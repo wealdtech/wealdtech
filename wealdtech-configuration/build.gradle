@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+sourceCompatibility=1.7
+group='com.wealdtech'
+version=0.1
+
+repositories
+{
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies
+{
+    compile 'com.wealdtech:wealdtech-core:+'
+    compile 'ch.qos.logback:logback-classic:1.0.+'
+}
+
+jar
+{
+    manifest
+    {
+        attributes 'Implementation-title': 'configuration', 'Implementation-version': version
+    }
+}
