@@ -6,10 +6,11 @@ sourceCompatibility=1.7
 group='com.wealdtech'
 version=0.1
 
-//dependencies
-//{
+dependencies
+{
 //    compile 'ch.qos.logback:logback-classic:1.0.+'
-//}
+    testCompile 'org.testng:testng:6.+'
+}
 
 repositories
 {
