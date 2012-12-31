@@ -14,11 +14,11 @@
  *   limitations under the License.
  */
 
-package com.wealdtech;
+package com.wealdtech.utils;
 
 import java.security.SecureRandom;
 
-public class WealdUtils
+public class StringUtils
 {
   private static final SecureRandom RANDOMSOURCE;
   private static String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvexyz0123456789";
