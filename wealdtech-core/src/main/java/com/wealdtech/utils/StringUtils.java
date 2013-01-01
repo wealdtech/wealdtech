@@ -21,7 +21,7 @@ import java.security.SecureRandom;
 public class StringUtils
 {
   private static final SecureRandom RANDOMSOURCE;
-  private static String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvexyz0123456789";
+  private static String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   static
   {
@@ -29,7 +29,13 @@ public class StringUtils
   }
 
   /**
-   * Generate a random string of alphanumeric characters
+   * Generate a random string of alphanumeric characters.
+   * <p>
+   * The string returned will contain characters randomly 
+   * selected from upper- and lower-case a through z as
+   * well as the digits 0 through 9.
+   * @param length the length of the string to generate
+   * @returns a string of random alphanumeric characters of the requested length
    */
   public static String generateRandomString(int length)
   {
@@ -38,6 +44,32 @@ public class StringUtils
     {
       sb.append(CANDIDATES.charAt(RANDOMSOURCE.nextInt(62)));
     }
+    return sb.toString();
+  }
+
+  /**
+   * Capitalise a string.
+   * Useful for handling introspection and camel case.
+   * @param str the string to capitalise
+   * @return The capitalised string
+   */
+  public static String capitalise(final String str)
+  {
+    final StringBuilder sb = new StringBuilder(str);
+    sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+    return sb.toString();
+  }
+
+  /**
+   * Change a variable name to the name of the getter.
+   * @param str a variable name in camelcase
+   * @return The name of the getter
+   */
+  public static String nameToGetter(final String str)
+  {
+    final StringBuilder sb = new StringBuilder("get");
+    sb.append(str);
+    sb.setCharAt(3, Character.toUpperCase(sb.charAt(3)));
     return sb.toString();
   }
 }

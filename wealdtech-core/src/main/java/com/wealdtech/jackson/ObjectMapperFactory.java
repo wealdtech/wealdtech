@@ -1,6 +1,9 @@
 package com.wealdtech.jackson;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.Module;
@@ -57,6 +60,10 @@ public class ObjectMapperFactory
     {
       mapper.registerModule(module);
     }
+    for (Map.Entry<JsonParser.Feature, Boolean> entry : configuration.getParserFeatures().entrySet())
+    {
+      mapper.getFactory().configure(entry.getKey(), entry.getValue());
+    }
     mapper.setInjectableValues(configuration.getInjectableValues());
     if (configuration.getPropertyNamingStrategy().isPresent())
     {
@@ -66,6 +73,7 @@ public class ObjectMapperFactory
     {
       mapper.setSerializationInclusion(configuration.getSerializationInclusion().get());
     }
+
     return mapper;
   }
 
@@ -73,70 +81,4 @@ public class ObjectMapperFactory
   {
     return DEFAULTMAPPER;
   }
-
-  // private transient final Map<String, ObjectMapper> mappers;
-  // private static transient final ObjectMapper CLIENTMAPPER;
-  // private static transient final ObjectMapper SERVERMAPPER;
-  // static
-  // {
-  // CLIENTMAPPER = new ObjectMapper();
-  // // Clients need the ability to send empty arrays for updates
-  // CLIENTMAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-  // // Ensure that JSON keys are completely lower-case
-  // CLIENTMAPPER.setPropertyNamingStrategy(new LcStrategy());
-  // // If people send us "" treat as NULL
-  // //
-  // CLIENTMAPPER.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-  // // Register our custom serializers and deserializers
-  // CLIENTMAPPER.registerModule(new WealdJodaModule());
-  // // Use Guava custom serializers and deserializers
-  // CLIENTMAPPER.registerModule(new GuavaModule());
-  // // Add flag stating that this is a client mapper
-  // final InjectableValues clientinject = new
-  // InjectableValues.Std().addValue("AllowPartials", Boolean.FALSE);
-  // CLIENTMAPPER.setInjectableValues(clientinject);
-  // CLIENTMAPPER.configure(Feature.ALLOW_COMMENTS, true);
-  //
-  // SERVERMAPPER = new ObjectMapper();
-  // SERVERMAPPER.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-  // // SERVERMAPPER.enable(SerializationFeature.INDENT_OUTPUT);
-  // // Ensure that JSON keys are completely lower-case
-  // SERVERMAPPER.setPropertyNamingStrategy(new LcStrategy());
-  // // If people send us "" treat as NULL
-  // //
-  // SERVERMAPPER.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-  // // TODO see if this makes a difference
-  // SERVERMAPPER.enable(MapperFeature.USE_STATIC_TYPING);
-  // // Register our custom serializers and deserializers
-  // SERVERMAPPER.registerModule(new WealdJodaModule());
-  // // Use Guava custom serializers and deserializers
-  // SERVERMAPPER.registerModule(new GuavaModule());
-  // // Add flag stating that this is a server mapper
-  // final InjectableValues serverinject = new
-  // InjectableValues.Std().addValue("AllowPartials", Boolean.TRUE);
-  // SERVERMAPPER.setInjectableValues(serverinject);
-  // SERVERMAPPER.configure(Feature.ALLOW_COMMENTS, true);
-  // }
-  //
-  // /**
-  // * Obtain a client ObjectMapper with Weald settings.
-  // * Note that this returns a shared instance so the
-  // * configuration should not be altered.
-  // * @return An ObjectMapper.
-  // */
-  // public static ObjectMapper getMapper()
-  // {
-  // return CLIENTMAPPER;
-  // }
-  //
-  // /**
-  // * Obtain a server ObjectMapper with Weald settings.
-  // * Note that this returns a shared instance so the
-  // * configuration should not be altered.
-  // * @return An ObjectMapper.
-  // */
-  // public static ObjectMapper getServerMapper()
-  // {
-  // return SERVERMAPPER;
-  // }
 }
