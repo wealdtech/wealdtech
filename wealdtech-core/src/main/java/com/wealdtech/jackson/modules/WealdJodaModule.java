@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+
 //import com.wealdtech.utils.messaging.MessageObjects;
 
 /**
@@ -44,11 +45,11 @@ public class WealdJodaModule extends Module
   @Override
   public Version version()
   {
-    if (version == null)
+    if (this.version == null)
     {
-      version = new Version(1, 0, 0, null, "com.wealdtech", "utils");
+      this.version = new Version(1, 0, 0, null, "com.wealdtech", "utils");
     }
-    return version;
+    return this.version;
   }
 
   @Override
@@ -65,8 +66,9 @@ public class WealdJodaModule extends Module
     deserializers.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
     serializers.addSerializer(new LocalDateSerializer());
     deserializers.addDeserializer(LocalDate.class, new LocalDateDeserializer());
-    serializers.addSerializer(new MessageObjectsSerializer());
-//    deserializers.addDeserializer((Class<MessageObjects<?>>)(Class<?>)MessageObjects.class, new MessageObjectsDeserializer());
+    // serializers.addSerializer(new MessageObjectsSerializer());
+    // deserializers.addDeserializer((Class<MessageObjects<?>>)(Class<?>)MessageObjects.class,
+    // new MessageObjectsDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);
