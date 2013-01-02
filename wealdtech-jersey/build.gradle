@@ -1,0 +1,22 @@
+dependencies
+{
+    compile project(':wealdtech-core')
+    compile 'ch.qos.logback:logback-classic:1.0.+'
+    compile 'com.sun.jersey:jersey-core:1.16'
+    compile 'com.sun.jersey:jersey-server:1.16'
+    compile 'com.sun.jersey:jersey-servlet:1.16'
+    compile 'javax.ws.rs:jsr311-api:1.1.1'
+    compile 'com.sun.jersey.contribs:jersey-guice:1.13'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-jersey'
+            pom.project {
+                name 'Wealdtech Jersey'
+                description 'Jersey filters and features'
+            }
+        }
+    }
+}
