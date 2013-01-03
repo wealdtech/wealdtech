@@ -24,6 +24,16 @@ public class NotFoundException extends HttpException
 {
   private static final long serialVersionUID = 7524382631982564538L;
 
+  public NotFoundException(final String errorCode)
+  {
+    super(Status.NOT_FOUND, errorCode);
+  }
+
+  public NotFoundException(final Throwable t)
+  {
+    super(Status.NOT_FOUND, t);
+  }
+
   public NotFoundException(final String errorCode, final Throwable t)
   {
     super(Status.NOT_FOUND, errorCode, t);

@@ -24,6 +24,16 @@ public class BadRequestException extends HttpException
 {
   private static final long serialVersionUID = -2327527911628760654L;
 
+  public BadRequestException(final String errorCode)
+  {
+    super(Status.BAD_REQUEST, errorCode);
+  }
+
+  public BadRequestException(final Throwable t)
+  {
+    super(Status.BAD_REQUEST, t);
+  }
+
   public BadRequestException(final String errorCode, final Throwable t)
   {
     super(Status.BAD_REQUEST, errorCode, t);

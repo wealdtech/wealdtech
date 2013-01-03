@@ -26,7 +26,12 @@ public class UnauthorizedException extends HttpException
 
   public UnauthorizedException(final String errorCode)
   {
-    super (Status.UNAUTHORIZED, errorCode, null);
+    super(Status.UNAUTHORIZED, errorCode);
+  }
+
+  public UnauthorizedException(final Throwable t)
+  {
+    super (Status.UNAUTHORIZED, t);
   }
 
   public UnauthorizedException(final String errorCode, final Throwable t)

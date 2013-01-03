@@ -24,6 +24,16 @@ public class ForbiddenException extends HttpException
 {
   private static final long serialVersionUID = -2302278348355473625L;
 
+  public ForbiddenException(final String errorCode)
+  {
+    super(Status.FORBIDDEN, errorCode);
+  }
+
+  public ForbiddenException(final Throwable t)
+  {
+    super(Status.FORBIDDEN, t);
+  }
+
   public ForbiddenException(final String errorCode, final Throwable t)
   {
     super(Status.FORBIDDEN, errorCode, t);

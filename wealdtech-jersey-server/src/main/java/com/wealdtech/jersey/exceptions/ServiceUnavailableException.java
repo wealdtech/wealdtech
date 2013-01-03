@@ -23,25 +23,21 @@ import javax.ws.rs.core.Response.Status;
 public class ServiceUnavailableException extends HttpException
 {
   private static final long serialVersionUID = -1497533974587152020L;
+  // TODO make this configurable
   private static final Integer DEFAULTRETRY = 60;
 
   public ServiceUnavailableException(final String errorCode)
   {
-    super (Status.SERVICE_UNAVAILABLE, errorCode, DEFAULTRETRY, null);
+    super(Status.SERVICE_UNAVAILABLE, errorCode, DEFAULTRETRY, null);
   }
 
-  public ServiceUnavailableException(final String errorCode, final Integer retry)
+  public ServiceUnavailableException(final Throwable t)
   {
-    super (Status.SERVICE_UNAVAILABLE, errorCode, retry, null);
+    super (Status.SERVICE_UNAVAILABLE, null, DEFAULTRETRY, t);
   }
 
   public ServiceUnavailableException(final String errorCode, final Throwable t)
   {
     super(Status.SERVICE_UNAVAILABLE, errorCode, DEFAULTRETRY, t);
-  }
-
-  public ServiceUnavailableException(final String errorCode, final Integer retry, final Throwable t)
-  {
-    super(Status.SERVICE_UNAVAILABLE, errorCode, retry, t);
   }
 }
