@@ -63,7 +63,7 @@ public class WealdExceptionMapper implements ExceptionMapper<HttpException>
     ErrorInfo status = ErrorInfoMap.get(message);
     if (status == null)
     {
-      status =new ErrorInfo(message, null, null, null);
+      status =new ErrorInfo(message, null, null, (String)null);
     }
     try
     {
