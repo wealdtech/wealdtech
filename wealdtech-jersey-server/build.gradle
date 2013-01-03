@@ -6,16 +6,15 @@ dependencies
     compile 'com.sun.jersey:jersey-server:1.16'
     compile 'com.sun.jersey:jersey-servlet:1.16'
     compile 'javax.ws.rs:jsr311-api:1.1.1'
-    compile 'com.sun.jersey.contribs:jersey-guice:1.13'
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-jersey'
+            pom.artifactId = 'wealdtech-jersey-server'
             pom.project {
-                name 'Wealdtech Jersey'
-                description 'Jersey filters and features'
+                name 'Wealdtech Jersey server'
+                description 'Jersey server-side filters and features'
             }
         }
     }

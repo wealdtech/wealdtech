@@ -22,32 +22,33 @@ import javax.annotation.Nullable;
 
 /**
  * <b>Weald Technology version of </b> simple static methods to be called at the
- * start of your own methods to verify correct arguments and state. This allows
- * constructs such as
- * 
+ * start of your own methods to verify correct arguments and state, throwing
+ * Weald Technology exceptions such as {@link com.wealdtech.DataError} rather than
+ * NullPointerException. This allows constructs such as
+ *
  * <pre>
  * if (count &lt;= 0)
  * {
  *   throw new DataError(&quot;must be positive: &quot; + count);
  * }
  * </pre>
- * 
+ *
  * to be replaced with the more compact
- * 
+ *
  * <pre>
  * checkArgument(count &gt; 0, &quot;must be positive: %s&quot;, count);
  * </pre>
- * 
+ *
  * Note that the sense of the expression is inverted; with {@code Preconditions}
  * you declare what you expect to be <i>true</i>, just as you do with an <a
  * href="http://java.sun.com/j2se/1.5.0/docs/guide/language/assert.html">
  * {@code assert}</a> or a JUnit {@code assertTrue} call.
- * 
+ *
  * <p>
  * <b>Warning:</b> only the {@code "%s"} specifier is recognized as a
  * placeholder in these messages, not the full range of
  * {@link String#format(String, Object[])} specifiers.
- * 
+ *
  * <p>
  * Take care not to confuse precondition checking with other similar types of
  * checks! Precondition exceptions -- including those provided here, but also
@@ -57,12 +58,12 @@ import javax.annotation.Nullable;
  * should not have invoked the method when it did, with the arguments it did, or
  * perhaps ever. Postcondition or other invariant failures should not throw
  * these types of exceptions.
- * 
+ *
  * <p>
  * See the Guava User Guide on <a href=
  * "http://code.google.com/p/guava-libraries/wiki/PreconditionsExplained"> using
  * {@code Preconditions}</a>.
- * 
+ *
  * @author Kevin Bourrillion
  * @since 2.0 (imported from Google Collections Library)
  */
@@ -75,7 +76,7 @@ public final class Preconditions
   /**
    * Ensures the truth of an expression involving one or more parameters to the
    * calling method.
-   * 
+   *
    * @param expression
    *          a boolean expression
    * @throws DataError
@@ -92,7 +93,7 @@ public final class Preconditions
   /**
    * Ensures the truth of an expression involving one or more parameters to the
    * calling method.
-   * 
+   *
    * @param expression
    *          a boolean expression
    * @param errorMessage
@@ -112,7 +113,7 @@ public final class Preconditions
   /**
    * Ensures the truth of an expression involving one or more parameters to the
    * calling method.
-   * 
+   *
    * @param expression
    *          a boolean expression
    * @param errorMessageTemplate
@@ -143,7 +144,7 @@ public final class Preconditions
   /**
    * Ensures the truth of an expression involving the state of the calling
    * instance, but not involving any parameters to the calling method.
-   * 
+   *
    * @param expression
    *          a boolean expression
    * @throws DataError
@@ -160,7 +161,7 @@ public final class Preconditions
   /**
    * Ensures the truth of an expression involving the state of the calling
    * instance, but not involving any parameters to the calling method.
-   * 
+   *
    * @param expression
    *          a boolean expression
    * @param errorMessage
@@ -180,7 +181,7 @@ public final class Preconditions
   /**
    * Ensures the truth of an expression involving the state of the calling
    * instance, but not involving any parameters to the calling method.
-   * 
+   *
    * @param expression
    *          a boolean expression
    * @param errorMessageTemplate
@@ -211,7 +212,7 @@ public final class Preconditions
   /**
    * Ensures that an object reference passed as a parameter to the calling
    * method is not null.
-   * 
+   *
    * @param reference
    *          an object reference
    * @return the non-null reference that was validated
@@ -230,7 +231,7 @@ public final class Preconditions
   /**
    * Ensures that an object reference passed as a parameter to the calling
    * method is not null.
-   * 
+   *
    * @param reference
    *          an object reference
    * @param errorMessage
@@ -252,7 +253,7 @@ public final class Preconditions
   /**
    * Ensures that an object reference passed as a parameter to the calling
    * method is not null.
-   * 
+   *
    * @param reference
    *          an object reference
    * @param errorMessageTemplate
@@ -282,22 +283,22 @@ public final class Preconditions
 
   /*
    * All recent hotspots (as of 2009) *really* like to have the natural code
-   * 
+   *
    * if (guardExpression) { throw new BadException(messageExpression); }
-   * 
+   *
    * refactored so that messageExpression is moved to a separate
    * String-returning method.
-   * 
+   *
    * if (guardExpression) { throw new BadException(badMsg(...)); }
-   * 
+   *
    * The alternative natural refactorings into void or Exception-returning
    * methods are much slower. This is a big deal - we're talking factors of 2-8
    * in microbenchmarks, not just 10-20%. (This is a hotspot optimizer bug,
    * which should be fixed, but that's a separate, big project).
-   * 
+   *
    * The coding pattern above is heavily used in java.util, e.g. in ArrayList.
    * There is a RangeCheckMicroBenchmark in the JDK that was used to test this.
-   * 
+   *
    * But the methods in this class want to throw different exceptions, depending
    * on the args, so it appears that this pattern is not directly applicable.
    * But we can use the ridiculous, devious trick of throwing an exception in
@@ -309,7 +310,7 @@ public final class Preconditions
    * Ensures that {@code index} specifies a valid <i>element</i> in an array,
    * list or string of size {@code size}. An element index may range from zero,
    * inclusive, to {@code size}, exclusive.
-   * 
+   *
    * @param index
    *          a user-supplied index identifying an element of an array, list or
    *          string
@@ -330,7 +331,7 @@ public final class Preconditions
    * Ensures that {@code index} specifies a valid <i>element</i> in an array,
    * list or string of size {@code size}. An element index may range from zero,
    * inclusive, to {@code size}, exclusive.
-   * 
+   *
    * @param index
    *          a user-supplied index identifying an element of an array, list or
    *          string
@@ -375,7 +376,7 @@ public final class Preconditions
    * Ensures that {@code index} specifies a valid <i>position</i> in an array,
    * list or string of size {@code size}. A position index may range from zero
    * to {@code size}, inclusive.
-   * 
+   *
    * @param index
    *          a user-supplied index identifying a position in an array, list or
    *          string
@@ -396,7 +397,7 @@ public final class Preconditions
    * Ensures that {@code index} specifies a valid <i>position</i> in an array,
    * list or string of size {@code size}. A position index may range from zero
    * to {@code size}, inclusive.
-   * 
+   *
    * @param index
    *          a user-supplied index identifying a position in an array, list or
    *          string
@@ -441,7 +442,7 @@ public final class Preconditions
    * Ensures that {@code start} and {@code end} specify a valid <i>positions</i>
    * in an array, list or string of size {@code size}, and are in order. A
    * position index may range from zero to {@code size}, inclusive.
-   * 
+   *
    * @param start
    *          a user-supplied index identifying a starting position in an array,
    *          list or string
@@ -484,7 +485,7 @@ public final class Preconditions
    * matched by position - the first {@code %s} gets {@code args[0]}, etc. If
    * there are more arguments than placeholders, the unmatched arguments will be
    * appended to the end of the formatted message in square braces.
-   * 
+   *
    * @param template
    *          a non-null string containing 0 or more {@code %s} placeholders.
    * @param args
