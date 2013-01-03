@@ -16,6 +16,10 @@
 package com.wealdtech.errors;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
@@ -30,6 +34,8 @@ import com.google.common.collect.Ordering;
  */
 public class ErrorInfo implements Comparable<ErrorInfo>
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ErrorInfo.class);
+
   private final String userMessage;
   private final String developerMessage;
   private final String errorCode;
@@ -51,6 +57,36 @@ public class ErrorInfo implements Comparable<ErrorInfo>
     this.userMessage = userMessage;
     this.developerMessage = developerMessage;
     this.moreInfo = moreInfo;
+  }
+
+  /**
+   * Create information about an error.
+   * @param errorCode the error code.  This should be unique within your application
+   * @param userMessage the message suitable for displaying to a user
+   * @param developerMessage the message suitable for displaying to a developer
+   * @param moreInfo a link to a website that provides additional information
+   */
+  public ErrorInfo(final String errorCode,
+                   final String userMessage,
+                   final String developerMessage,
+                   final String moreInfo)
+  {
+    this.errorCode = errorCode;
+    this.userMessage = userMessage;
+    this.developerMessage = developerMessage;
+    URI moreInfoUri = null;
+    if (moreInfo != null)
+    {
+      try
+      {
+        moreInfoUri = new URI(moreInfo);
+      }
+      catch (URISyntaxException use)
+      {
+        LOGGER.warn("Failed to parse {} in to a valid URI", moreInfo, use);
+      }
+    }
+    this.moreInfo = moreInfoUri;
   }
 
   /**

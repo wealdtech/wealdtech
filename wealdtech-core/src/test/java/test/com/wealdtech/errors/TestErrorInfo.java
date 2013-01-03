@@ -43,7 +43,7 @@ public class TestErrorInfo
     ErrorInfo test2 = new ErrorInfo("code2",
                                     null,
                                     null,
-                                    null);
+                                    "http://www.example2.com/test2");
     test2.toString();
     test2.hashCode();
     assertEquals(test2, test2);
@@ -52,6 +52,6 @@ public class TestErrorInfo
     assertEquals(test2.getErrorCode(), "code2");
     assertEquals(test2.getUserMessage(), null);
     assertEquals(test2.getDeveloperMessage(), null);
-    assertEquals(test2.getMoreInfo(), null);
+    assertEquals(test2.getMoreInfo().toString(), "http://www.example2.com/test2");
   }
 }
