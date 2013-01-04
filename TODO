@@ -1,0 +1,3 @@
+JettyServer
+  - Create with full JAX-RS configuration
+    - Stop subclassing/copying it
