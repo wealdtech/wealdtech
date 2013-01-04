@@ -17,19 +17,20 @@ package com.wealdtech.jersey.auth;
 
 import com.google.common.base.Optional;
 import com.sun.jersey.spi.container.ContainerRequest;
+import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
 
 /**
- * Generic interface for authentication of a principal against credentials.
+ * Generic interface for authentication of a principal for a given request.
  */
-public interface Authenticator<C, P>
+public interface Authenticator<T>
 {
   /**
    * Authenticate a principal given a set of credentials.
    * @param request the request which is to be authenticated
-   * @param credentials a set of credentials
    * @return The authenticated principal, or Optional.absent() if not authenticated
+   * @throws DataError if the authentication can not be carried out due to bad data
    * @throws ServerError if there is a problem authenticating the credentials
    */
-  Optional<P> authenticate(final ContainerRequest request, final C credentials) throws ServerError;
+  Optional<T> authenticate(final ContainerRequest request) throws DataError, ServerError;
 }
