@@ -13,37 +13,30 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
 package com.wealdtech.jersey.providers;
 
-import java.lang.reflect.Type;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 
-import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.api.container.ContainerException;
 
 /**
- * Provide details of an authenticated principal. Most of the heavy lifting is
- * carried out by the authentication filter, so we're just here as a convenience
- * to make the information easily accessible.
- *
- * @param <E>
+ * Catch ContainerExceptions and respond with the underlying cause.
  */
-//@Provider
-public class AuthenticatedPrincipalProvider<E> extends AbstractInjectableProvider<E>
+@Provider
+public class ContainerExceptionManager implements ExceptionMapper<ContainerException>
 {
   @Context
-  private transient HttpServletRequest servletrequest;
-
-  public AuthenticatedPrincipalProvider(final Type t)
-  {
-    super(t);
-  }
+  Providers providers;
 
   @Override
-  public E getValue(final HttpContext c)
+  public Response toResponse(final ContainerException exception)
   {
-    return (E)this.servletrequest.getAttribute("com.wealdtech.authenticatedprincipal");
+    Throwable underlying = exception.getCause();
+
+    return ((ExceptionMapper<Throwable>)this.providers.getExceptionMapper(underlying.getClass())).toResponse(underlying);
   }
 }
