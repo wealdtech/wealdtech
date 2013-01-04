@@ -25,6 +25,7 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 
+
 /**
  * A simple HTTP server to test Hawk authentication
  */
