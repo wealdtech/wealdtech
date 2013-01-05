@@ -12,21 +12,21 @@ public class TestConfiguration
   @Test
   public void testConfiguration() throws Exception
   {
-    SampleConfiguration tc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test.json", SampleConfiguration.class);
-    assertEquals(tc.getString(), "twenty three");
-    assertEquals(tc.getInt(), 23);
-    assertEquals(tc.getOptional(), "Default");
-    assertEquals(tc.getSubConfiguration().getString(), "sub string");
+    SampleConfiguration sc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test.json", SampleConfiguration.class);
+    assertEquals(sc.getString(), "twenty three");
+    assertEquals(sc.getInt(), 23);
+    assertEquals(sc.getOptional(), "Default");
+    assertEquals(sc.getSubConfiguration().getString(), "sub string");
   }
 
   @Test
   public void testConfiguration2() throws Exception
   {
-    SampleConfiguration tc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test2.json", SampleConfiguration.class);
-    assertEquals(tc.getString(), "twenty three");
-    assertEquals(tc.getInt(), 23);
-    assertEquals(tc.getOptional(), "Another string");
-    assertEquals(tc.getSubConfiguration().getString(), "sub string");
+    SampleConfiguration sc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test2.json", SampleConfiguration.class);
+    assertEquals(sc.getString(), "twenty three");
+    assertEquals(sc.getInt(), 23);
+    assertEquals(sc.getOptional(), "Another string");
+    assertEquals(sc.getSubConfiguration().getString(), "sub string");
   }
 
   @Test

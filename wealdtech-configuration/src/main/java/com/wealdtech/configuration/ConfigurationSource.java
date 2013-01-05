@@ -36,7 +36,7 @@ import com.wealdtech.utils.ResourceLoader;
  * return a configuration object.
  *
  * Configurations allow for the creation of objects containing configuration
- * properties which can be accessed by real classes.  It provides
+ * properties which can be accessed by real classes.  They provide
  * a single source for multiple different types of configuration information,
  * retaining the flexibility of file-based configuration with the strict checking
  * and validation available through object-based configuration.
