@@ -16,11 +16,11 @@
 
 package test.com.wealdtech.utils;
 
+import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
 
 import com.wealdtech.utils.ResourceLoader;
-
-import static org.testng.Assert.assertNotNull;
 
 public class TestResourceLoader
 {
@@ -28,5 +28,6 @@ public class TestResourceLoader
   public void testFindInBase() throws Exception
   {
     assertNotNull(ResourceLoader.getResource("basetest.json"));
+    assertNull(ResourceLoader.getResource("missingtest.json"));
   }
 }

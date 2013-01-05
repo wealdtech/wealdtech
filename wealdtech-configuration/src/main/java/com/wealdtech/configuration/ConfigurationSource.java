@@ -72,6 +72,10 @@ public class ConfigurationSource<T>
     final String linefeed = System.getProperty("line.separator");
     try (BufferedReader reader = getReader(filename))
     {
+      if (reader == null)
+      {
+        throw new DataError("Failed to find resource \"" + filename + "\"");
+      }
       String line = null;
       while ((line = reader.readLine()) != null)
       {
@@ -90,6 +94,10 @@ public class ConfigurationSource<T>
   private static BufferedReader getReader(final String filename) throws DataError
   {
     final URL fileurl = ResourceLoader.getResource(filename);
+    if (fileurl == null)
+    {
+      return null;
+    }
     try
     {
       return Files.newBufferedReader(Paths.get(fileurl.toURI()), Charset.defaultCharset());

@@ -52,11 +52,11 @@ public class ObjectMapperConfiguration
   {
     this.factory = Optional.absent();
     this.modules = Lists.newArrayList();
+    this.modules.add(new GuavaModule());
+    this.modules.add(new WealdJodaModule());
     this.parserFeatures = Maps.newHashMap();
     this.parserFeatures.put(JsonParser.Feature.ALLOW_COMMENTS, true);
     this.injectableValues = new InjectableValues.Std();
-    this.modules.add(new GuavaModule());
-    this.modules.add(new WealdJodaModule());
     this.propertyNamingStrategy = Optional.fromNullable(new LcStrategy());
     this.serializationInclusion = Optional.fromNullable(JsonInclude.Include.NON_NULL);
   }
@@ -109,7 +109,10 @@ public class ObjectMapperConfiguration
    */
   public void addModule(final Module module)
   {
-    this.modules.add(module);
+    if (module != null)
+    {
+      this.modules.add(module);
+    }
   }
 
   /**
