@@ -32,6 +32,7 @@ public class ContainerExceptionManager implements ExceptionMapper<ContainerExcep
   @Context
   Providers providers;
 
+  @SuppressWarnings("unchecked")
   @Override
   public Response toResponse(final ContainerException exception)
   {

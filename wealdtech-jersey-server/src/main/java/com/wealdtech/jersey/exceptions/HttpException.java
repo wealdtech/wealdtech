@@ -18,6 +18,7 @@ package com.wealdtech.jersey.exceptions;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.common.base.Optional;
+import com.wealdtech.WealdError;
 import com.wealdtech.errors.ErrorInfoMap;
 
 /**
@@ -101,5 +102,84 @@ public class HttpException extends RuntimeException
   public Optional<Integer> getRetryAfter()
   {
     return this.retryAfter;
+  }
+
+  /**
+   * Provide the message without the exception name
+   */
+  @Override
+  public String toString()
+  {
+    final String s = getClass().getName();
+    final String message = getLocalizedMessage();
+    return (message != null) ? message : s;
+  }
+
+  /**
+   * Provide the full path of the throwing class.
+   * This comes from the lowest-level WealdError that we can find.
+   */
+  public String getThrowingClassName()
+  {
+    WealdError we = null;
+    Throwable t = this.getCause();
+    while (t != null)
+    {
+      if (t instanceof WealdError)
+      {
+        we = (WealdError)t;
+      }
+      t = t.getCause();
+    }
+    String result = null;
+    final StackTraceElement[] stacktrace = we.getStackTrace();
+    if (stacktrace.length > 0)
+    {
+      result = stacktrace[0].getClassName();
+    }
+    return result;
+  }
+
+  /**
+   * Provide the name of the throwing method
+   */
+  public String getThrowingMethodName()
+  {
+    WealdError we = null;
+    Throwable t = this.getCause();
+    while (t != null)
+    {
+      if (t instanceof WealdError)
+      {
+        we = (WealdError)t;
+      }
+      t = t.getCause();
+    }
+    String result = null;
+    final StackTraceElement[] stacktrace = we.getStackTrace();
+    if (stacktrace.length > 0)
+    {
+      result = stacktrace[0].getMethodName();
+    }
+    return result;
+  }
+
+  public String getFullyQualifiedMessage()
+  {
+    StringBuilder sb = new StringBuilder(128);
+    String className = getThrowingClassName();
+    if (className != null)
+    {
+      sb.append(className);
+      sb.append(':');
+    }
+    String methodName = getThrowingMethodName();
+    if (methodName != null)
+    {
+      sb.append(methodName);
+      sb.append(':');
+    }
+    sb.append(toString());
+    return sb.toString();
   }
 }

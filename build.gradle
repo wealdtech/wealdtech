@@ -5,8 +5,8 @@ subprojects {
     apply plugin: 'signing'
 
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
     }
 
     group = 'com.wealdtech'

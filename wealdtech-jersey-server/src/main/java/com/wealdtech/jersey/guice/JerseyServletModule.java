@@ -7,6 +7,7 @@ import java.util.Map;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ObjectArrays;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.PackagesResourceConfig;
@@ -64,23 +65,26 @@ public class JerseyServletModule extends ServletModule
     serve("/*").with(GuiceContainer.class, params);
   }
 
+  /**
+   * Set the list of packages that we will search for providers and the like
+   * @param additionalPackages The packages above and beyond our standard list
+   */
   private void setPackages(final String... additionalPackages)
   {
-    this.packages = Joiner.on(',').skipNulls().join("com.wealdtech.jersey",
-                                                    "com.yammer.metrics.jersey",
-                                                    additionalPackages);
+    String[] packagesList = ObjectArrays.concat("com.wealdtech.jersey", additionalPackages);
+    packagesList = ObjectArrays.concat("com.yammer.metrics", packagesList);
+    this.packages = Joiner.on(',').skipNulls().join(packagesList);
   }
 
-  @SuppressWarnings("rawtypes")
   /**
    * Convert a varargs of clases in to a comma-separated string of class names
    */
-  private String joinClassNames(final Class... clazz)
+  private String joinClassNames(final Class<?>... clazz)
   {
-    Function<Class, String> classToName = new Function<Class, String>()
+    Function<Class<?>, String> classToName = new Function<Class<?>, String>()
     {
       @Override
-      public String apply(Class klazz)
+      public String apply(Class<?> klazz)
       {
         return klazz.getName();
       }

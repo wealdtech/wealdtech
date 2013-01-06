@@ -17,13 +17,13 @@
 package com.wealdtech;
 
 /**
- * A DataError covers all exceptions generated due to bad data.
- * Such errors are always correctable by altering the data presented
- * the the throwing method suitably. 
+ * A DataError covers all exceptions generated due to bad data. Such errors are
+ * always correctable by altering the data presented the the throwing method
+ * suitably.
  */
-public class DataError extends Exception
+public class DataError extends WealdError
 {
-  private static final long serialVersionUID = -8127456058290412830L;
+  private static final long serialVersionUID = -3487779032177158481L;
 
   /**
    * Generic data error
@@ -35,7 +35,9 @@ public class DataError extends Exception
 
   /**
    * Data error with message
-   * @param msg the message
+   *
+   * @param msg
+   *          the message
    */
   public DataError(final String msg)
   {
@@ -43,9 +45,23 @@ public class DataError extends Exception
   }
 
   /**
-   * Data error with message and underlying exception
-   * @param msg the message
-   * @param t the underlying exception
+   * Data error with cause
+   *
+   * @param t
+   *          the cause
+   */
+  public DataError(final Throwable t)
+  {
+    super(t);
+  }
+
+  /**
+   * Data error with message and cause
+   *
+   * @param msg
+   *          the message
+   * @param t
+   *          the cause
    */
   public DataError(final String msg, final Throwable t)
   {

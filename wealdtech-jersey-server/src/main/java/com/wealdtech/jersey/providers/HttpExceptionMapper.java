@@ -32,13 +32,14 @@ import com.wealdtech.jackson.ObjectMapperFactory;
 import com.wealdtech.jersey.exceptions.HttpException;
 
 /**
- * Convert exceptions in to a suitable JSON response for clients.
- * <p/>As part of this process
+ * Convert Weald HTTP exceptions in to a suitable JSON response for clients.
+ * <p/>As part of this process the error maps is checked to see if there
+ * is additional information that can be supplied to the requestor.
  */
 @Provider
-public class WealdExceptionMapper implements ExceptionMapper<HttpException>
+public class HttpExceptionMapper implements ExceptionMapper<HttpException>
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(WealdExceptionMapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpExceptionMapper.class);
 
   private static transient final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
 
@@ -46,7 +47,7 @@ public class WealdExceptionMapper implements ExceptionMapper<HttpException>
   public Response toResponse(final HttpException exception)
   {
     ResponseBuilder builder = Response.status(exception.getStatus())
-                                      .entity(statusToJSON(exception.getMessage()))
+                                      .entity(statusToJSON(exception.getFullyQualifiedMessage()))
                                       .type(MediaType.APPLICATION_JSON);
 
     if (exception.getRetryAfter().isPresent())
@@ -57,13 +58,13 @@ public class WealdExceptionMapper implements ExceptionMapper<HttpException>
     return builder.build();
   }
 
-  private String statusToJSON(final String message)
+  private String statusToJSON(final String key)
   {
     // See if our message is really an error code
-    ErrorInfo status = ErrorInfoMap.get(message);
+    ErrorInfo status = ErrorInfoMap.get(key);
     if (status == null)
     {
-      status =new ErrorInfo(message, null, null, (String)null);
+      status =new ErrorInfo(key, null, null, (String)null);
     }
     try
     {
@@ -72,7 +73,7 @@ public class WealdExceptionMapper implements ExceptionMapper<HttpException>
     catch (JsonProcessingException e)
     {
       LOGGER.error("Failed to generate JSON for status \"{}\"", status);
-      return "{\"message\":\"" + message + "\"}";
+      return "{\"message\":\"" + key + "\"}";
     }
   }
 }

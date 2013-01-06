@@ -41,6 +41,7 @@ public class AuthenticatedPrincipalProvider<E> extends AbstractInjectableProvide
     super(t);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public E getValue(final HttpContext c)
   {
