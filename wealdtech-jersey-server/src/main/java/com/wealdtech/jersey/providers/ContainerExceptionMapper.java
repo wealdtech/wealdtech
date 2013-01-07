@@ -27,7 +27,7 @@ import com.sun.jersey.api.container.ContainerException;
  * Catch ContainerExceptions and respond with the underlying cause.
  */
 @Provider
-public class ContainerExceptionManager implements ExceptionMapper<ContainerException>
+public class ContainerExceptionMapper implements ExceptionMapper<ContainerException>
 {
   @Context
   Providers providers;

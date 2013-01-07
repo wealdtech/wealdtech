@@ -18,6 +18,7 @@ package com.wealdtech.jersey.providers;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -26,47 +27,34 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wealdtech.WealdError;
 import com.wealdtech.errors.ErrorInfo;
 import com.wealdtech.jackson.ObjectMapperFactory;
 import com.wealdtech.jersey.exceptions.HttpException;
 
 /**
- * Convert Weald HTTP exceptions in to a suitable JSON response for clients.
+ * Convert unexpected exceptions in to a suitable JSON response for clients.
+ * <p>We use the phrase "unexpected" here to indicate exceptions that are not
+ * caught and translated in to a subclass of {@link HttpException}.
  */
 @Provider
-public class HttpExceptionMapper implements ExceptionMapper<HttpException>
+public class UnexpectedExceptionMapper implements ExceptionMapper<Exception>
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(HttpExceptionMapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UnexpectedExceptionMapper.class);
 
   private static transient final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
 
   @Override
-  public Response toResponse(final HttpException exception)
+  public Response toResponse(final Exception exception)
   {
-    ResponseBuilder builder = Response.status(exception.getStatus())
-                                      .entity(statusToJSON(exception))
+    ResponseBuilder builder = Response.status(Status.BAD_REQUEST)
+                                      .entity(defaultJSON(exception))
                                       .type(MediaType.APPLICATION_JSON);
-
-    if (exception.getRetryAfter().isPresent())
-    {
-      builder.header("Retry-After", exception.getRetryAfter().get());
-    }
-
     return builder.build();
   }
 
-  private String statusToJSON(final HttpException exception)
+  private String defaultJSON(final Exception exception)
   {
-    WealdError err = exception;
-    while (err.getCause() != null)
-    {
-      if (err.getCause() instanceof WealdError)
-      {
-        err = (WealdError)err.getCause();
-      }
-    }
-    ErrorInfo errorInfo = new ErrorInfo(null, err.getUserMessage(), err.getMessage(), err.getUrl());
+    ErrorInfo errorInfo = new ErrorInfo(null, exception.getMessage(), exception.getMessage(), (String)null);
 
     try
     {
