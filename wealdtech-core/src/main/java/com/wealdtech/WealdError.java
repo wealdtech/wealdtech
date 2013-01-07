@@ -19,45 +19,20 @@ package com.wealdtech;
 /**
  * Abstract base exception for all Weald Technology exceptions.
  */
-public abstract class WealdError extends Exception
+public abstract class WealdError extends RuntimeException
 {
   private static final long serialVersionUID = -8127456058290412830L;
 
-  /**
-   * Error
-   */
-  public WealdError()
-  {
-    super();
-  }
+  protected static String BASEURL = "http://developers.wealdtech.com/docs/";
 
-  /**
-   * Error with message
-   * @param msg the message
-   */
-  public WealdError(final String msg)
-  {
-    super(msg);
-  }
+  private final String userMessage;
+  private final String url;
 
-  /**
-   * Error with cause.
-   * <p>Note that this propagates the message from the cause
-   * @param t the cause
-   */
-  public WealdError(final Throwable t)
+  public WealdError(final String message, final String userMessage, final String url, final Throwable t)
   {
-    super(t.getLocalizedMessage(), t);
-  }
-
-  /**
-   * Error with message and cause
-   * @param msg the message
-   * @param t the cause
-   */
-  public WealdError(final String msg, final Throwable t)
-  {
-    super(msg, t);
+    super(message, t);
+    this.userMessage = userMessage;
+    this.url = url;
   }
 
   /**
@@ -69,6 +44,16 @@ public abstract class WealdError extends Exception
     final String s = getClass().getName();
     final String message = getLocalizedMessage();
     return (message != null) ? message : s;
+  }
+
+  public String getUserMessage()
+  {
+    return this.userMessage;
+  }
+
+  public String getUrl()
+  {
+    return this.url;
   }
 
   /**

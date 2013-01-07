@@ -30,46 +30,42 @@ public class ServerError extends WealdError
 {
   private static final long serialVersionUID = -2991176925799773512L;
 
+  public static final String URL = "http://status.wealdtech.com/";
+  public static final String USERMESSAGE = "Our service is experiencing problems; please try again later";
+
   /**
    * Generic server error
    */
   public ServerError()
   {
-    super();
+    super(null, USERMESSAGE, URL, null);
   }
 
   /**
-   * Server error with message
-   *
-   * @param msg
-   *          the message
+   * Server error with explanation
+   * @param message the message
    */
-  public ServerError(final String msg)
+  public ServerError(final String message)
   {
-    super(msg);
+    super(message, USERMESSAGE, URL, null);
   }
 
   /**
    * Server error with cause
-   *
-   * @param t
-   *          the cause
+   * @param t the cause
    */
   public ServerError(final Throwable t)
   {
-    super(t);
+    super(null, USERMESSAGE, URL, t);
   }
 
   /**
-   * Server error with message and cause
-   *
-   * @param msg
-   *          the message
-   * @param t
-   *          the cause
+   * Server error with explanation and cause
+   * @param message the message
+   * @param t the cause
    */
-  public ServerError(final String msg, final Throwable t)
+  public ServerError(final String message, final Throwable t)
   {
-    super(msg, t);
+    super(message, USERMESSAGE, URL, t);
   }
 }

@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wealdtech.WealdError;
 import com.wealdtech.errors.ErrorInfo;
-import com.wealdtech.errors.ErrorInfoMap;
 import com.wealdtech.jackson.ObjectMapperFactory;
 import com.wealdtech.jersey.exceptions.HttpException;
 
@@ -47,7 +47,7 @@ public class HttpExceptionMapper implements ExceptionMapper<HttpException>
   public Response toResponse(final HttpException exception)
   {
     ResponseBuilder builder = Response.status(exception.getStatus())
-                                      .entity(statusToJSON(exception.getFullyQualifiedMessage()))
+                                      .entity(statusToJSON(exception))
                                       .type(MediaType.APPLICATION_JSON);
 
     if (exception.getRetryAfter().isPresent())
@@ -58,22 +58,26 @@ public class HttpExceptionMapper implements ExceptionMapper<HttpException>
     return builder.build();
   }
 
-  private String statusToJSON(final String key)
+  private String statusToJSON(final HttpException exception)
   {
-    // See if our message is really an error code
-    ErrorInfo status = ErrorInfoMap.get(key);
-    if (status == null)
+    WealdError err = exception;
+    while (err.getCause() != null)
     {
-      status =new ErrorInfo(key, null, null, (String)null);
+      if (err.getCause() instanceof WealdError)
+      {
+        err = (WealdError)err.getCause();
+      }
     }
+    ErrorInfo errorInfo = new ErrorInfo(null, err.getUserMessage(), err.getMessage(), err.getUrl());
+
     try
     {
-      return mapper.writeValueAsString(status);
+      return mapper.writeValueAsString(errorInfo);
     }
     catch (JsonProcessingException e)
     {
-      LOGGER.error("Failed to generate JSON for status \"{}\"", status);
-      return "{\"message\":\"" + key + "\"}";
+      LOGGER.error("Failed to generate JSON for status \"{}\"", errorInfo);
+      return "{\"message\":\"An error occurred\"}";
     }
   }
 }

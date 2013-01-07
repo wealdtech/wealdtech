@@ -25,7 +25,7 @@ import com.wealdtech.errors.ErrorInfoMap;
  * Base class for daemon HTTP exceptions that provide additional information to
  * the requestor.
  */
-public class HttpException extends RuntimeException
+public class HttpException extends WealdError
 {
   private static final long serialVersionUID = -2193964229153866237L;
 
@@ -34,45 +34,37 @@ public class HttpException extends RuntimeException
 
   /**
    * Generate an HTTP exception with underlying application exception.
-   * <p/>The message in the application exception is used as a key to check
-   * the error info map for additional information.  To provide this information
-   * please see {@link ErrorInfoMap}.
-   * @param errorCode
+   * @param status an HTTP status to be sent back to the requestor
+   * @param message an explanation of the error
    */
-  public HttpException(final Status status, final String errorCode)
+  public HttpException(final Status status, final String message)
   {
-    super(errorCode);
+    super(message, null, null, null);
     this.status = status;
     this.retryAfter = Optional.absent();
   }
 
   /**
    * Generate an HTTP exception with underlying application exception.
-   * <p/>The message in the application exception is used as a key to check
-   * the error info map for additional information.  To provide this information
-   * please see {@link ErrorInfoMap}.
    * @param status an HTTP status to be sent back to the requestor
    * @param t the underlying application exception
    */
   public HttpException(final Status status, final Throwable t)
   {
-    super(t);
+    super(null, null, null, t);
     this.status = status;
     this.retryAfter = Optional.absent();
   }
 
   /**
    * Generate an HTTP exception with underlying application exception.
-   * <p/>The message provided is used as a key to check the error info map
-   * for additional information.  To provide this information please see
-   * {@link ErrorInfoMap}.
    * @param status an HTTP status to be sent back to the requestor
-   * @param message a message to be pased back to the requestor
+   * @param message an explanation of the error
    * @param t the underlying application exception
    */
   public HttpException(final Status status, final String message, final Throwable t)
   {
-    super(message, t);
+    super(message, null, null, t);
     this.status = status;
     this.retryAfter = Optional.absent();
   }
@@ -89,7 +81,7 @@ public class HttpException extends RuntimeException
    */
   public HttpException(final Status status, final String message, final Integer retryAfter, final Throwable t)
   {
-    super(message, t);
+    super(message, null, null, t);
     this.status = status;
     this.retryAfter = Optional.fromNullable(retryAfter);
   }
@@ -119,6 +111,7 @@ public class HttpException extends RuntimeException
    * Provide the full path of the throwing class.
    * This comes from the lowest-level WealdError that we can find.
    */
+  @Override
   public String getThrowingClassName()
   {
     WealdError we = null;
@@ -143,6 +136,7 @@ public class HttpException extends RuntimeException
   /**
    * Provide the name of the throwing method
    */
+  @Override
   public String getThrowingMethodName()
   {
     WealdError we = null;

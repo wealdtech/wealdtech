@@ -16,6 +16,7 @@
 
 package com.wealdtech;
 
+
 /**
  * A DataError covers all exceptions generated due to bad data. Such errors are
  * always correctable by altering the data presented the the throwing method
@@ -30,41 +31,99 @@ public class DataError extends WealdError
    */
   public DataError()
   {
-    super();
+   super(null, null, null, null);
   }
 
   /**
-   * Data error with message
-   *
-   * @param msg
-   *          the message
+   * Data error with explanation
+   * @param message the message
    */
-  public DataError(final String msg)
+  public DataError(final String message)
   {
-    super(msg);
+    super(message, null, null, null);
   }
 
   /**
    * Data error with cause
-   *
-   * @param t
-   *          the cause
+   * @param t the cause
    */
   public DataError(final Throwable t)
   {
-    super(t);
+    super(null, null, null, t);
   }
 
   /**
-   * Data error with message and cause
-   *
-   * @param msg
-   *          the message
-   * @param t
-   *          the cause
+   * Data error with explanation and cause
+   * @param message the message
+   * @param t the cause
    */
-  public DataError(final String msg, final Throwable t)
+  public DataError(final String message,final Throwable t)
   {
-    super(msg, t);
+    super(message, null, null, t);
+  }
+
+  /**
+   * Generic data error.
+   * <p>This should only be used where there no alternative available from a subclass of DataError.
+   * @param message a message suitable to be displayed back to the developer
+   * @param userMessage a message suitable to be displayed back to the end user
+   * @param url a URL for more information about the problem
+   * @param t the cause of the error, if any
+   */
+  public DataError(final String message, final String userMessage, final String url, final Throwable t)
+  {
+    super(message, userMessage, url, t);
+  }
+
+  /**
+   * An error authenticating a request
+   */
+  public static class Authentication extends DataError
+  {
+    public static String URL = BASEURL + "authentication";
+    public static String USERMESSAGE = "There was a problem authenticating your request";
+    public Authentication(final String message)
+    {
+      super(message, USERMESSAGE, URL, null);
+    }
+    public Authentication(final String message, final Throwable t)
+    {
+      super(message, USERMESSAGE, URL, t);
+    }
+  }
+
+  /**
+   * An error due to missing data
+   */
+  public static class Missing extends DataError
+  {
+    public static String URL = BASEURL + "missingdata";
+    public static String USERMESSAGE = "Some of the data required to complete your request is missing";
+    public Missing(final String message)
+    {
+      super(message, USERMESSAGE, URL, null);
+    }
+
+    public Missing(final String message, final Throwable t)
+    {
+      super(message, USERMESSAGE, URL, t);
+    }
+  }
+
+  /**
+   * An error due to bad data
+   */
+  public static class Bad extends DataError
+  {
+    public static String URL = BASEURL + "baddata";
+    public static String USERMESSAGE = "Some of the data required to complete your request is incorrect";
+    public Bad(final String message)
+    {
+      super(message, USERMESSAGE, URL, null);
+    }
+    public Bad(final String message, final Throwable t)
+    {
+      super(message, USERMESSAGE, URL, t);
+    }
   }
 }
