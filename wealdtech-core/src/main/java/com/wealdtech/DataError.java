@@ -16,7 +16,6 @@
 
 package com.wealdtech;
 
-
 /**
  * A DataError covers all exceptions generated due to bad data. Such errors are
  * always correctable by altering the data presented the the throwing method
@@ -80,6 +79,7 @@ public class DataError extends WealdError
    */
   public static class Authentication extends DataError
   {
+    private static final long serialVersionUID = -6353201997641349475L;
     public static String URL = BASEURL + "authentication";
     public static String USERMESSAGE = "There was a problem authenticating your request";
     public Authentication(final String message)
@@ -97,6 +97,7 @@ public class DataError extends WealdError
    */
   public static class Missing extends DataError
   {
+    private static final long serialVersionUID = -7181236040016670944L;
     public static String URL = BASEURL + "missingdata";
     public static String USERMESSAGE = "Some of the data required to complete your request is missing";
     public Missing(final String message)
@@ -115,6 +116,7 @@ public class DataError extends WealdError
    */
   public static class Bad extends DataError
   {
+    private static final long serialVersionUID = 8345370192499264874L;
     public static String URL = BASEURL + "baddata";
     public static String USERMESSAGE = "Some of the data required to complete your request is incorrect";
     public Bad(final String message)

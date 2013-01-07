@@ -86,7 +86,7 @@ public final class Preconditions
   {
     if (!expression)
     {
-      throw new DataError();
+      throw new DataError.Bad("Value does not meet requirements");
     }
   }
 
@@ -106,7 +106,7 @@ public final class Preconditions
   {
     if (!expression)
     {
-      throw new DataError(String.valueOf(errorMessage));
+      throw new DataError.Bad(String.valueOf(errorMessage));
     }
   }
 
@@ -137,7 +137,7 @@ public final class Preconditions
   {
     if (!expression)
     {
-      throw new DataError(format(errorMessageTemplate, errorMessageArgs));
+      throw new DataError.Bad(format(errorMessageTemplate, errorMessageArgs));
     }
   }
 
@@ -154,7 +154,7 @@ public final class Preconditions
   {
     if (!expression)
     {
-      throw new DataError();
+      throw new DataError.Bad("Invalid state");
     }
   }
 
@@ -174,7 +174,7 @@ public final class Preconditions
   {
     if (!expression)
     {
-      throw new DataError(String.valueOf(errorMessage));
+      throw new DataError.Bad(String.valueOf(errorMessage));
     }
   }
 
@@ -205,7 +205,7 @@ public final class Preconditions
   {
     if (!expression)
     {
-      throw new DataError(format(errorMessageTemplate, errorMessageArgs));
+      throw new DataError.Bad(format(errorMessageTemplate, errorMessageArgs));
     }
   }
 
@@ -223,7 +223,7 @@ public final class Preconditions
   {
     if (reference == null)
     {
-      throw new DataError();
+      throw new DataError.Missing("Value is missing");
     }
     return reference;
   }
@@ -245,7 +245,7 @@ public final class Preconditions
   {
     if (reference == null)
     {
-      throw new DataError(String.valueOf(errorMessage));
+      throw new DataError.Missing(String.valueOf(errorMessage));
     }
     return reference;
   }
@@ -276,7 +276,7 @@ public final class Preconditions
     if (reference == null)
     {
       // If either of these parameters is null, the right thing happens anyway
-      throw new DataError(format(errorMessageTemplate, errorMessageArgs));
+      throw new DataError.Missing(format(errorMessageTemplate, errorMessageArgs));
     }
     return reference;
   }
@@ -350,7 +350,7 @@ public final class Preconditions
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (index < 0 || index >= size)
     {
-      throw new DataError(badElementIndex(index, size, desc));
+      throw new DataError.Bad(badElementIndex(index, size, desc));
     }
     return index;
   }
@@ -416,7 +416,7 @@ public final class Preconditions
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (index < 0 || index > size)
     {
-      throw new DataError(badPositionIndex(index, size, desc));
+      throw new DataError.Bad(badPositionIndex(index, size, desc));
     }
     return index;
   }
@@ -462,7 +462,7 @@ public final class Preconditions
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (start < 0 || end < start || end > size)
     {
-      throw new DataError(badPositionIndexes(start, end, size));
+      throw new DataError.Bad(badPositionIndexes(start, end, size));
     }
   }
 
