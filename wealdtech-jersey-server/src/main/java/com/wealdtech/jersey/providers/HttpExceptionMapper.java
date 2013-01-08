@@ -59,12 +59,14 @@ public class HttpExceptionMapper implements ExceptionMapper<HttpException>
   private String statusToJSON(final HttpException exception)
   {
     WealdError err = exception;
-    while (err.getCause() != null)
+    Throwable t = exception.getCause();
+    while (t != null)
     {
-      if (err.getCause() instanceof WealdError)
+      if (t instanceof WealdError)
       {
-        err = (WealdError)err.getCause();
+        err = (WealdError)t;
       }
+      t = t.getCause();
     }
     ErrorInfo errorInfo = new ErrorInfo(null, err.getUserMessage(), err.getMessage(), err.getUrl());
 
