@@ -1,20 +1,47 @@
+/*
+ *    Copyright 2013 Weald Technology Trading Limited
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package com.wealdtech.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wealdtech.jersey.JerseyServerConfiguration;
 
+/**
+ * Configuration for a Jetty server.
+ */
 public class JettyServerConfiguration
 {
   private String host = "localhost";
 
   private int port = 8080;
 
+  private JettyResponseConfiguration response = new JettyResponseConfiguration();
+
+  private JerseyServerConfiguration jersey = new JerseyServerConfiguration();
+
   private ConnectorConfiguration connector = new ConnectorConfiguration();
 
   private ThreadPoolConfiguration threadpool = new ThreadPoolConfiguration();
 
+  @JsonCreator
   private JettyServerConfiguration(@JsonProperty("host") final String host,
                                    @JsonProperty("port") final Integer port,
+                                   @JsonProperty("response") final JettyResponseConfiguration response,
+                                   @JsonProperty("jersey") final JerseyServerConfiguration jersey,
                                    @JsonProperty("connector") final ConnectorConfiguration connector,
                                    @JsonProperty("threadpool") final ThreadPoolConfiguration threadpool)
   {
@@ -25,6 +52,14 @@ public class JettyServerConfiguration
     if (port != null)
     {
       this.port = port;
+    }
+    if (response != null)
+    {
+      this.response = response;
+    }
+    if (jersey != null)
+    {
+      this.jersey = jersey;
     }
     if (connector != null)
     {
@@ -46,6 +81,16 @@ public class JettyServerConfiguration
     return this.port;
   }
 
+  public JettyResponseConfiguration getResponseConfiguration()
+  {
+    return this.response;
+  }
+
+  public JerseyServerConfiguration getJerseyConfiguration()
+  {
+    return this.jersey;
+  }
+
   public ConnectorConfiguration getConnector()
   {
     return this.connector;
@@ -54,6 +99,42 @@ public class JettyServerConfiguration
   public ThreadPoolConfiguration getThreadPool()
   {
     return this.threadpool;
+  }
+
+  public static class JettyResponseConfiguration
+  {
+    private String serverName = "Weald Technology server";
+
+    private int retryPeriod = 60;
+
+    public JettyResponseConfiguration()
+    {
+      // Just use defaults
+    }
+
+    @JsonCreator
+    private JettyResponseConfiguration(@JsonProperty("servername") final String serverName,
+                                       @JsonProperty("retryperiod") final Integer retryPeriod)
+    {
+      if (serverName != null)
+      {
+        this.serverName = serverName;
+      }
+      if (retryPeriod != null)
+      {
+        this.retryPeriod = retryPeriod;
+      }
+    }
+
+    public String getServerName()
+    {
+      return this.serverName;
+    }
+
+    public int getRetryPeriod()
+    {
+      return this.retryPeriod;
+    }
   }
 
   public static class ConnectorConfiguration
@@ -68,7 +149,7 @@ public class JettyServerConfiguration
 
     public ConnectorConfiguration()
     {
-      // Just use defaults;
+      // Just use defaults
     }
 
     @JsonCreator

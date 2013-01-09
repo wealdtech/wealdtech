@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.AnnotatedParameter;
 
-/*
+/**
  * Simple naming strategy to force all JSON keys to lower-case.
  * There are a variety of naming conventions out there, but attempting
  * to remember which one is in use where is a pain.  In addition,

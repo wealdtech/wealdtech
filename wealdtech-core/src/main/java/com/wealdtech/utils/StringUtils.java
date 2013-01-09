@@ -35,7 +35,7 @@ public class StringUtils
    * selected from upper- and lower-case a through z as
    * well as the digits 0 through 9.
    * @param length the length of the string to generate
-   * @returns a string of random alphanumeric characters of the requested length
+   * @return a string of random alphanumeric characters of the requested length
    */
   public static String generateRandomString(int length)
   {

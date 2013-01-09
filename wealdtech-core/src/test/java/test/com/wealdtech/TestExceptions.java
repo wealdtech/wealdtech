@@ -1,4 +1,3 @@
-package test.com.wealdtech;
 /*
  *    Copyright 2013 Weald Technology Trading Limited
  *
@@ -15,12 +14,14 @@ package test.com.wealdtech;
  *   limitations under the License.
  */
 
-import static org.testng.Assert.assertEquals;
+package test.com.wealdtech;
 
 import org.testng.annotations.Test;
 
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
+
+import static org.testng.Assert.assertEquals;
 
 public class TestExceptions
 {

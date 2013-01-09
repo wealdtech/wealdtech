@@ -85,7 +85,7 @@ public class ObjectMapperConfiguration
   /**
    * Set the property naming strategy.
    *
-   * @param factory
+   * @param propertyNamingStrategy
    *          the property naming strategy
    */
   public void setPropertyNamingStrategy(final PropertyNamingStrategy propertyNamingStrategy)
@@ -192,7 +192,7 @@ public class ObjectMapperConfiguration
   /**
    * Set the serialization inclusion.
    *
-   * @param factory
+   * @param serializationInclusion
    *          the serialization inclusion
    */
   public void setSerializationInclusion(final JsonInclude.Include serializationInclusion)

@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response.Status;
 
 import com.google.common.base.Optional;
 import com.wealdtech.WealdError;
-import com.wealdtech.errors.ErrorInfoMap;
 
 /**
  * Base class for daemon HTTP exceptions that provide additional information to
@@ -71,9 +70,6 @@ public class HttpException extends WealdError
 
   /**
    * Generate an HTTP exception with underlying application exception.
-   * <p/>The message provided is used as a key to check the error info map
-   * for additional information.  To provide this information please see
-   * {@link ErrorInfoMap}.
    * @param status an HTTP status to be sent back to the requestor
    * @param message a message to be pased back to the requestor
    * @param retryAfter the number of seconds the requestor should wait before resubmitting the request

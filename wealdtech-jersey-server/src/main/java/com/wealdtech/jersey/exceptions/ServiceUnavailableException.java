@@ -17,27 +17,31 @@ package com.wealdtech.jersey.exceptions;
 
 import javax.ws.rs.core.Response.Status;
 
+import com.google.inject.Inject;
+import com.wealdtech.http.JettyServerConfiguration;
+
 /**
  * Exception for requests which the server cannot handle for now.
  */
 public class ServiceUnavailableException extends HttpException
 {
   private static final long serialVersionUID = -1497533974587152020L;
-  // TODO make this configurable
-  private static final Integer DEFAULTRETRY = 60;
+
+  @Inject
+  static private JettyServerConfiguration configuration;
 
   public ServiceUnavailableException(final String errorCode)
   {
-    super(Status.SERVICE_UNAVAILABLE, errorCode, DEFAULTRETRY, null);
+    super(Status.SERVICE_UNAVAILABLE, errorCode, configuration.getResponseConfiguration().getRetryPeriod(), null);
   }
 
   public ServiceUnavailableException(final Throwable t)
   {
-    super (Status.SERVICE_UNAVAILABLE, null, DEFAULTRETRY, t);
+    super (Status.SERVICE_UNAVAILABLE, null, configuration.getResponseConfiguration().getRetryPeriod(), t);
   }
 
   public ServiceUnavailableException(final String errorCode, final Throwable t)
   {
-    super(Status.SERVICE_UNAVAILABLE, errorCode, DEFAULTRETRY, t);
+    super(Status.SERVICE_UNAVAILABLE, errorCode, configuration.getResponseConfiguration().getRetryPeriod(), t);
   }
 }
