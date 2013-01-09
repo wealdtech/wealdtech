@@ -1,0 +1,9 @@
+{
+  "invalid key": "invalid value",
+  "test string": "twenty three",
+  "test int": 23,
+  "sub configuration":
+  {
+    "test string": "sub string"
+  }
+}

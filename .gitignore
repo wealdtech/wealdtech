@@ -14,3 +14,6 @@ bin
 # Gradle
 build
 .gradle
+
+# TestNG
+test-output

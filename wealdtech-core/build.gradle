@@ -1,25 +1,23 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'maven'
-
-sourceCompatibility=1.7
-group='com.wealdtech'
-version=0.1
-
-//dependencies
-//{
-//    compile 'ch.qos.logback:logback-classic:1.0.+'
-//}
-
-repositories
+dependencies
 {
-    mavenCentral()
+    compile 'com.google.inject:guice:3.0'
+    compile 'ch.qos.logback:logback-classic:1.0.+'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.1.+'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.1.+'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.1.+'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.1.+'
+    compile 'joda-time:joda-time:2.1'
+    testCompile 'org.testng:testng:6.+'
 }
 
-jar
-{
-    manifest
-    {
-        attributes 'Implementation-title': 'Weald Technology core', 'Implementation-version': version
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-core'
+            pom.project {
+                name 'Wealdtech Core'
+                description 'Weald Technology core libraries and utilities'
+            }
+        }
     }
 }
