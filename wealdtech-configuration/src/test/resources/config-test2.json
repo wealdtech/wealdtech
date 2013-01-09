@@ -1,0 +1,9 @@
+{
+  "test string": "twenty three",
+  "test int": 23,
+  "test optional": "Another string",
+  "sub configuration":
+  {
+    "test string": "sub string"
+  }
+}

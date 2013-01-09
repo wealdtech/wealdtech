@@ -1,3 +1,18 @@
+/*
+ *    Copyright 2013 Weald Technology Trading Limited
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package com.wealdtech.jackson;
 
 import java.util.List;
@@ -37,18 +52,18 @@ public class ObjectMapperConfiguration
   {
     this.factory = Optional.absent();
     this.modules = Lists.newArrayList();
+    this.modules.add(new GuavaModule());
+    this.modules.add(new WealdJodaModule());
     this.parserFeatures = Maps.newHashMap();
     this.parserFeatures.put(JsonParser.Feature.ALLOW_COMMENTS, true);
     this.injectableValues = new InjectableValues.Std();
-    this.modules.add(new GuavaModule());
-    this.modules.add(new WealdJodaModule());
     this.propertyNamingStrategy = Optional.fromNullable(new LcStrategy());
     this.serializationInclusion = Optional.fromNullable(JsonInclude.Include.NON_NULL);
   }
 
   /**
    * Set the parsing factory.
-   * 
+   *
    * @param factory
    *          the parsing factory
    */
@@ -59,7 +74,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Get the (optional) parsing factory.
-   * 
+   *
    * @return the parsing factory
    */
   public Optional<JsonFactory> getFactory()
@@ -69,8 +84,8 @@ public class ObjectMapperConfiguration
 
   /**
    * Set the property naming strategy.
-   * 
-   * @param factory
+   *
+   * @param propertyNamingStrategy
    *          the property naming strategy
    */
   public void setPropertyNamingStrategy(final PropertyNamingStrategy propertyNamingStrategy)
@@ -88,18 +103,21 @@ public class ObjectMapperConfiguration
 
   /**
    * Add an additional module.
-   * 
+   *
    * @param module
    *          the additional module
    */
   public void addModule(final Module module)
   {
-    this.modules.add(module);
+    if (module != null)
+    {
+      this.modules.add(module);
+    }
   }
 
   /**
    * Get the additional modules.
-   * 
+   *
    * @return the additional modules
    */
   public List<Module> getModules()
@@ -117,7 +135,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Add a parser feature.
-   * 
+   *
    * @param feature
    *          the parser feature
    * @param value
@@ -130,7 +148,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Get the parser features.
-   * 
+   *
    * @return the parser features
    */
   public Map<JsonParser.Feature, Boolean> getParserFeatures()
@@ -140,7 +158,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Add an injectable value.
-   * 
+   *
    * @param name
    *          the name of the injectable
    * @param value
@@ -153,7 +171,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Get the injectable values.
-   * 
+   *
    * @return the injectable values
    */
   public InjectableValues getInjectableValues()
@@ -163,7 +181,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Get the (optional) property naming strategy.
-   * 
+   *
    * @return the property naming strategy
    */
   public Optional<? extends PropertyNamingStrategy> getPropertyNamingStrategy()
@@ -173,8 +191,8 @@ public class ObjectMapperConfiguration
 
   /**
    * Set the serialization inclusion.
-   * 
-   * @param factory
+   *
+   * @param serializationInclusion
    *          the serialization inclusion
    */
   public void setSerializationInclusion(final JsonInclude.Include serializationInclusion)
@@ -184,7 +202,7 @@ public class ObjectMapperConfiguration
 
   /**
    * Get the (optional) serialization inclusion.
-   * 
+   *
    * @return the serialization inclusion
    */
   public Optional<JsonInclude.Include> getSerializationInclusion()

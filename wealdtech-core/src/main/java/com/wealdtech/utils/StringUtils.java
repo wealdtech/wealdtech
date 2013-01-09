@@ -31,11 +31,11 @@ public class StringUtils
   /**
    * Generate a random string of alphanumeric characters.
    * <p>
-   * The string returned will contain characters randomly 
+   * The string returned will contain characters randomly
    * selected from upper- and lower-case a through z as
    * well as the digits 0 through 9.
    * @param length the length of the string to generate
-   * @returns a string of random alphanumeric characters of the requested length
+   * @return a string of random alphanumeric characters of the requested length
    */
   public static String generateRandomString(int length)
   {
@@ -48,12 +48,12 @@ public class StringUtils
   }
 
   /**
-   * Capitalise a string.
+   * Capitalize a string.
    * Useful for handling introspection and camel case.
-   * @param str the string to capitalise
-   * @return The capitalised string
+   * @param str the string to capitalize
+   * @return The capitalized string
    */
-  public static String capitalise(final String str)
+  public static String capitalize(final String str)
   {
     final StringBuilder sb = new StringBuilder(str);
     sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));

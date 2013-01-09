@@ -24,36 +24,48 @@ package com.wealdtech;
  * may have been resolved.
  * <p/>
  * Note that server errors do not provide any information on the validity
- * of the data passed to the method.
+ * of the server passed to the method.
  */
-public class ServerError extends Exception
+public class ServerError extends WealdError
 {
-  private static final long serialVersionUID = 3983137948441740262L;
+  private static final long serialVersionUID = -2991176925799773512L;
+
+  public static final String URL = "http://status.wealdtech.com/";
+  public static final String USERMESSAGE = "Our service is experiencing problems; please try again later";
 
   /**
    * Generic server error
    */
   public ServerError()
   {
-    super();
+    super(null, USERMESSAGE, URL, null);
   }
 
   /**
-   * Server error with message
-   * @param msg the message
+   * Server error with explanation
+   * @param message the message
    */
-  public ServerError(final String msg)
+  public ServerError(final String message)
   {
-    super(msg);
+    super(message, USERMESSAGE, URL, null);
   }
 
   /**
-   * Server error with message and underlying exception
-   * @param msg the message
-   * @param t the underlying exception
+   * Server error with cause
+   * @param t the cause
    */
-  public ServerError(final String msg, final Throwable t)
+  public ServerError(final Throwable t)
   {
-    super(msg, t);
+    super(null, USERMESSAGE, URL, t);
+  }
+
+  /**
+   * Server error with explanation and cause
+   * @param message the message
+   * @param t the cause
+   */
+  public ServerError(final String message, final Throwable t)
+  {
+    super(message, USERMESSAGE, URL, t);
   }
 }
