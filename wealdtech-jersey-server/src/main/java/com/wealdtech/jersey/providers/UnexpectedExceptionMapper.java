@@ -46,6 +46,7 @@ public class UnexpectedExceptionMapper implements ExceptionMapper<Exception>
   @Override
   public Response toResponse(final Exception exception)
   {
+    LOGGER.info("Unexpected exception {}", exception);
     ResponseBuilder builder = Response.status(Status.BAD_REQUEST)
                                       .entity(defaultJSON(exception))
                                       .type(MediaType.APPLICATION_JSON);

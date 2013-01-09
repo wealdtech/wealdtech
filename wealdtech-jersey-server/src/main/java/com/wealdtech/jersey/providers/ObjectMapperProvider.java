@@ -22,7 +22,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.wealdtech.jackson.ObjectMapperFactory;
+import com.wealdtech.jackson.WealdMapper;
 
 /**
  * Provide an objectmapper.
@@ -42,8 +42,8 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper>
   @Inject
   public ObjectMapperProvider()
   {
-    // TODO work out which configuration to put here
-    this.mapper = ObjectMapperFactory.getDefaultMapper();
+//    this.mapper = ObjectMapperFactory.getDefaultMapper();
+    this.mapper = WealdMapper.getServerMapper();
   }
 
   @Override
