@@ -26,24 +26,19 @@ import com.wealdtech.jersey.JerseyServerConfiguration;
 public class JettyServerConfiguration
 {
   private String host = "localhost";
-
   private int port = 8080;
-
-  private JettyResponseConfiguration response = new JettyResponseConfiguration();
-
-  private JerseyServerConfiguration jersey = new JerseyServerConfiguration();
-
-  private ConnectorConfiguration connector = new ConnectorConfiguration();
-
-  private ThreadPoolConfiguration threadpool = new ThreadPoolConfiguration();
+  private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
+  private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
+  private ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration();
+  private ThreadPoolConfiguration threadPoolConfiguration = new ThreadPoolConfiguration();
 
   @JsonCreator
   private JettyServerConfiguration(@JsonProperty("host") final String host,
                                    @JsonProperty("port") final Integer port,
-                                   @JsonProperty("response") final JettyResponseConfiguration response,
-                                   @JsonProperty("jersey") final JerseyServerConfiguration jersey,
-                                   @JsonProperty("connector") final ConnectorConfiguration connector,
-                                   @JsonProperty("threadpool") final ThreadPoolConfiguration threadpool)
+                                   @JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
+                                   @JsonProperty("jersey") final JerseyServerConfiguration jerseyConfiguration,
+                                   @JsonProperty("connector") final ConnectorConfiguration connectorConfiguration,
+                                   @JsonProperty("threadpool") final ThreadPoolConfiguration threadPoolConfiguration)
   {
     if (host != null)
     {
@@ -53,21 +48,21 @@ public class JettyServerConfiguration
     {
       this.port = port;
     }
-    if (response != null)
+    if (responseConfiguration != null)
     {
-      this.response = response;
+      this.responseConfiguration = responseConfiguration;
     }
-    if (jersey != null)
+    if (jerseyConfiguration != null)
     {
-      this.jersey = jersey;
+      this.jerseyConfiguration = jerseyConfiguration;
     }
-    if (connector != null)
+    if (connectorConfiguration != null)
     {
-      this.connector = connector;
+      this.connectorConfiguration = connectorConfiguration;
     }
-    if (threadpool != null)
+    if (threadPoolConfiguration != null)
     {
-      this.threadpool = threadpool;
+      this.threadPoolConfiguration = threadPoolConfiguration;
     }
   }
 
@@ -83,22 +78,94 @@ public class JettyServerConfiguration
 
   public JettyResponseConfiguration getResponseConfiguration()
   {
-    return this.response;
+    return this.responseConfiguration;
   }
 
   public JerseyServerConfiguration getJerseyConfiguration()
   {
-    return this.jersey;
+    return this.jerseyConfiguration;
   }
 
-  public ConnectorConfiguration getConnector()
+  public ConnectorConfiguration getConnectorConfiguration()
   {
-    return this.connector;
+    return this.connectorConfiguration;
   }
 
-  public ThreadPoolConfiguration getThreadPool()
+  public ThreadPoolConfiguration getThreadPoolConfiguration()
   {
-    return this.threadpool;
+    return this.threadPoolConfiguration;
+  }
+
+  public static class Builder
+  {
+    private String host;
+    private Integer port;
+    private JettyResponseConfiguration responseConfiguration;
+    private JerseyServerConfiguration jerseyConfiguration;
+    private ConnectorConfiguration connectorConfiguration;
+    private ThreadPoolConfiguration threadPoolConfiguration;
+
+    /**
+     * Start to build a Jetty server configuration.
+     */
+    public Builder()
+    {
+    }
+
+    /**
+     * Start to build a Jetty server configuration based on a prior configuration.
+     * @param prior the prior configuration.
+     */
+    public Builder(final JettyServerConfiguration prior)
+    {
+      this.host = prior.host;
+      this.port = prior.port;
+      this.responseConfiguration = prior.responseConfiguration;
+      this.jerseyConfiguration = prior.jerseyConfiguration;
+      this.connectorConfiguration = prior.connectorConfiguration;
+      this.threadPoolConfiguration = prior.threadPoolConfiguration;
+    }
+
+    public Builder host(final String host)
+    {
+      this.host = host;
+      return this;
+    }
+
+    public Builder port(final Integer port)
+    {
+      this.port = port;
+      return this;
+    }
+
+    public Builder responseConfiguration(final JettyResponseConfiguration responseConfiguration)
+    {
+      this.responseConfiguration = responseConfiguration;
+      return this;
+    }
+
+    public Builder jerseyConfiguration(final JerseyServerConfiguration jerseyConfiguration)
+    {
+      this.jerseyConfiguration = jerseyConfiguration;
+      return this;
+    }
+
+    public Builder connectorConfiguration(final ConnectorConfiguration connectorConfiguration)
+    {
+      this.connectorConfiguration = connectorConfiguration;
+      return this;
+    }
+
+    public Builder threadPoolConfiguration(final ThreadPoolConfiguration threadPoolConfiguration)
+    {
+      this.threadPoolConfiguration = threadPoolConfiguration;
+      return this;
+    }
+
+    public JettyServerConfiguration build()
+    {
+      return new JettyServerConfiguration(this.host, this.port, this.responseConfiguration, this.jerseyConfiguration, this.connectorConfiguration, this.threadPoolConfiguration);
+    }
   }
 
   public static class JettyResponseConfiguration
