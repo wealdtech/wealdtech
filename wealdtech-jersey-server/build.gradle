@@ -2,7 +2,7 @@ dependencies
 {
     // Utilities
     compile project(':wealdtech-core')
-    compile 'ch.qos.logback:logback-classic:1.0.+'
+    compile 'ch.qos.logback:logback-classic:1.0.2'
 
     // JAX-RS
     compile 'com.sun.jersey:jersey-core:1.16'
@@ -14,13 +14,13 @@ dependencies
     compile 'javax.ws.rs:jsr311-api:1.1.1'
 
     // Jetty
-    compile 'org.eclipse.jetty:jetty-server:8.1.+'
-    compile 'org.eclipse.jetty:jetty-servlet:8.1.+'
+    compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106'
+    compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106'
 
     // Instrumentation
-    compile 'com.yammer.metrics:metrics-servlet:2.1.+'
-    compile 'com.yammer.metrics:metrics-jersey:2.1.+'
-    compile 'com.yammer.metrics:metrics-jetty:2.1.+'
+    compile 'com.yammer.metrics:metrics-servlet:2.1.5'
+    compile 'com.yammer.metrics:metrics-jersey:2.1.5'
+    compile 'com.yammer.metrics:metrics-jetty:2.1.5'
 
     testCompile 'com.sun.jersey:jersey-grizzly2:1.16'
 }

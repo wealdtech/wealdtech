@@ -110,7 +110,7 @@ public class JettyServer
   {
     final AbstractConnector connector;
 
-    ConnectorConfiguration configuration = this.configuration.getConnector();
+    ConnectorConfiguration configuration = this.configuration.getConnectorConfiguration();
 
     // Blocking connector
     connector = new InstrumentedBlockingChannelConnector(this.configuration.getPort());
@@ -139,7 +139,7 @@ public class JettyServer
   private ThreadPool createThreadPool()
   {
     final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
-    ThreadPoolConfiguration configuration = this.configuration.getThreadPool();
+    ThreadPoolConfiguration configuration = this.configuration.getThreadPoolConfiguration();
     pool.setMinThreads(configuration.getMinThreads());
     pool.setMaxIdleTimeMs(configuration.getMaxIdleTimeMs());
     return pool;

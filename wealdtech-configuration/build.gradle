@@ -1,8 +1,8 @@
 dependencies
 {
     compile project(':wealdtech-core')
-    compile 'ch.qos.logback:logback-classic:1.0.+'
-    testCompile 'org.testng:testng:6.+'
+    compile 'ch.qos.logback:logback-classic:1.0.9'
+    testCompile 'org.testng:testng:6.8'
 }
 
 uploadArchives {
