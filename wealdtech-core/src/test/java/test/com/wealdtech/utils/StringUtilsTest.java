@@ -22,7 +22,7 @@ import com.wealdtech.utils.StringUtils;
 
 import static org.testng.Assert.assertEquals;
 
-public class TestStringUtils
+public class StringUtilsTest
 {
   @Test
   public void testRandomGeneration() throws Exception

@@ -30,7 +30,7 @@ import com.wealdtech.jackson.modules.WealdJodaModule;
 /**
  *
  */
-public class TestObjectMapperFactory
+public class ObjectMapperFactoryTest
 {
   @Test
   public void testDefaultMapper()

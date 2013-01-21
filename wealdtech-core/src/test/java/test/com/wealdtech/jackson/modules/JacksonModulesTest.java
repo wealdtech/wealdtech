@@ -38,7 +38,7 @@ import com.wealdtech.jackson.ObjectMapperFactory;
 
 import static org.testng.Assert.*;
 
-public class TestJacksonModules
+public class JacksonModulesTest
 {
   private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
 
