@@ -52,7 +52,6 @@ public class WIDTest
     final long shardId = 7134L;
     final long id = 952L;
     final WID<Date> testWid = WID.<Date>fromComponents(timestamp, shardId, id);
-    System.err.println(testWid);
     assertEquals(testWid.getTimestamp(), timestamp);
     assertEquals(testWid.getShardId(), shardId);
   }
@@ -74,6 +73,15 @@ public class WIDTest
     final String input = "\"123456789abcdef\"";
     final WID<Date> testWid = mapper.readValue(input, new TypeReference<WID<Date>>(){});
     assertEquals("\"" + testWid.toString() + "\"", input);
+  }
+
+  @Test
+  public void testRandomWID() throws Exception
+  {
+    for (int i = 0; i < 10000; i++)
+    {
+      WID.<Date>randomWID();
+    }
   }
 }
 

@@ -15,6 +15,8 @@
  */
 package com.wealdtech;
 
+import java.util.Random;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,9 +37,11 @@ public class WID<T> implements Comparable<WID<T>>
   // Masks for the pieces of the ID
   private static final long TIMESTAMPMASK = 0xffffffffff800000L;
   private static final int TIMESTAMPOFFSET = 23;
-  private static final long SHARDMASK =     0x00000000007ffc00L;
+  private static final long SHARDMASK = 0x00000000007ffc00L;
   private static final int SHARDOFFSET = 10;
+  private static final long MAX_SHARD = 8192;
   private static final long IDMASK = 0x00000000000003ffL;
+  private static final long MAX_ID = 1024;
 
   private final long id;
 
@@ -58,6 +62,15 @@ public class WID<T> implements Comparable<WID<T>>
     return (id & SHARDMASK) >> SHARDOFFSET;
   }
 
+  /**
+   * Generate a simple long value for the ID
+   * @return a simple long value for the ID
+   */
+  public long toLong()
+  {
+    return id;
+  }
+
   /*
    * Obtain the timestamp from a WID.
    * <p/>
@@ -71,7 +84,18 @@ public class WID<T> implements Comparable<WID<T>>
 
   public static <T> WID<T> fromString(final String input)
   {
-    return new WID<T>(Long.valueOf(input, 16));
+    // Handle both decimal and hexadecimal strings.
+    // Due to the timestamp portion we should never see
+    // a decimal string of less than 16 characters, so this
+    // is a safe way of deciding which is which
+    if (input.length() > 16)
+    {
+      return new WID<T>(Long.valueOf(input, 10));
+    }
+    else
+    {
+      return new WID<T>(Long.valueOf(input, 16));
+    }
   }
 
   /**
@@ -84,11 +108,24 @@ public class WID<T> implements Comparable<WID<T>>
   public static <T> WID<T> fromComponents(final long timestamp, final long shardId, final long id)
   {
     checkArgument(timestamp >= EPOCH && timestamp < 3524399255552L, "Timestamp out of range");
-    checkArgument(shardId >=0 && shardId < 8192, "Shard ID out of range");
-    checkArgument(id >=0 && id < 1024, "ID out of range");
+    checkArgument(shardId >=0 && shardId < MAX_SHARD, "Shard ID {} out of range", shardId);
+    checkArgument(id >=0 && id < MAX_ID, "ID {} out of range", id);
     return new WID<T>((((timestamp - EPOCH) << TIMESTAMPOFFSET) & TIMESTAMPMASK) |
                       ((shardId << SHARDOFFSET) & SHARDMASK) |
                       (id & IDMASK));
+  }
+
+  /**
+   * Generate a WID with random shard ID and ID.
+   * @return a random WID
+   */
+  public static <T> WID<T> randomWID()
+  {
+    final Random random = new Random();
+    final long timestamp = System.currentTimeMillis();
+    final long shardId = random.nextInt((int)MAX_SHARD);
+    final long id = random.nextInt((int)MAX_ID);
+    return fromComponents(timestamp, shardId, id);
   }
 
   // Standard object methods
