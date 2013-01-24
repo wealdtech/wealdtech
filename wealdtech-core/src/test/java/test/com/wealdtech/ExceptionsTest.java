@@ -23,7 +23,7 @@ import com.wealdtech.ServerError;
 
 import static org.testng.Assert.assertEquals;
 
-public class TestExceptions
+public class ExceptionsTest
 {
   @Test
   public void testDataError() throws Exception

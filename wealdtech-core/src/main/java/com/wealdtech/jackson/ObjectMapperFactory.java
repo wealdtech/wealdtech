@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
 
 /**
@@ -51,6 +52,8 @@ public class ObjectMapperFactory
     DEFAULTMAPPER.registerModule(new WealdJodaModule());
     // Use Guava custom serializers and deserializers
     DEFAULTMAPPER.registerModule(new GuavaModule());
+    // Handle the Weald ID
+    DEFAULTMAPPER.registerModule(new WealdIDModule());
     // Add flag stating that this is a client mapper
     final InjectableValues clientinject = new InjectableValues.Std().addValue("AllowPartials", Boolean.FALSE);
     DEFAULTMAPPER.setInjectableValues(clientinject);
