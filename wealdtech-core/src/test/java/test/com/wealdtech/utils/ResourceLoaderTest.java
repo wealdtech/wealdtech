@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 
 import com.wealdtech.utils.ResourceLoader;
 
-public class TestResourceLoader
+public class ResourceLoaderTest
 {
   @Test
   public void testFindInBase() throws Exception

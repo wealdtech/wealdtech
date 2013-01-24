@@ -28,6 +28,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
 
 /**
@@ -54,6 +55,7 @@ public class ObjectMapperConfiguration
     this.modules = Lists.newArrayList();
     this.modules.add(new GuavaModule());
     this.modules.add(new WealdJodaModule());
+    this.modules.add(new WealdIDModule());
     this.parserFeatures = Maps.newHashMap();
     this.parserFeatures.put(JsonParser.Feature.ALLOW_COMMENTS, true);
     this.injectableValues = new InjectableValues.Std();
