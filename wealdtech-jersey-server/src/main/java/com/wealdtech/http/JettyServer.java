@@ -18,10 +18,12 @@ package com.wealdtech.http;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.nio.AbstractNIOConnector;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +64,16 @@ public class JettyServer
     this.server.addConnector(createConnector());
     this.server.setThreadPool(createThreadPool());
 
-    final ServletContextHandler admin = new ServletContextHandler(this.server, "/admin", ServletContextHandler.SESSIONS);
-    admin.addServlet(AdminServlet.class, "/*");
+    HandlerCollection collection = new HandlerCollection();
 
-    final ServletContextHandler root = new ServletContextHandler(this.server, "/", ServletContextHandler.SESSIONS);
+    final ServletContextHandler admin = new ServletContextHandler();
+    admin.addServlet(new ServletHolder(new AdminServlet()), "/*");
+    admin.setContextPath("/admin");
+    collection.addHandler(admin);
+
+    //    final ServletContextHandler admin = new ServletContextHandler(this.server, "/admin", ServletContextHandler.SESSIONS);
+
+    final ServletContextHandler root = new ServletContextHandler();
     root.addEventListener(new GuiceServletContextListener()
     {
       @Override
@@ -76,6 +84,21 @@ public class JettyServer
     });
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
+    collection.addHandler(root);
+//    final ServletContextHandler root = new ServletContextHandler(this.server, "/", ServletContextHandler.SESSIONS);
+//    root.addEventListener(new GuiceServletContextListener()
+//    {
+//      @Override
+//      protected Injector getInjector()
+//      {
+//        return JettyServer.this.injector;
+//      }
+//    });
+//    root.addServlet(AdminServlet.class, "/admin/*");
+//    root.addFilter(GuiceFilter.class, "/*", null);
+//    root.addServlet(DefaultServlet.class, "/");
+
+    this.server.setHandler(collection);
 
     this.server.start();
     this.server.join();

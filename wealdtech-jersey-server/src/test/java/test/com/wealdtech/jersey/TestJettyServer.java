@@ -11,18 +11,19 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
+import com.wealdtech.http.JettyServer;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 
-public class JettyServer
+public class TestJettyServer
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestJettyServer.class);
 
   private transient Server server;
 
   private transient final Injector injector;
 
   @Inject
-  public JettyServer(final Injector injector)
+  public TestJettyServer(final Injector injector)
   {
     this.injector = injector;
   }
@@ -39,7 +40,7 @@ public class JettyServer
       @Override
       protected Injector getInjector()
       {
-        return JettyServer.this.injector;
+        return TestJettyServer.this.injector;
       }
     });
     context.addFilter(GuiceFilter.class, "/*", null);
