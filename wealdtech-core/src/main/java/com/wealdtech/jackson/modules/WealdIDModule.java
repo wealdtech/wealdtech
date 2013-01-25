@@ -53,11 +53,17 @@ public class WealdIDModule extends Module
   {
     // Serializers and deserializers alter values
     final SimpleSerializers serializers = new SimpleSerializers();
-    final SimpleDeserializers deserializers = new SimpleDeserializers();
     serializers.addSerializer(new WIDSerializer());
+
+    final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(WID.class, new WIDDeserializer());
+
+    // Key serializers alter the field name
+    final SimpleSerializers keySerializers = new SimpleSerializers();
+    keySerializers.addSerializer(new WIDKeySerializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);
+    context.addKeySerializers(keySerializers);
   }
 }

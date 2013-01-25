@@ -17,9 +17,7 @@ package com.wealdtech;
 
 import java.util.Random;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.primitives.Longs;
 
 import static com.wealdtech.Preconditions.*;
@@ -62,8 +60,7 @@ public class WID<T> implements Comparable<WID<T>>
 
   private final long id;
 
-  @JsonCreator
-  public WID(@JsonProperty("id") final long wid)
+  public WID(final long wid)
   {
     this.id = wid;
   }
