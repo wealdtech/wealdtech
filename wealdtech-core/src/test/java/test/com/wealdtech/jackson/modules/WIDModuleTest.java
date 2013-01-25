@@ -50,6 +50,16 @@ public class WIDModuleTest
   }
 
   @Test
+  public void testDeserWIDMap() throws Exception
+  {
+    final String ser = "{\"20a2a19b20000a\":\"Test\"}";
+    final Map<WID<Date>, String> deser = this.mapper.readValue(ser, new TypeReference<Map<WID<Date>, String>>(){});
+    assertNotNull(deser);
+    assertEquals(deser.size(), 1);
+    assertNotNull(deser.get(WID.<Date>fromComponents(5, 1500000000000L, 10)));
+  }
+
+  @Test
   public void testSerWID() throws Exception
   {
     final WID<Date> wid = WID.fromComponents(5, 1500000000000L, 10);

@@ -19,6 +19,7 @@ package com.wealdtech.jackson.modules;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
+import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.wealdtech.WID;
 
@@ -62,8 +63,12 @@ public class WealdIDModule extends Module
     final SimpleSerializers keySerializers = new SimpleSerializers();
     keySerializers.addSerializer(new WIDKeySerializer());
 
+    final SimpleKeyDeserializers keyDeserializers = new SimpleKeyDeserializers();
+    keyDeserializers.addDeserializer(WID.class, new WIDKeyDeserializer());
+
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);
     context.addKeySerializers(keySerializers);
+    context.addKeyDeserializers(keyDeserializers);
   }
 }
