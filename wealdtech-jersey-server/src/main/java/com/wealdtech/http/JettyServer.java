@@ -16,6 +16,10 @@
 
 package com.wealdtech.http;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -34,6 +38,8 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.wealdtech.http.JettyServerConfiguration.ConnectorConfiguration;
 import com.wealdtech.http.JettyServerConfiguration.ThreadPoolConfiguration;
+import com.wealdtech.jersey.filters.BodyPrefetchFilter;
+import com.wealdtech.jersey.filters.ThreadNameFilter;
 import com.yammer.metrics.jetty.InstrumentedBlockingChannelConnector;
 import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
 import com.yammer.metrics.reporting.AdminServlet;
@@ -71,8 +77,6 @@ public class JettyServer
     admin.setContextPath("/admin");
     collection.addHandler(admin);
 
-    //    final ServletContextHandler admin = new ServletContextHandler(this.server, "/admin", ServletContextHandler.SESSIONS);
-
     final ServletContextHandler root = new ServletContextHandler();
     root.addEventListener(new GuiceServletContextListener()
     {
@@ -82,21 +86,11 @@ public class JettyServer
         return JettyServer.this.injector;
       }
     });
+    root.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+    root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
     collection.addHandler(root);
-//    final ServletContextHandler root = new ServletContextHandler(this.server, "/", ServletContextHandler.SESSIONS);
-//    root.addEventListener(new GuiceServletContextListener()
-//    {
-//      @Override
-//      protected Injector getInjector()
-//      {
-//        return JettyServer.this.injector;
-//      }
-//    });
-//    root.addServlet(AdminServlet.class, "/admin/*");
-//    root.addFilter(GuiceFilter.class, "/*", null);
-//    root.addServlet(DefaultServlet.class, "/");
 
     this.server.setHandler(collection);
 

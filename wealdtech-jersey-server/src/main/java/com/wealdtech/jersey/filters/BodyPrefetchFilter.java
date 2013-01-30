@@ -1,4 +1,4 @@
-package com.wealdtech.jersey;
+package com.wealdtech.jersey.filters;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,18 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 public class BodyPrefetchFilter implements Filter
 {
   @Override
-  public void init(FilterConfig filterConfig) throws ServletException
+  public void init(final FilterConfig filterConfig) throws ServletException
   {
-    // TODO details of which content types should be read
-  }
-
-  @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException
-  {
-    HttpServletRequest httpServletRequest = (HttpServletRequest)servletRequest;
-    HttpServletResponse httpServletResponse = (HttpServletResponse)servletResponse;
-    BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
-    chain.doFilter(bufferedRequest, httpServletResponse);
+    // TODO details of which content types and file sizes should be read
   }
 
   @Override
@@ -45,36 +36,42 @@ public class BodyPrefetchFilter implements Filter
     // TODO
   }
 
+  @Override
+  public void doFilter(final ServletRequest servletRequest,
+                       final ServletResponse servletResponse,
+                       final FilterChain chain) throws IOException, ServletException
+  {
+    HttpServletRequest httpServletRequest = (HttpServletRequest)servletRequest;
+    HttpServletResponse httpServletResponse = (HttpServletResponse)servletResponse;
+    BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
+    chain.doFilter(bufferedRequest, httpServletResponse);
+  }
+
   private static final class BufferedRequestWrapper extends HttpServletRequestWrapper
   {
-    private ByteArrayInputStream bais = null;
-    private ByteArrayOutputStream baos = null;
-    private BufferedServletInputStream bsis = null;
-    private byte[] buffer = null;
+    private byte[] body = null;
 
     public BufferedRequestWrapper(HttpServletRequest req) throws IOException
     {
       super(req);
-      // Read InputStream and store its content in a buffer
-      InputStream is = req.getInputStream();
-      this.baos = new ByteArrayOutputStream();
+      // Store the body
+      final InputStream is = req.getInputStream();
+      final ByteArrayOutputStream baos = new ByteArrayOutputStream();
       byte buf[] = new byte[1024];
-      int letti;
 
-      while ((letti = is.read(buf)) > 0)
+      int bytesRead;
+      while ((bytesRead = is.read(buf)) > 0)
       {
-        this.baos.write(buf, 0, letti);
+        baos.write(buf, 0, bytesRead);
       }
-      this.buffer = this.baos.toByteArray();
+      this.body = baos.toByteArray();
     }
 
     @Override
     public ServletInputStream getInputStream()
     {
-      // Generate a new InputStream by stored buffer
-      this.bais = new ByteArrayInputStream(this.buffer);
-      this.bsis = new BufferedServletInputStream(this.bais);
-      return this.bsis;
+      ByteArrayInputStream bais = new ByteArrayInputStream(this.body);
+      return new BufferedServletInputStream(bais);
     }
   }
 
@@ -82,7 +79,7 @@ public class BodyPrefetchFilter implements Filter
   {
     private final ByteArrayInputStream bais;
 
-    public BufferedServletInputStream(ByteArrayInputStream bais)
+    public BufferedServletInputStream(final ByteArrayInputStream bais)
     {
       this.bais = bais;
     }
