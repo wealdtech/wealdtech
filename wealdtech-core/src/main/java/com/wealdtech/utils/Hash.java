@@ -1,3 +1,18 @@
+/*
+ *    Copyright 2013 Weald Technology Trading Limited
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package com.wealdtech.utils;
 
 import java.util.concurrent.ExecutionException;
@@ -17,7 +32,11 @@ import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
 
 /**
- * Utilities for hashing data (mainly passwords)
+ * Utilities for hashing data using the Bcrypt algorithm.
+ * <p/>Due to the expense of hashing using bcrypt this class
+ * uses a short-term cache to reduce the cost of recalculating the same
+ * hash multiple times.  As such, this class should only be used on secure
+ * systems.
  */
 public enum Hash
 {
@@ -47,7 +66,11 @@ public enum Hash
     });
   }
 
-  // Hash an input
+  /**
+   * Hash an input string using a random salt.
+   * @param input the input string
+   * @return The hash of the input string.
+   */
   public static String hash(final String input)
   {
     return BCrypt.hashpw(input, BCrypt.gensalt(12));
