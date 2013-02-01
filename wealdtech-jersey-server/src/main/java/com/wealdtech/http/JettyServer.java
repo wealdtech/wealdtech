@@ -156,7 +156,9 @@ public class JettyServer
   private ThreadPool createThreadPool()
   {
     final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
-    ThreadPoolConfiguration configuration = this.configuration.getThreadPoolConfiguration();
+
+    final ThreadPoolConfiguration configuration = this.configuration.getThreadPoolConfiguration();
+
     pool.setMinThreads(configuration.getMinThreads());
     pool.setMaxIdleTimeMs(configuration.getMaxIdleTimeMs());
     return pool;
