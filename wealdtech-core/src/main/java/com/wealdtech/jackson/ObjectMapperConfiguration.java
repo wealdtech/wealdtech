@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
+import com.wealdtech.jackson.modules.WealdMiscModule;
 
 /**
  * The configuration for an object mapper. This contains various settings that
@@ -56,6 +57,7 @@ public class ObjectMapperConfiguration
     this.modules.add(new GuavaModule());
     this.modules.add(new WealdJodaModule());
     this.modules.add(new WealdIDModule());
+    this.modules.add(new WealdMiscModule());
     this.parserFeatures = Maps.newHashMap();
     this.parserFeatures.put(JsonParser.Feature.ALLOW_COMMENTS, true);
     this.injectableValues = new InjectableValues.Std();
