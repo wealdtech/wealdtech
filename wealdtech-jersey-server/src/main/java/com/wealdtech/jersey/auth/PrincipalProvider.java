@@ -28,5 +28,5 @@ import com.wealdtech.ServerError;
  */
 public interface PrincipalProvider<T, C>
 {
-  public Optional<T> get(C key) throws DataError, ServerError;
+  public Optional<T> getFromKey(C key) throws DataError, ServerError;
 }

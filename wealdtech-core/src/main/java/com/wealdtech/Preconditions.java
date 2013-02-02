@@ -74,6 +74,38 @@ public final class Preconditions
   }
 
   /**
+   * Ensures authentication is met.
+   *
+   * @param expression
+   *          a boolean expression
+   * @throws DataError
+   *           if {@code expression} is false
+   */
+  public static void checkAuthentication(boolean expression) throws DataError
+  {
+    if (!expression)
+    {
+      throw new DataError.Authentication("Not authenticated");
+    }
+  }
+
+  /**
+   * Ensures a permission is met.
+   *
+   * @param expression
+   *          a boolean expression
+   * @throws DataError
+   *           if {@code expression} is false
+   */
+  public static void checkPermission(boolean expression) throws DataError
+  {
+    if (!expression)
+    {
+      throw new DataError.Permission("Not permitted");
+    }
+  }
+
+  /**
    * Ensures the truth of an expression involving one or more parameters to the
    * calling method.
    *
