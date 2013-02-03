@@ -108,6 +108,12 @@ public class WID<T> implements Comparable<WID<T>>
     return id;
   }
 
+  /**
+   * Create an ID given a string representation.
+   * <p/>The string representation is expected to be a hex value.
+   * @param input a string representing the WID
+   * @return The WID.
+   */
   public static <T> WID<T> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
@@ -137,6 +143,17 @@ public class WID<T> implements Comparable<WID<T>>
     return new WID<T>(((shardId << SHARDOFFSET) & SHARDMASK) |
                       ((adjustedTimestamp << TIMESTAMPOFFSET) & TIMESTAMPMASK) |
                       (id & IIDMASK));
+  }
+
+  /**
+   * Create an ID given a long representation.
+   * @param input a long representing the WID
+   * @return The WID.
+   */
+  public static <T> WID<T> fromLong(final Long input)
+  {
+    checkNotNull(input, "Passed NULL WID");
+    return new WID<T>(input);
   }
 
   /**
