@@ -13,13 +13,12 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 package com.wealdtech;
 
 import java.util.Random;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.primitives.Longs;
 
 import static com.wealdtech.Preconditions.*;
@@ -62,8 +61,7 @@ public class WID<T> implements Comparable<WID<T>>
 
   private final long id;
 
-  @JsonCreator
-  public WID(@JsonProperty("id") final long wid)
+  public WID(final long wid)
   {
     this.id = wid;
   }
@@ -110,6 +108,12 @@ public class WID<T> implements Comparable<WID<T>>
     return id;
   }
 
+  /**
+   * Create an ID given a string representation.
+   * <p/>The string representation is expected to be a hex value.
+   * @param input a string representing the WID
+   * @return The WID.
+   */
   public static <T> WID<T> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
@@ -139,6 +143,17 @@ public class WID<T> implements Comparable<WID<T>>
     return new WID<T>(((shardId << SHARDOFFSET) & SHARDMASK) |
                       ((adjustedTimestamp << TIMESTAMPOFFSET) & TIMESTAMPMASK) |
                       (id & IIDMASK));
+  }
+
+  /**
+   * Create an ID given a long representation.
+   * @param input a long representing the WID
+   * @return The WID.
+   */
+  public static <T> WID<T> fromLong(final Long input)
+  {
+    checkNotNull(input, "Passed NULL WID");
+    return new WID<T>(input);
   }
 
   /**

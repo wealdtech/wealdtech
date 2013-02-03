@@ -18,6 +18,7 @@ package com.wealdtech.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.inject.Inject;
 import com.wealdtech.jersey.JerseyServerConfiguration;
 
 /**
@@ -31,6 +32,12 @@ public class JettyServerConfiguration
   private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
   private ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration();
   private ThreadPoolConfiguration threadPoolConfiguration = new ThreadPoolConfiguration();
+
+  @Inject
+  private JettyServerConfiguration()
+  {
+
+  }
 
   @JsonCreator
   private JettyServerConfiguration(@JsonProperty("host") final String host,

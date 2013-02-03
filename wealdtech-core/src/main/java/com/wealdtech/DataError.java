@@ -93,6 +93,24 @@ public class DataError extends WealdError
   }
 
   /**
+   * An error with permissions for request
+   */
+  public static class Permission extends DataError
+  {
+    private static final long serialVersionUID = -6353201997641349475L;
+    public static String URL = BASEURL + "permissions";
+    public static String USERMESSAGE =  "You do not have permission to carry out your request";
+    public Permission(final String message)
+    {
+      super(message, USERMESSAGE, URL, null);
+    }
+    public Permission(final String message, final Throwable t)
+    {
+      super(message, USERMESSAGE, URL, t);
+    }
+  }
+
+  /**
    * An error due to missing data
    */
   public static class Missing extends DataError

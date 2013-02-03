@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ *    Copyright 2012 Weald Technology Trading Limited
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,19 +14,24 @@
  *   limitations under the License.
  */
 
-package com.wealdtech.jersey.auth;
+package com.wealdtech.jackson.modules;
 
-import com.google.common.base.Optional;
-import com.wealdtech.DataError;
-import com.wealdtech.ServerError;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
+import com.wealdtech.WID;
 
-/**
- * Interface to provide a principal from a unique key.
- *
- * @param <T> the type of the principal
- * @param <C> the type of the key passed to locate the principal
- */
-public interface PrincipalProvider<T, C>
+public class WIDKeyDeserializer extends StdKeyDeserializer
 {
-  public Optional<T> getFromKey(C key) throws DataError, ServerError;
+  private static final long serialVersionUID = -9206684533148783990L;
+
+  public WIDKeyDeserializer()
+  {
+    super(WID.class);
+  }
+
+  @Override
+  protected Object _parse(String key, DeserializationContext ctxt) throws Exception
+  {
+    return WID.fromString(key);
+  }
 }

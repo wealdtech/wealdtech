@@ -1,5 +1,5 @@
 /*
- *    Copyright 2012 Weald Technology Trading Limited
+ *    Copyright 2013 Weald Technology Trading Limited
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,21 +16,19 @@
 
 package com.wealdtech.jackson.modules;
 
+import java.net.InetSocketAddress;
+
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
-import com.wealdtech.WID;
-
-//import com.wealdtech.utils.messaging.MessageObjects;
 
 /**
- * Custom serializers and deserializers for Joda types.
+ * Custom serializers and deserializers for miscellaneous types.
  */
-public class WealdIDModule extends Module
+public class WealdMiscModule extends Module
 {
-  private final transient static String NAME = "WealdIDModule";
+  private final transient static String NAME = "WealdMiscModule";
   private transient Version version;
 
   @Override
@@ -54,21 +52,12 @@ public class WealdIDModule extends Module
   {
     // Serializers and deserializers alter values
     final SimpleSerializers serializers = new SimpleSerializers();
-    serializers.addSerializer(new WIDSerializer());
+    serializers.addSerializer(new InetSocketAddressSerializer());
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
-    deserializers.addDeserializer(WID.class, new WIDDeserializer());
-
-    // Key serializers alter the field name
-    final SimpleSerializers keySerializers = new SimpleSerializers();
-    keySerializers.addSerializer(new WIDKeySerializer());
-
-    final SimpleKeyDeserializers keyDeserializers = new SimpleKeyDeserializers();
-    keyDeserializers.addDeserializer(WID.class, new WIDKeyDeserializer());
+    deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);
-    context.addKeySerializers(keySerializers);
-    context.addKeyDeserializers(keyDeserializers);
   }
 }

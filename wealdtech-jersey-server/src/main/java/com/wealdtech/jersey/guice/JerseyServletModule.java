@@ -19,6 +19,11 @@ package com.wealdtech.jersey.guice;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -38,19 +43,10 @@ public class JerseyServletModule extends ServletModule
 
   static
   {
-    // Jersey uses java.util.logging, so here we bridge to slf4
-    // This is a static initialiser because we don't want to do this multiple
-    // times.
-
-    // TODO
-    // final java.util.logging.Logger rootLogger =
-    // LogManager.getLogManager().getLogger("");
-    // final Handler[] handlers = rootLogger.getHandlers();
-    // for (int i = 0; i < handlers.length; i++)
-    // {
-    // rootLogger.removeHandler(handlers[i]);
-    // }
-    // SLF4JBridgeHandler.install();
+    // Get rid of j.u.l. and install SLF4J
+    LogManager.getLogManager().reset();
+    SLF4JBridgeHandler.install();
+    Logger.getLogger("global").setLevel(Level.FINEST);
   }
 
   /**

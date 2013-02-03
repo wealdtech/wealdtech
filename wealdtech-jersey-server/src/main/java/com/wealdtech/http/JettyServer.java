@@ -16,12 +16,18 @@
 
 package com.wealdtech.http;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.nio.AbstractNIOConnector;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +38,8 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.wealdtech.http.JettyServerConfiguration.ConnectorConfiguration;
 import com.wealdtech.http.JettyServerConfiguration.ThreadPoolConfiguration;
+import com.wealdtech.jersey.filters.BodyPrefetchFilter;
+import com.wealdtech.jersey.filters.ThreadNameFilter;
 import com.yammer.metrics.jetty.InstrumentedBlockingChannelConnector;
 import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
 import com.yammer.metrics.reporting.AdminServlet;
@@ -62,10 +70,14 @@ public class JettyServer
     this.server.addConnector(createConnector());
     this.server.setThreadPool(createThreadPool());
 
-    final ServletContextHandler admin = new ServletContextHandler(this.server, "/admin", ServletContextHandler.SESSIONS);
-    admin.addServlet(AdminServlet.class, "/*");
+    HandlerCollection collection = new HandlerCollection();
 
-    final ServletContextHandler root = new ServletContextHandler(this.server, "/", ServletContextHandler.SESSIONS);
+    final ServletContextHandler admin = new ServletContextHandler();
+    admin.addServlet(new ServletHolder(new AdminServlet()), "/*");
+    admin.setContextPath("/admin");
+    collection.addHandler(admin);
+
+    final ServletContextHandler root = new ServletContextHandler();
     root.addEventListener(new GuiceServletContextListener()
     {
       @Override
@@ -74,8 +86,13 @@ public class JettyServer
         return JettyServer.this.injector;
       }
     });
+    root.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+    root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
+    collection.addHandler(root);
+
+    this.server.setHandler(collection);
 
     this.server.start();
     this.server.join();
@@ -139,7 +156,9 @@ public class JettyServer
   private ThreadPool createThreadPool()
   {
     final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
-    ThreadPoolConfiguration configuration = this.configuration.getThreadPoolConfiguration();
+
+    final ThreadPoolConfiguration configuration = this.configuration.getThreadPoolConfiguration();
+
     pool.setMinThreads(configuration.getMinThreads());
     pool.setMaxIdleTimeMs(configuration.getMaxIdleTimeMs());
     return pool;
