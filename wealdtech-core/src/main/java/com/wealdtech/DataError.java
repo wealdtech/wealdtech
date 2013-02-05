@@ -80,8 +80,9 @@ public class DataError extends WealdError
   public static class Authentication extends DataError
   {
     private static final long serialVersionUID = -6353201997641349475L;
-    public static String URL = BASEURL + "authentication";
-    public static String USERMESSAGE = "There was a problem authenticating your request";
+    private static final String URL = BASEURL + "authentication";
+    private static final String USERMESSAGE = "There was a problem authenticating your request";
+
     public Authentication(final String message)
     {
       super(message, USERMESSAGE, URL, null);
@@ -98,8 +99,9 @@ public class DataError extends WealdError
   public static class Permission extends DataError
   {
     private static final long serialVersionUID = -6353201997641349475L;
-    public static String URL = BASEURL + "permissions";
-    public static String USERMESSAGE =  "You do not have permission to carry out your request";
+    private static final String URL = BASEURL + "permissions";
+    private static final String USERMESSAGE =  "You do not have permission to carry out your request";
+
     public Permission(final String message)
     {
       super(message, USERMESSAGE, URL, null);
@@ -116,8 +118,9 @@ public class DataError extends WealdError
   public static class Missing extends DataError
   {
     private static final long serialVersionUID = -7181236040016670944L;
-    public static String URL = BASEURL + "missingdata";
-    public static String USERMESSAGE = "Some of the data required to complete your request is missing";
+    private static final String URL = BASEURL + "missingdata";
+    private static final String USERMESSAGE = "Some of the data required to complete your request is missing";
+
     public Missing(final String message)
     {
       super(message, USERMESSAGE, URL, null);
@@ -135,8 +138,9 @@ public class DataError extends WealdError
   public static class Bad extends DataError
   {
     private static final long serialVersionUID = 8345370192499264874L;
-    public static String URL = BASEURL + "baddata";
-    public static String USERMESSAGE = "Some of the data required to complete your request is incorrect";
+    private static final String URL = BASEURL + "baddata";
+    private static final String USERMESSAGE = "Some of the data required to complete your request is incorrect";
+
     public Bad(final String message)
     {
       super(message, USERMESSAGE, URL, null);

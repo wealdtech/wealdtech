@@ -38,7 +38,7 @@ import com.wealdtech.jackson.modules.WealdMiscModule;
 public class ObjectMapperFactory
 {
   // A default mapper, without any configuration tweaks
-  private static transient final ObjectMapper DEFAULTMAPPER;
+  private static final transient ObjectMapper DEFAULTMAPPER;
 
   static
   {

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.module.SimpleSerializers;
  */
 public class WealdMiscModule extends Module
 {
-  private final transient static String NAME = "WealdMiscModule";
+  private static final transient String NAME = "WealdMiscModule";
   private transient Version version;
 
   @Override

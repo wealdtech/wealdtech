@@ -24,7 +24,7 @@ import com.wealdtech.jersey.JerseyServerConfiguration;
 /**
  * Configuration for a Jetty server.
  */
-public class JettyServerConfiguration
+public final class JettyServerConfiguration
 {
   private String host = "localhost";
   private int port = 8080;

@@ -44,23 +44,23 @@ public enum Hash
   private static final Logger LOGGER = LoggerFactory.getLogger(Hash.class);
 
   // Cache of (input, salt), match
-  private static final LoadingCache<TwoTuple<String, String>, Boolean> cache;
+  private static final LoadingCache<TwoTuple<String, String>, Boolean> CACHE;
 
   // Metrics
-  private static final Meter cacheMisses;
-  private static final Timer gets;
+  private static final Meter CACHEMISSES;
+  private static final Timer GETS;
 
   static
   {
-    cacheMisses = Metrics.defaultRegistry().newMeter(Hash.class, "cache-misses", "lookups", TimeUnit.SECONDS);
-    gets = Metrics.defaultRegistry().newTimer(Hash.class, "gets", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
+    CACHEMISSES = Metrics.defaultRegistry().newMeter(Hash.class, "cache-misses", "lookups", TimeUnit.SECONDS);
+    GETS = Metrics.defaultRegistry().newTimer(Hash.class, "gets", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
     final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(2,  TimeUnit.MINUTES);
-    cache = cb.recordStats().build(new CacheLoader<TwoTuple<String, String>, Boolean>()
+    CACHE = cb.recordStats().build(new CacheLoader<TwoTuple<String, String>, Boolean>()
     {
       @Override
       public Boolean load(final TwoTuple<String, String> input)
       {
-        cacheMisses.mark();
+        CACHEMISSES.mark();
         return calculateMatches(input.getS(), input.getT());
       }
     });
@@ -84,13 +84,13 @@ public enum Hash
    */
   public static boolean matches(final String input, final String hashed)
   {
-    final TimerContext context = gets.time();
+    final TimerContext context = GETS.time();
     try
     {
       boolean result = false;
       try
       {
-        result = cache.get(new TwoTuple<String, String>(input, hashed));
+        result = CACHE.get(new TwoTuple<String, String>(input, hashed));
       }
       catch (ExecutionException e)
       {

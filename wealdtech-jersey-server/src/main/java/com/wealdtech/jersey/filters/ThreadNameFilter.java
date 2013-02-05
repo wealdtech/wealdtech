@@ -18,12 +18,12 @@ public class ThreadNameFilter implements Filter
 {
   @Override
   public void init(final FilterConfig filterConfig) throws ServletException
-  { /* unused */
+  {
   }
 
   @Override
   public void destroy()
-  { /* unused */
+  {
   }
 
   @Override

@@ -27,7 +27,7 @@ import com.wealdtech.utils.messaging.MessageObjects;
  */
 public class MessageObjectsModule extends Module
 {
-  private final transient static String NAME = "MessageObjectsModule";
+  private static final transient String NAME = "MessageObjectsModule";
   private transient Version version;
 
   @Override
@@ -39,11 +39,11 @@ public class MessageObjectsModule extends Module
   @Override
   public Version version()
   {
-    if (version == null)
+    if (this.version == null)
     {
-      version = new Version(1, 0, 0, null, "com.wealdtech", "utils");
+      this.version = new Version(1, 0, 0, null, "com.wealdtech", "utils");
     }
-    return version;
+    return this.version;
   }
 
   @Override

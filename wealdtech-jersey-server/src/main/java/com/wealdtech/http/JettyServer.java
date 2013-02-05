@@ -50,9 +50,9 @@ public class JettyServer
 
   private transient Server server;
 
-  private transient final JettyServerConfiguration configuration;
+  private final transient JettyServerConfiguration configuration;
 
-  private transient final Injector injector;
+  private final transient Injector injector;
 
   @Inject
   public JettyServer(final Injector injector, final JettyServerConfiguration configuration)
@@ -127,24 +127,24 @@ public class JettyServer
   {
     final AbstractConnector connector;
 
-    ConnectorConfiguration configuration = this.configuration.getConnectorConfiguration();
+    final ConnectorConfiguration connectorConfiguration = this.configuration.getConnectorConfiguration();
 
     // Blocking connector
     connector = new InstrumentedBlockingChannelConnector(this.configuration.getPort());
 
     if (connector instanceof SelectChannelConnector)
     {
-      ((SelectChannelConnector)connector).setLowResourcesConnections(configuration.getLowResourcesConnections());
+      ((SelectChannelConnector)connector).setLowResourcesConnections(connectorConfiguration.getLowResourcesConnections());
     }
 
     if (connector instanceof AbstractNIOConnector)
     {
-      ((AbstractNIOConnector)connector).setUseDirectBuffers(configuration.getUseDirectBuffers());
+      ((AbstractNIOConnector)connector).setUseDirectBuffers(connectorConfiguration.getUseDirectBuffers());
     }
 
-    connector.setAcceptors(configuration.getAcceptors());
+    connector.setAcceptors(connectorConfiguration.getAcceptors());
 
-    connector.setAcceptQueueSize(configuration.getAcceptQueueSize());
+    connector.setAcceptQueueSize(connectorConfiguration.getAcceptQueueSize());
 
     return connector;
   }
@@ -157,10 +157,10 @@ public class JettyServer
   {
     final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
 
-    final ThreadPoolConfiguration configuration = this.configuration.getThreadPoolConfiguration();
+    final ThreadPoolConfiguration threadPoolConfiguration = this.configuration.getThreadPoolConfiguration();
 
-    pool.setMinThreads(configuration.getMinThreads());
-    pool.setMaxIdleTimeMs(configuration.getMaxIdleTimeMs());
+    pool.setMinThreads(threadPoolConfiguration.getMinThreads());
+    pool.setMaxIdleTimeMs(threadPoolConfiguration.getMaxIdleTimeMs());
     return pool;
   }
 }

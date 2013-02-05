@@ -15,8 +15,8 @@ import com.wealdtech.jackson.modules.MessageObjectsModule;
 public enum WealdMapper
 {
   INSTANCE;
-  private static transient final ObjectMapper CLIENTMAPPER;
-  private static transient final ObjectMapper SERVERMAPPER;
+  private static final transient ObjectMapper CLIENTMAPPER;
+  private static final transient ObjectMapper SERVERMAPPER;
 
   static
   {

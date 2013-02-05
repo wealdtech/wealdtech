@@ -23,14 +23,12 @@ import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.wealdtech.WID;
 
-//import com.wealdtech.utils.messaging.MessageObjects;
-
 /**
  * Custom serializers and deserializers for Joda types.
  */
 public class WealdIDModule extends Module
 {
-  private final transient static String NAME = "WealdIDModule";
+  private static final transient String NAME = "WealdIDModule";
   private transient Version version;
 
   @Override

@@ -24,9 +24,9 @@ package com.wealdtech.utils.messaging;
  */
 public class MessageItem
 {
-  private transient final int msgtype;
-  private transient final String destination;
-  private transient final MessageObjects<?> objects;
+  private final transient int msgtype;
+  private final transient String destination;
+  private final transient MessageObjects<?> objects;
 
   public MessageItem(final int msgtype, final String destination, final MessageObjects<?> objects)
   {

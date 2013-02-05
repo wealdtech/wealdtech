@@ -18,10 +18,12 @@ package com.wealdtech.utils;
 
 import java.security.SecureRandom;
 
-public class StringUtils
+public enum StringUtils
 {
+  INSTANCE;
+
   private static final SecureRandom RANDOMSOURCE;
-  private static String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  private static final String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   static
   {

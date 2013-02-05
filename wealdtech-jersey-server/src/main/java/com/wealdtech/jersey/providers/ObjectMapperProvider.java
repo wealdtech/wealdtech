@@ -16,8 +16,6 @@
 
 package com.wealdtech.jersey.providers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -35,15 +33,11 @@ import com.wealdtech.jackson.WealdMapper;
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper>
 {
-  private transient final ObjectMapper mapper;
-
-  @Context
-  private transient HttpServletRequest servletrequest;
+  private final transient ObjectMapper mapper;
 
   @Inject
   public ObjectMapperProvider()
   {
-//    this.mapper = ObjectMapperFactory.getDefaultMapper();
     this.mapper = WealdMapper.getServerMapper();
   }
 

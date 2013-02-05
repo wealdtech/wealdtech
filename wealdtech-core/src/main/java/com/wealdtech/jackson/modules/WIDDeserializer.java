@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.wealdtech.WID;
@@ -35,13 +34,13 @@ public class WIDDeserializer extends FromStringDeserializer<WID<?>>
   }
 
   @Override
-  protected WID<?> _deserialize(String value, DeserializationContext ctxt) throws IOException, JsonProcessingException
+  protected WID<?> _deserialize(String value, DeserializationContext ctxt) throws IOException
   {
     return WID.fromString(value);
   }
 
   @Override
-  protected WID<?> _deserializeEmbedded(Object ob, DeserializationContext ctxt) throws IOException, JsonProcessingException
+  protected WID<?> _deserializeEmbedded(Object ob, DeserializationContext ctxt) throws IOException
   {
     if (ob instanceof byte[])
     {
