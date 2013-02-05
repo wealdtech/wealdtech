@@ -16,6 +16,7 @@
 
 package com.wealdtech;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,8 +40,10 @@ import static com.wealdtech.Preconditions.*;
  * The ranges of valid values for each of these components are as follows:
  * TODO
  */
-public class WID<T> implements Comparable<WID<T>>
+public class WID<T> implements Comparable<WID<T>>, Serializable
 {
+  private static final long serialVersionUID = 6897379549693105270L;
+
   // The epoch of our timestamp, relative to the actual epoch
   public static final long EPOCH = 1325376000000L;
 
