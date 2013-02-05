@@ -16,13 +16,13 @@
 
 package com.wealdtech;
 
+import static com.wealdtech.Preconditions.*;
+
 import java.io.Serializable;
 import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.primitives.Longs;
-
-import static com.wealdtech.Preconditions.*;
 
 /**
  * A sharded and time-localized ID system that uses generics
@@ -62,6 +62,9 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   private static final int IIDSIZE = 10;
   public static final long MAX_IID = (1L << IIDSIZE) - 1;
 
+  // Radix for WID - hex
+  private static final int RADIX = 16;
+
   private final long id;
 
   public WID(final long wid)
@@ -77,7 +80,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   @JsonIgnore
   public long getShardId()
   {
-    return (id & SHARDMASK) >> SHARDOFFSET;
+    return (this.id & SHARDMASK) >> SHARDOFFSET;
   }
 
   /*
@@ -88,7 +91,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   @JsonIgnore
   public long getTimestamp()
   {
-    return ((id & TIMESTAMPMASK) >> TIMESTAMPOFFSET) + EPOCH;
+    return ((this.id & TIMESTAMPMASK) >> TIMESTAMPOFFSET) + EPOCH;
   }
 
   /*
@@ -99,7 +102,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   @JsonIgnore
   public long getIid()
   {
-    return id & IIDMASK;
+    return this.id & IIDMASK;
   }
 
   /**
@@ -108,7 +111,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    */
   public long toLong()
   {
-    return id;
+    return this.id;
   }
 
   /**
@@ -122,7 +125,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
     checkNotNull(input, "Passed NULL WID");
     try
     {
-      return new WID<T>(Long.valueOf(input, 16));
+      return new WID<T>(Long.valueOf(input, RADIX));
     }
     catch (NumberFormatException nfe)
     {

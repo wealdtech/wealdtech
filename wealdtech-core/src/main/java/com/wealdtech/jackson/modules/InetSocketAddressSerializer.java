@@ -33,7 +33,7 @@ public class InetSocketAddressSerializer extends StdSerializer<InetSocketAddress
   @Override
   public void serialize(final InetSocketAddress value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    StringBuffer sb = new StringBuffer(32);
+    StringBuffer sb = new StringBuffer();
     sb.append(value.getHostName());
     sb.append(":");
     sb.append(value.getPort());

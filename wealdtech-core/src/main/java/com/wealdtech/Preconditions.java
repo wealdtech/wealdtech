@@ -397,7 +397,8 @@ public final class Preconditions
         throw new IllegalArgumentException("negative size: " + size);
       }
       else
-      { // index >= size
+      {
+        // index >= size
         return format("%s (%s) must be less than size (%s)", desc, index, size);
       }
   }
@@ -463,7 +464,8 @@ public final class Preconditions
         throw new IllegalArgumentException("negative size: " + size);
       }
       else
-      { // index > size
+      {
+        // index > size
         return format("%s (%s) must not be greater than size (%s)", desc, index, size);
       }
   }
@@ -525,7 +527,8 @@ public final class Preconditions
    */
   private static String format(String template, @Nullable Object... args)
   {
-    template = String.valueOf(template); // null -> "null"
+    // null -> "null"
+    template = String.valueOf(template);
 
     // start substituting the arguments into the '%s' placeholders
     StringBuilder builder = new StringBuilder(template.length() + 16 * args.length);

@@ -28,6 +28,8 @@ public class WIDDeserializer extends FromStringDeserializer<WID<?>>
 {
   private static final long serialVersionUID = -8771787639009660187L;
 
+  private static final int WID_BINARY_SIZE = 8;
+
   public WIDDeserializer()
   {
     super(WID.class);
@@ -45,7 +47,7 @@ public class WIDDeserializer extends FromStringDeserializer<WID<?>>
     if (ob instanceof byte[])
     {
       byte[] bytes = (byte[]) ob;
-      if (bytes.length != 8)
+      if (bytes.length != WID_BINARY_SIZE)
       {
         ctxt.mappingException("Can only construct WIDs from 8 byte arrays");
       }

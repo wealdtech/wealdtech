@@ -50,11 +50,18 @@ public enum Hash
   private static final Meter CACHEMISSES;
   private static final Timer GETS;
 
+  private static final HashConfiguration CONFIGURATION;
+
   static
   {
+    // TODO where to obtain this from?
+    CONFIGURATION = new HashConfiguration();
+
     CACHEMISSES = Metrics.defaultRegistry().newMeter(Hash.class, "cache-misses", "lookups", TimeUnit.SECONDS);
     GETS = Metrics.defaultRegistry().newTimer(Hash.class, "gets", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
-    final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(2,  TimeUnit.MINUTES);
+    final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder()
+                                                        .maximumSize(CONFIGURATION.getCacheConfiguration().getMaxEntries())
+                                                        .expireAfterWrite(CONFIGURATION.getCacheConfiguration().getMaxDuration(),  TimeUnit.SECONDS);
     CACHE = cb.recordStats().build(new CacheLoader<TwoTuple<String, String>, Boolean>()
     {
       @Override
@@ -73,7 +80,7 @@ public enum Hash
    */
   public static String hash(final String input)
   {
-    return BCrypt.hashpw(input, BCrypt.gensalt(12));
+    return BCrypt.hashpw(input, BCrypt.gensalt(CONFIGURATION.getStrength()));
   }
 
   /**
