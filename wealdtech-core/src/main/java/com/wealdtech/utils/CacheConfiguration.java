@@ -19,41 +19,38 @@ package com.wealdtech.utils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
+import com.wealdtech.configuration.Configuration;
 
 /**
  * Configuration for a Guava cache.
  */
-public class CacheConfiguration
+public class CacheConfiguration implements Configuration
 {
-  private final int maxEntries;
-  private static final int MAXENTRIES_DEFAULT = 10000;
+  /**
+   * The maximum number of entries in the cache
+   */
+  private int maxEntries = 10000;
 
-  private final int maxDuration;
-  private static final int MAXDURATION_DEFAULT = 120;
+  /**
+   * The maximum number of seconds an entry will remain in the cache
+   */
+  private int maxDuration = 120;
 
   @Inject
   public CacheConfiguration()
   {
-    this(null, null);
+    // 0-configuration injection
   }
 
   @JsonCreator
   private CacheConfiguration(@JsonProperty("maxsize") final Integer maxSize,
                              @JsonProperty("maxduration") final Integer maxDuration)
   {
-    if (maxSize == null)
-    {
-      this.maxEntries = MAXENTRIES_DEFAULT;
-    }
-    else
+    if (maxSize != null)
     {
       this.maxEntries = maxSize;
     }
-    if (maxDuration == null)
-    {
-      this.maxDuration = MAXDURATION_DEFAULT;
-    }
-    else
+    if (maxDuration != null)
     {
       this.maxDuration = maxDuration;
     }

@@ -19,40 +19,40 @@ package com.wealdtech.utils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
+import com.wealdtech.configuration.Configuration;
 
 /**
  * Configuration for the hash utility.
  */
-public class HashConfiguration
+public class HashConfiguration implements Configuration
 {
-  private final CacheConfiguration cacheConfiguration;
-  private final int strength;
-  private static final int STRENGTH_DEFAULT = 12;
+  /**
+   * The configuration of the cache of local hashes
+   */
+  private CacheConfiguration cacheConfiguration = new CacheConfiguration();
+
+  /**
+   * The strength of the bcrypt algorithm.  Each increment implies a doubling
+   * of the time taken to generate the hash
+   */
+  private int strength = 12;
 
   @Inject
   public HashConfiguration()
   {
-    this(null, null);
+    // 0-configuration injection
   }
 
   @JsonCreator
   private HashConfiguration(@JsonProperty("cache") final CacheConfiguration cacheConfiguration,
                             @JsonProperty("strength") final Integer strength)
   {
-    if (cacheConfiguration == null)
-    {
-      this.cacheConfiguration = new CacheConfiguration();
-    }
-    else
+    if (cacheConfiguration != null)
     {
       this.cacheConfiguration = cacheConfiguration;
     }
 
-    if (strength == null)
-    {
-      this.strength = STRENGTH_DEFAULT;
-    }
-    else
+    if (strength != null)
     {
       this.strength = strength;
     }
