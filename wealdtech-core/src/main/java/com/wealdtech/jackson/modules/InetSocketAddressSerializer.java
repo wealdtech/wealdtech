@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
@@ -32,9 +31,9 @@ public class InetSocketAddressSerializer extends StdSerializer<InetSocketAddress
   }
 
   @Override
-  public void serialize(final InetSocketAddress value, final JsonGenerator gen, final SerializerProvider provider) throws IOException, JsonProcessingException
+  public void serialize(final InetSocketAddress value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    StringBuffer sb = new StringBuffer(32);
+    StringBuffer sb = new StringBuffer();
     sb.append(value.getHostName());
     sb.append(":");
     sb.append(value.getPort());

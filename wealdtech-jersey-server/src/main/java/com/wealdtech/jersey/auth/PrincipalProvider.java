@@ -17,8 +17,6 @@
 package com.wealdtech.jersey.auth;
 
 import com.google.common.base.Optional;
-import com.wealdtech.DataError;
-import com.wealdtech.ServerError;
 
 /**
  * Interface to provide a principal from a unique key.
@@ -28,5 +26,5 @@ import com.wealdtech.ServerError;
  */
 public interface PrincipalProvider<T, C>
 {
-  public Optional<T> getFromKey(C key) throws DataError, ServerError;
+  Optional<T> getFromKey(C key);
 }

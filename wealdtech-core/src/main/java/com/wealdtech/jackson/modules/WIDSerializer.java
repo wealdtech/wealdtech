@@ -19,7 +19,6 @@ package com.wealdtech.jackson.modules;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wealdtech.WID;
@@ -32,7 +31,7 @@ public class WIDSerializer extends StdSerializer<WID<?>>
   }
 
   @Override
-  public void serialize(final WID<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException, JsonProcessingException
+  public void serialize(final WID<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(value.toString());
   }

@@ -29,7 +29,7 @@ public class ServerHeadersFilter implements ContainerResponseFilter
 {
   private static final String SERVERHEADER = "Server";
 
-  final JettyServerConfiguration configuration;
+  private final transient JettyServerConfiguration configuration;
 
   @Inject
   public ServerHeadersFilter(final JettyServerConfiguration configuration)
@@ -40,7 +40,7 @@ public class ServerHeadersFilter implements ContainerResponseFilter
   @Override
   public ContainerResponse filter(final ContainerRequest request, final ContainerResponse response)
   {
-    response.getHttpHeaders().add(SERVERHEADER, configuration.getResponseConfiguration().getServerName());
+    response.getHttpHeaders().add(SERVERHEADER, this.configuration.getResponseConfiguration().getServerName());
     return response;
   }
 }

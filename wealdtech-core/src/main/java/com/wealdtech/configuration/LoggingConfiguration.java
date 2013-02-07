@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 /**
  * Configuration for a logging system.
  */
-public class LoggingConfiguration
+public class LoggingConfiguration implements Configuration
 {
   private Level level = Level.INFO;
 

@@ -18,14 +18,21 @@ package com.wealdtech.utils;
 
 import java.security.SecureRandom;
 
-public class StringUtils
+public enum StringUtils
 {
+  INSTANCE;
+
   private static final SecureRandom RANDOMSOURCE;
-  private static String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  private static final String CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  private static final int CANDIDATESLEN;
+  private static final String GET = "get";
+  private static final int GETLEN;
 
   static
   {
     RANDOMSOURCE = new SecureRandom();
+    CANDIDATESLEN = CANDIDATES.length();
+    GETLEN = GET.length();
   }
 
   /**
@@ -42,7 +49,7 @@ public class StringUtils
     final StringBuffer sb = new StringBuffer(length);
     for (int i = 0; i < length; i++)
     {
-      sb.append(CANDIDATES.charAt(RANDOMSOURCE.nextInt(62)));
+      sb.append(CANDIDATES.charAt(RANDOMSOURCE.nextInt(CANDIDATESLEN)));
     }
     return sb.toString();
   }
@@ -67,9 +74,9 @@ public class StringUtils
    */
   public static String nameToGetter(final String str)
   {
-    final StringBuilder sb = new StringBuilder("get");
+    final StringBuilder sb = new StringBuilder(GET);
     sb.append(str);
-    sb.setCharAt(3, Character.toUpperCase(sb.charAt(3)));
+    sb.setCharAt(GETLEN, Character.toUpperCase(sb.charAt(GETLEN)));
     return sb.toString();
   }
 }

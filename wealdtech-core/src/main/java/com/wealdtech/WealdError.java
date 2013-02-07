@@ -23,7 +23,7 @@ public abstract class WealdError extends RuntimeException
 {
   private static final long serialVersionUID = -8127456058290412830L;
 
-  protected static String BASEURL = "http://developers.wealdtech.com/docs/";
+  protected static final String BASEURL = "http://developers.wealdtech.com/docs/";
 
   private final String userMessage;
   private final String url;

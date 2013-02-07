@@ -26,14 +26,12 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 
-//import com.wealdtech.utils.messaging.MessageObjects;
-
 /**
  * Custom serializers and deserializers for Joda types.
  */
 public class WealdJodaModule extends Module
 {
-  private final transient static String NAME = "WealdModule";
+  private static final transient String NAME = "WealdModule";
   private transient Version version;
 
   @Override
@@ -66,9 +64,6 @@ public class WealdJodaModule extends Module
     deserializers.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
     serializers.addSerializer(new LocalDateSerializer());
     deserializers.addDeserializer(LocalDate.class, new LocalDateDeserializer());
-    // serializers.addSerializer(new MessageObjectsSerializer());
-    // deserializers.addDeserializer((Class<MessageObjects<?>>)(Class<?>)MessageObjects.class,
-    // new MessageObjectsDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

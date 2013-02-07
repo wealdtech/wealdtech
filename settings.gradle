@@ -1,1 +1,1 @@
-include 'wealdtech-core', 'wealdtech-configuration', 'wealdtech-jersey-server'
+include 'wealdtech-core', 'wealdtech-jersey-server'

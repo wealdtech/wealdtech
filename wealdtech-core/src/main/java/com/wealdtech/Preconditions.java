@@ -16,8 +16,6 @@
 
 package com.wealdtech;
 
-import java.util.NoSuchElementException;
-
 import javax.annotation.Nullable;
 
 /**
@@ -52,7 +50,7 @@ import javax.annotation.Nullable;
  * <p>
  * Take care not to confuse precondition checking with other similar types of
  * checks! Precondition exceptions -- including those provided here, but also
- * {@link IndexOutOfBoundsException}, {@link NoSuchElementException},
+ * {@link IndexOutOfBoundsException}, {@link java.util.NoSuchElementException},
  * {@link UnsupportedOperationException} and others -- are used to signal that
  * the <i>calling method</i> has made an error. This tells the caller that it
  * should not have invoked the method when it did, with the arguments it did, or
@@ -78,10 +76,10 @@ public final class Preconditions
    *
    * @param expression
    *          a boolean expression
-   * @throws DataError
+   * @throws DataError.Authentication
    *           if {@code expression} is false
    */
-  public static void checkAuthentication(boolean expression) throws DataError
+  public static void checkAuthentication(boolean expression)
   {
     if (!expression)
     {
@@ -94,10 +92,10 @@ public final class Preconditions
    *
    * @param expression
    *          a boolean expression
-   * @throws DataError
+   * @throws DataError.Permission
    *           if {@code expression} is false
    */
-  public static void checkPermission(boolean expression) throws DataError
+  public static void checkPermission(boolean expression)
   {
     if (!expression)
     {
@@ -111,10 +109,10 @@ public final class Preconditions
    *
    * @param expression
    *          a boolean expression
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code expression} is false
    */
-  public static void checkArgument(boolean expression) throws DataError
+  public static void checkArgument(boolean expression)
   {
     if (!expression)
     {
@@ -131,10 +129,10 @@ public final class Preconditions
    * @param errorMessage
    *          the exception message to use if the check fails; will be converted
    *          to a string using {@link String#valueOf(Object)}
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code expression} is false
    */
-  public static void checkArgument(boolean expression, @Nullable Object errorMessage) throws DataError
+  public static void checkArgument(boolean expression, @Nullable Object errorMessage)
   {
     if (!expression)
     {
@@ -159,13 +157,13 @@ public final class Preconditions
    *          the arguments to be substituted into the message template.
    *          Arguments are converted to strings using
    *          {@link String#valueOf(Object)}.
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code expression} is false
    * @throws NullPointerException
    *           if the check fails and either {@code errorMessageTemplate} or
    *           {@code errorMessageArgs} is null (don't let this happen)
    */
-  public static void checkArgument(boolean expression, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) throws DataError
+  public static void checkArgument(boolean expression, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs)
   {
     if (!expression)
     {
@@ -179,10 +177,10 @@ public final class Preconditions
    *
    * @param expression
    *          a boolean expression
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code expression} is false
    */
-  public static void checkState(boolean expression) throws DataError
+  public static void checkState(boolean expression)
   {
     if (!expression)
     {
@@ -199,10 +197,10 @@ public final class Preconditions
    * @param errorMessage
    *          the exception message to use if the check fails; will be converted
    *          to a string using {@link String#valueOf(Object)}
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code expression} is false
    */
-  public static void checkState(boolean expression, @Nullable Object errorMessage) throws DataError
+  public static void checkState(boolean expression, @Nullable Object errorMessage)
   {
     if (!expression)
     {
@@ -227,13 +225,13 @@ public final class Preconditions
    *          the arguments to be substituted into the message template.
    *          Arguments are converted to strings using
    *          {@link String#valueOf(Object)}.
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code expression} is false
    * @throws NullPointerException
    *           if the check fails and either {@code errorMessageTemplate} or
    *           {@code errorMessageArgs} is null (don't let this happen)
    */
-  public static void checkState(boolean expression, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) throws DataError
+  public static void checkState(boolean expression, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs)
   {
     if (!expression)
     {
@@ -248,10 +246,10 @@ public final class Preconditions
    * @param reference
    *          an object reference
    * @return the non-null reference that was validated
-   * @throws DataError
+   * @throws DataError.Missing
    *           if {@code reference} is null
    */
-  public static <T> T checkNotNull(T reference) throws DataError
+  public static <T> T checkNotNull(T reference)
   {
     if (reference == null)
     {
@@ -270,10 +268,10 @@ public final class Preconditions
    *          the exception message to use if the check fails; will be converted
    *          to a string using {@link String#valueOf(Object)}
    * @return the non-null reference that was validated
-   * @throws DataError
+   * @throws DataError.Missing
    *           if {@code reference} is null
    */
-  public static <T> T checkNotNull(T reference, @Nullable Object errorMessage) throws DataError
+  public static <T> T checkNotNull(T reference, @Nullable Object errorMessage)
   {
     if (reference == null)
     {
@@ -300,10 +298,10 @@ public final class Preconditions
    *          Arguments are converted to strings using
    *          {@link String#valueOf(Object)}.
    * @return the non-null reference that was validated
-   * @throws DataError
+   * @throws DataError.Missing
    *           if {@code reference} is null
    */
-  public static <T> T checkNotNull(T reference, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) throws DataError
+  public static <T> T checkNotNull(T reference, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs)
   {
     if (reference == null)
     {
@@ -349,12 +347,12 @@ public final class Preconditions
    * @param size
    *          the size of that array, list or string
    * @return the value of {@code index}
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code index} is negative or is not less than {@code size}
    * @throws IllegalArgumentException
    *           if {@code size} is negative
    */
-  public static int checkElementIndex(int index, int size) throws DataError
+  public static int checkElementIndex(int index, int size)
   {
     return checkElementIndex(index, size, "index");
   }
@@ -372,12 +370,12 @@ public final class Preconditions
    * @param desc
    *          the text to use to describe this index in an error message
    * @return the value of {@code index}
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code index} is negative or is not less than {@code size}
    * @throws IllegalArgumentException
    *           if {@code size} is negative
    */
-  public static int checkElementIndex(int index, int size, @Nullable String desc) throws DataError
+  public static int checkElementIndex(int index, int size, @Nullable String desc)
   {
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (index < 0 || index >= size)
@@ -399,7 +397,8 @@ public final class Preconditions
         throw new IllegalArgumentException("negative size: " + size);
       }
       else
-      { // index >= size
+      {
+        // index >= size
         return format("%s (%s) must be less than size (%s)", desc, index, size);
       }
   }
@@ -415,12 +414,12 @@ public final class Preconditions
    * @param size
    *          the size of that array, list or string
    * @return the value of {@code index}
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code index} is negative or is greater than {@code size}
    * @throws IllegalArgumentException
    *           if {@code size} is negative
    */
-  public static int checkPositionIndex(int index, int size) throws DataError
+  public static int checkPositionIndex(int index, int size)
   {
     return checkPositionIndex(index, size, "index");
   }
@@ -438,12 +437,12 @@ public final class Preconditions
    * @param desc
    *          the text to use to describe this index in an error message
    * @return the value of {@code index}
-   * @throws DataError
+   * @throws DataError.Bad
    *           if {@code index} is negative or is greater than {@code size}
    * @throws IllegalArgumentException
    *           if {@code size} is negative
    */
-  public static int checkPositionIndex(int index, int size, @Nullable String desc) throws DataError
+  public static int checkPositionIndex(int index, int size, @Nullable String desc)
   {
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (index < 0 || index > size)
@@ -465,7 +464,8 @@ public final class Preconditions
         throw new IllegalArgumentException("negative size: " + size);
       }
       else
-      { // index > size
+      {
+        // index > size
         return format("%s (%s) must not be greater than size (%s)", desc, index, size);
       }
   }
@@ -483,13 +483,13 @@ public final class Preconditions
    *          list or string
    * @param size
    *          the size of that array, list or string
-   * @throws DataError
+   * @throws DataError.Bad
    *           if either index is negative or is greater than {@code size}, or
    *           if {@code end} is less than {@code start}
    * @throws IllegalArgumentException
    *           if {@code size} is negative
    */
-  public static void checkPositionIndexes(int start, int end, int size) throws DataError
+  public static void checkPositionIndexes(int start, int end, int size)
   {
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (start < 0 || end < start || end > size)
@@ -527,7 +527,8 @@ public final class Preconditions
    */
   private static String format(String template, @Nullable Object... args)
   {
-    template = String.valueOf(template); // null -> "null"
+    // null -> "null"
+    template = String.valueOf(template);
 
     // start substituting the arguments into the '%s' placeholders
     StringBuilder builder = new StringBuilder(template.length() + 16 * args.length);

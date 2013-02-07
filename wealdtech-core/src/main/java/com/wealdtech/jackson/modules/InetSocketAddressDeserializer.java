@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.google.common.base.Splitter;
@@ -35,7 +34,7 @@ public class InetSocketAddressDeserializer extends FromStringDeserializer<InetSo
   }
 
   @Override
-  protected InetSocketAddress _deserialize(String value, DeserializationContext ctxt) throws IOException, JsonProcessingException
+  protected InetSocketAddress _deserialize(String value, DeserializationContext ctxt) throws IOException
   {
     // TODO check for malformed values
     Iterator<String> vals = Splitter.on(':').split(value).iterator();

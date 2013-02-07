@@ -31,7 +31,7 @@ import com.sun.jersey.api.container.ContainerException;
 public class ContainerExceptionMapper implements ExceptionMapper<ContainerException>
 {
   @Context
-  Providers providers;
+  private Providers providers;
 
   @SuppressWarnings("unchecked")
   @Override
