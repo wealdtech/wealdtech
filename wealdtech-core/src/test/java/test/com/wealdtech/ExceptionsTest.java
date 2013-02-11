@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 public class ExceptionsTest
 {
@@ -33,6 +33,27 @@ public class ExceptionsTest
       throw new DataError();
     }
     catch (DataError de)
+    {
+      de.toString();
+      de.getUserMessage();
+      de.getUrl();
+      de.getThrowingClassName();
+      de.getThrowingMethodName();
+    }
+
+    try
+    {
+      try
+      {
+        throw new ServerError("Test");
+      }
+      catch (ServerError se)
+      {
+        se.toString();
+        throw new DataError(se);
+      }
+    }
+    catch (DataError se)
     {
       // Good
     }
@@ -53,6 +74,102 @@ public class ExceptionsTest
         assertEquals(de2.getMessage(), "Test data error 3");
       }
     }
+
+    try
+    {
+      throw new DataError.Authentication("Bad");
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+    try
+    {
+      try
+      {
+        throw new ServerError("Bad");
+      }
+      catch (ServerError se)
+      {
+        throw new DataError.Authentication("Bad", se);
+      }
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+
+    try
+    {
+      throw new DataError.Permission("Bad");
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+    try
+    {
+      try
+      {
+        throw new ServerError("Bad");
+      }
+      catch (ServerError se)
+      {
+        throw new DataError.Permission("Bad", se);
+      }
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+
+    try
+    {
+      throw new DataError.Missing("Bad");
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+    try
+    {
+      try
+      {
+        throw new ServerError("Bad");
+      }
+      catch (ServerError se)
+      {
+        throw new DataError.Missing("Bad", se);
+      }
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+
+    try
+    {
+      throw new DataError.Bad("Bad");
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
+    try
+    {
+      try
+      {
+        throw new ServerError("Bad");
+      }
+      catch (ServerError se)
+      {
+        throw new DataError.Bad("Bad", se);
+      }
+    }
+    catch (DataError de)
+    {
+      // Good
+    }
   }
 
   @Test
@@ -63,6 +180,22 @@ public class ExceptionsTest
       throw new ServerError();
     }
     catch (ServerError de)
+    {
+      // Good
+    }
+
+    try
+    {
+      try
+      {
+        throw new DataError.Missing("Test");
+      }
+      catch (DataError de)
+      {
+        throw new ServerError(de);
+      }
+    }
+    catch (ServerError se)
     {
       // Good
     }

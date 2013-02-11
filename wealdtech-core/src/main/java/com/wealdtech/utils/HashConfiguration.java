@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
+import static com.wealdtech.Preconditions.*;
+
 /**
  * Configuration for the hash utility.
  */
@@ -56,6 +58,14 @@ public class HashConfiguration implements Configuration
     {
       this.strength = strength;
     }
+    validate();
+  }
+
+  private void validate()
+  {
+    checkNotNull(this.cacheConfiguration, "Cache configuration is required");
+    checkNotNull(this.strength, "Strength is required");
+    checkState(this.strength >= 4 && this.strength <= 20, "Strength must be between 4 and 20");
   }
 
   public CacheConfiguration getCacheConfiguration()

@@ -24,13 +24,14 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
+import com.wealdtech.DataError;
 
 /**
  * Information regarding an error.
  * <p/>
  * Detailed information to pass back as part of an HTTP response.
  * <p/>This provides a standardized way to return information containing
- * multiple fields to a
+ * multiple fields to a client
  */
 public class ErrorInfo implements Comparable<ErrorInfo>
 {
@@ -84,6 +85,7 @@ public class ErrorInfo implements Comparable<ErrorInfo>
       catch (URISyntaxException use)
       {
         LOGGER.warn("Failed to parse {} in to a valid URI", moreInfo, use);
+        throw new DataError.Bad("Attempt to create error info with bad URI", use);
       }
     }
     this.moreInfo = moreInfoUri;

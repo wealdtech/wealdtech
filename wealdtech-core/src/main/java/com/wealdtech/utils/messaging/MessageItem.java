@@ -16,26 +16,70 @@
 
 package com.wealdtech.utils.messaging;
 
+import java.util.Locale;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.wealdtech.DataError;
+import com.wealdtech.utils.StringUtils;
+
+import static com.wealdtech.Preconditions.*;
+
 /**
  * A message item contains a {@link MessageObjects} along with details of
  * the message to send
- * @author jgm
  *
  */
 public class MessageItem
 {
-  private final transient int msgtype;
+  private final transient Type msgtype;
   private final transient String destination;
   private final transient MessageObjects<?> objects;
 
-  public MessageItem(final int msgtype, final String destination, final MessageObjects<?> objects)
+  public enum Type
+  {
+    /**
+     * Publish a message for general consumption
+     */
+    PUBLISH,
+    /**
+     * Place a message on a queue
+     */
+    QUEUE;
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+        return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH));
+    }
+
+    @JsonCreator
+    public static Type fromString(final String type)
+    {
+      checkNotNull(type, "Message item type is required");
+      try
+      {
+        return valueOf(type.toUpperCase(Locale.ENGLISH));
+      }
+      catch (IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A message item type supplied is invalid"); // NOPMD
+      }
+    }
+  }
+
+  public MessageItem(final Type msgtype, final String destination, final MessageObjects<?> objects)
   {
     this.msgtype = msgtype;
     this.destination = destination;
     this.objects = objects;
   }
 
-  public int getMsgType()
+  public Type getMsgType()
   {
     return this.msgtype;
   }

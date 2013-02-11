@@ -45,6 +45,7 @@ public class WIDTest
     {
       // Good
     }
+    WID.<Date>fromComponents(WID.MAX_IID, System.currentTimeMillis(), 0);
     try
     {
       WID.<Date>fromComponents(WID.MAX_IID + 1, System.currentTimeMillis(), 0);
@@ -64,6 +65,7 @@ public class WIDTest
     {
       // Good
     }
+    WID.<Date>fromComponents(0, WID.MAX_TIMESTAMP, 0);
     try
     {
       WID.<Date>fromComponents(0, WID.MAX_TIMESTAMP + 1, 0);
@@ -121,7 +123,7 @@ public class WIDTest
     {
       WID.<Date>fromString("invalid");
     }
-    catch (DataError.Missing de)
+    catch (DataError.Bad de)
     {
       // Good
     }
@@ -171,6 +173,21 @@ public class WIDTest
     for (int i = 0; i < 1000000; i++)
     {
       WID.<Date>randomWID();
+    }
+  }
+
+  @Test
+  public void testFromLong() throws Exception
+  {
+    WID.<String>fromLong(12345678901234L);
+    try
+    {
+      WID.<String>fromLong(null);
+      fail("Created WID from NULL long");
+    }
+    catch (DataError.Missing de)
+    {
+      // Good
     }
   }
 }
