@@ -23,16 +23,19 @@ import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.wealdtech.http.JettyServerConfiguration;
 
 /**
- * Filter to add headers to outgoing responses.
+ * Filter to handle cross-origin resource sharing.
  */
-public class ServerHeadersFilter implements ContainerResponseFilter
+public class CORSFilter implements ContainerResponseFilter
 {
-  private static final String SERVERHEADER = "Server";
+  private static final String ORIGINHEADER = "Origin";
+  private static final String ACAOHEADER = "Access-Control-Allow-Origin";
+  private static final String ACRHHEADER = "Access-Control-Request-Headers";
+  private static final String ACAHHEADER = "Access-Control-Allow-Headers";
 
   private final transient JettyServerConfiguration configuration;
 
   @Inject
-  public ServerHeadersFilter(final JettyServerConfiguration configuration)
+  public CORSFilter(final JettyServerConfiguration configuration)
   {
     this.configuration = configuration;
   }
@@ -40,7 +43,12 @@ public class ServerHeadersFilter implements ContainerResponseFilter
   @Override
   public ContainerResponse filter(final ContainerRequest request, final ContainerResponse response)
   {
-    response.getHttpHeaders().add(SERVERHEADER, this.configuration.getResponseConfiguration().getServerName());
+    // TODO Tighten up security and configuration options
+    final String requestOrigin = request.getHeaderValue(ORIGINHEADER);
+    response.getHttpHeaders().add(ACAOHEADER, requestOrigin);
+
+    final String requestHeaders = request.getHeaderValue(ACRHHEADER);
+    response.getHttpHeaders().add(ACAHHEADER, requestHeaders);
     return response;
   }
 }

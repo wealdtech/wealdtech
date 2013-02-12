@@ -34,8 +34,9 @@ import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import com.wealdtech.jersey.filters.CORSFilter;
 import com.wealdtech.jersey.filters.RequestLoggingFilter;
-import com.wealdtech.jersey.filters.ServerHeadersFilter;
+import com.wealdtech.jersey.filters.ServerHeaderFilter;
 
 public class JerseyServletModule extends ServletModule
 {
@@ -68,7 +69,7 @@ public class JerseyServletModule extends ServletModule
     params.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE.toString());
 
     final String requestFilters = joinClassNames(RequestLoggingFilter.class, GZIPContentEncodingFilter.class);
-    final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeadersFilter.class, GZIPContentEncodingFilter.class);
+    final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeaderFilter.class, CORSFilter.class, GZIPContentEncodingFilter.class);
 
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, requestFilters);
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, responseFilters);
