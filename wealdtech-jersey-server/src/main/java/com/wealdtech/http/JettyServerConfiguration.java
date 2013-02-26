@@ -19,12 +19,13 @@ package com.wealdtech.http;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
+import com.wealdtech.configuration.Configuration;
 import com.wealdtech.jersey.JerseyServerConfiguration;
 
 /**
  * Configuration for a Jetty server.
  */
-public final class JettyServerConfiguration
+public final class JettyServerConfiguration implements Configuration
 {
   private String host = "localhost";
   private int port = 8080;
@@ -175,7 +176,7 @@ public final class JettyServerConfiguration
     }
   }
 
-  public static class JettyResponseConfiguration
+  public static class JettyResponseConfiguration implements Configuration
   {
     private String serverName = "Weald Technology server";
 
@@ -211,7 +212,7 @@ public final class JettyServerConfiguration
     }
   }
 
-  public static class ConnectorConfiguration
+  public static class ConnectorConfiguration implements Configuration
   {
     private int acceptors = 4;
 

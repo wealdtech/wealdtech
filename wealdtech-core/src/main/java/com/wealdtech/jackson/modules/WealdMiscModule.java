@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.wealdtech.utils.messaging.MessageObjects;
 
 /**
  * Custom serializers and deserializers for miscellaneous types.
@@ -53,9 +54,11 @@ public class WealdMiscModule extends Module
     // Serializers and deserializers alter values
     final SimpleSerializers serializers = new SimpleSerializers();
     serializers.addSerializer(new InetSocketAddressSerializer());
+    serializers.addSerializer(new MessageObjectsSerializer());
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
+    deserializers.addDeserializer((Class<MessageObjects<?>>)(Class<?>)MessageObjects.class, new MessageObjectsDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

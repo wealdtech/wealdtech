@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
+import static com.wealdtech.Preconditions.*;
+
 /**
  * Configuration for a Guava cache.
  */
@@ -43,17 +45,26 @@ public class CacheConfiguration implements Configuration
   }
 
   @JsonCreator
-  private CacheConfiguration(@JsonProperty("maxsize") final Integer maxSize,
+  private CacheConfiguration(@JsonProperty("maxentries") final Integer maxEntries,
                              @JsonProperty("maxduration") final Integer maxDuration)
   {
-    if (maxSize != null)
+    if (maxEntries != null)
     {
-      this.maxEntries = maxSize;
+      this.maxEntries = maxEntries;
     }
     if (maxDuration != null)
     {
       this.maxDuration = maxDuration;
     }
+    validate();
+  }
+
+  private void validate()
+  {
+    checkNotNull(this.maxEntries, "Maximum size is required");
+    checkState(this.maxEntries >= 0 && this.maxEntries <= 1000000, "Maximum size must be between 0 and 1,000,000");
+    checkNotNull(this.maxDuration, "Maximum size is required");
+    checkState(this.maxDuration >= 0 && this.maxDuration <= 86400, "Maximum duration must be between 0 and 86,400");
   }
 
   /**

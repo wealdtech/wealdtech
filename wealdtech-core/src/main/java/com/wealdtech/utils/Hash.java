@@ -31,6 +31,8 @@ import com.yammer.metrics.core.Meter;
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
 
+import static com.wealdtech.Preconditions.*;
+
 /**
  * Utilities for hashing data using the Bcrypt algorithm.
  * <p/>Due to the expense of hashing using bcrypt this class
@@ -80,6 +82,7 @@ public enum Hash
    */
   public static String hash(final String input)
   {
+    checkNotNull(input, "Cannot hash NULL");
     return BCrypt.hashpw(input, BCrypt.gensalt(CONFIGURATION.getStrength()));
   }
 
@@ -91,6 +94,7 @@ public enum Hash
    */
   public static boolean matches(final String input, final String hashed)
   {
+    checkNotNull(hashed, "Cannot compare NULL");
     final TimerContext context = GETS.time();
     try
     {
@@ -128,6 +132,8 @@ public enum Hash
 
   public static boolean isHashed(final String input)
   {
+    checkNotNull(input, "Cannot consider NULL");
+
     boolean hashed;
     if (input.startsWith("$2a$") || input.startsWith("$2$"))
     {

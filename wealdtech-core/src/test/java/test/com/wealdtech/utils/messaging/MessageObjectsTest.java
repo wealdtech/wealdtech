@@ -48,7 +48,7 @@ public class MessageObjectsTest
   {
     final MessageObjects<TestData> testmo = new MessageObjects<>(new TestData("Prior string", 0), new TestData("Current string", 1));
     final String ser = mapper.writeValueAsString(testmo);
-    assertEquals(ser,  "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
+    assertEquals(ser,  "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
   }
 
   @Test
@@ -56,7 +56,7 @@ public class MessageObjectsTest
   {
     final MessageObjects<TestData> testmo = new MessageObjects<>(null, new TestData("Current string", 1));
     final String ser = mapper.writeValueAsString(testmo);
-    assertEquals(ser,  "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
+    assertEquals(ser,  "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
   }
 
   @Test
@@ -64,13 +64,13 @@ public class MessageObjectsTest
   {
     final MessageObjects<TestData> testmo = new MessageObjects<>(new TestData("Prior string", 0), null);
     final String ser = mapper.writeValueAsString(testmo);
-    assertEquals(ser,  "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}");
+    assertEquals(ser,  "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}");
   }
 
   @Test
   public void testDeser() throws Exception
   {
-    final String ser = "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
+    final String ser = "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
     final TypeReference<MessageObjects<TestData>> type = new TypeReference<MessageObjects<TestData>>(){};
     final MessageObjects<TestData> mo = mapper.readValue(ser, type);
     assertEquals(mapper.writeValueAsString(mo), ser);
@@ -79,7 +79,7 @@ public class MessageObjectsTest
   @Test
   public void testDeserNullPrior() throws Exception
   {
-    final String ser = "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
+    final String ser = "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
     final TypeReference<MessageObjects<TestData>> type = new TypeReference<MessageObjects<TestData>>(){};
     final MessageObjects<TestData> mo = mapper.readValue(ser, type);
     assertEquals(mapper.writeValueAsString(mo), ser);
@@ -88,7 +88,7 @@ public class MessageObjectsTest
   @Test
   public void testDeserNullCurrent() throws Exception
   {
-    final String ser = "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}";
+    final String ser = "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}";
     final TypeReference<MessageObjects<TestData>> type = new TypeReference<MessageObjects<TestData>>(){};
     final MessageObjects<TestData> mo = mapper.readValue(ser, type);
     assertEquals(mapper.writeValueAsString(mo), ser);
@@ -112,7 +112,7 @@ public class MessageObjectsTest
     }
 
     // Unknown type
-    final String ser2 = "{\"_type\":\"test.com.wealdtech.utils.jackson.UnknownClass\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
+    final String ser2 = "{\"_type\":\"test.com.wealdtech.utils.messaging.UnknownClass\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
     try
     {
        mapper.readValue(ser2, type);
@@ -125,7 +125,7 @@ public class MessageObjectsTest
     }
 
     // Both null
-    final String ser3 = "{\"_type\":\"test.com.wealdtech.utils.jackson.MessageObjectsTest$TestData\"}";
+    final String ser3 = "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\"}";
     try
     {
        mapper.readValue(ser3, type);
