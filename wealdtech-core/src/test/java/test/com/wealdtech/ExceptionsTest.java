@@ -16,12 +16,12 @@
 
 package test.com.wealdtech;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
 
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
-
-import static org.testng.Assert.*;
 
 public class ExceptionsTest
 {
