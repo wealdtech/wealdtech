@@ -32,8 +32,8 @@ public class MessageObjects<T extends Object> implements Serializable
 {
   private static final long serialVersionUID = 6306799063373268531L;
 
-  private transient final T prior;
-  private transient final T current;
+  private final transient T prior;
+  private final transient T current;
 
   /**
    * Create a MessageObjects.
@@ -42,8 +42,8 @@ public class MessageObjects<T extends Object> implements Serializable
    * @throws DataError if the objects passed do not match a valid state
    */
   @JsonCreator
-  public MessageObjects(final @JsonProperty("prior") T prior,
-                        final @JsonProperty("current") T current) throws DataError
+  public MessageObjects(@JsonProperty("prior") final T prior,
+                        @JsonProperty("current") final T current)
   {
     if ((prior == null) && (current == null))
     {
@@ -78,7 +78,7 @@ public class MessageObjects<T extends Object> implements Serializable
   public Class<? extends Object> getType()
   {
     Class<? extends Object> retclass;
-    if (prior == null)
+    if (this.prior == null)
     {
       retclass = this.current.getClass();
     }

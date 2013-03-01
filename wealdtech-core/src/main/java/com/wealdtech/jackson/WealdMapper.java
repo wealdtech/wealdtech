@@ -2,7 +2,6 @@ package com.wealdtech.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wealdtech.jackson.modules.MessageObjectsModule;
 
 /**
  * Provide Jackson object mappers with Weald settings. This provides two object
@@ -15,22 +14,19 @@ import com.wealdtech.jackson.modules.MessageObjectsModule;
 public enum WealdMapper
 {
   INSTANCE;
-  private static transient final ObjectMapper CLIENTMAPPER;
-  private static transient final ObjectMapper SERVERMAPPER;
+  private static final transient ObjectMapper CLIENTMAPPER;
+  private static final transient ObjectMapper SERVERMAPPER;
 
   static
   {
     ObjectMapperConfiguration clientconfiguration = new ObjectMapperConfiguration();
     clientconfiguration.addInjectableValue("AllowPartials", Boolean.FALSE);
     clientconfiguration.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    // TODO necessary?
-    clientconfiguration.addModule(new MessageObjectsModule());
     CLIENTMAPPER = new ObjectMapperFactory().build(clientconfiguration);
 
     ObjectMapperConfiguration serverconfiguration = new ObjectMapperConfiguration();
     serverconfiguration.addInjectableValue("AllowPartials", Boolean.TRUE);
     serverconfiguration.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-    serverconfiguration.addModule(new MessageObjectsModule());
     SERVERMAPPER = new ObjectMapperFactory().build(serverconfiguration);
   }
 

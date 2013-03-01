@@ -16,6 +16,8 @@
 
 package com.wealdtech.jackson.modules;
 
+import java.net.InetSocketAddress;
+
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
@@ -23,11 +25,11 @@ import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.wealdtech.utils.messaging.MessageObjects;
 
 /**
- * Jackson configuration for message objects.
+ * Custom serializers and deserializers for miscellaneous types.
  */
-public class MessageObjectsModule extends Module
+public class WealdMiscModule extends Module
 {
-  private final transient static String NAME = "MessageObjectsModule";
+  private static final transient String NAME = "WealdMiscModule";
   private transient Version version;
 
   @Override
@@ -39,11 +41,11 @@ public class MessageObjectsModule extends Module
   @Override
   public Version version()
   {
-    if (version == null)
+    if (this.version == null)
     {
-      version = new Version(1, 0, 0, null, "com.wealdtech", "utils");
+      this.version = new Version(1, 0, 0, null, "com.wealdtech", "utils");
     }
-    return version;
+    return this.version;
   }
 
   @Override
@@ -51,8 +53,11 @@ public class MessageObjectsModule extends Module
   {
     // Serializers and deserializers alter values
     final SimpleSerializers serializers = new SimpleSerializers();
-    final SimpleDeserializers deserializers = new SimpleDeserializers();
+    serializers.addSerializer(new InetSocketAddressSerializer());
     serializers.addSerializer(new MessageObjectsSerializer());
+
+    final SimpleDeserializers deserializers = new SimpleDeserializers();
+    deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
     deserializers.addDeserializer((Class<MessageObjects<?>>)(Class<?>)MessageObjects.class, new MessageObjectsDeserializer());
 
     context.addSerializers(serializers);

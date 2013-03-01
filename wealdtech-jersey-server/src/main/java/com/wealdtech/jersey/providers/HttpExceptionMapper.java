@@ -40,7 +40,7 @@ public class HttpExceptionMapper implements ExceptionMapper<HttpException>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpExceptionMapper.class);
 
-  private static transient final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
+  private static final transient ObjectMapper MAPPER = ObjectMapperFactory.getDefaultMapper();
 
   @Override
   public Response toResponse(final HttpException exception)
@@ -73,7 +73,7 @@ public class HttpExceptionMapper implements ExceptionMapper<HttpException>
 
     try
     {
-      return mapper.writeValueAsString(errorInfo);
+      return MAPPER.writeValueAsString(errorInfo);
     }
     catch (JsonProcessingException e)
     {

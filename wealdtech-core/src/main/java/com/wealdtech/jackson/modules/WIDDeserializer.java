@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.wealdtech.WID;
@@ -29,24 +28,26 @@ public class WIDDeserializer extends FromStringDeserializer<WID<?>>
 {
   private static final long serialVersionUID = -8771787639009660187L;
 
+  private static final int WID_BINARY_SIZE = 8;
+
   public WIDDeserializer()
   {
     super(WID.class);
   }
 
   @Override
-  protected WID<?> _deserialize(String value, DeserializationContext ctxt) throws IOException, JsonProcessingException
+  protected WID<?> _deserialize(String value, DeserializationContext ctxt) throws IOException
   {
     return WID.fromString(value);
   }
 
   @Override
-  protected WID<?> _deserializeEmbedded(Object ob, DeserializationContext ctxt) throws IOException, JsonProcessingException
+  protected WID<?> _deserializeEmbedded(Object ob, DeserializationContext ctxt) throws IOException
   {
     if (ob instanceof byte[])
     {
       byte[] bytes = (byte[]) ob;
-      if (bytes.length != 8)
+      if (bytes.length != WID_BINARY_SIZE)
       {
         ctxt.mappingException("Can only construct WIDs from 8 byte arrays");
       }

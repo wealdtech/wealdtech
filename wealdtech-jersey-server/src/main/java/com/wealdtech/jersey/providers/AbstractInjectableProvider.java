@@ -28,7 +28,7 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 
 public abstract class AbstractInjectableProvider<E> extends AbstractHttpContextInjectable<E> implements InjectableProvider<Context, Type>
 {
-  private transient final Type t;
+  private final transient Type t;
 
   public AbstractInjectableProvider(final Type t)
   {

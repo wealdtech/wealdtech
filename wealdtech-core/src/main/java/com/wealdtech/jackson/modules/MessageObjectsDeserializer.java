@@ -42,7 +42,7 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
   public MessageObjects<? extends Object> deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException
   {
     // This assumes a strict JSON format of _type, followed by prior and current (if they exist)
-    jp.nextToken(); // Start of MO
+    jp.nextToken();
     String fieldname = jp.getCurrentName();
     if (!"_type".equals(fieldname))
     {

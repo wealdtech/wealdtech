@@ -17,25 +17,27 @@ import javax.servlet.http.HttpServletRequest;
 public class ThreadNameFilter implements Filter
 {
   @Override
-  public void init(FilterConfig filterConfig) throws ServletException
-  { /* unused */
+  public void init(final FilterConfig filterConfig) throws ServletException
+  {
   }
 
   @Override
   public void destroy()
-  { /* unused */
+  {
   }
 
   @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
+  public void doFilter(final ServletRequest servletRequest,
+                       final ServletResponse servletResponse,
+                       final FilterChain chain) throws IOException, ServletException
   {
-    final HttpServletRequest req = (HttpServletRequest)request;
+    final HttpServletRequest req = (HttpServletRequest)servletRequest;
     final Thread current = Thread.currentThread();
     final String oldName = current.getName();
     try
     {
-      current.setName(formatName(req, oldName));
-      chain.doFilter(request, response);
+      current.setName(addRequestDetails(req, oldName));
+      chain.doFilter(servletRequest, servletResponse);
     }
     finally
     {
@@ -43,8 +45,8 @@ public class ThreadNameFilter implements Filter
     }
   }
 
-  private static String formatName(HttpServletRequest req, String oldName)
+  private static String addRequestDetails(final HttpServletRequest servletRequest, final String baseName)
   {
-    return oldName + " - " + req.getMethod() + ' ' + req.getPathInfo();
+    return baseName + " - " + servletRequest.getMethod() + ' ' + servletRequest.getPathInfo();
   }
 }

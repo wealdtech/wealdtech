@@ -47,12 +47,12 @@ public class ConfigurationSource<T>
 
   private static final String DEFAULTFILENAME = "config.json";
 
-  public T getConfiguration(final Class<T> klazz) throws DataError
+  public T getConfiguration(final Class<T> klazz)
   {
     return getConfiguration(DEFAULTFILENAME, klazz);
   }
 
-  public T getConfiguration(final String filename, final Class<T> klazz) throws DataError
+  public T getConfiguration(final String filename, final Class<T> klazz)
   {
     final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
     try
@@ -66,7 +66,7 @@ public class ConfigurationSource<T>
     }
   }
 
-  private static String readFile(final String filename) throws DataError
+  private static String readFile(final String filename)
   {
     final StringBuilder content = new StringBuilder();
     final String linefeed = System.getProperty("line.separator");
@@ -91,7 +91,7 @@ public class ConfigurationSource<T>
     return content.toString();
   }
 
-  private static BufferedReader getReader(final String filename) throws DataError
+  private static BufferedReader getReader(final String filename)
   {
     final URL fileurl = ResourceLoader.getResource(filename);
     if (fileurl == null)

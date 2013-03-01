@@ -30,24 +30,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wealdtech.errors.ErrorInfo;
 import com.wealdtech.jackson.ObjectMapperFactory;
-import com.wealdtech.jersey.exceptions.HttpException;
 
 /**
  * Convert unexpected exceptions in to a suitable JSON response for clients.
  * <p>We use the phrase "unexpected" here to indicate exceptions that are not
- * caught and translated in to a subclass of {@link HttpException}.
+ * caught and translated in to a subclass of {@link com.wealdtech.jersey.exceptions.HttpException}.
  */
 @Provider
 public class UnexpectedExceptionMapper implements ExceptionMapper<Exception>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(UnexpectedExceptionMapper.class);
 
-  private static transient final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
+  private static final transient ObjectMapper MAPPER = ObjectMapperFactory.getDefaultMapper();
 
   @Override
   public Response toResponse(final Exception exception)
   {
-    LOGGER.info("Unexpected exception {}", exception);
+    LOGGER.info("Unexpected exception", exception);
     ResponseBuilder builder = Response.status(Status.BAD_REQUEST)
                                       .entity(defaultJSON(exception))
                                       .type(MediaType.APPLICATION_JSON);
@@ -60,7 +59,7 @@ public class UnexpectedExceptionMapper implements ExceptionMapper<Exception>
 
     try
     {
-      return mapper.writeValueAsString(errorInfo);
+      return MAPPER.writeValueAsString(errorInfo);
     }
     catch (JsonProcessingException e)
     {

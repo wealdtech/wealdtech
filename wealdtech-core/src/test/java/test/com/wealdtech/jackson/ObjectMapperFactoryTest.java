@@ -16,8 +16,6 @@
 
 package test.com.wealdtech.jackson;
 
-import static org.testng.Assert.assertNotNull;
-
 import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,7 +23,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.wealdtech.jackson.LcStrategy;
 import com.wealdtech.jackson.ObjectMapperConfiguration;
 import com.wealdtech.jackson.ObjectMapperFactory;
+import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jackson.modules.WealdJodaModule;
+
+import static org.testng.Assert.*;
 
 /**
  *
@@ -56,5 +57,11 @@ public class ObjectMapperFactoryTest
     configuration.setPropertyNamingStrategy(new LcStrategy());
     configuration.setSerializationInclusion(null);
     assertNotNull(new ObjectMapperFactory().build(configuration));
+  }
+
+  @Test
+  public void testWealdMapper()
+  {
+    WealdMapper.getServerMapper();
   }
 }

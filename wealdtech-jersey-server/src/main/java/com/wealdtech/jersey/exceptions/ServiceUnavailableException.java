@@ -28,7 +28,7 @@ public class ServiceUnavailableException extends HttpException
   private static final long serialVersionUID = -1497533974587152020L;
 
   @Inject
-  static private JettyServerConfiguration configuration;
+  private static JettyServerConfiguration configuration;
 
   public ServiceUnavailableException(final String errorCode)
   {

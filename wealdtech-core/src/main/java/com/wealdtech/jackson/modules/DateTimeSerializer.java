@@ -23,7 +23,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
@@ -45,7 +44,7 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   }
 
   @Override
-  public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException, JsonProcessingException
+  public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeStartObject();
     gen.writeStringField("datetime", formatter.print(value));

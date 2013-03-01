@@ -19,6 +19,11 @@ package com.wealdtech.jersey.guice;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -29,8 +34,9 @@ import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import com.wealdtech.jersey.filters.CORSFilter;
 import com.wealdtech.jersey.filters.RequestLoggingFilter;
-import com.wealdtech.jersey.filters.ServerHeadersFilter;
+import com.wealdtech.jersey.filters.ServerHeaderFilter;
 
 public class JerseyServletModule extends ServletModule
 {
@@ -38,19 +44,10 @@ public class JerseyServletModule extends ServletModule
 
   static
   {
-    // Jersey uses java.util.logging, so here we bridge to slf4
-    // This is a static initialiser because we don't want to do this multiple
-    // times.
-
-    // TODO
-    // final java.util.logging.Logger rootLogger =
-    // LogManager.getLogManager().getLogger("");
-    // final Handler[] handlers = rootLogger.getHandlers();
-    // for (int i = 0; i < handlers.length; i++)
-    // {
-    // rootLogger.removeHandler(handlers[i]);
-    // }
-    // SLF4JBridgeHandler.install();
+    // Get rid of j.u.l. and install SLF4J
+    LogManager.getLogManager().reset();
+    SLF4JBridgeHandler.install();
+    Logger.getLogger("global").setLevel(Level.FINEST);
   }
 
   /**
@@ -72,7 +69,7 @@ public class JerseyServletModule extends ServletModule
     params.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE.toString());
 
     final String requestFilters = joinClassNames(RequestLoggingFilter.class, GZIPContentEncodingFilter.class);
-    final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeadersFilter.class, GZIPContentEncodingFilter.class);
+    final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeaderFilter.class, CORSFilter.class, GZIPContentEncodingFilter.class);
 
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, requestFilters);
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, responseFilters);

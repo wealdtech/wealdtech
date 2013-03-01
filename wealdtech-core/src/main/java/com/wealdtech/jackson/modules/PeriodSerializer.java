@@ -23,7 +23,6 @@ import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
@@ -41,7 +40,7 @@ public class PeriodSerializer extends StdSerializer<Period>
   }
 
   @Override
-  public void serialize(final Period value, final JsonGenerator gen, final SerializerProvider provider) throws IOException, JsonProcessingException
+  public void serialize(final Period value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(formatter.print(value));
   }
