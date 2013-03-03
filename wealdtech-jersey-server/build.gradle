@@ -6,22 +6,22 @@ dependencies
     compile 'org.slf4j:jul-to-slf4j:1.6.1'
 
     // JAX-RS
-    compile 'com.sun.jersey:jersey-core:1.16'
-    compile 'com.sun.jersey:jersey-server:1.16'
-    compile 'com.sun.jersey:jersey-servlet:1.16'
-    compile 'com.sun.jersey:jersey-json:1.16'
-    compile 'com.sun.jersey.contribs:jersey-guice:1.16'
+    compile 'com.sun.jersey:jersey-core:1.17.1'
+    compile 'com.sun.jersey:jersey-server:1.17.1'
+    compile 'com.sun.jersey:jersey-servlet:1.17.1'
+    compile 'com.sun.jersey:jersey-json:1.17.1'
+    compile 'com.sun.jersey.contribs:jersey-guice:1.17.1'
     compile 'javax.servlet:javax.servlet-api:3.0.1'
     compile 'javax.ws.rs:jsr311-api:1.1.1'
 
     // Jetty
-    compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106'
-    compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106'
+    compile 'org.eclipse.jetty:jetty-server:8.1.9.v20130131'
+    compile 'org.eclipse.jetty:jetty-servlet:8.1.9.v20130131'
 
     // Instrumentation
-    compile 'com.yammer.metrics:metrics-servlet:2.1.5'
-    compile 'com.yammer.metrics:metrics-jersey:2.1.5'
-    compile 'com.yammer.metrics:metrics-jetty:2.1.5'
+    compile 'com.yammer.metrics:metrics-servlet:2.2.0'
+    compile 'com.yammer.metrics:metrics-jersey:2.2.0'
+    compile 'com.yammer.metrics:metrics-jetty:2.2.0'
 
     testCompile 'com.sun.jersey:jersey-grizzly2:1.16'
 }
