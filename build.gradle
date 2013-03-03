@@ -11,7 +11,7 @@ subprojects {
     }
 
     group = 'com.wealdtech'
-    version = '1.3.0'
+    version = '1.4.0'
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'

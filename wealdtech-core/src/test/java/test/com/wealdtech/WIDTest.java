@@ -1,5 +1,7 @@
 package test.com.wealdtech;
 
+import static org.testng.Assert.*;
+
 import java.util.Date;
 
 import org.testng.annotations.Test;
@@ -9,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
 import com.wealdtech.jackson.ObjectMapperFactory;
-
-import static org.testng.Assert.*;
 
 public class WIDTest
 {
@@ -134,7 +134,7 @@ public class WIDTest
   {
     final WID<Date> testWid = WID.<Date>fromString("0123456789abcdef");
     final long timestamp = testWid.getTimestamp();
-    // TODO test
+    assertEquals(timestamp, 2224532175603L);
   }
 
   @Test

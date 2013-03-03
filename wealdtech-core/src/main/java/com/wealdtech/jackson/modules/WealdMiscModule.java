@@ -58,7 +58,7 @@ public class WealdMiscModule extends Module
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
-    deserializers.addDeserializer((Class<MessageObjects<?>>)(Class<?>)MessageObjects.class, new MessageObjectsDeserializer());
+    deserializers.addDeserializer(MessageObjects.class, new MessageObjectsDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);
