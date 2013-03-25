@@ -31,6 +31,10 @@ public class CORSFilter implements ContainerResponseFilter
   private static final String ACAOHEADER = "Access-Control-Allow-Origin";
   private static final String ACRHHEADER = "Access-Control-Request-Headers";
   private static final String ACAHHEADER = "Access-Control-Allow-Headers";
+  private static final String ACAMHEADER = "Access-Control-Allow-Methods";
+  private static final String ACAMRESPONSE = "GET, POST, PUT, DELETE, OPTIONS";
+  private static final String ACACHEADER = "Access-Control-Allow-Credentials";
+  private static final String ACACRESPONSE = "true";
 
   private final transient JettyServerConfiguration configuration;
 
@@ -49,6 +53,11 @@ public class CORSFilter implements ContainerResponseFilter
 
     final String requestHeaders = request.getHeaderValue(ACRHHEADER);
     response.getHttpHeaders().add(ACAHHEADER, requestHeaders);
+
+    response.getHttpHeaders().add(ACAMHEADER, ACAMRESPONSE);
+
+    response.getHttpHeaders().add(ACACHEADER, ACACRESPONSE);
+
     return response;
   }
 }
