@@ -24,9 +24,11 @@ public class UnauthorizedException extends HttpException
 {
   private static final long serialVersionUID = 5702671032995783425L;
 
-  public UnauthorizedException(final String errorCode)
+  public static final String USERMESSAGE = "You are not allowed to access that information";
+
+  public UnauthorizedException(final String message, final String userMessage)
   {
-    super(Status.UNAUTHORIZED, errorCode);
+    super(Status.UNAUTHORIZED, message, userMessage);
   }
 
   public UnauthorizedException(final Throwable t)
@@ -34,8 +36,8 @@ public class UnauthorizedException extends HttpException
     super (Status.UNAUTHORIZED, t);
   }
 
-  public UnauthorizedException(final String errorCode, final Throwable t)
+  public UnauthorizedException(final String message, final String userMessage, final Throwable t)
   {
-    super(Status.UNAUTHORIZED, errorCode, t);
+    super(Status.UNAUTHORIZED, message, userMessage, t);
   }
 }

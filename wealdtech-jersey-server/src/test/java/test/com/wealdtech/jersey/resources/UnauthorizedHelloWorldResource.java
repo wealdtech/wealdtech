@@ -31,6 +31,6 @@ public class UnauthorizedHelloWorldResource
   @Produces("text/plain")
   public String getHelloWorld()
   {
-    throw new UnauthorizedException("Not allowed to see this");
+    throw new UnauthorizedException("Not allowed to see this", null);
   }
 }
