@@ -24,9 +24,11 @@ public class ForbiddenException extends HttpException
 {
   private static final long serialVersionUID = -2302278348355473625L;
 
-  public ForbiddenException(final String errorCode)
+  public static final String USERMESSAGE = "You are not allowed to carry out that action";
+
+  public ForbiddenException(final String message, final String userMessage)
   {
-    super(Status.FORBIDDEN, errorCode);
+    super(Status.FORBIDDEN, message, userMessage);
   }
 
   public ForbiddenException(final Throwable t)
@@ -34,8 +36,8 @@ public class ForbiddenException extends HttpException
     super(Status.FORBIDDEN, t);
   }
 
-  public ForbiddenException(final String errorCode, final Throwable t)
+  public ForbiddenException(final String message, final String userMessage, final Throwable t)
   {
-    super(Status.FORBIDDEN, errorCode, t);
+    super(Status.FORBIDDEN, message, userMessage, t);
   }
 }

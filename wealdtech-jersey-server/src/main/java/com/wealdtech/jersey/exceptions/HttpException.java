@@ -35,10 +35,11 @@ public class HttpException extends WealdError
    * Generate an HTTP exception with underlying application exception.
    * @param status an HTTP status to be sent back to the requestor
    * @param message an explanation of the error
+   * @param userMessage TODO
    */
-  public HttpException(final Status status, final String message)
+  public HttpException(final Status status, final String message, String userMessage)
   {
-    super(message, null, null, null);
+    super(message, userMessage, null, null);
     this.status = status;
     this.retryAfter = Optional.absent();
   }
@@ -61,9 +62,9 @@ public class HttpException extends WealdError
    * @param message an explanation of the error
    * @param t the underlying application exception
    */
-  public HttpException(final Status status, final String message, final Throwable t)
+  public HttpException(final Status status, final String message, final String userMessage, final Throwable t)
   {
-    super(message, null, null, t);
+    super(message, userMessage, null, t);
     this.status = status;
     this.retryAfter = Optional.absent();
   }
@@ -75,9 +76,9 @@ public class HttpException extends WealdError
    * @param retryAfter the number of seconds the requestor should wait before resubmitting the request
    * @param t the underlying application exception
    */
-  public HttpException(final Status status, final String message, final Integer retryAfter, final Throwable t)
+  public HttpException(final Status status, final String message, final String userMessage, final Integer retryAfter, final Throwable t)
   {
-    super(message, null, null, t);
+    super(message, userMessage, null, t);
     this.status = status;
     this.retryAfter = Optional.fromNullable(retryAfter);
   }

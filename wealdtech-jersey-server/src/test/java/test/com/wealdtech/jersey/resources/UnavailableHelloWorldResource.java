@@ -31,6 +31,6 @@ public class UnavailableHelloWorldResource
   @Produces("text/plain")
   public String getHelloWorld()
   {
-    throw new ServiceUnavailableException("Not available at the moment");
+    throw new ServiceUnavailableException("Service unavailable", "Not available at the moment");
   }
 }

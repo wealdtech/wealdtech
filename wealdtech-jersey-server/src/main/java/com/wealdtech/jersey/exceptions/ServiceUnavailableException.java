@@ -27,21 +27,23 @@ public class ServiceUnavailableException extends HttpException
 {
   private static final long serialVersionUID = -1497533974587152020L;
 
+  public static final String USERMESSAGE = "Our systems are currently unavailable; please try again later";
+
   @Inject
   private static JettyServerConfiguration configuration;
 
-  public ServiceUnavailableException(final String errorCode)
+  public ServiceUnavailableException(final String message, final String userMessage)
   {
-    super(Status.SERVICE_UNAVAILABLE, errorCode, configuration.getResponseConfiguration().getRetryPeriod(), null);
+    super(Status.SERVICE_UNAVAILABLE, message, userMessage, configuration.getResponseConfiguration().getRetryPeriod(), null);
   }
 
   public ServiceUnavailableException(final Throwable t)
   {
-    super (Status.SERVICE_UNAVAILABLE, null, configuration.getResponseConfiguration().getRetryPeriod(), t);
+    super (Status.SERVICE_UNAVAILABLE, null, null, configuration.getResponseConfiguration().getRetryPeriod(), t);
   }
 
-  public ServiceUnavailableException(final String errorCode, final Throwable t)
+  public ServiceUnavailableException(final String message, final String userMessage, final Throwable t)
   {
-    super(Status.SERVICE_UNAVAILABLE, errorCode, configuration.getResponseConfiguration().getRetryPeriod(), t);
+    super(Status.SERVICE_UNAVAILABLE, message, userMessage, configuration.getResponseConfiguration().getRetryPeriod(), t);
   }
 }

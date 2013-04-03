@@ -24,9 +24,11 @@ public class InternalServerException extends HttpException
 {
   private static final long serialVersionUID = 5546207767000364431L;
 
-  public InternalServerException(final String errorCode)
+  public static final String USERMESSAGE = "Our systems are experiencing a problem; please try again later";
+
+  public InternalServerException(final String message, final String userMessage)
   {
-    super(Status.INTERNAL_SERVER_ERROR, errorCode);
+    super(Status.INTERNAL_SERVER_ERROR, message, userMessage);
   }
 
   public InternalServerException(final Throwable t)
@@ -34,8 +36,8 @@ public class InternalServerException extends HttpException
     super(Status.INTERNAL_SERVER_ERROR, t);
   }
 
-  public InternalServerException(final String errorCode, final Throwable t)
+  public InternalServerException(final String message, final String userMessage, final Throwable t)
   {
-    super(Status.INTERNAL_SERVER_ERROR, errorCode, t);
+    super(Status.INTERNAL_SERVER_ERROR, message, userMessage, t);
   }
 }
