@@ -2,6 +2,9 @@ package test.com.wealdtech.jersey;
 
 import static org.testng.Assert.assertEquals;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
@@ -41,6 +44,21 @@ public class JerseyTest
     return connection;
   }
 
+  // Helper
+  private String getStringResponse(final HttpURLConnection connection) throws Exception
+  {
+    InputStream stream = connection.getInputStream();
+    InputStreamReader isReader = new InputStreamReader(stream);
+    BufferedReader br = new BufferedReader(isReader);
+    StringBuffer sb = new StringBuffer();
+    String s;
+    while ((s = br.readLine()) != null)
+    {
+      sb.append(s);
+    }
+    return sb.toString();
+  }
+
   @BeforeClass
   public void setUp() throws Exception
   {
@@ -64,7 +82,8 @@ public class JerseyTest
     // Test valid authentication with a GET request
     final HttpURLConnection connection = connect(this.validuri1, "GET", null, null);
     assertEquals(connection.getResponseCode(), 200);
-    assertEquals(connection.getContent().toString(), "Hello world");
+    final String response = getStringResponse(connection);
+    assertEquals(response, "Hello world");
   }
 }
 
