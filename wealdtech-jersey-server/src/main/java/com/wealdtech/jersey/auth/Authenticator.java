@@ -25,6 +25,13 @@ import com.sun.jersey.spi.container.ContainerRequest;
 public interface Authenticator<T>
 {
   /**
+   * State if this authenticator can authenticate the given request
+   * @param request the request which is to be authenticated
+   * @return <code>true</code> if the authenticator can be used for this request, <code>false</code> otherwise
+   */
+  boolean canAuthenticate(final ContainerRequest request);
+
+  /**
    * Authenticate a principal given a set of credentials.
    * @param request the request which is to be authenticated
    * @return The authenticated principal, or Optional.absent() if not authenticated

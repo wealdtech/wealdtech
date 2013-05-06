@@ -35,9 +35,9 @@ public final class JettyServerConfiguration implements Configuration
   private ThreadPoolConfiguration threadPoolConfiguration = new ThreadPoolConfiguration();
 
   @Inject
-  private JettyServerConfiguration()
+  public JettyServerConfiguration()
   {
-
+    // 0-configuration injection
   }
 
   @JsonCreator

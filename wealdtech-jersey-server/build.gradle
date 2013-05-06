@@ -15,8 +15,11 @@ dependencies
     compile 'javax.ws.rs:jsr311-api:1.1.1'
 
     // Jetty
-    compile 'org.eclipse.jetty:jetty-server:8.1.9.v20130131'
-    compile 'org.eclipse.jetty:jetty-servlet:8.1.9.v20130131'
+    compile 'org.eclipse.jetty:jetty-server:9.0.0.v20130308'
+    compile 'org.eclipse.jetty:jetty-servlet:9.0.0.v20130308'
+    compile 'org.eclipse.jetty.websocket:websocket-common:9.0.0.v20130308'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.0.0.v20130308'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.0.0.v20130308'
 
     // Instrumentation
     compile 'com.yammer.metrics:metrics-servlet:2.2.0'
@@ -24,6 +27,7 @@ dependencies
     compile 'com.yammer.metrics:metrics-jetty:2.2.0'
 
     testCompile 'com.sun.jersey:jersey-grizzly2:1.16'
+    testCompile 'org.eclipse.jetty.websocket:websocket-client:9.0.0.v20130308'
 }
 
 uploadArchives {

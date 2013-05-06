@@ -19,15 +19,15 @@ package com.wealdtech.http;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Servlet;
 
-import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.nio.AbstractNIOConnector;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +36,12 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.wealdtech.http.JettyServerConfiguration.ConnectorConfiguration;
 import com.wealdtech.http.JettyServerConfiguration.ThreadPoolConfiguration;
 import com.wealdtech.jersey.filters.BodyPrefetchFilter;
 import com.wealdtech.jersey.filters.ThreadNameFilter;
-import com.yammer.metrics.jetty.InstrumentedBlockingChannelConnector;
-import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
 import com.yammer.metrics.reporting.AdminServlet;
+//import com.yammer.metrics.jetty.InstrumentedBlockingChannelConnector;
+//import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
 
 public class JettyServer
 {
@@ -59,23 +58,20 @@ public class JettyServer
   {
     this.injector = injector;
     this.configuration = configuration;
-  }
 
-  public void start() throws Exception // NOPMD
-  {
     final int port = this.configuration.getPort();
     LOGGER.info("Starting http server on port {}", port);
+//    this.server = new Server(createThreadPool());
     this.server = new Server();
 
-    this.server.addConnector(createConnector());
-    this.server.setThreadPool(createThreadPool());
+    setConnectors();
 
-    HandlerCollection collection = new HandlerCollection();
+    HandlerCollection handlers = new HandlerCollection();
 
     final ServletContextHandler admin = new ServletContextHandler();
-    admin.addServlet(new ServletHolder(new AdminServlet()), "/*");
     admin.setContextPath("/admin");
-    collection.addHandler(admin);
+    admin.addServlet(AdminServlet.class, "/*");
+    handlers.addHandler(admin);
 
     final ServletContextHandler root = new ServletContextHandler();
     root.addEventListener(new GuiceServletContextListener()
@@ -90,17 +86,27 @@ public class JettyServer
     root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
-    collection.addHandler(root);
+    handlers.addHandler(root);
 
-    this.server.setHandler(collection);
+    this.server.setHandler(handlers);
+  }
 
+  public void start() throws Exception // NOPMD
+  {
     this.server.start();
-    this.server.join();
   }
 
   public boolean isRunning()
   {
     return ((this.server != null) && (this.server.isRunning()));
+  }
+
+  public void join() throws Exception
+  {
+    if (this.server != null)
+    {
+      this.server.join();
+    }
   }
 
   public void stop() throws Exception // NOPMD
@@ -120,33 +126,36 @@ public class JettyServer
   }
 
   /**
-   * Create a connector
-   * @return The connector
+   * Set the connectors for a server
    */
-  private AbstractConnector createConnector()
+  private void setConnectors()
   {
-    final AbstractConnector connector;
+    final ServerConnector connector;
 
-    final ConnectorConfiguration connectorConfiguration = this.configuration.getConnectorConfiguration();
+    // TODO Handle configuration
+//    final ConnectorConfiguration connectorConfiguration = this.configuration.getConnectorConfiguration();
 
+    connector = new ServerConnector(this.server);
+    connector.setPort(this.configuration.getPort());
+    this.server.setConnectors(new Connector[]{connector});
     // Blocking connector
-    connector = new InstrumentedBlockingChannelConnector(this.configuration.getPort());
+//    connector = new InstrumentedBlockingChannelConnector(this.configuration.getPort());
 
-    if (connector instanceof SelectChannelConnector)
-    {
-      ((SelectChannelConnector)connector).setLowResourcesConnections(connectorConfiguration.getLowResourcesConnections());
-    }
+//    if (connector instanceof SelectChannelConnector)
+//    {
+//      ((SelectChannelConnector)connector).setLowResourcesConnections(connectorConfiguration.getLowResourcesConnections());
+//    }
+//
+//    if (connector instanceof AbstractNIOConnector)
+//    {
+//      ((AbstractNIOConnector)connector).setUseDirectBuffers(connectorConfiguration.getUseDirectBuffers());
+//    }
 
-    if (connector instanceof AbstractNIOConnector)
-    {
-      ((AbstractNIOConnector)connector).setUseDirectBuffers(connectorConfiguration.getUseDirectBuffers());
-    }
+//    connector.setAcceptors(connectorConfiguration.getAcceptors());
+//
+//    connector.setAcceptQueueSize(connectorConfiguration.getAcceptQueueSize());
 
-    connector.setAcceptors(connectorConfiguration.getAcceptors());
-
-    connector.setAcceptQueueSize(connectorConfiguration.getAcceptQueueSize());
-
-    return connector;
+//    return connector;
   }
 
   /**
@@ -155,12 +164,24 @@ public class JettyServer
    */
   private ThreadPool createThreadPool()
   {
-    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
+//    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
+  final QueuedThreadPool pool = new QueuedThreadPool();
 
     final ThreadPoolConfiguration threadPoolConfiguration = this.configuration.getThreadPoolConfiguration();
 
     pool.setMinThreads(threadPoolConfiguration.getMinThreads());
-    pool.setMaxIdleTimeMs(threadPoolConfiguration.getMaxIdleTimeMs());
+    pool.setIdleTimeout(threadPoolConfiguration.getMaxIdleTimeMs());
+//    pool.setMaxIdleTimeMs(threadPoolConfiguration.getMaxIdleTimeMs());
     return pool;
+  }
+
+
+  public void registerHandler(final String path, final Class<? extends Servlet> klazz)
+  {
+    // TODO add rather than overwrite
+    final ServletContextHandler context = new ServletContextHandler();
+    context.setContextPath(path);
+    context.addServlet(klazz, "/*");
+    this.server.setHandler(context);
   }
 }

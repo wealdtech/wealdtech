@@ -24,9 +24,11 @@ public class BadRequestException extends HttpException
 {
   private static final long serialVersionUID = -2327527911628760654L;
 
-  public BadRequestException(final String errorCode)
+  public static final String USERMESSAGE = "Your request was not understood";
+
+  public BadRequestException(final String message, final String userMessage)
   {
-    super(Status.BAD_REQUEST, errorCode);
+    super(Status.BAD_REQUEST, message, userMessage);
   }
 
   public BadRequestException(final Throwable t)
@@ -34,8 +36,8 @@ public class BadRequestException extends HttpException
     super(Status.BAD_REQUEST, t);
   }
 
-  public BadRequestException(final String errorCode, final Throwable t)
+  public BadRequestException(final String message, final String userMessage, final Throwable t)
   {
-    super(Status.BAD_REQUEST, errorCode, t);
+    super(Status.BAD_REQUEST, message, userMessage, t);
   }
 }

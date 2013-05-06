@@ -24,9 +24,11 @@ public class NotFoundException extends HttpException
 {
   private static final long serialVersionUID = 7524382631982564538L;
 
-  public NotFoundException(final String errorCode)
+  public static final String USERMESSAGE = "We could not find the item to which the request refers";
+
+  public NotFoundException(final String message, final String userMessage)
   {
-    super(Status.NOT_FOUND, errorCode);
+    super(Status.NOT_FOUND, message, userMessage);
   }
 
   public NotFoundException(final Throwable t)
@@ -34,8 +36,8 @@ public class NotFoundException extends HttpException
     super(Status.NOT_FOUND, t);
   }
 
-  public NotFoundException(final String errorCode, final Throwable t)
+  public NotFoundException(final String message, final String userMessage, final Throwable t)
   {
-    super(Status.NOT_FOUND, errorCode, t);
+    super(Status.NOT_FOUND, message, userMessage, t);
   }
 }
