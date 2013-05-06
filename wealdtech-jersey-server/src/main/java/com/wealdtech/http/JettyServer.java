@@ -19,6 +19,7 @@ package com.wealdtech.http;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -57,10 +58,7 @@ public class JettyServer
   {
     this.injector = injector;
     this.configuration = configuration;
-  }
 
-  public void start() throws Exception // NOPMD
-  {
     final int port = this.configuration.getPort();
     LOGGER.info("Starting http server on port {}", port);
 //    this.server = new Server(createThreadPool());
@@ -91,7 +89,10 @@ public class JettyServer
     handlers.addHandler(root);
 
     this.server.setHandler(handlers);
+  }
 
+  public void start() throws Exception // NOPMD
+  {
     this.server.start();
   }
 
@@ -172,5 +173,15 @@ public class JettyServer
     pool.setIdleTimeout(threadPoolConfiguration.getMaxIdleTimeMs());
 //    pool.setMaxIdleTimeMs(threadPoolConfiguration.getMaxIdleTimeMs());
     return pool;
+  }
+
+
+  public void registerHandler(final String path, final Class<? extends Servlet> klazz)
+  {
+    // TODO add rather than overwrite
+    final ServletContextHandler context = new ServletContextHandler();
+    context.setContextPath(path);
+    context.addServlet(klazz, "/*");
+    this.server.setHandler(context);
   }
 }
