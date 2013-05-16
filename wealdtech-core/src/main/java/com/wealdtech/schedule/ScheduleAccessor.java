@@ -29,6 +29,14 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
 
   private transient DateTime mark;
 
+  private transient Integer curYearsOfScheduleIndex;
+  private transient Integer curMonthsOfYearIndex;
+  private transient Integer curWeeksOfYearIndex;
+  private transient Integer curWeeksOfMonthIndex;
+  private transient Integer curDaysOfYearIndex;
+  private transient Integer curDaysOfMonthIndex;
+  private transient Integer curDaysOfWeekIndex;
+
   public ScheduleAccessor(final Schedule schedule)
   {
     this(schedule, schedule.getStart());
@@ -38,6 +46,41 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   {
     this.schedule = schedule;
     this.mark = mark;
+
+    resetIndices();
+  }
+
+  // Reset the indices tracking our schedule according to current mark
+  private void resetIndices()
+  {
+    if (this.schedule.getYearsOfSchedule().isPresent())
+    {
+      this.curYearsOfScheduleIndex = 0;
+    }
+    if (this.schedule.getMonthsOfYear().isPresent())
+    {
+      this.curMonthsOfYearIndex = 0;
+    }
+    if (this.schedule.getWeeksOfYear().isPresent())
+    {
+      this.curWeeksOfYearIndex = 0;
+    }
+    if (this.schedule.getWeeksOfMonth().isPresent())
+    {
+      this.curWeeksOfMonthIndex = 0;
+    }
+    if (this.schedule.getDaysOfYear().isPresent())
+    {
+      this.curDaysOfYearIndex = 0;
+    }
+    if (this.schedule.getDaysOfMonth().isPresent())
+    {
+      this.curDaysOfMonthIndex = 0;
+    }
+    if (this.schedule.getDaysOfWeek().isPresent())
+    {
+      this.curDaysOfWeekIndex = 0;
+    }
   }
 
   @Override
@@ -56,7 +99,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   @Override
   public boolean hasNext()
   {
-    return this.schedule.terminates();
+    return !this.schedule.terminates();
   }
 
   @Override
