@@ -22,6 +22,7 @@ import org.joda.time.Period;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
 
@@ -40,8 +41,8 @@ public class ScheduleTest
     final Schedule rs1 = new Schedule.Builder()
                                      .start(new DateTime(2012, 1, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
-                                     .monthOfYear(1)
-                                     .dayOfMonth(5)
+                                     .monthsOfYear(1)
+                                     .daysOfMonth(5)
                                      .build();
     assertNotNull(rs1);
     rs1.toString();
@@ -52,8 +53,8 @@ public class ScheduleTest
     final Schedule rs2 = new Schedule.Builder(rs1)
                                      .start(new DateTime(2012, 2, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
-                                     .monthOfYear(2)
-                                     .dayOfMonth(5)
+                                     .monthsOfYear(2)
+                                     .daysOfMonth(5)
                                      .build();
     assertNotNull(rs2);
     rs2.toString();
@@ -70,8 +71,8 @@ public class ScheduleTest
     {
       new Schedule.Builder()
                   .duration(new Period(Hours.ONE))
-                  .monthOfYear(1)
-                  .dayOfMonth(5)
+                  .monthsOfYear(1)
+                  .daysOfMonth(5)
                   .build();
       fail("Created schedule without start date");
     }
@@ -89,8 +90,8 @@ public class ScheduleTest
       new Schedule.Builder()
                   .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
-                  .monthOfYear(1)
-                  .weekOfYear(5)
+                  .monthsOfYear(1)
+                  .weeksOfYear(5)
                   .build();
       fail("Created schedule with both month and week of year");
     }
@@ -108,15 +109,27 @@ public class ScheduleTest
       new Schedule.Builder()
                   .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
-                  .yearOfSchedule(-1)
-                  .weekOfYear(5)
-                  .monday(1)
+                  .yearsOfSchedule(-1)
+                  .weeksOfYear(5)
+                  .daysOfWeek(1)
                   .build();
-      fail("Created schedule with both invalid year of schedule");
+      fail("Created schedule with invalid year of schedule");
     }
     catch (DataError.Bad de)
     {
       // Good
     }
+  }
+
+  @Test
+  public void testJgm() throws Exception
+  {
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2012, 1, 5, 1, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(ImmutableList.of(6, -1, 3, -5, 2))
+                                          .weeksOfYear(Schedule.ALL)
+                                          .build();
+    System.err.println(schedule.getDaysOfWeek());
   }
 }

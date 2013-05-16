@@ -23,9 +23,11 @@ import org.joda.time.Period;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Range;
 import com.wealdtech.utils.Accessor;
 import com.wealdtech.utils.PeriodOrdering;
 
@@ -71,15 +73,14 @@ public class Schedule implements Comparable<Schedule>
     this.start = start;
     this.end = Optional.fromNullable(end);
     this.duration = duration;
-    // Empty lists count as absent
-    // FIXME order lists by value
+    // Empty lists count as absent.  Lists which contain values are sorted
     if (yearsOfSchedule == null || yearsOfSchedule.isEmpty())
     {
       this.yearsOfSchedule = Optional.absent();
     }
     else
     {
-      this.yearsOfSchedule = Optional.of(yearsOfSchedule);
+      this.yearsOfSchedule = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(yearsOfSchedule)));
     }
     if (monthsOfYear == null || monthsOfYear.isEmpty())
     {
@@ -87,7 +88,7 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.monthsOfYear = Optional.of(monthsOfYear);
+      this.monthsOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(monthsOfYear)));
     }
     if (weeksOfYear == null || weeksOfYear.isEmpty())
     {
@@ -95,7 +96,7 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.weeksOfYear = Optional.of(weeksOfYear);
+      this.weeksOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(weeksOfYear)));
     }
     if (weeksOfMonth == null || weeksOfMonth.isEmpty())
     {
@@ -103,7 +104,7 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.weeksOfMonth = Optional.of(weeksOfMonth);
+      this.weeksOfMonth = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(weeksOfMonth)));
     }
     if (daysOfYear == null || daysOfYear.isEmpty())
     {
@@ -111,7 +112,7 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.daysOfYear = Optional.of(daysOfYear);
+      this.daysOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfYear)));
     }
     if (daysOfMonth == null || daysOfMonth.isEmpty())
     {
@@ -119,7 +120,7 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.daysOfMonth = Optional.of(daysOfMonth);
+      this.daysOfMonth = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfMonth)));
     }
     if (daysOfWeek == null || daysOfWeek.isEmpty())
     {
@@ -127,7 +128,7 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.daysOfWeek = Optional.of(daysOfWeek);
+      this.daysOfWeek = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfWeek)));
     }
     validate();
   }
@@ -142,35 +143,28 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.yearsOfSchedule.isPresent())
     {
-      // TODO Confirm that all values are >= 0
+      checkState(Collections2.filter(this.yearsOfSchedule.get(), Range.<Integer>lessThan(0)).isEmpty(), "Years must not be negative");
     }
 
-    if (this.monthsOfYear.isPresent())
+    checkState(this.daysOfYear.isPresent() || this.daysOfMonth.isPresent() || this.daysOfWeek.isPresent(), "Schedule requires a day");
+
+    if (this.daysOfWeek.isPresent())
     {
-      // This is a month-based schedule so ensure that there are no year-based
-      checkState(!this.weeksOfYear.isPresent(), "Cannot combine yearly and weekly schedules");
-      checkState(!this.daysOfYear.isPresent(), "Cannot combine yearly and daily schedules");
+      checkState((this.weeksOfMonth.isPresent() && this.monthsOfYear.isPresent()) || this.weeksOfYear.isPresent(), "Schedule not complete");
+      checkState(!(this.daysOfMonth.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
+      checkState(!(this.weeksOfMonth.isPresent() && this.weeksOfYear.isPresent()), "Schedule cannot have multiple week items");
     }
 
-    if (this.weeksOfYear.isPresent())
+    if (this.daysOfMonth.isPresent())
     {
-      checkState((!this.weeksOfMonth.isPresent()), "Cannot combine yearly and weekly schedules");
-      checkState((!this.daysOfYear.isPresent()), "Cannot combine yearly and daily schedules");
-      checkState((!this.daysOfMonth.isPresent()), "Cannot combine yearly and daily schedules");
-    }
-
-    if (this.weeksOfMonth.isPresent())
-    {
-      checkState((!this.daysOfYear.isPresent()), "Cannot combine monthly and daily schedules");
-      checkState((!this.daysOfMonth.isPresent()), "Cannot combine monthly and daily schedules");
+      checkState(this.monthsOfYear.isPresent(), "Schedule not complete");
+      checkState(!(this.daysOfWeek.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
     }
 
     if (this.daysOfYear.isPresent())
     {
-      checkState((!this.daysOfMonth.isPresent()), "Cannot combine yearly and monthly schedules");
+      checkState(!(this.daysOfWeek.isPresent() && this.daysOfMonth.isPresent()), "Schedule cannot have multiple day items");
     }
-
-    checkState(this.daysOfYear.isPresent() || this.daysOfMonth.isPresent() || this.daysOfWeek.isPresent(), "Need a day");
 
     // TODO Ensure that the start matches a valid date
   }
@@ -346,7 +340,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder yearOfSchedule(final Integer yearOfSchedule)
+    public Builder yearsOfSchedule(final Integer yearOfSchedule)
     {
       this.yearsOfSchedule = ImmutableList.of(yearOfSchedule);
       return this;
@@ -358,7 +352,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder monthOfYear(final Integer monthOfYear)
+    public Builder monthsOfYear(final Integer monthOfYear)
     {
       this.monthsOfYear = ImmutableList.of(monthOfYear);
       return this;
@@ -370,7 +364,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder weekOfYear(final Integer weekOfYear)
+    public Builder weeksOfYear(final Integer weekOfYear)
     {
       this.weeksOfYear = ImmutableList.of(weekOfYear);
       return this;
@@ -382,7 +376,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder weekOfMonth(final Integer weekOfMonth)
+    public Builder weeksOfMonth(final Integer weekOfMonth)
     {
       this.weeksOfMonth = ImmutableList.of(weekOfMonth);
       return this;
@@ -394,7 +388,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder dayOfYear(final Integer dayOfYear)
+    public Builder daysOfYear(final Integer dayOfYear)
     {
       this.daysOfYear = ImmutableList.of(dayOfYear);
       return this;
@@ -406,7 +400,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder dayOfMonth(final Integer dayOfMonth)
+    public Builder daysOfMonth(final Integer dayOfMonth)
     {
       this.daysOfMonth = ImmutableList.of(dayOfMonth);
       return this;
@@ -418,7 +412,7 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder dayOfWeek(final Integer dayOfWeek)
+    public Builder daysOfWeek(final Integer dayOfWeek)
     {
       this.daysOfWeek = ImmutableList.of(dayOfWeek);
       return this;
