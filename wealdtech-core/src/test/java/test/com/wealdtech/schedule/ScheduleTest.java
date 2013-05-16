@@ -1,0 +1,122 @@
+/*
+ *    Copyright 2013 Weald Technology Trading Limited
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+package test.com.wealdtech.schedule;
+
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
+import org.joda.time.Period;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import com.wealdtech.DataError;
+import com.wealdtech.schedule.Schedule;
+
+import static org.testng.Assert.*;
+
+public class ScheduleTest
+{
+  @BeforeClass
+  public void setUp()
+  {
+  }
+
+  @Test
+  public void testModel() throws Exception
+  {
+    final Schedule rs1 = new Schedule.Builder()
+                                     .start(new DateTime(2012, 1, 5, 1, 0))
+                                     .duration(new Period(Hours.ONE))
+                                     .monthOfYear(1)
+                                     .dayOfMonth(5)
+                                     .build();
+    assertNotNull(rs1);
+    rs1.toString();
+    rs1.hashCode();
+    assertNotEquals(null, rs1);
+    assertEquals(rs1, rs1);
+
+    final Schedule rs2 = new Schedule.Builder(rs1)
+                                     .start(new DateTime(2012, 2, 5, 1, 0))
+                                     .duration(new Period(Hours.ONE))
+                                     .monthOfYear(2)
+                                     .dayOfMonth(5)
+                                     .build();
+    assertNotNull(rs2);
+    rs2.toString();
+    rs2.hashCode();
+    assertNotEquals(null, rs2);
+    assertEquals(rs2, rs2);
+    assertNotEquals(rs1, rs2);
+  }
+
+  @Test
+  public void testInvalidNoStartTime() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .duration(new Period(Hours.ONE))
+                  .monthOfYear(1)
+                  .dayOfMonth(5)
+                  .build();
+      fail("Created schedule without start date");
+    }
+    catch (DataError.Missing de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMonthAndWeekOfYear() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .monthOfYear(1)
+                  .weekOfYear(5)
+                  .build();
+      fail("Created schedule with both month and week of year");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidBadYear() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .yearOfSchedule(-1)
+                  .weekOfYear(5)
+                  .monday(1)
+                  .build();
+      fail("Created schedule with both invalid year of schedule");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+}
