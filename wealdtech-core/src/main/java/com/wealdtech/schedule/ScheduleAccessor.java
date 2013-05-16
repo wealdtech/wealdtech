@@ -18,6 +18,7 @@ package com.wealdtech.schedule;
 
 import org.joda.time.DateTime;
 
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.utils.Accessor;
 
 /**
@@ -46,13 +47,13 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   {
     this.schedule = schedule;
     this.mark = mark;
-
     resetIndices();
   }
 
   // Reset the indices tracking our schedule according to current mark
   private void resetIndices()
   {
+    // TODO relate to current mark rather than resetting to 0
     if (this.schedule.getYearsOfSchedule().isPresent())
     {
       this.curYearsOfScheduleIndex = 0;
@@ -105,8 +106,25 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   @Override
   public Occurrence next()
   {
-    // TODO Auto-generated method stub
-    return null;
+    if (this.curDaysOfWeekIndex != null)
+    {
+      ImmutableList<Integer> daysOfWeek = this.schedule.getDaysOfWeek().get();
+      if (this.curDaysOfWeekIndex < daysOfWeek.size() - 1)
+      {
+        int days = daysOfWeek.get(this.curDaysOfWeekIndex + 1) - daysOfWeek.get(this.curDaysOfWeekIndex);
+        this.curDaysOfWeekIndex++;
+        this.mark = this.mark.plusDays(days);
+      }
+      else
+      {
+        int days = daysOfWeek.get(this.curDaysOfWeekIndex) - daysOfWeek.get(0);
+        this.curDaysOfWeekIndex = 0;
+        this.mark = this.mark.plusDays(7 - days);
+      }
+    }
+
+    // FIXME set endtime of occurrence
+    return new Occurrence(this.mark, this.mark);
   }
 
   @Override

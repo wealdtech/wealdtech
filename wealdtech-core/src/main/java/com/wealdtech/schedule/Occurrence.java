@@ -16,7 +16,7 @@
 
 package com.wealdtech.schedule;
 
-import org.joda.time.LocalTime;
+import org.joda.time.DateTime;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
@@ -28,10 +28,10 @@ import com.google.common.collect.ComparisonChain;
  */
 public class Occurrence implements Comparable<Occurrence>
 {
-  private final transient LocalTime start;
-  private final transient LocalTime end;
+  private final transient DateTime start;
+  private final transient DateTime end;
 
-  public Occurrence(final LocalTime start, final LocalTime end)
+  public Occurrence(final DateTime start, final DateTime end)
   {
     this.start = start;
     this.end = end;
