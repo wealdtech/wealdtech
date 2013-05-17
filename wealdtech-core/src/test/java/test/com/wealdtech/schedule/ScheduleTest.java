@@ -16,6 +16,8 @@
 
 package test.com.wealdtech.schedule;
 
+import static org.testng.Assert.*;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -24,8 +26,6 @@ import org.testng.annotations.Test;
 
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
-
-import static org.testng.Assert.*;
 
 public class ScheduleTest
 {
@@ -121,14 +121,39 @@ public class ScheduleTest
   }
 
   @Test
-  public void testJgm() throws Exception
+  public void testInvalidBadStart() throws Exception
   {
-    final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2012, 1, 5, 1, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .daysOfWeek(6, 5, 2)
-                                          .weeksOfYear(Schedule.ALL)
-                                          .build();
-    System.err.println(schedule.getDaysOfWeek());
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 3, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .weeksOfYear(Schedule.ALL)
+                  .daysOfWeek(1)
+                  .build();
+      fail("Created schedule with invalid start");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
   }
+
+  @Test
+  public void testRealWeekOfYear() throws Exception
+  {
+    for (int i = 1970; i < 2070; i++)
+    {
+      DateTime dt = new DateTime(i, 1, 1, 1, 0);
+      int realWeekOfYear = Schedule.getRealWeekOfYear(dt);
+      assertEquals(realWeekOfYear, 1, "Real week of year was " + realWeekOfYear + "(" + dt + ")");
+    }
+
+    for (int i = 1970; i < 2070; i++)
+    {
+      DateTime dt = new DateTime(i, 12, 31, 1, 0);
+      int realWeekOfYear = Schedule.getRealWeekOfYear(dt);
+      assertTrue(realWeekOfYear == 52 || realWeekOfYear == 53, "Real week of year was " + realWeekOfYear + "(" + dt + ")");
+    }
+}
 }

@@ -125,18 +125,18 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .start(new DateTime(2013, 3, 3, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(daysOfMonth)
                                           .build();
     final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
     Occurrence oc1 = accessor.next();
-    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(oc1.getStart(), new DateTime(2013, 3, 3, 9, 0));
     Occurrence oc2 = accessor.next();
-    assertEquals(oc2.getStart(), new DateTime(2013, 1, 2, 9, 0));
+    assertEquals(oc2.getStart(), new DateTime(2013, 3, 4, 9, 0));
     Occurrence oc3 = accessor.next();
-    assertEquals(oc3.getStart(), new DateTime(2013, 1, 3, 9, 0));
+    assertEquals(oc3.getStart(), new DateTime(2013, 3, 5, 9, 0));
     for (int i = 0; i < 30; i++)
     {
       Occurrence ocl = accessor.next();
@@ -144,7 +144,8 @@ public class ScheduleAccessorTest
       assertTrue(monthsOfYear.contains(ocl.getStart().getMonthOfYear()));
     }
     Occurrence oc4 = accessor.next();
-    assertEquals(oc4.getStart(), new DateTime(2015, 1, 4, 9, 0));
+    // FIXME check
+    assertEquals(oc4.getStart(), new DateTime(2015, 5, 1, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
       Occurrence ocl = accessor.next();
@@ -153,7 +154,7 @@ public class ScheduleAccessorTest
     }
     Occurrence oc5 = accessor.next();
     // FIXME check
-    assertEquals(oc5.getStart(), new DateTime(2081, 5, 5, 9, 0));
+    assertEquals(oc5.getStart(), new DateTime(2082, 3, 2, 9, 0));
   }
 
   @Test

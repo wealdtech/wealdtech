@@ -250,6 +250,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfYear.isPresent() && !this.weeksOfYear.get().contains(Schedule.ALL))
     {
+      // FIXME broken
       if (!this.weeksOfYear.get().contains(datetime.getWeekOfWeekyear()))
       {
         return false;
@@ -308,6 +309,54 @@ public class Schedule implements Comparable<Schedule>
   public Optional<ImmutableList<Integer>> getDaysOfWeek()
   {
     return this.daysOfWeek;
+  }
+
+  /**
+   * Calculate the real week of the year, with the first week
+   * of the year being the week in
+   * @param datetime
+   * @return
+   */
+  public static int getRealWeekOfYear(final DateTime datetime)
+  {
+    int weekOfYear;
+    int offset = 0;
+    int weeksInYear = 52;
+    if (datetime.withDayOfMonth(1).withMonthOfYear(1).weekOfWeekyear().get() > 1)
+    {
+      // This is a year which had less than four days in its first real week.  Need
+      // to compensate by adding 1 to the normal week values generated
+      offset = 1;
+      weeksInYear++;
+    }
+    if (datetime.dayOfYear().get() < 4)
+    {
+      weekOfYear = 1;
+    }
+    else
+    {
+      weekOfYear = datetime.weekOfWeekyear().get() + offset;
+    }
+
+    if (datetime.monthOfYear().get() == 12 && datetime.dayOfMonth().get() > 27)
+    {
+      if (datetime.withDayOfMonth(31).withMonthOfYear(12).weekOfWeekyear().get() == 1)
+      {
+        // This is a year which had less than four days in its last real week.  Need
+        // to compensate by resetting week number if last week of the year
+        weeksInYear++;
+        if (weekOfYear == 1)
+        {
+          weekOfYear = weeksInYear;
+        }
+      }
+    }
+    return weekOfYear;
+  }
+
+  public static int getRealWeekOfMonth(final DateTime datetime, final int month)
+  {
+    return 0;
   }
 
   // Standard object methods follow

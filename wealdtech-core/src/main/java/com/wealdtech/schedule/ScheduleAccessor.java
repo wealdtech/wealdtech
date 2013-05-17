@@ -218,6 +218,11 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (weeksOfMonth.contains(Schedule.ALL))
     {
       // Every week
+      if (this.mark.plusWeeks(1).getMonthOfYear() > this.mark.getMonthOfYear())
+      {
+        this.mark = this.mark.monthOfYear().withMinimumValue();
+        rollingover = true;
+      }
       // TODO check to see if 7 days ahead is in the next month
       this.mark = this.mark.plusWeeks(1);
     }
@@ -249,6 +254,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (weeksOfYear.contains(Schedule.ALL))
     {
       // Every week
+      // FIXME wrong wrong wrong
       if (this.mark.equals(this.mark.weekOfWeekyear().withMaximumValue()))
       {
         this.mark = this.mark.weekOfWeekyear().withMinimumValue();
