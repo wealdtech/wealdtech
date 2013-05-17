@@ -37,6 +37,16 @@ public class Occurrence implements Comparable<Occurrence>
     this.end = end;
   }
 
+  public DateTime getStart()
+  {
+    return this.start;
+  }
+
+  public DateTime getEnd()
+  {
+    return this.end;
+  }
+
   // Standard object methods
 
   @Override

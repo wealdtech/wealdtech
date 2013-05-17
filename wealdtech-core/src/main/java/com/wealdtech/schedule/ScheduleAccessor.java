@@ -29,6 +29,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private final transient Schedule schedule;
 
   private transient DateTime mark;
+  private transient boolean preset = false;
 
   private transient Integer curYearsOfScheduleIndex;
   private transient Integer curMonthsOfYearIndex;
@@ -82,6 +83,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     {
       this.curDaysOfWeekIndex = 0;
     }
+    preset = true;
   }
 
   @Override
@@ -106,9 +108,236 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   @Override
   public Occurrence next()
   {
-    if (this.curDaysOfWeekIndex != null)
+    if (this.preset == true)
     {
-      ImmutableList<Integer> daysOfWeek = this.schedule.getDaysOfWeek().get();
+      // Use the preset value
+      this.preset = false;
+    }
+    else
+    {
+      // We work on the basis of increments and rollovers.
+      boolean rolledover = false;
+      rolledover = nextDay();
+      if (rolledover)
+      {
+        // Our days rolled over, go to weeks
+        rolledover = nextWeek();
+        if (rolledover)
+        {
+          rolledover = nextMonth();
+          if (rolledover)
+          {
+            nextYear();
+          }
+        }
+      }
+    }
+
+    return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
+  }
+
+  // Get the next year for our schedule
+  private void nextYear()
+  {
+    if (this.schedule.getYearsOfSchedule().isPresent())
+    {
+      nextYearOfSchedule();
+    }
+    else
+    {
+      this.mark = this.mark.plusYears(1);
+    }
+  }
+
+  // Get the next year for our years-of-schedule
+  private void nextYearOfSchedule()
+  {
+    ImmutableList<Integer> yearsOfSchedule = this.schedule.getYearsOfSchedule().get();
+    if (yearsOfSchedule.contains(Schedule.ALL))
+    {
+      // Every year
+      this.mark = this.mark.plusYears(1);
+    }
+    else
+    {
+      // Specific years
+      this.mark = this.mark.plusMonths(yearsOfSchedule.get(this.curYearsOfScheduleIndex));
+    }
+  }
+
+  // Get the next month for our schedule
+  private boolean nextMonth()
+  {
+    boolean rollingover = true;
+    if (this.schedule.getMonthsOfYear().isPresent())
+    {
+      rollingover = nextMonthOfYear();
+    }
+    return rollingover;
+  }
+
+  // Get the next month for our months-per-year schedule
+  private boolean nextMonthOfYear()
+  {
+    boolean rollingover = false;
+    ImmutableList<Integer> monthsOfYear = this.schedule.getMonthsOfYear().get();
+    if (monthsOfYear.contains(Schedule.ALL))
+    {
+      // Every month
+      if (this.mark.equals(this.mark.monthOfYear().withMaximumValue()))
+      {
+        this.mark = this.mark.monthOfYear().withMinimumValue();
+        rollingover = true;
+      }
+      else
+      {
+        this.mark = this.mark.plusMonths(1);
+      }
+    }
+    else
+    {
+      // Specific months
+      if (this.curMonthsOfYearIndex < monthsOfYear.size() - 1)
+      {
+        int months = monthsOfYear.get(this.curMonthsOfYearIndex + 1) - monthsOfYear.get(this.curMonthsOfYearIndex);
+        this.curMonthsOfYearIndex++;
+        this.mark = this.mark.plusMonths(months);
+      }
+      else
+      {
+        int months = monthsOfYear.get(this.curMonthsOfYearIndex) - monthsOfYear.get(0);
+        this.curMonthsOfYearIndex = 0;
+        this.mark = this.mark.minusMonths(months);
+        rollingover = true;
+      }
+    }
+    return rollingover;
+  }
+
+  // Get the next week for our schedule
+  private boolean nextWeek()
+  {
+    boolean rollingover = true;
+    if (this.schedule.getWeeksOfMonth().isPresent())
+    {
+      rollingover = nextWeekOfMonth();
+    }
+    else if (this.schedule.getWeeksOfYear().isPresent())
+    {
+      rollingover = nextWeekOfYear();
+    }
+    return rollingover;
+  }
+
+  // Get the next week for our weeks-per-month schedule
+  private boolean nextWeekOfMonth()
+  {
+    boolean rollingover = false;
+    ImmutableList<Integer> weeksOfMonth = this.schedule.getWeeksOfMonth().get();
+    if (weeksOfMonth.contains(Schedule.ALL))
+    {
+      // Every week
+      // TODO check to see if 7 days ahead is in the next month
+      this.mark = this.mark.plusWeeks(1);
+    }
+    else
+    {
+      // Specific weeks
+      if (this.curWeeksOfMonthIndex < weeksOfMonth.size() - 1)
+      {
+        int weeks = weeksOfMonth.get(this.curWeeksOfMonthIndex + 1) - weeksOfMonth.get(this.curWeeksOfMonthIndex);
+        this.curWeeksOfMonthIndex++;
+        this.mark = this.mark.plusWeeks(weeks);
+      }
+      else
+      {
+        int weeks = weeksOfMonth.get(this.curWeeksOfMonthIndex) - weeksOfMonth.get(0);
+        this.curWeeksOfMonthIndex = 0;
+        this.mark = this.mark.minusWeeks(weeks);
+        rollingover = true;
+      }
+    }
+    return rollingover;
+  }
+
+  // Get the next week for our weeks-per-year schedule
+  private boolean nextWeekOfYear()
+  {
+    boolean rollingover = false;
+    ImmutableList<Integer> weeksOfYear = this.schedule.getWeeksOfYear().get();
+    if (weeksOfYear.contains(Schedule.ALL))
+    {
+      // Every week
+      if (this.mark.equals(this.mark.weekOfWeekyear().withMaximumValue()))
+      {
+        this.mark = this.mark.weekOfWeekyear().withMinimumValue();
+        rollingover = true;
+      }
+      else
+      {
+        this.mark = this.mark.plusWeeks(1);
+      }
+    }
+    else
+    {
+      // Specific weeks
+      if (this.curWeeksOfYearIndex < weeksOfYear.size() - 1)
+      {
+        int weeks = weeksOfYear.get(this.curWeeksOfYearIndex + 1) - weeksOfYear.get(this.curWeeksOfYearIndex);
+        this.curWeeksOfYearIndex++;
+        this.mark = this.mark.plusWeeks(weeks);
+      }
+      else
+      {
+        int weeks = weeksOfYear.get(this.curWeeksOfYearIndex) - weeksOfYear.get(0);
+        this.curWeeksOfYearIndex = 0;
+        this.mark = this.mark.minusWeeks(weeks);
+        rollingover = true;
+      }
+    }
+    return rollingover;
+  }
+
+  // Get the next day for our schedule
+  private boolean nextDay()
+  {
+    boolean rollingover = true;
+    if (this.schedule.getDaysOfWeek().isPresent())
+    {
+      rollingover = nextDayOfWeek();
+    }
+    else if (this.schedule.getDaysOfMonth().isPresent())
+    {
+      rollingover = nextDayOfMonth();
+    }
+    else if (this.schedule.getDaysOfYear().isPresent())
+    {
+      rollingover = nextDayOfYear();
+    }
+    return rollingover;
+  }
+
+  // Get the next day for our days-per-week schedule
+  private boolean nextDayOfWeek()
+  {
+    boolean rollingover = false;
+    ImmutableList<Integer> daysOfWeek = this.schedule.getDaysOfWeek().get();
+    if (daysOfWeek.contains(Schedule.ALL))
+    {
+      // Every day
+      if (this.mark.equals(this.mark.dayOfWeek().withMaximumValue()))
+      {
+        this.mark = this.mark.dayOfWeek().withMinimumValue();
+        rollingover = true;
+      }
+      else
+      {
+        this.mark = this.mark.plusDays(1);
+      }
+    }
+    else
+    {
+      // Specific days
       if (this.curDaysOfWeekIndex < daysOfWeek.size() - 1)
       {
         int days = daysOfWeek.get(this.curDaysOfWeekIndex + 1) - daysOfWeek.get(this.curDaysOfWeekIndex);
@@ -119,26 +348,86 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         int days = daysOfWeek.get(this.curDaysOfWeekIndex) - daysOfWeek.get(0);
         this.curDaysOfWeekIndex = 0;
-        this.mark = this.mark.plusDays(7 - days);
+        this.mark = this.mark.minusDays(days);
+        rollingover = true;
       }
     }
-
-    // FIXME set endtime of occurrence
-    return new Occurrence(this.mark, this.mark);
+    return rollingover;
   }
 
-  @Override
-  public Occurrence nextAfterItem(Occurrence mark)
+  // Get the next day for our days-per-month schedule
+  private boolean nextDayOfMonth()
   {
-    // TODO Auto-generated method stub
-    return null;
+    boolean rollingover = false;
+    ImmutableList<Integer> daysOfMonth = this.schedule.getDaysOfMonth().get();
+    if (daysOfMonth.contains(Schedule.ALL))
+    {
+      // Every day
+      if (this.mark.equals(this.mark.dayOfMonth().withMaximumValue()))
+      {
+        this.mark = this.mark.dayOfMonth().withMinimumValue();
+        rollingover = true;
+      }
+      else
+      {
+        this.mark = this.mark.plusDays(1);
+      }
+    }
+    else
+    {
+      if (this.curDaysOfMonthIndex < daysOfMonth.size() - 1)
+      {
+        int days = daysOfMonth.get(this.curDaysOfMonthIndex + 1) - daysOfMonth.get(this.curDaysOfMonthIndex);
+        this.curDaysOfMonthIndex++;
+        this.mark = this.mark.plusDays(days);
+      }
+      else
+      {
+        int days = daysOfMonth.get(this.curDaysOfMonthIndex) - daysOfMonth.get(0);
+        this.curDaysOfMonthIndex = 0;
+        this.mark = this.mark.minusDays(days);
+        rollingover = true;
+      }
+    }
+    return rollingover;
   }
 
-  @Override
-  public Occurrence nextAfter(DateTime mark)
+  // Get the next day for our days-per-year schedule
+  private boolean nextDayOfYear()
   {
-    // TODO Auto-generated method stub
-    return null;
+    boolean rollingover = false;
+    ImmutableList<Integer> daysOfYear = this.schedule.getDaysOfYear().get();
+    if (daysOfYear.contains(Schedule.ALL))
+    {
+      // Every day
+      if (this.mark.equals(this.mark.dayOfYear().withMaximumValue()))
+      {
+        this.mark = this.mark.dayOfYear().withMinimumValue();
+        rollingover  = true;
+      }
+      else
+      {
+        this.mark = this.mark.plusDays(1);
+      }
+    }
+    else
+    {
+      // Specific days
+      if (this.curDaysOfYearIndex < daysOfYear.size() - 1)
+      {
+        int days = daysOfYear.get(this.curDaysOfYearIndex + 1) - daysOfYear.get(this.curDaysOfYearIndex);
+        this.curDaysOfYearIndex++;
+        this.mark = this.mark.plusDays(days);
+      }
+      else
+      {
+        int days = daysOfYear.get(this.curDaysOfYearIndex) - daysOfYear.get(0);
+        this.curDaysOfYearIndex = 0;
+        this.mark = this.mark.minusDays(days);
+        rollingover = true;
+      }
+    }
+    return rollingover;
   }
 
   @Override
@@ -150,20 +439,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
 
   @Override
   public Occurrence previous()
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Occurrence previousBeforeItem(Occurrence mark)
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Occurrence previousBefore(DateTime mark)
   {
     // TODO Auto-generated method stub
     return null;

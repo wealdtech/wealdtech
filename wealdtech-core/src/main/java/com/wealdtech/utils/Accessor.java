@@ -30,15 +30,7 @@ public interface Accessor<T, M>
 
   public T next();
 
-  public T nextAfterItem(final T mark);
-
-  public T nextAfter(final M mark);
-
   public boolean hasPrevious();
 
   public T previous();
-
-  public T previousBeforeItem(final T mark);
-
-  public T previousBefore(final M mark);
 }
