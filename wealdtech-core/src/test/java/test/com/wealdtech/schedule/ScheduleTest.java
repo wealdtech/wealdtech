@@ -153,7 +153,7 @@ public class ScheduleTest
     {
       DateTime dt = new DateTime(i, 12, 31, 1, 0);
       int realWeekOfYear = Schedule.getRealWeekOfYear(dt);
-      assertTrue(realWeekOfYear == 52 || realWeekOfYear == 53, "Real week of year was " + realWeekOfYear + "(" + dt + ")");
+      assertTrue(realWeekOfYear >= 52 && realWeekOfYear <= 54, "Real week of year was " + realWeekOfYear + "(" + dt + ")");
     }
 }
 }

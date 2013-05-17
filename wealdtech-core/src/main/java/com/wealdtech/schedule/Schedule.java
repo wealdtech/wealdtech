@@ -345,7 +345,7 @@ public class Schedule implements Comparable<Schedule>
         // This is a year which had less than four days in its last real week.  Need
         // to compensate by resetting week number if last week of the year
         weeksInYear++;
-        if (weekOfYear == 1)
+        if (weekOfYear == (1 + offset))
         {
           weekOfYear = weeksInYear;
         }
