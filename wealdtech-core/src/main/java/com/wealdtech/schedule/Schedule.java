@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.wealdtech.utils.Accessor;
@@ -49,7 +50,7 @@ public class Schedule implements Comparable<Schedule>
 
   private final Period duration;
 
-  private final Optional<ImmutableList<Integer>> yearsOfSchedule;
+  private final Integer yearGap;
   private final Optional<ImmutableList<Integer>> monthsOfYear;
   private final Optional<ImmutableList<Integer>> weeksOfYear;
   private final Optional<ImmutableList<Integer>> weeksOfMonth;
@@ -57,12 +58,12 @@ public class Schedule implements Comparable<Schedule>
   private final Optional<ImmutableList<Integer>> daysOfMonth;
   private final Optional<ImmutableList<Integer>> daysOfWeek;
 
-  // TODO times
+  // TODO hours and minutes
 
   private Schedule(final DateTime start,
                             final DateTime end,
                             final Period duration,
-                            final ImmutableList<Integer> yearsOfSchedule,
+                            final Integer yearGap,
                             final ImmutableList<Integer> monthsOfYear,
                             final ImmutableList<Integer> weeksOfYear,
                             final ImmutableList<Integer> weeksOfMonth,
@@ -73,14 +74,13 @@ public class Schedule implements Comparable<Schedule>
     this.start = start;
     this.end = Optional.fromNullable(end);
     this.duration = duration;
-    // Empty lists count as absent.  Lists which contain values are sorted
-    if (yearsOfSchedule == null || yearsOfSchedule.isEmpty())
+    if (yearGap == null)
     {
-      this.yearsOfSchedule = Optional.absent();
+      this.yearGap = 0;
     }
     else
     {
-      this.yearsOfSchedule = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(yearsOfSchedule)));
+      this.yearGap = yearGap;
     }
     if (monthsOfYear == null || monthsOfYear.isEmpty())
     {
@@ -141,15 +141,13 @@ public class Schedule implements Comparable<Schedule>
 
     checkNotNull(this.duration, "Schedule requires a duration");
 
-    if (this.yearsOfSchedule.isPresent())
-    {
-      checkState(Collections2.filter(this.yearsOfSchedule.get(), Range.<Integer>lessThan(0)).isEmpty(), "Years must not be negative");
-    }
+    checkState(this.yearGap >= 0, "Year gap cannot be negative");
 
     checkState(this.daysOfYear.isPresent() || this.daysOfMonth.isPresent() || this.daysOfWeek.isPresent(), "Schedule requires a day");
 
     if (this.daysOfWeek.isPresent())
     {
+      checkState(Collections2.filter(this.daysOfWeek.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of week must not contain negative values");
       checkState((this.weeksOfMonth.isPresent() && this.monthsOfYear.isPresent()) || this.weeksOfYear.isPresent(), "Schedule not complete");
       checkState(!(this.daysOfMonth.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
       checkState(!(this.weeksOfMonth.isPresent() && this.weeksOfYear.isPresent()), "Schedule cannot have multiple week items");
@@ -157,12 +155,14 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.daysOfMonth.isPresent())
     {
+      checkState(Collections2.filter(this.daysOfMonth.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of month must not contain negative values");
       checkState(this.monthsOfYear.isPresent(), "Schedule not complete");
       checkState(!(this.daysOfWeek.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
     }
 
     if (this.daysOfYear.isPresent())
     {
+      checkState(Collections2.filter(this.daysOfYear.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of year must not contain negative values");
       checkState(!(this.daysOfWeek.isPresent() && this.daysOfMonth.isPresent()), "Schedule cannot have multiple day items");
     }
 
@@ -198,9 +198,9 @@ public class Schedule implements Comparable<Schedule>
     return this.duration;
   }
 
-  public Optional<ImmutableList<Integer>> getYearsOfSchedule()
+  public Integer getYearGap()
   {
-    return this.yearsOfSchedule;
+    return this.yearGap;
   }
 
   public Optional<ImmutableList<Integer>> getMonthsOfYear()
@@ -241,7 +241,7 @@ public class Schedule implements Comparable<Schedule>
                   .add("start", this.getStart())
                   .add("end", this.getEnd())
                   .add("duration", this.getDuration())
-                  .add("yearsOfSchedule", this.getYearsOfSchedule())
+                  .add("yearsGap", this.getYearGap())
                   .add("monthsOfYear", this.getMonthsOfYear())
                   .add("weeksOfYear", this.getWeeksOfYear())
                   .add("weeksOfMonth", this.getWeeksOfMonth())
@@ -264,7 +264,7 @@ public class Schedule implements Comparable<Schedule>
     return Objects.hashCode(this.getStart(),
                             this.getEnd(),
                             this.getDuration(),
-                            this.getYearsOfSchedule(),
+                            this.getYearGap(),
                             this.getMonthsOfYear(),
                             this.getWeeksOfYear(),
                             this.getWeeksOfMonth(),
@@ -280,7 +280,7 @@ public class Schedule implements Comparable<Schedule>
                           .compare(this.getStart(), that.getStart())
                           .compare(this.getEnd().orNull(), that.getEnd().orNull(), Ordering.natural().nullsFirst())
                           .compare(this.getDuration(), that.getDuration(), new PeriodOrdering().nullsFirst())
-                          .compare(this.getYearsOfSchedule().orNull(), that.getYearsOfSchedule().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
+                          .compare(this.getYearGap(), that.getYearGap())
                           .compare(this.getMonthsOfYear().orNull(), that.getMonthsOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfYear().orNull(), that.getWeeksOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfMonth().orNull(), that.getWeeksOfMonth().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
@@ -295,7 +295,7 @@ public class Schedule implements Comparable<Schedule>
     private transient DateTime start;
     private transient DateTime end;
     private transient Period duration;
-    private transient ImmutableList<Integer> yearsOfSchedule;
+    private transient Integer yearGap;
     private transient ImmutableList<Integer> monthsOfYear;
     private transient ImmutableList<Integer> weeksOfYear;
     private transient ImmutableList<Integer> weeksOfMonth;
@@ -313,7 +313,7 @@ public class Schedule implements Comparable<Schedule>
       this.start = prior.getStart();
       this.end = prior.getEnd().orNull();
       this.duration = prior.getDuration();
-      this.yearsOfSchedule = prior.getYearsOfSchedule().orNull();
+      this.yearGap = prior.getYearGap();
       this.monthsOfYear = prior.getMonthsOfYear().orNull();
       this.weeksOfYear = prior.getWeeksOfYear().orNull();
       this.weeksOfMonth = prior.getWeeksOfMonth().orNull();
@@ -340,93 +340,129 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder yearsOfSchedule(final Integer yearOfSchedule)
+    public Builder yearGap(final Integer yearGap)
     {
-      this.yearsOfSchedule = ImmutableList.of(yearOfSchedule);
+      this.yearGap = yearGap;
       return this;
     }
 
-    public Builder yearsOfSchedule(final List<Integer> yearsOfSchedule)
+    public Builder monthsOfYear(final Integer firstMonthOfYear, final Integer ... subsequentMonthsOfYear)
     {
-      this.yearsOfSchedule = ImmutableList.copyOf(yearsOfSchedule);
-      return this;
-    }
-
-    public Builder monthsOfYear(final Integer monthOfYear)
-    {
-      this.monthsOfYear = ImmutableList.of(monthOfYear);
+      this.monthsOfYear = ImmutableList.copyOf(Lists.asList(firstMonthOfYear, subsequentMonthsOfYear));
       return this;
     }
 
     public Builder monthsOfYear(final List<Integer> monthsOfYear)
     {
-      this.monthsOfYear = ImmutableList.copyOf(monthsOfYear);
+      if (monthsOfYear == null)
+      {
+        this.monthsOfYear = null;
+      }
+      else
+      {
+        this.monthsOfYear = ImmutableList.copyOf(monthsOfYear);
+      }
       return this;
     }
 
-    public Builder weeksOfYear(final Integer weekOfYear)
+    public Builder weeksOfYear(final Integer firstWeekOfYear, final Integer ... subsequentWeeksOfYear)
     {
-      this.weeksOfYear = ImmutableList.of(weekOfYear);
+      this.weeksOfYear = ImmutableList.copyOf(Lists.asList(firstWeekOfYear, subsequentWeeksOfYear));
       return this;
     }
 
     public Builder weeksOfYear(final List<Integer> weeksOfYear)
     {
-      this.weeksOfYear = ImmutableList.copyOf(weeksOfYear);
+      if (weeksOfYear == null)
+      {
+        this.weeksOfYear = null;
+      }
+      else
+      {
+        this.weeksOfYear = ImmutableList.copyOf(weeksOfYear);
+      }
       return this;
     }
 
-    public Builder weeksOfMonth(final Integer weekOfMonth)
+    public Builder weeksOfMonth(final Integer firstWeekOfMonth, final Integer ... subsequentWeeksOfMonth)
     {
-      this.weeksOfMonth = ImmutableList.of(weekOfMonth);
+      this.weeksOfMonth = ImmutableList.copyOf(Lists.asList(firstWeekOfMonth, subsequentWeeksOfMonth));
       return this;
     }
 
     public Builder weeksOfMonth(final List<Integer> weeksOfMonth)
     {
-      this.weeksOfMonth = ImmutableList.copyOf(weeksOfMonth);
+      if (weeksOfMonth == null)
+      {
+        this.weeksOfMonth = null;
+      }
+      else
+      {
+        this.weeksOfMonth = ImmutableList.copyOf(weeksOfMonth);
+      }
       return this;
     }
 
-    public Builder daysOfYear(final Integer dayOfYear)
+    public Builder daysOfYear(final Integer firstDayOfYear, final Integer ... subsequentDaysOfYear)
     {
-      this.daysOfYear = ImmutableList.of(dayOfYear);
+      this.daysOfYear = ImmutableList.copyOf(Lists.asList(firstDayOfYear, subsequentDaysOfYear));
       return this;
     }
 
     public Builder daysOfYear(final List<Integer> daysOfYear)
     {
-      this.daysOfYear = ImmutableList.copyOf(daysOfYear);
+      if (daysOfYear == null)
+      {
+        this.daysOfYear = null;
+      }
+      else
+      {
+        this.daysOfYear = ImmutableList.copyOf(daysOfYear);
+      }
       return this;
     }
 
-    public Builder daysOfMonth(final Integer dayOfMonth)
+    public Builder daysOfMonth(final Integer firstDayOfMonth, final Integer ... subsequentDaysOfMonth)
     {
-      this.daysOfMonth = ImmutableList.of(dayOfMonth);
+      this.daysOfMonth = ImmutableList.copyOf(Lists.asList(firstDayOfMonth, subsequentDaysOfMonth));
       return this;
     }
 
     public Builder daysOfMonth(final List<Integer> daysOfMonth)
     {
-      this.daysOfMonth = ImmutableList.copyOf(daysOfMonth);
+      if (daysOfMonth == null)
+      {
+        this.daysOfMonth = null;
+      }
+      else
+      {
+        this.daysOfMonth = ImmutableList.copyOf(daysOfMonth);
+      }
       return this;
     }
 
-    public Builder daysOfWeek(final Integer dayOfWeek)
+    public Builder daysOfWeek(final Integer firstDayOfWeek, final Integer ... subsequentDaysOfWeek)
     {
-      this.daysOfWeek = ImmutableList.of(dayOfWeek);
+      this.daysOfWeek = ImmutableList.copyOf(Lists.asList(firstDayOfWeek, subsequentDaysOfWeek));
       return this;
     }
 
     public Builder daysOfWeek(final List<Integer> daysOfWeek)
     {
-      this.daysOfWeek = ImmutableList.copyOf(daysOfWeek);
+      if (daysOfWeek == null)
+      {
+        this.daysOfWeek = null;
+      }
+      else
+      {
+        this.daysOfWeek = ImmutableList.copyOf(daysOfWeek);
+      }
       return this;
     }
 
     public Schedule build()
     {
-      return new Schedule(this.start, this.end, this.duration, this.yearsOfSchedule, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
+      return new Schedule(this.start, this.end, this.duration, this.yearGap, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
     }
   }
 }

@@ -22,7 +22,6 @@ import org.joda.time.Period;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
 
@@ -109,11 +108,11 @@ public class ScheduleTest
       new Schedule.Builder()
                   .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
-                  .yearsOfSchedule(-1)
+                  .yearGap(-1)
                   .weeksOfYear(5)
                   .daysOfWeek(1)
                   .build();
-      fail("Created schedule with invalid year of schedule");
+      fail("Created schedule with invalid year gap");
     }
     catch (DataError.Bad de)
     {
@@ -127,7 +126,7 @@ public class ScheduleTest
     final Schedule schedule = new Schedule.Builder()
                                           .start(new DateTime(2012, 1, 5, 1, 0))
                                           .duration(new Period(Hours.ONE))
-                                          .daysOfWeek(ImmutableList.of(6, -1, 3, -5, 2))
+                                          .daysOfWeek(6, 5, 2)
                                           .weeksOfYear(Schedule.ALL)
                                           .build();
     System.err.println(schedule.getDaysOfWeek());

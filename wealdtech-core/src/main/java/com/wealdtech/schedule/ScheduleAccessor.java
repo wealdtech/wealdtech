@@ -31,7 +31,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private transient DateTime mark;
   private transient boolean preset = false;
 
-  private transient Integer curYearsOfScheduleIndex;
   private transient Integer curMonthsOfYearIndex;
   private transient Integer curWeeksOfYearIndex;
   private transient Integer curWeeksOfMonthIndex;
@@ -55,10 +54,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private void resetIndices()
   {
     // TODO relate to current mark rather than resetting to 0
-    if (this.schedule.getYearsOfSchedule().isPresent())
-    {
-      this.curYearsOfScheduleIndex = 0;
-    }
     if (this.schedule.getMonthsOfYear().isPresent())
     {
       this.curMonthsOfYearIndex = 0;
@@ -139,30 +134,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   // Get the next year for our schedule
   private void nextYear()
   {
-    if (this.schedule.getYearsOfSchedule().isPresent())
-    {
-      nextYearOfSchedule();
-    }
-    else
-    {
-      this.mark = this.mark.plusYears(1);
-    }
-  }
-
-  // Get the next year for our years-of-schedule
-  private void nextYearOfSchedule()
-  {
-    ImmutableList<Integer> yearsOfSchedule = this.schedule.getYearsOfSchedule().get();
-    if (yearsOfSchedule.contains(Schedule.ALL))
-    {
-      // Every year
-      this.mark = this.mark.plusYears(1);
-    }
-    else
-    {
-      // Specific years
-      this.mark = this.mark.plusMonths(yearsOfSchedule.get(this.curYearsOfScheduleIndex));
-    }
+    this.mark = this.mark.plusYears(this.schedule.getYearGap() + 1);
   }
 
   // Get the next month for our schedule
