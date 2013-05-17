@@ -19,6 +19,7 @@ package com.wealdtech.schedule;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.DataError;
 import com.wealdtech.utils.Accessor;
 
 /**
@@ -50,17 +51,21 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     resetIndices();
   }
 
-  // Reset the indices tracking our schedule according to current mark
+  /**
+   * Reset the indices tracking our schedule according to the current mark.
+   * Note that the current mark might not be a valid schedule, in which
+   * case we move it forward to the next valid occurrence prior to resetting
+   * the indices
+   */
   private void resetIndices()
   {
-    // TODO relate to current mark rather than resetting to 0
     if (this.schedule.getMonthsOfYear().isPresent())
     {
-      this.curMonthsOfYearIndex = 0;
+      this.curMonthsOfYearIndex = this.schedule.getMonthsOfYear().get().indexOf(this.mark.getMonthOfYear());
     }
     if (this.schedule.getWeeksOfYear().isPresent())
     {
-      this.curWeeksOfYearIndex = 0;
+      this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(this.mark.getWeekOfWeekyear());
     }
     if (this.schedule.getWeeksOfMonth().isPresent())
     {
@@ -68,30 +73,34 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     if (this.schedule.getDaysOfYear().isPresent())
     {
-      this.curDaysOfYearIndex = 0;
+      this.curDaysOfYearIndex = this.schedule.getDaysOfYear().get().indexOf(this.mark.getDayOfYear());
     }
     if (this.schedule.getDaysOfMonth().isPresent())
     {
-      this.curDaysOfMonthIndex = 0;
+      this.curDaysOfMonthIndex = this.schedule.getDaysOfMonth().get().indexOf(this.mark.getDayOfMonth());
     }
     if (this.schedule.getDaysOfWeek().isPresent())
     {
-      this.curDaysOfWeekIndex = 0;
+      this.curDaysOfWeekIndex = this.schedule.getDaysOfWeek().get().indexOf(this.mark.getDayOfWeek());
     }
-    preset = true;
+    this.preset = true;
   }
 
   @Override
   public void setBaseItem(Occurrence mark)
   {
-    // TODO Auto-generated method stub
-
+    setBase(mark.getStart());
   }
 
   @Override
   public void setBase(DateTime mark)
   {
+    if (!this.schedule.isAScheduleStart(mark))
+    {
+      throw new DataError.Bad("Date is not a valid member of the schedule");
+    }
     this.mark = mark;
+    resetIndices();
   }
 
   @Override

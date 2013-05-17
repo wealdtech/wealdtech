@@ -16,6 +16,8 @@
 
 package test.com.wealdtech.schedule;
 
+import static org.testng.Assert.*;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -25,8 +27,6 @@ import com.google.common.collect.ImmutableList;
 import com.wealdtech.schedule.Occurrence;
 import com.wealdtech.schedule.Schedule;
 import com.wealdtech.utils.Accessor;
-
-import static org.testng.Assert.*;
 
 public class ScheduleAccessorTest
 {
@@ -60,18 +60,18 @@ public class ScheduleAccessorTest
     // Simple days of month schedule
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .start(new DateTime(2013, 1, 3, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(Schedule.ALL)
                                           .daysOfMonth(daysOfMonth)
                                           .build();
     final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
     Occurrence oc1 = accessor.next();
-    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(oc1.getStart(), new DateTime(2013, 1, 3, 9, 0));
     Occurrence oc2 = accessor.next();
-    assertEquals(oc2.getStart(), new DateTime(2013, 1, 2, 9, 0));
+    assertEquals(oc2.getStart(), new DateTime(2013, 1, 4, 9, 0));
     Occurrence oc3 = accessor.next();
-    assertEquals(oc3.getStart(), new DateTime(2013, 1, 3, 9, 0));
+    assertEquals(oc3.getStart(), new DateTime(2013, 1, 5, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
       Occurrence ocl = accessor.next();
@@ -79,7 +79,7 @@ public class ScheduleAccessorTest
     }
     Occurrence oc4 = accessor.next();
     // FIXME check
-    assertEquals(oc4.getStart(), new DateTime(2029, 9, 4, 9, 0));
+    assertEquals(oc4.getStart(), new DateTime(2029, 10, 1, 9, 0));
   }
 
   @Test

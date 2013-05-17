@@ -16,6 +16,8 @@
 
 package com.wealdtech.schedule;
 
+import static com.wealdtech.Preconditions.*;
+
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -31,8 +33,6 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.wealdtech.utils.Accessor;
 import com.wealdtech.utils.PeriodOrdering;
-
-import static com.wealdtech.Preconditions.*;
 
 /**
  * A Schedule is a statement of one or more {@link Occurrence} instances.
@@ -148,6 +148,7 @@ public class Schedule implements Comparable<Schedule>
     if (this.daysOfWeek.isPresent())
     {
       checkState(Collections2.filter(this.daysOfWeek.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of week must not contain negative values");
+      checkState(Collections2.filter(this.daysOfWeek.get(), Range.<Integer>greaterThan(7)).isEmpty(), "Days of week must not contain values greater than 7");
       checkState((this.weeksOfMonth.isPresent() && this.monthsOfYear.isPresent()) || this.weeksOfYear.isPresent(), "Schedule not complete");
       checkState(!(this.daysOfMonth.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
       checkState(!(this.weeksOfMonth.isPresent() && this.weeksOfYear.isPresent()), "Schedule cannot have multiple week items");
@@ -156,6 +157,7 @@ public class Schedule implements Comparable<Schedule>
     if (this.daysOfMonth.isPresent())
     {
       checkState(Collections2.filter(this.daysOfMonth.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of month must not contain negative values");
+      checkState(Collections2.filter(this.daysOfMonth.get(), Range.<Integer>greaterThan(31)).isEmpty(), "Days of month must not contain values greater than 31");
       checkState(this.monthsOfYear.isPresent(), "Schedule not complete");
       checkState(!(this.daysOfWeek.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
     }
@@ -163,10 +165,26 @@ public class Schedule implements Comparable<Schedule>
     if (this.daysOfYear.isPresent())
     {
       checkState(Collections2.filter(this.daysOfYear.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of year must not contain negative values");
+      checkState(Collections2.filter(this.daysOfYear.get(), Range.<Integer>greaterThan(366)).isEmpty(), "Days of year must not contain values greater than 366");
       checkState(!(this.daysOfWeek.isPresent() && this.daysOfMonth.isPresent()), "Schedule cannot have multiple day items");
     }
 
-    // TODO Ensure that the start matches a valid date
+    if (this.weeksOfMonth.isPresent())
+    {
+      checkState(Collections2.filter(this.weeksOfMonth.get(), Range.<Integer>greaterThan(6)).isEmpty(), "Weeks of month must not contain values greater than 6");
+    }
+
+    if (this.weeksOfYear.isPresent())
+    {
+      checkState(Collections2.filter(this.weeksOfYear.get(), Range.<Integer>greaterThan(53)).isEmpty(), "Weeks of year must not contain values greater than 53");
+    }
+
+    if (this.monthsOfYear.isPresent())
+    {
+      checkState(Collections2.filter(this.monthsOfYear.get(), Range.<Integer>greaterThan(12)).isEmpty(), "Months of year must not contain values greater than 12");
+    }
+
+    checkState(isAScheduleStart(this.start), "Start date is not a valid schedule start date");
   }
 
   /**
@@ -178,9 +196,68 @@ public class Schedule implements Comparable<Schedule>
     return (this.end.isPresent());
   }
 
+  /**
+   * Provide an {@link Accessor} for this schedule.
+   * @return an accessor
+   */
   public Accessor<Occurrence, DateTime> accessor()
   {
     return new ScheduleAccessor(this);
+  }
+
+  /**
+   * Confirm if a given date/time is a valid start time for this schedule
+   * @param datetime the date/time to check
+   * @return {@code true} if valid, {@code false} if not
+   */
+  public boolean isAScheduleStart(final DateTime datetime)
+  {
+    // Check time
+    if ((datetime.getMinuteOfHour() != this.start.getMinuteOfHour()) ||
+        (datetime.getHourOfDay() != this.start.getHourOfDay()))
+    {
+      return false;
+    }
+
+    if (this.daysOfWeek.isPresent() && !this.daysOfWeek.get().contains(Schedule.ALL))
+    {
+      if (!this.daysOfWeek.get().contains(datetime.getDayOfWeek()))
+      {
+        return false;
+      }
+    }
+
+    if (this.daysOfMonth.isPresent() && !this.daysOfMonth.get().contains(Schedule.ALL))
+    {
+      if (!this.daysOfMonth.get().contains(datetime.getDayOfMonth()))
+      {
+        return false;
+      }
+    }
+
+    if (this.daysOfYear.isPresent() && !this.daysOfYear.get().contains(Schedule.ALL))
+    {
+      if (!this.daysOfYear.get().contains(datetime.getDayOfYear()))
+      {
+        return false;
+      }
+    }
+
+    if (this.weeksOfMonth.isPresent() && !this.weeksOfMonth.get().contains(Schedule.ALL))
+    {
+      // FIXME work this one out
+    }
+
+    if (this.weeksOfYear.isPresent() && !this.weeksOfYear.get().contains(Schedule.ALL))
+    {
+      if (!this.weeksOfYear.get().contains(datetime.getWeekOfWeekyear()))
+      {
+        return false;
+      }
+    }
+
+    // All checks passed
+    return true;
   }
 
   public DateTime getStart()
