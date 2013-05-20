@@ -105,7 +105,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
         this.mark = this.mark.withDayOfMonth(1).plusWeeks(this.schedule.getWeeksOfMonth().get().get(this.curWeeksOfMonthIndex) - 1);
       }
 
-
       // We need to reset the day to ensure that it is a valid day of week
       final DateTime tmp = this.mark.withDayOfWeek(this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
       if (tmp.isBefore(this.mark))
@@ -290,7 +289,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Every week
       if (this.mark.getYear() != this.mark.plusWeeks(1).getYear())
       {
-        this.mark = this.mark.minusWeeks(Schedule.getRelativeWeekOfYear(this.mark));
+        this.mark = this.mark.minusWeeks((Schedule.getRelativeWeekOfYear(this.mark) - 1));
         rollingover = true;
       }
       else

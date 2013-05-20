@@ -182,11 +182,38 @@ public class ScheduleAccessorTest
     }
     Occurrence oc4 = accessor.next();
     // FIXME check
-    assertEquals(oc4.getStart(), new DateTime(2014, 01, 04, 9, 0));
+    assertEquals(oc4.getStart(), new DateTime(2017, 11, 11, 9, 0));
   }
 
   @Test
   public void testWeeksOfYear() throws Exception
+  {
+    // Simple weeks of year schedule
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(Schedule.ALL)
+                                          .daysOfWeek(2)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    Occurrence oc1 = accessor.next();
+    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
+    Occurrence oc2 = accessor.next();
+    assertEquals(oc2.getStart(), new DateTime(2013, 1, 8, 9, 0));
+    Occurrence oc3 = accessor.next();
+    assertEquals(oc3.getStart(), new DateTime(2013, 1, 15, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      Occurrence ocl = accessor.next();
+      assertTrue(ocl.getStart().getDayOfWeek() == 2, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getRelativeWeekOfYear() returned " + Schedule.getRelativeWeekOfYear(ocl.getStart()));
+    }
+    Occurrence oc4 = accessor.next();
+    // FIXME check
+    assertEquals(oc4.getStart(), new DateTime(2032, 7, 6, 9, 0));
+  }
+
+  @Test
+  public void testWeeksOfYear2() throws Exception
   {
     // Simple weeks of year schedule
     final Schedule schedule = new Schedule.Builder()
@@ -212,9 +239,8 @@ public class ScheduleAccessorTest
     assertEquals(oc4.getStart(), new DateTime(3016, 1, 2, 9, 0));
   }
 
-
   @Test
-  public void testWeeksOfYear2() throws Exception
+  public void testWeeksOfYear3() throws Exception
   {
     // Weeks of year schedule with multiple entries
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52);
