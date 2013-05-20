@@ -59,31 +59,65 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
    */
   private void resetIndices()
   {
-    if (this.schedule.getMonthsOfYear().isPresent())
+    if (this.schedule.getMonthsOfYear().isPresent() && (!this.schedule.getMonthsOfYear().get().contains(Schedule.ALL)))
     {
       this.curMonthsOfYearIndex = this.schedule.getMonthsOfYear().get().indexOf(this.mark.getMonthOfYear());
     }
-    if (this.schedule.getWeeksOfYear().isPresent())
+    if (this.schedule.getWeeksOfYear().isPresent() && (!this.schedule.getWeeksOfYear().get().contains(Schedule.ALL)))
     {
       this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(this.mark.getWeekOfWeekyear());
     }
-    if (this.schedule.getWeeksOfMonth().isPresent())
+    if (this.schedule.getWeeksOfMonth().isPresent() && (!this.schedule.getWeeksOfMonth().get().contains(Schedule.ALL)))
     {
       this.curWeeksOfMonthIndex = 0;
     }
-    if (this.schedule.getDaysOfYear().isPresent())
+    if (this.schedule.getDaysOfYear().isPresent() && (!this.schedule.getDaysOfYear().get().contains(Schedule.ALL)))
     {
       this.curDaysOfYearIndex = this.schedule.getDaysOfYear().get().indexOf(this.mark.getDayOfYear());
     }
-    if (this.schedule.getDaysOfMonth().isPresent())
+    if (this.schedule.getDaysOfMonth().isPresent() && (!this.schedule.getDaysOfMonth().get().contains(Schedule.ALL)))
     {
       this.curDaysOfMonthIndex = this.schedule.getDaysOfMonth().get().indexOf(this.mark.getDayOfMonth());
     }
-    if (this.schedule.getDaysOfWeek().isPresent())
+    if (this.schedule.getDaysOfWeek().isPresent() && (!this.schedule.getDaysOfWeek().get().contains(Schedule.ALL)))
     {
       this.curDaysOfWeekIndex = this.schedule.getDaysOfWeek().get().indexOf(this.mark.getDayOfWeek());
     }
     this.preset = true;
+  }
+
+  /**
+   * Reset the mark to provide the correct day of the week
+   */
+  private void resetDayOfWeek()
+  {
+    if (this.schedule.getDaysOfWeek().isPresent() && (!this.schedule.getDaysOfWeek().get().contains(Schedule.ALL)))
+    {
+      // We have either a week of month or a week of year setup.
+      if (this.schedule.getWeeksOfYear().isPresent() && (!this.schedule.getWeeksOfYear().get().contains(Schedule.ALL)))
+      {
+        // This is a week of year setup.  Ensure that we are on the correct week of the year as per the schedule
+        this.mark = this.mark.withMonthOfYear(1).withDayOfMonth(1).plusWeeks(this.schedule.getWeeksOfYear().get().get(this.curWeeksOfYearIndex) - 1);
+      }
+      if (this.schedule.getWeeksOfMonth().isPresent() && (!this.schedule.getWeeksOfMonth().get().contains(Schedule.ALL)))
+      {
+        // This is a week of month setup.  Ensure that we are on the correct week of the month as per the schedule
+        this.mark = this.mark.withDayOfMonth(1).plusWeeks(this.schedule.getWeeksOfMonth().get().get(this.curWeeksOfMonthIndex) - 1);
+      }
+
+
+      // We need to reset the day to ensure that it is a valid day of week
+      final DateTime tmp = this.mark.withDayOfWeek(this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
+      if (tmp.isBefore(this.mark))
+      {
+        // We went back in time, which isn't a smart move.  Go forward one week to reset
+        this.mark = tmp.plusWeeks(1);
+      }
+      else
+      {
+        this.mark = tmp;
+      }
+    }
   }
 
   @Override
@@ -135,8 +169,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           }
         }
       }
+      resetDayOfWeek(); // FIXME only call when needed
     }
-
     return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
   }
 
@@ -254,10 +288,9 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (weeksOfYear.contains(Schedule.ALL))
     {
       // Every week
-      // FIXME wrong wrong wrong
-      if (this.mark.equals(this.mark.weekOfWeekyear().withMaximumValue()))
+      if (this.mark.getYear() != this.mark.plusWeeks(1).getYear())
       {
-        this.mark = this.mark.weekOfWeekyear().withMinimumValue();
+        this.mark = this.mark.minusWeeks(Schedule.getRelativeWeekOfYear(this.mark));
         rollingover = true;
       }
       else

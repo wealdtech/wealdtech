@@ -16,8 +16,6 @@
 
 package com.wealdtech.schedule;
 
-import static com.wealdtech.Preconditions.*;
-
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -33,6 +31,8 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.wealdtech.utils.Accessor;
 import com.wealdtech.utils.PeriodOrdering;
+
+import static com.wealdtech.Preconditions.*;
 
 /**
  * A Schedule is a statement of one or more {@link Occurrence} instances.
@@ -312,11 +312,19 @@ public class Schedule implements Comparable<Schedule>
   }
 
   /**
-   * Calculate the real week of the year, with the first week
-   * of the year being the week in
+   * Calculate the relative week of the year.
+   * Relative weeks work on the 1st of January being the first day of the
+   * first week of the year.
+   * <p/>Note that due to leap years it is possible for dates after
+   * 28th February to be in different relative weeks in different years.
    * @param datetime
-   * @return
+   * @return the relative week of the year, in the range 1 to 53
    */
+  public static int getRelativeWeekOfYear(final DateTime datetime)
+  {
+    return 1 + (datetime.getDayOfYear() - 1) / 7;
+  }
+
   public static int getRealWeekOfYear(final DateTime datetime)
   {
     int weekOfYear;
