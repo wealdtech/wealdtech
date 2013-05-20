@@ -251,12 +251,26 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (weeksOfMonth.contains(Schedule.ALL))
     {
       // Every week
+      if (this.mark.getMonthOfYear() != this.mark.plusWeeks(1).getYear())
+      {
+        // Rolling over; reset the week to the first week of this month
+//        this.mark = this.mark.minusWeeks(Schedule.getRelativeWeekOfMonth(this.mark) - 1));
+        rollingover = true;
+      }
+      else
+      {
+        this.mark = this.mark.plusWeeks(1);
+      }
+    }
+    if (weeksOfMonth.contains(Schedule.ALL))
+    {
+      // Every week
       if (this.mark.plusWeeks(1).getMonthOfYear() > this.mark.getMonthOfYear())
       {
+        // FIXME looks like rubbish
         this.mark = this.mark.monthOfYear().withMinimumValue();
         rollingover = true;
       }
-      // TODO check to see if 7 days ahead is in the next month
       this.mark = this.mark.plusWeeks(1);
     }
     else
@@ -289,6 +303,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Every week
       if (this.mark.getYear() != this.mark.plusWeeks(1).getYear())
       {
+        // Rolling over; reset the week to the first week of this year
         this.mark = this.mark.minusWeeks((Schedule.getRelativeWeekOfYear(this.mark) - 1));
         rollingover = true;
       }
@@ -310,6 +325,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         int weeks = weeksOfYear.get(this.curWeeksOfYearIndex) - weeksOfYear.get(0);
         this.curWeeksOfYearIndex = 0;
+        // Rolling over; reset the week to the first valid week of this year as per the schedule
         this.mark = this.mark.minusWeeks(weeks);
         rollingover = true;
       }
@@ -346,7 +362,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Every day
       if (this.mark.equals(this.mark.dayOfWeek().withMaximumValue()))
       {
-        this.mark = this.mark.dayOfWeek().withMinimumValue();
+        // Rolling over; reset the day to the first day of the week
+        this.mark = this.mark.withDayOfWeek(1);
         rollingover = true;
       }
       else
@@ -367,6 +384,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         int days = daysOfWeek.get(this.curDaysOfWeekIndex) - daysOfWeek.get(0);
         this.curDaysOfWeekIndex = 0;
+        // Rolling over; reset the day to the first valid day of this week as per the schedule
         this.mark = this.mark.minusDays(days);
         rollingover = true;
       }
@@ -384,7 +402,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Every day
       if (this.mark.equals(this.mark.dayOfMonth().withMaximumValue()))
       {
-        this.mark = this.mark.dayOfMonth().withMinimumValue();
+        // Rolling over; reset the day to the first day of the month
+        this.mark = this.mark.withDayOfMonth(1);
         rollingover = true;
       }
       else
@@ -404,6 +423,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         int days = daysOfMonth.get(this.curDaysOfMonthIndex) - daysOfMonth.get(0);
         this.curDaysOfMonthIndex = 0;
+        // Rolling over; reset the day to the first valid day of this month as per the schedule
         this.mark = this.mark.minusDays(days);
         rollingover = true;
       }
@@ -421,7 +441,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Every day
       if (this.mark.equals(this.mark.dayOfYear().withMaximumValue()))
       {
-        this.mark = this.mark.dayOfYear().withMinimumValue();
+        // Rolling over; reset the day to the first day of the year
+        this.mark = this.mark.withDayOfYear(1);
         rollingover  = true;
       }
       else
@@ -442,6 +463,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         int days = daysOfYear.get(this.curDaysOfYearIndex) - daysOfYear.get(0);
         this.curDaysOfYearIndex = 0;
+        // Rolling over; reset the day to the first valid day of this year as per the schedule
         this.mark = this.mark.minusDays(days);
         rollingover = true;
       }
