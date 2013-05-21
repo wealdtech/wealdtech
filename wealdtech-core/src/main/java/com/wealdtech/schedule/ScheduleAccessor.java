@@ -142,6 +142,37 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     return !this.schedule.terminates();
   }
 
+//  @Override
+//  public Occurrence next()
+//  {
+//    if (this.preset == true)
+//    {
+//      // Use the preset value
+//      this.preset = false;
+//    }
+//    else
+//    {
+//      // We work on the basis of increments and rollovers.
+//      boolean rolledover = false;
+//      rolledover = nextDay();
+//      if (rolledover)
+//      {
+//        // Our days rolled over, go to weeks
+//        rolledover = nextWeek();
+//        if (rolledover)
+//        {
+//          rolledover = nextMonth();
+//          if (rolledover)
+//          {
+//            nextYear();
+//          }
+//        }
+//      }
+//      resetDayOfWeek(); // FIXME only call when needed
+//    }
+//    return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
+//  }
+
   @Override
   public Occurrence next()
   {
@@ -152,31 +183,31 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     else
     {
-      // We work on the basis of increments and rollovers.
+      // We increment the day and then ensure that it continues to fit the additional constraints
       boolean rolledover = false;
       rolledover = nextDay();
       if (rolledover)
       {
-        // Our days rolled over, go to weeks
-        rolledover = nextWeek();
+        // Ensure that the new mark meets our constraints and fix it if it doesn't
+        rolledover = constrainWeek();
         if (rolledover)
         {
-          rolledover = nextMonth();
+          rolledover = constrainMonth();
           if (rolledover)
           {
-            nextYear();
+            constrainYear();
           }
         }
       }
-      resetDayOfWeek(); // FIXME only call when needed
+//      resetDayOfWeek(); // FIXME only call when needed
     }
     return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
   }
 
-  // Get the next year for our schedule
-  private void nextYear()
+  // Constrain the year to valid values
+  private void constrainYear()
   {
-    this.mark = this.mark.plusYears(this.schedule.getYearGap() + 1);
+    this.mark = this.mark.plusYears(this.schedule.getYearGap());
   }
 
   // Get the next month for our schedule
@@ -227,6 +258,108 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     return rollingover;
   }
+
+  // Ensure that the updated month fits the current constraints, and if not then fix it so that it does
+  private boolean constrainMonth()
+  {
+    boolean rollingover = true;
+    if (this.schedule.getMonthsOfYear().isPresent())
+    {
+      rollingover = constrainMonthOfYear();
+    }
+    return rollingover;
+  }
+
+  private boolean constrainMonthOfYear()
+  {
+    boolean rollingover = false;
+    ImmutableList<Integer> monthsOfYear = this.schedule.getMonthsOfYear().get();
+    if (monthsOfYear.contains(Schedule.ALL))
+    {
+      // Every month
+      if (this.mark.getYear() != this.mark.minusMonths(1).getYear())
+      {
+        // Rolling over
+        rollingover = true;
+      }
+    }
+    else
+    {
+      // Specific months
+      if (this.curMonthsOfYearIndex < monthsOfYear.size() - 1)
+      {
+        int months = monthsOfYear.get(this.curMonthsOfYearIndex + 1) - monthsOfYear.get(this.curMonthsOfYearIndex);
+        this.curMonthsOfYearIndex++;
+        // Remember we have already rolled over so need to reduce the delta by 1 here
+        this.mark = this.mark.plusMonths(months - 1);
+      }
+      else
+      {
+        this.curMonthsOfYearIndex = 0;
+        // Rolling over; reset the month to the first valid month of the next year as per the schedule
+        this.mark = this.mark.plusYears(1).withMonthOfYear(monthsOfYear.get(0));
+        rollingover = true;
+      }
+    }
+    return rollingover;
+  }
+
+  // Ensure that the updated week fits the current constraints, and if not then fix it so that it does
+  private boolean constrainWeek()
+  {
+    boolean rollingover = true;
+    if (this.schedule.getWeeksOfMonth().isPresent())
+    {
+      rollingover = constrainWeekOfMonth();
+    }
+    else if (this.schedule.getWeeksOfYear().isPresent())
+    {
+      rollingover = constrainWeekOfYear();
+    }
+    return rollingover;
+  }
+
+  private boolean constrainWeekOfMonth()
+  {
+    // FIXME code!
+    return false;
+  }
+
+  private boolean constrainWeekOfYear()
+  {
+    boolean rollingover = false;
+    ImmutableList<Integer> weeksOfYear = this.schedule.getWeeksOfYear().get();
+    if (weeksOfYear.contains(Schedule.ALL))
+    {
+      // Every week
+      if (this.mark.getYear() != this.mark.minusWeeks(1).getYear())
+      {
+        // Rolling over
+        rollingover = true;
+      }
+    }
+    else
+    {
+      // Specific weeks
+      if (this.curWeeksOfYearIndex < weeksOfYear.size() - 1)
+      {
+        int weeks = weeksOfYear.get(this.curWeeksOfYearIndex + 1) - weeksOfYear.get(this.curWeeksOfYearIndex);
+        this.curWeeksOfYearIndex++;
+        this.mark = this.mark.plusWeeks(weeks);
+      }
+      else
+      {
+        int weeks = weeksOfYear.get(this.curWeeksOfYearIndex) - weeksOfYear.get(0);
+        this.curWeeksOfYearIndex = 0;
+        // Rolling over; reset the week to the first valid week of this year as per the schedule
+        // FIXME is this valid for consecutive years with different numbers of weeks?
+        this.mark = this.mark.plusYears(1).minusWeeks(weeks);
+        rollingover = true;
+      }
+    }
+    return rollingover;
+  }
+
 
   // Get the next week for our schedule
   private boolean nextWeek()
@@ -360,21 +493,17 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (daysOfWeek.contains(Schedule.ALL))
     {
       // Every day
-      if (this.mark.equals(this.mark.dayOfWeek().withMaximumValue()))
+      this.mark = this.mark.plusDays(1);
+      if (this.mark.getDayOfWeek() == 1)
       {
-        // Rolling over; reset the day to the first day of the week
-        this.mark = this.mark.withDayOfWeek(1);
+        // We've rolled over in to another week
         rollingover = true;
-      }
-      else
-      {
-        this.mark = this.mark.plusDays(1);
       }
     }
     else
     {
       // Specific days
-      if (this.curDaysOfWeekIndex < daysOfWeek.size() - 1)
+      if (this.curDaysOfWeekIndex != (daysOfWeek.size() - 1))
       {
         int days = daysOfWeek.get(this.curDaysOfWeekIndex + 1) - daysOfWeek.get(this.curDaysOfWeekIndex);
         this.curDaysOfWeekIndex++;
@@ -382,10 +511,9 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       }
       else
       {
-        int days = daysOfWeek.get(this.curDaysOfWeekIndex) - daysOfWeek.get(0);
+        // Reached the end of the list, go back to the first entry and increment the week
         this.curDaysOfWeekIndex = 0;
-        // Rolling over; reset the day to the first valid day of this week as per the schedule
-        this.mark = this.mark.minusDays(days);
+        this.mark = this.mark.withDayOfWeek(daysOfWeek.get(this.curDaysOfWeekIndex)).plusWeeks(1);
         rollingover = true;
       }
     }
@@ -400,20 +528,17 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (daysOfMonth.contains(Schedule.ALL))
     {
       // Every day
-      if (this.mark.equals(this.mark.dayOfMonth().withMaximumValue()))
+      this.mark = this.mark.plusDays(1);
+      if (this.mark.getDayOfMonth() == 1)
       {
-        // Rolling over; reset the day to the first day of the month
-        this.mark = this.mark.withDayOfMonth(1);
+        // We've rolled over in to another month
         rollingover = true;
-      }
-      else
-      {
-        this.mark = this.mark.plusDays(1);
       }
     }
     else
     {
-      if (this.curDaysOfMonthIndex < daysOfMonth.size() - 1)
+      // Specific days
+      if (this.curDaysOfMonthIndex != (daysOfMonth.size() - 1))
       {
         int days = daysOfMonth.get(this.curDaysOfMonthIndex + 1) - daysOfMonth.get(this.curDaysOfMonthIndex);
         this.curDaysOfMonthIndex++;
@@ -421,10 +546,9 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       }
       else
       {
-        int days = daysOfMonth.get(this.curDaysOfMonthIndex) - daysOfMonth.get(0);
+        // Reached the end of the list, go back to the first entry and increment the month
         this.curDaysOfMonthIndex = 0;
-        // Rolling over; reset the day to the first valid day of this month as per the schedule
-        this.mark = this.mark.minusDays(days);
+        this.mark = this.mark.withDayOfMonth(daysOfMonth.get(this.curDaysOfMonthIndex)).plusMonths(1);
         rollingover = true;
       }
     }
@@ -439,21 +563,17 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     if (daysOfYear.contains(Schedule.ALL))
     {
       // Every day
-      if (this.mark.equals(this.mark.dayOfYear().withMaximumValue()))
+      this.mark = this.mark.plusDays(1);
+      if (this.mark.getDayOfYear() == 1)
       {
-        // Rolling over; reset the day to the first day of the year
-        this.mark = this.mark.withDayOfYear(1);
-        rollingover  = true;
-      }
-      else
-      {
-        this.mark = this.mark.plusDays(1);
+        // We've rolled over in to another year
+        rollingover = true;
       }
     }
     else
     {
       // Specific days
-      if (this.curDaysOfYearIndex < daysOfYear.size() - 1)
+      if (this.curDaysOfYearIndex != (daysOfYear.size() - 1))
       {
         int days = daysOfYear.get(this.curDaysOfYearIndex + 1) - daysOfYear.get(this.curDaysOfYearIndex);
         this.curDaysOfYearIndex++;
@@ -461,15 +581,133 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       }
       else
       {
-        int days = daysOfYear.get(this.curDaysOfYearIndex) - daysOfYear.get(0);
+        // Reached the end of the list, go back to the first entry and increment the year
         this.curDaysOfYearIndex = 0;
-        // Rolling over; reset the day to the first valid day of this year as per the schedule
-        this.mark = this.mark.minusDays(days);
+        this.mark = this.mark.withDayOfYear(daysOfYear.get(this.curDaysOfYearIndex)).plusYears(1);
         rollingover = true;
       }
     }
     return rollingover;
   }
+
+//  // Get the next day for our days-per-week schedule
+//  private boolean nextDayOfWeek()
+//  {
+//    boolean rollingover = false;
+//    ImmutableList<Integer> daysOfWeek = this.schedule.getDaysOfWeek().get();
+//    if (daysOfWeek.contains(Schedule.ALL))
+//    {
+//      // Every day
+//      if (this.mark.equals(this.mark.dayOfWeek().withMaximumValue()))
+//      {
+//        // Rolling over; reset the day to the first day of the week
+//        this.mark = this.mark.withDayOfWeek(1);
+//        rollingover = true;
+//      }
+//      else
+//      {
+//        this.mark = this.mark.plusDays(1);
+//      }
+//    }
+//    else
+//    {
+//      // Specific days
+//      if (this.curDaysOfWeekIndex < daysOfWeek.size() - 1)
+//      {
+//        int days = daysOfWeek.get(this.curDaysOfWeekIndex + 1) - daysOfWeek.get(this.curDaysOfWeekIndex);
+//        this.curDaysOfWeekIndex++;
+//        this.mark = this.mark.plusDays(days);
+//      }
+//      else
+//      {
+//        int days = daysOfWeek.get(this.curDaysOfWeekIndex) - daysOfWeek.get(0);
+//        this.curDaysOfWeekIndex = 0;
+//        // Rolling over; reset the day to the first valid day of this week as per the schedule
+//        this.mark = this.mark.minusDays(days);
+//        rollingover = true;
+//      }
+//    }
+//    return rollingover;
+//  }
+
+//  // Get the next day for our days-per-month schedule
+//  private boolean nextDayOfMonth()
+//  {
+//    boolean rollingover = false;
+//    ImmutableList<Integer> daysOfMonth = this.schedule.getDaysOfMonth().get();
+//    if (daysOfMonth.contains(Schedule.ALL))
+//    {
+//      // Every day
+//      if (this.mark.equals(this.mark.dayOfMonth().withMaximumValue()))
+//      {
+//        // Rolling over; reset the day to the first day of the month
+//        this.mark = this.mark.withDayOfMonth(1);
+//        rollingover = true;
+//      }
+//      else
+//      {
+//        this.mark = this.mark.plusDays(1);
+//      }
+//    }
+//    else
+//    {
+//      if (this.curDaysOfMonthIndex < daysOfMonth.size() - 1)
+//      {
+//        int days = daysOfMonth.get(this.curDaysOfMonthIndex + 1) - daysOfMonth.get(this.curDaysOfMonthIndex);
+//        this.curDaysOfMonthIndex++;
+//        this.mark = this.mark.plusDays(days);
+//      }
+//      else
+//      {
+//        int days = daysOfMonth.get(this.curDaysOfMonthIndex) - daysOfMonth.get(0);
+//        this.curDaysOfMonthIndex = 0;
+//        // Rolling over; reset the day to the first valid day of this month as per the schedule
+//        this.mark = this.mark.minusDays(days);
+//        rollingover = true;
+//      }
+//    }
+//    return rollingover;
+//  }
+//
+//  // Get the next day for our days-per-year schedule
+//  private boolean nextDayOfYear()
+//  {
+//    boolean rollingover = false;
+//    ImmutableList<Integer> daysOfYear = this.schedule.getDaysOfYear().get();
+//    if (daysOfYear.contains(Schedule.ALL))
+//    {
+//      // Every day
+//      if (this.mark.equals(this.mark.dayOfYear().withMaximumValue()))
+//      {
+//        // Rolling over; reset the day to the first day of the year
+//        this.mark = this.mark.withDayOfYear(1);
+//        rollingover  = true;
+//      }
+//      else
+//      {
+//        this.mark = this.mark.plusDays(1);
+//      }
+//    }
+//    else
+//    {
+//      // Specific days
+//      if (this.curDaysOfYearIndex < daysOfYear.size() - 1)
+//      {
+//        int days = daysOfYear.get(this.curDaysOfYearIndex + 1) - daysOfYear.get(this.curDaysOfYearIndex);
+//        this.curDaysOfYearIndex++;
+//        this.mark = this.mark.plusDays(days);
+//      }
+//      else
+//      {
+//        int days = daysOfYear.get(this.curDaysOfYearIndex) - daysOfYear.get(0);
+//        this.curDaysOfYearIndex = 0;
+//        // Rolling over; reset the day to the first valid day of this year as per the schedule
+//        this.mark = this.mark.minusDays(days);
+//        rollingover = true;
+//      }
+//    }
+//    return rollingover;
+//  }
 
   @Override
   public boolean hasPrevious()

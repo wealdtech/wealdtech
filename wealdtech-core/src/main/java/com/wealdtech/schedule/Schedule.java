@@ -176,7 +176,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfYear.isPresent())
     {
-      checkState(Collections2.filter(this.weeksOfYear.get(), Range.<Integer>greaterThan(53)).isEmpty(), "Weeks of year must not contain values greater than 53");
+      checkState(Collections2.filter(this.weeksOfYear.get(), Range.<Integer>greaterThan(54)).isEmpty(), "Weeks of year must not contain values greater than 54");
     }
 
     if (this.monthsOfYear.isPresent())
