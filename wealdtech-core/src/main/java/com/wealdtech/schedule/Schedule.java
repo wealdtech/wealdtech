@@ -250,8 +250,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfYear.isPresent() && !this.weeksOfYear.get().contains(Schedule.ALL))
     {
-      // FIXME broken
-      if (!this.weeksOfYear.get().contains(datetime.getWeekOfWeekyear()))
+      if (!this.weeksOfYear.get().contains(Schedule.getRelativeWeekOfYear(datetime)))
       {
         return false;
       }
