@@ -73,7 +73,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     if (this.schedule.getWeeksOfYear().isPresent() && (!this.schedule.getWeeksOfYear().get().contains(Schedule.ALL)))
     {
-      this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(Schedule.getRelativeWeekOfYear(this.mark));
+      this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(Schedule.getAbsoluteWeekOfYear(this.mark));
     }
     if (this.schedule.getWeeksOfMonth().isPresent() && (!this.schedule.getWeeksOfMonth().get().contains(Schedule.ALL)))
     {
@@ -450,7 +450,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
         nextMark = this.mark.withDayOfWeek(daysOfWeek.get(this.curDaysOfWeekIndex)).plusWeeks(1);
       }
     }
-    this.weekRolledOver = (Schedule.getRelativeWeekOfYear(this.mark) != Schedule.getRelativeWeekOfYear(nextMark));
+    this.weekRolledOver = (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark));
     this.monthRolledOver = (this.mark.getMonthOfYear() != nextMark.getMonthOfYear());
     this.yearRolledOver = (this.mark.getYear() != nextMark.getYear());
     this.mark = nextMark;

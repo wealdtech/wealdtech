@@ -51,6 +51,8 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2015, 10, 2, 9, 0));
   }
 
+  // Day-of-year tests
+
   @Test
   public void testSpecificDaysOfYear() throws Exception
   {
@@ -70,9 +72,10 @@ public class ScheduleAccessorTest
     {
       assertTrue(daysOfYear.contains(accessor.next().getStart().getDayOfYear()));
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2347, 10, 27, 9, 0));
   }
+
+  // Day-of-month tests
 
   @Test
   public void testSpecificDaysOfMonth() throws Exception
@@ -94,9 +97,37 @@ public class ScheduleAccessorTest
     {
       assertTrue(daysOfMonth.contains(accessor.next().getStart().getDayOfMonth()));
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2029,  10,  2, 9, 0));
   }
+
+  @Test
+  public void test28and29thFeb() throws Exception
+  {
+    // Ensure that a schedule for 28th and 29th February works
+    final ImmutableList<Integer> daysOfMonth = ImmutableList.of(28, 29);
+    final ImmutableList<Integer> monthsOfYear = ImmutableList.of(2);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2016,  2, 28, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfMonth(daysOfMonth)
+                                          .monthsOfYear(monthsOfYear)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 29, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2017,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2018,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2019,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 29, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2021,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2022,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2023,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 29, 9, 0));
+  }
+
+  // Day-of-week tests
 
   @Test
   public void testSpecificDaysOfWeek() throws Exception
@@ -140,28 +171,7 @@ public class ScheduleAccessorTest
     {
       assertTrue(monthsOfYear.contains(accessor.next().getStart().getMonthOfYear()), "Month of year at iteration " + i + " incorrect");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2023,  5, 12, 9, 0));
-  }
-
-  @Test
-  public void testLastWeekOfYear() throws Exception
-  {
-    // Ensure that the last week of the year is rolled over correctly
-    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1, 2, 3, 5, 6);
-    final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 12, 30, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .weeksOfYear(Schedule.ALL)
-                                          .daysOfWeek(daysOfWeek)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 30, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  4, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  6, 9, 0));
   }
 
   @Test
@@ -217,52 +227,6 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2028,  2, 29, 9, 0));
-  }
-
-  @Test
-  public void test28and29thFeb() throws Exception
-  {
-    // Ensure that a schedule for 28th and 29th February works
-    final ImmutableList<Integer> daysOfMonth = ImmutableList.of(28, 29);
-    final ImmutableList<Integer> monthsOfYear = ImmutableList.of(2);
-    final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2016,  2, 28, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .daysOfMonth(daysOfMonth)
-                                          .monthsOfYear(monthsOfYear)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 29, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2017,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2018,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2019,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 29, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2021,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2022,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2023,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 28, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 29, 9, 0));
-  }
-
-  @Test
-  public void test53WeekOfYear() throws Exception
-  {
-    // Ensure that a schedule with 2nd day of 53rd week of year works
-    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
-    final ImmutableList<Integer> weeksOfYear = ImmutableList.of(53);
-    final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2024, 12, 31, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .weeksOfYear(weeksOfYear)
-                                          .daysOfWeek(daysOfWeek)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2024, 12, 31, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2030, 12, 31, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2036, 12, 30, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2041, 12, 31, 9, 0));
   }
 
   @Test
@@ -345,6 +309,53 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2020,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 29, 9, 0));
   }
+
+  // Day-of-week tests
+
+  @Test
+  public void testLastWeekOfYear() throws Exception
+  {
+    // Ensure that the last week of the year is rolled over correctly
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1, 2, 3, 5, 6);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 12, 30, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(Schedule.ALL)
+                                          .daysOfWeek(daysOfWeek)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 30, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  4, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  6, 9, 0));
+  }
+
+
+  // Week of month-based tests
+
+  // Week of year-based tests
+
+  @Test
+  public void test53WeekOfYear() throws Exception
+  {
+    // Ensure that a schedule with 2nd day of 53rd week of year works
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
+    final ImmutableList<Integer> weeksOfYear = ImmutableList.of(53);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2024, 12, 31, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(weeksOfYear)
+                                          .daysOfWeek(daysOfWeek)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2024, 12, 31, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2030, 12, 31, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2036, 12, 30, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2041, 12, 31, 9, 0));
+  }
+
 
 //  @Test
 //  public void testDaysOfMonthAndMonthsOfYear() throws Exception

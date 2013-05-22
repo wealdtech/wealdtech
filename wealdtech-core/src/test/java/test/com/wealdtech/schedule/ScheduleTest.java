@@ -16,8 +16,6 @@
 
 package test.com.wealdtech.schedule;
 
-import static org.testng.Assert.*;
-
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -26,6 +24,8 @@ import org.testng.annotations.Test;
 
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
+
+import static org.testng.Assert.*;
 
 public class ScheduleTest
 {
@@ -139,21 +139,4 @@ public class ScheduleTest
     }
   }
 
-  @Test
-  public void testRealWeekOfYear() throws Exception
-  {
-    for (int i = 1970; i < 2070; i++)
-    {
-      DateTime dt = new DateTime(i, 1, 1, 1, 0);
-      int realWeekOfYear = Schedule.getRealWeekOfYear(dt);
-      assertEquals(realWeekOfYear, 1, "Real week of year was " + realWeekOfYear + "(" + dt + ")");
-    }
-
-    for (int i = 1970; i < 2070; i++)
-    {
-      DateTime dt = new DateTime(i, 12, 31, 1, 0);
-      int realWeekOfYear = Schedule.getRealWeekOfYear(dt);
-      assertTrue(realWeekOfYear >= 52 && realWeekOfYear <= 54, "Real week of year was " + realWeekOfYear + "(" + dt + ")");
-    }
-}
 }

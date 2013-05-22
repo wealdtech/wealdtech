@@ -250,7 +250,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfYear.isPresent() && !this.weeksOfYear.get().contains(Schedule.ALL))
     {
-      if (!this.weeksOfYear.get().contains(Schedule.getRelativeWeekOfYear(datetime)))
+      if (!this.weeksOfYear.get().contains(Schedule.getAbsoluteWeekOfYear(datetime)))
       {
         return false;
       }
@@ -311,59 +311,17 @@ public class Schedule implements Comparable<Schedule>
   }
 
   /**
-   * Calculate the relative week of the year.
-   * Relative weeks work on the 1st of January being the first day of the
+   * Calculate the absolute week of the year.
+   * Absolute weeks work on the 1st of January being the first day of the
    * first week of the year.
    * <p/>Note that due to leap years it is possible for dates after
    * 28th February to be in different relative weeks in different years.
    * @param datetime
-   * @return the relative week of the year, in the range 1 to 53
+   * @return the absolute week of the year, in the range 1 to 53
    */
-  public static int getRelativeWeekOfYear(final DateTime datetime)
+  public static int getAbsoluteWeekOfYear(final DateTime datetime)
   {
     return 1 + (datetime.getDayOfYear() - 1) / 7;
-  }
-
-  public static int getRealWeekOfYear(final DateTime datetime)
-  {
-    int weekOfYear;
-    int offset = 0;
-    int weeksInYear = 52;
-    if (datetime.withDayOfMonth(1).withMonthOfYear(1).weekOfWeekyear().get() > 1)
-    {
-      // This is a year which had less than four days in its first real week.  Need
-      // to compensate by adding 1 to the normal week values generated
-      offset = 1;
-      weeksInYear++;
-    }
-    if (datetime.dayOfYear().get() < 4)
-    {
-      weekOfYear = 1;
-    }
-    else
-    {
-      weekOfYear = datetime.weekOfWeekyear().get() + offset;
-    }
-
-    if (datetime.monthOfYear().get() == 12 && datetime.dayOfMonth().get() > 27)
-    {
-      if (datetime.withDayOfMonth(31).withMonthOfYear(12).weekOfWeekyear().get() == 1)
-      {
-        // This is a year which had less than four days in its last real week.  Need
-        // to compensate by resetting week number if last week of the year
-        weeksInYear++;
-        if (weekOfYear == (1 + offset))
-        {
-          weekOfYear = weeksInYear;
-        }
-      }
-    }
-    return weekOfYear;
-  }
-
-  public static int getRealWeekOfMonth(final DateTime datetime, final int month)
-  {
-    return 0;
   }
 
   // Standard object methods follow
