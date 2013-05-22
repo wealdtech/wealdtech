@@ -324,6 +324,24 @@ public class Schedule implements Comparable<Schedule>
     return 1 + (datetime.getDayOfYear() - 1) / 7;
   }
 
+  /**
+   * Set the day of the week using the absolute week definition
+   * as per {@link getAbsoluteWeekOfYear}.
+   * @param datetime
+   * @return
+   */
+  public static DateTime withDayOfAbsoluteWeek(final DateTime datetime, final int day)
+  {
+    final int weekOfYear = getAbsoluteWeekOfYear(datetime);
+    return datetime.withDayOfYear((weekOfYear - 1) * 7 + day);
+  }
+
+  public static DateTime withAbsoluteWeekOfYear(final DateTime datetime, final int week)
+  {
+    final int dayOfWeek = datetime.getDayOfYear() - ((getAbsoluteWeekOfYear(datetime) - 1) * 7);
+    return datetime.withDayOfYear((week - 1) * 7 + dayOfWeek );
+  }
+
   // Standard object methods follow
   @Override
   public String toString()

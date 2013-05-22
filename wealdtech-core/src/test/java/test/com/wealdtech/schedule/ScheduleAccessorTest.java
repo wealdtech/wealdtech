@@ -144,6 +144,10 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  5, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  8, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  9, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 12, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
       assertTrue(daysOfWeek.contains(accessor.next().getStart().getDayOfWeek()));
@@ -329,7 +333,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  3, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  4, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  6, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  8, 9, 0));
   }
 
 
