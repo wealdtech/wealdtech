@@ -63,27 +63,27 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
    */
   private void resetIndices()
   {
-    if (this.schedule.getMonthsOfYear().isPresent() && (!this.schedule.getMonthsOfYear().get().contains(Schedule.ALL)))
+    if (this.schedule.getMonthsOfYear().isPresent())
     {
       this.curMonthsOfYearIndex = this.schedule.getMonthsOfYear().get().indexOf(this.mark.getMonthOfYear());
     }
-    if (this.schedule.getWeeksOfYear().isPresent() && (!this.schedule.getWeeksOfYear().get().contains(Schedule.ALL)))
+    if (this.schedule.getWeeksOfYear().isPresent())
     {
       this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(Schedule.getAbsoluteWeekOfYear(this.mark));
     }
-    if (this.schedule.getWeeksOfMonth().isPresent() && (!this.schedule.getWeeksOfMonth().get().contains(Schedule.ALL)))
+    if (this.schedule.getWeeksOfMonth().isPresent())
     {
       this.curWeeksOfMonthIndex = 0;
     }
-    if (this.schedule.getDaysOfYear().isPresent() && (!this.schedule.getDaysOfYear().get().contains(Schedule.ALL)))
+    if (this.schedule.getDaysOfYear().isPresent())
     {
       this.curDaysOfYearIndex = this.schedule.getDaysOfYear().get().indexOf(this.mark.getDayOfYear());
     }
-    if (this.schedule.getDaysOfMonth().isPresent() && (!this.schedule.getDaysOfMonth().get().contains(Schedule.ALL)))
+    if (this.schedule.getDaysOfMonth().isPresent())
     {
       this.curDaysOfMonthIndex = this.schedule.getDaysOfMonth().get().indexOf(this.mark.getDayOfMonth());
     }
-    if (this.schedule.getDaysOfWeek().isPresent() && (!this.schedule.getDaysOfWeek().get().contains(Schedule.ALL)))
+    if (this.schedule.getDaysOfWeek().isPresent())
     {
       this.curDaysOfWeekIndex = this.schedule.getDaysOfWeek().get().indexOf(this.mark.getDayOfWeek());
     }
@@ -92,7 +92,11 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
 
   private DateTime resetWeek(final DateTime mark)
   {
-    if (this.schedule.getWeeksOfYear().isPresent())
+    if (this.schedule.getWeeksOfMonth().isPresent())
+    {
+      return resetWeekOfMonth(mark);
+    }
+    else if (this.schedule.getWeeksOfYear().isPresent())
     {
       return resetWeekOfYear(mark);
     }
@@ -102,17 +106,16 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
   }
 
+  private DateTime resetWeekOfMonth(final DateTime mark)
+  {
+    this.curWeeksOfMonthIndex = 0;
+    return Schedule.withAbsoluteWeekOfMonth(mark, this.schedule.getWeeksOfMonth().get().get(0));
+  }
+
   private DateTime resetWeekOfYear(final DateTime mark)
   {
-    if (this.schedule.getWeeksOfYear().get().contains(Schedule.ALL))
-    {
-      return Schedule.withAbsoluteWeekOfYear(mark, 1);
-    }
-    else
-    {
       this.curWeeksOfYearIndex = 0;
       return Schedule.withAbsoluteWeekOfYear(mark, this.schedule.getWeeksOfYear().get().get(0));
-    }
   }
 
   private DateTime resetMonth(final DateTime mark)
@@ -129,22 +132,26 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
 
   private DateTime resetMonthOfYear(final DateTime mark)
   {
-    if (this.schedule.getMonthsOfYear().get().contains(Schedule.ALL))
-    {
-      return mark.withMonthOfYear(1);
-    }
-    else
-    {
       this.curMonthsOfYearIndex = 0;
       return mark.withMonthOfYear(this.schedule.getMonthsOfYear().get().get(0));
-    }
   }
 
   private DateTime resetDay(final DateTime mark)
   {
     if (this.schedule.getDaysOfWeek().isPresent())
     {
-      return resetDayOfWeek(mark);
+      if (this.schedule.getWeeksOfYear().isPresent())
+      {
+        return resetDayOfWeek(mark);
+      }
+      else if (this.schedule.getWeeksOfMonth().isPresent())
+      {
+        return resetDayOfWeekOfMonth(mark);
+      }
+      else
+      {
+        throw new ServerError("Bad schedule (DoW without Wo?)");
+      }
     }
     else if (this.schedule.getDaysOfMonth().isPresent())
     {
@@ -163,51 +170,32 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   /**
    * Reset the mark to provide the correct day of the week
    */
-  private DateTime resetDayOfWeek(DateTime mark)
+  private DateTime resetDayOfWeek(final DateTime mark)
   {
-    if (this.schedule.getDaysOfWeek().get().contains(Schedule.ALL))
-    {
-      mark = Schedule.withDayOfAbsoluteWeek(mark, 1);
-    }
-    else
-    {
-      mark = Schedule.withDayOfAbsoluteWeek(mark, this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
-    }
-    return mark;
+    return Schedule.withDayOfAbsoluteWeek(mark, this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
+  }
+
+  private DateTime resetDayOfWeekOfMonth(final DateTime mark)
+  {
+    return Schedule.withDayOfAbsoluteWeekOfMonth(mark, this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
   }
 
   /**
    * Reset the day of the month to the first valid value
    * @throws IllegalFieldValueException if this results in an invalid date
    */
-  private DateTime resetDayOfMonth(DateTime mark) throws IllegalFieldValueException
+  private DateTime resetDayOfMonth(final DateTime mark) throws IllegalFieldValueException
   {
-    if (this.schedule.getDaysOfMonth().get().contains(Schedule.ALL))
-    {
-      mark = mark.withDayOfMonth(1);
-    }
-    else
-    {
-      mark = mark.withDayOfMonth(this.schedule.getDaysOfMonth().get().get(this.curDaysOfMonthIndex));
-    }
-    return mark;
+      return mark.withDayOfMonth(this.schedule.getDaysOfMonth().get().get(this.curDaysOfMonthIndex));
   }
 
   /**
    * Reset the day of the year to the first valid value
    * @throws IllegalFieldValueException if this results in an invalid date
    */
-  private DateTime resetDayOfYear(DateTime mark) throws IllegalFieldValueException
+  private DateTime resetDayOfYear(final DateTime mark) throws IllegalFieldValueException
   {
-    if (this.schedule.getDaysOfYear().get().contains(Schedule.ALL))
-    {
-      mark = mark.withDayOfYear(1);
-    }
-    else
-    {
-      mark = mark.withDayOfYear(this.schedule.getDaysOfYear().get().get(this.curDaysOfYearIndex));
-    }
-    return mark;
+      return mark.withDayOfYear(this.schedule.getDaysOfYear().get().get(this.curDaysOfYearIndex));
   }
 
   @Override
@@ -345,8 +333,41 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
 
   private DateTime nextWeekOfMonth(final DateTime mark)
   {
-    // FIXME code
-    throw new ServerError("TODO");
+    final ImmutableList<Integer> weeksOfMonth = this.schedule.getWeeksOfMonth().get();
+    DateTime nextMark = mark;
+    try
+    {
+      if (this.curWeeksOfMonthIndex == weeksOfMonth.size() - 1)
+      {
+        // Reached the end of our specified weeks of the month.  Reset and rollover
+        throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
+      }
+      final int weeksToAdd = weeksOfMonth.get(this.curWeeksOfMonthIndex + 1) - weeksOfMonth.get(this.curWeeksOfMonthIndex++);
+      nextMark = nextMark.plusWeeks(weeksToAdd);
+      if (this.mark.getMonthOfYear() != nextMark.getMonthOfYear())
+      {
+        // We've moved in to next month; roll over
+        throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
+      }
+    }
+    catch (IllegalFieldValueException ifve)
+    {
+      // Our attempt to increment the week caused an invalid value, which
+      // means that there are no more valid values for this month.  Roll the
+      // month over and find the next valid value
+      this.curWeeksOfMonthIndex = 0;
+      if (this.schedule.getMonthsOfYear().isPresent())
+      {
+        nextMark = nextMonthOfYear(this.mark);
+        nextMark = resetWeek(nextMark);
+        nextMark = resetDay(nextMark);
+      }
+      else
+      {
+        throw new ServerError("Invalid schedule format (WoM but no MoY)");
+      }
+    }
+    return nextMark;
   }
 
   // Get the next week for our weeks-of-year schedule.

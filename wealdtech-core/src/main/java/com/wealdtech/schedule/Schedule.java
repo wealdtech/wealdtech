@@ -300,7 +300,10 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfMonth.isPresent())
     {
-      // FIXME work this one out
+      if (!this.weeksOfMonth.get().contains(Schedule.getAbsoluteWeekOfMonth(datetime)))
+      {
+        return false;
+      }
     }
 
     if (this.weeksOfYear.isPresent())
@@ -410,6 +413,30 @@ public class Schedule implements Comparable<Schedule>
   {
     final int dayOfWeek = datetime.getDayOfYear() - ((getAbsoluteWeekOfYear(datetime) - 1) * DateTimeConstants.DAYS_PER_WEEK);
     return datetime.withDayOfYear((week - 1) * DateTimeConstants.DAYS_PER_WEEK + dayOfWeek);
+  }
+
+  public static DateTime withAbsoluteWeekOfMonth(final DateTime datetime, final int week)
+  {
+    int dayOfWeek = (1 + datetime.getDayOfYear() - ((getAbsoluteWeekOfYear(datetime) - 1) * DateTimeConstants.DAYS_PER_WEEK)) % DateTimeConstants.DAYS_PER_WEEK;
+    if (dayOfWeek == 0)
+    {
+      dayOfWeek = 7;
+    }
+    return datetime.withDayOfMonth((week - 1) * DateTimeConstants.DAYS_PER_WEEK + dayOfWeek);
+  }
+
+  public static int getAbsoluteWeekOfMonth(final DateTime datetime)
+  {
+    int days = datetime.getDayOfYear() - datetime.withDayOfMonth(1).getDayOfYear();
+    return 1 + days / DateTimeConstants.DAYS_PER_WEEK;
+  }
+
+  public static DateTime withDayOfAbsoluteWeekOfMonth(final DateTime datetime, final int dayOfWeek)
+  {
+    final int weekOfMonth = getAbsoluteWeekOfMonth(datetime);
+    final int firstDayOfWeek = datetime.withDayOfMonth(1).getDayOfWeek();
+    final int dayOfWeekOffset = ((DateTimeConstants.DAYS_PER_WEEK - firstDayOfWeek) + dayOfWeek) % DateTimeConstants.DAYS_PER_WEEK;
+    return datetime.withDayOfMonth((weekOfMonth - 1) * DateTimeConstants.DAYS_PER_WEEK + 1 + dayOfWeekOffset);
   }
 
   // Standard object methods follow

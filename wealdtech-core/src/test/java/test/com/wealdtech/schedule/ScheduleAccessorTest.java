@@ -356,6 +356,12 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  4,  1, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(accessor.next().getStart())), "Week of month at iteration " + i + " incorrect");
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2096,  9,  3, 9, 0));
   }
 
 
