@@ -110,7 +110,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     else
     {
-      this.curMonthsOfYearIndex = 0;
+      this.curWeeksOfYearIndex = 0;
       return Schedule.withAbsoluteWeekOfYear(mark, this.schedule.getWeeksOfYear().get().get(0));
     }
   }
@@ -276,41 +276,27 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     DateTime nextMark = this.mark;
     try
     {
-      if (daysOfWeek.contains(Schedule.ALL))
+      if (this.curDaysOfWeekIndex == daysOfWeek.size() - 1)
       {
-        // Every day
-        DateTime tmp = nextMark.plusDays(1);
-        if (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(tmp))
-        {
-          throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
-        }
-        nextMark = tmp;
+        // Reached the end of our specified days of the week.  However, we do *not*
+        // reset here because it might be that the week starts on a day other than Monday
+        // and in this case we can start in the middle of the array
+        this.curDaysOfWeekIndex = -1;
+      }
+      final DateTime tmp = nextMark.withDayOfWeek(daysOfWeek.get(++this.curDaysOfWeekIndex));
+      if (tmp.equals(nextMark) || tmp.isBefore(nextMark))
+      {
+        // We didn't move forwards, which isn't a smart move.  Go forward one week to reset
+        nextMark = tmp.plusWeeks(1);
       }
       else
       {
-        // Specific schedule
-        if (this.curDaysOfWeekIndex == daysOfWeek.size() - 1)
-        {
-          // Reached the end of our specified days of the week.  However, we do *not*
-          // reset here because it might be that the week starts on a day other than Monday
-          // and in this case we can start in the middle of the array
-          this.curDaysOfWeekIndex = -1;
-        }
-        final DateTime tmp = nextMark.withDayOfWeek(daysOfWeek.get(++this.curDaysOfWeekIndex));
-        if (tmp.equals(nextMark) || tmp.isBefore(nextMark))
-        {
-          // We didn't move forwards, which isn't a smart move.  Go forward one week to reset
-          nextMark = tmp.plusWeeks(1);
-        }
-        else
-        {
-          nextMark = tmp;
-        }
-        if (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark))
-        {
-          // We've moved in to next week; roll over
-          throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
-        }
+        nextMark = tmp;
+      }
+      if (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark))
+      {
+        // We've moved in to next week; roll over
+        throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
       }
     }
     catch (IllegalFieldValueException ifve)
@@ -372,43 +358,20 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     {
       try
       {
-        if (weeksOfYear.contains(Schedule.ALL))
+        if (this.curWeeksOfYearIndex == weeksOfYear.size() - 1)
         {
-          final DateTime tmp = nextMark.plusWeeks(1);
-          if (mark.getYear() != tmp.getYear())
-          {
-            // Go to the next year
-            throw new IllegalFieldValueException(DateTimeFieldType.weekOfWeekyear(), null, null);
-          }
-          try
-          {
-            nextMark = resetDay(tmp);
-            break;
-          }
-          catch (IllegalFieldValueException ifve)
-          {
-            // This week doesn't match the constraints, go round the loop and try the next
-            nextMark = tmp;
-          }
+          // Reached the end of our specified weeks of the year; reset
+          throw new IllegalFieldValueException(DateTimeFieldType.weekOfWeekyear(), null, null);
         }
-        else
+        final DateTime tmp = Schedule.withAbsoluteWeekOfYear(nextMark, weeksOfYear.get(++this.curWeeksOfYearIndex));
+        try
         {
-          // Specific schedule
-          if (this.curWeeksOfYearIndex == weeksOfYear.size() - 1)
-          {
-            // Reached the end of our specified weeks of the year; reset
-            throw new IllegalFieldValueException(DateTimeFieldType.weekOfWeekyear(), null, null);
-          }
-          final DateTime tmp = Schedule.withAbsoluteWeekOfYear(nextMark, weeksOfYear.get(++this.curWeeksOfYearIndex));
-          try
-          {
-            nextMark = resetDay(tmp);
-            break;
-          }
-          catch (IllegalFieldValueException ifve)
-          {
-            // This month doesn't match the constraints, go round the loop and try the next
-          }
+          nextMark = resetDay(tmp);
+          break;
+        }
+        catch (IllegalFieldValueException ifve)
+        {
+          // This month doesn't match the constraints, go round the loop and try the next
         }
       }
       catch (IllegalFieldValueException ifve)
@@ -439,26 +402,12 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     DateTime nextMark = this.mark;
     try
     {
-      if (daysOfMonth.contains(Schedule.ALL))
+      if (this.curDaysOfMonthIndex == daysOfMonth.size() - 1)
       {
-        // Every day
-        DateTime tmp = nextMark.plusDays(1);
-        if (this.mark.getMonthOfYear() != tmp.getMonthOfYear())
-        {
-          throw new IllegalFieldValueException(DateTimeFieldType.dayOfMonth(), null, null);
-        }
-        nextMark = tmp;
+        // Reached the end of our specified days of the month; reset
+        throw new IllegalFieldValueException(DateTimeFieldType.dayOfMonth(), null, null);
       }
-      else
-      {
-        // Specific schedule
-        if (this.curDaysOfMonthIndex == daysOfMonth.size() - 1)
-        {
-          // Reached the end of our specified days of the month; reset
-          throw new IllegalFieldValueException(DateTimeFieldType.dayOfMonth(), null, null);
-        }
-        nextMark = nextMark.withDayOfMonth(daysOfMonth.get(++this.curDaysOfMonthIndex));
-      }
+      nextMark = nextMark.withDayOfMonth(daysOfMonth.get(++this.curDaysOfMonthIndex));
     }
     catch (IllegalFieldValueException ifve)
     {
@@ -479,28 +428,13 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     {
       try
       {
-        if (daysOfYear.contains(Schedule.ALL))
+        if (this.curDaysOfYearIndex == daysOfYear.size() - 1)
         {
-          final DateTime tmp = nextMark.plusDays(1);
-          if (mark.getYear() != tmp.getYear())
-          {
-            // Go to next year
-            throw new IllegalFieldValueException(DateTimeFieldType.dayOfYear(), null, null);
-          }
-          nextMark = tmp;
-          break;
+          // Reached the end of our specified days of the year; reset
+          throw new IllegalFieldValueException(DateTimeFieldType.dayOfYear(), null, null);
         }
-        else
-        {
-          // Specific schedule
-          if (this.curDaysOfYearIndex == daysOfYear.size() - 1)
-          {
-            // Reached the end of our specified days of the year; reset
-            throw new IllegalFieldValueException(DateTimeFieldType.dayOfYear(), null, null);
-          }
-          nextMark = nextMark.withDayOfYear(daysOfYear.get(++this.curDaysOfYearIndex));
-          break;
-        }
+        nextMark = nextMark.withDayOfYear(daysOfYear.get(++this.curDaysOfYearIndex));
+        break;
       }
       catch (IllegalFieldValueException ifve)
       {
@@ -532,43 +466,20 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     {
       try
       {
-        if (monthsOfYear.contains(Schedule.ALL))
+        if (this.curMonthsOfYearIndex == monthsOfYear.size() - 1)
         {
-          final DateTime tmp = nextMark.plusMonths(1);
-          if (mark.getYear() != tmp.getYear())
-          {
-            // Go to the next year
-            throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
-          }
-          try
-          {
-            nextMark = resetDay(tmp);
-            break;
-          }
-          catch (IllegalFieldValueException ifve)
-          {
-            // This month doesn't match the constraints, go round the loop and try the next
-            nextMark = tmp;
-          }
+          // Reached the end of our specified months of the year; reset
+          throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
         }
-        else
+        final DateTime tmp = nextMark.withMonthOfYear(monthsOfYear.get(++this.curMonthsOfYearIndex));
+        try
         {
-          // Specific schedule
-          if (this.curMonthsOfYearIndex == monthsOfYear.size() - 1)
-          {
-            // Reached the end of our specified months of the year; reset
-            throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
-          }
-          final DateTime tmp = nextMark.withMonthOfYear(monthsOfYear.get(++this.curMonthsOfYearIndex));
-          try
-          {
-            nextMark = resetDay(tmp);
-            break;
-          }
-          catch (IllegalFieldValueException ifve)
-          {
-            // This month doesn't match the constraints, go round the loop and try the next
-          }
+          nextMark = resetDay(tmp);
+          break;
+        }
+        catch (IllegalFieldValueException ifve)
+        {
+          // This month doesn't match the constraints, go round the loop and try the next
         }
       }
       catch (IllegalFieldValueException ifve)

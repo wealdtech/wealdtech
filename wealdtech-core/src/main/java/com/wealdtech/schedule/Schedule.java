@@ -26,6 +26,8 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ContiguousSet;
+import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -44,7 +46,16 @@ import static com.wealdtech.Preconditions.*;
  */
 public class Schedule implements Comparable<Schedule>
 {
+  // Shorthand for people building a schedule with all days of the week/months of the year/whatever
   public static Integer ALL = new Integer(0);
+
+  // Arrays containing all days of week/months of the year/etc.
+  private static final ImmutableList<Integer> ALL_DAYS_OF_WEEK = ContiguousSet.create(Range.closed(1, 7), DiscreteDomain.integers()).asList();
+  private static final ImmutableList<Integer> ALL_WEEKS_OF_YEAR = ContiguousSet.create(Range.closed(1, 53), DiscreteDomain.integers()).asList();
+  private static final ImmutableList<Integer> ALL_WEEKS_OF_MONTH = ContiguousSet.create(Range.closed(1, 5), DiscreteDomain.integers()).asList();
+  private static final ImmutableList<Integer> ALL_DAYS_OF_MONTH = ContiguousSet.create(Range.closed(1, 31), DiscreteDomain.integers()).asList();
+  private static final ImmutableList<Integer> ALL_MONTHS_OF_YEAR = ContiguousSet.create(Range.closed(1, 12), DiscreteDomain.integers()).asList();
+  private static final ImmutableList<Integer> ALL_DAYS_OF_YEAR = ContiguousSet.create(Range.closed(1, 366), DiscreteDomain.integers()).asList();
 
   private final DateTime start;
   private final Optional<DateTime> end;
@@ -89,7 +100,16 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.monthsOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(monthsOfYear)));
+      if (monthsOfYear.contains(ALL))
+      {
+        // Replace an ALL schedule with the actual values.  Makes later computation much simpler
+        // as there is only a single code path (everything uses the list)
+        this.monthsOfYear = Optional.of(ALL_MONTHS_OF_YEAR);
+      }
+      else
+      {
+        this.monthsOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(monthsOfYear)));
+      }
     }
     if (weeksOfYear == null || weeksOfYear.isEmpty())
     {
@@ -97,7 +117,14 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.weeksOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(weeksOfYear)));
+      if (weeksOfYear.contains(ALL))
+      {
+        this.weeksOfYear = Optional.of(ALL_WEEKS_OF_YEAR);
+      }
+      else
+      {
+        this.weeksOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(weeksOfYear)));
+      }
     }
     if (weeksOfMonth == null || weeksOfMonth.isEmpty())
     {
@@ -105,7 +132,14 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.weeksOfMonth = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(weeksOfMonth)));
+      if (weeksOfMonth.contains(ALL))
+      {
+        this.weeksOfMonth = Optional.of(ALL_WEEKS_OF_MONTH);
+      }
+      else
+      {
+        this.weeksOfMonth = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(weeksOfMonth)));
+      }
     }
     if (daysOfYear == null || daysOfYear.isEmpty())
     {
@@ -113,7 +147,14 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.daysOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfYear)));
+      if (daysOfYear.contains(ALL))
+      {
+        this.daysOfYear = Optional.of(ALL_DAYS_OF_YEAR);
+      }
+      else
+      {
+        this.daysOfYear = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfYear)));
+      }
     }
     if (daysOfMonth == null || daysOfMonth.isEmpty())
     {
@@ -121,7 +162,14 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.daysOfMonth = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfMonth)));
+      if (daysOfMonth.contains(ALL))
+      {
+        this.daysOfMonth = Optional.of(ALL_DAYS_OF_MONTH);
+      }
+      else
+      {
+        this.daysOfMonth = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfMonth)));
+      }
     }
     if (daysOfWeek == null || daysOfWeek.isEmpty())
     {
@@ -129,7 +177,14 @@ public class Schedule implements Comparable<Schedule>
     }
     else
     {
-      this.daysOfWeek = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfWeek)));
+      if (daysOfWeek.contains(ALL))
+      {
+        this.daysOfWeek = Optional.of(ALL_DAYS_OF_WEEK);
+      }
+      else
+      {
+        this.daysOfWeek = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(daysOfWeek)));
+      }
     }
     validate();
   }
