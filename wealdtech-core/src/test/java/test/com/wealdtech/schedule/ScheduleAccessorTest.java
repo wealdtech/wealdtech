@@ -356,14 +356,69 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  4,  1, 9, 0));
+    DateTime last = accessor.next().getStart();
+    for (int i = 0; i < 1000; i++)
+    {
+      final DateTime cur = accessor.next().getStart();
+      assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(cur)), "Week of month at iteration " + i + " incorrect (" + cur + ")");
+      assertTrue(cur.getMillis() - last.getMillis() < (1000L*60*60*24*38), "Increase too large at iteration " + i + " (" + last + "->" + cur + ")");
+      last = cur;
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2096, 10,  1, 9, 0));
+  }
+
+  @Test
+  public void testFourthTuesdayOfMonth() throws Exception
+  {
+    // Ensure that a schedule with 4th Tuesday of month works
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
+    final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(4);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 22, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(daysOfWeek)
+                                          .weeksOfMonth(weeksOfMonth)
+                                          .monthsOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 22, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  2, 26, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 26, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  4, 23, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
       assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(accessor.next().getStart())), "Week of month at iteration " + i + " incorrect");
     }
     // FIXME check
-    assertEquals(accessor.next().getStart(), new DateTime(2096,  9,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2096,  9, 25, 9, 0));
   }
 
+  @Test
+  public void testFifthSundayOfMonth() throws Exception
+  {
+    // Ensure that a schedule with 5th Sunday of month works
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(7);
+    final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(5);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 3, 31, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(daysOfWeek)
+                                          .weeksOfMonth(weeksOfMonth)
+                                          .monthsOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 31, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  6, 30, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  3, 30, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  6, 29, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(accessor.next().getStart())), "Week of month at iteration " + i + " incorrect");
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2096,  9, 25, 9, 0));
+  }
 
   // Week of year-based tests
 

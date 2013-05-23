@@ -281,7 +281,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         nextMark = tmp;
       }
-      if (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark))
+      if (((this.curWeeksOfYearIndex != null) && (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark))) ||
+          ((this.curWeeksOfMonthIndex != null) && (Schedule.getAbsoluteWeekOfMonth(this.mark) != Schedule.getAbsoluteWeekOfMonth(nextMark))))
       {
         // We've moved in to next week; roll over
         throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
@@ -335,36 +336,48 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   {
     final ImmutableList<Integer> weeksOfMonth = this.schedule.getWeeksOfMonth().get();
     DateTime nextMark = mark;
-    try
+    int bad = 0;
+    while (true)
     {
-      if (this.curWeeksOfMonthIndex == weeksOfMonth.size() - 1)
+      try
       {
-        // Reached the end of our specified weeks of the month.  Reset and rollover
-        throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
+        if (this.curWeeksOfMonthIndex == weeksOfMonth.size() - 1)
+        {
+          // Reached the end of our specified weeks of the month.  Reset and rollover
+          throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
+        }
+        final int weeksToAdd = weeksOfMonth.get(this.curWeeksOfMonthIndex + 1) - weeksOfMonth.get(this.curWeeksOfMonthIndex++);
+        nextMark = nextMark.plusWeeks(weeksToAdd);
+        if (this.mark.getMonthOfYear() != nextMark.getMonthOfYear())
+        {
+          // We've moved in to next month; roll over
+          throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
+        }
       }
-      final int weeksToAdd = weeksOfMonth.get(this.curWeeksOfMonthIndex + 1) - weeksOfMonth.get(this.curWeeksOfMonthIndex++);
-      nextMark = nextMark.plusWeeks(weeksToAdd);
-      if (this.mark.getMonthOfYear() != nextMark.getMonthOfYear())
+      catch (IllegalFieldValueException ifve)
       {
-        // We've moved in to next month; roll over
-        throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
-      }
-    }
-    catch (IllegalFieldValueException ifve)
-    {
-      // Our attempt to increment the week caused an invalid value, which
-      // means that there are no more valid values for this month.  Roll the
-      // month over and find the next valid value
-      this.curWeeksOfMonthIndex = 0;
-      if (this.schedule.getMonthsOfYear().isPresent())
-      {
-        nextMark = nextMonthOfYear(this.mark);
-        nextMark = resetWeek(nextMark);
-        nextMark = resetDay(nextMark);
-      }
-      else
-      {
-        throw new ServerError("Invalid schedule format (WoM but no MoY)");
+        try
+        {
+          // Our attempt to increment the week caused an invalid value, which
+         // means that there are no more valid values for this month.  Roll the
+         // month over and find the next valid value
+          this.curWeeksOfMonthIndex = 0;
+          if (this.schedule.getMonthsOfYear().isPresent())
+          {
+            nextMark = nextMonthOfYear(this.mark);
+            nextMark = resetWeek(nextMark);
+            nextMark = resetDay(nextMark);
+            break;
+          }
+          else
+          {
+            throw new ServerError("Invalid schedule format (WoM but no MoY)");
+          }
+        }
+        catch (IllegalFieldValueException ifve2)
+        {
+          // Need to keep iterating
+        }
       }
     }
     return nextMark;
