@@ -102,7 +102,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     else
     {
-      throw new ServerError("Mismatch for week component");
+      return mark;
     }
   }
 
@@ -336,7 +336,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   {
     final ImmutableList<Integer> weeksOfMonth = this.schedule.getWeeksOfMonth().get();
     DateTime nextMark = mark;
-    int bad = 0;
     while (true)
     {
       try
@@ -364,9 +363,9 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           this.curWeeksOfMonthIndex = 0;
           if (this.schedule.getMonthsOfYear().isPresent())
           {
-            nextMark = nextMonthOfYear(this.mark);
-            nextMark = resetWeek(nextMark);
+            nextMark = nextMonthOfYear(nextMark);
             nextMark = resetDay(nextMark);
+            nextMark = resetWeek(nextMark);
             break;
           }
           else
@@ -415,8 +414,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           // No luck just incrementing the month.  Roll the year over and find
           // the next valid value
           nextMark = nextYear(nextMark);
-          nextMark = resetWeek(nextMark);
           nextMark = resetDay(nextMark);
+          nextMark = resetWeek(nextMark);
           break;
         }
         catch (IllegalFieldValueException ifve2)
@@ -509,6 +508,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
         try
         {
           nextMark = resetDay(tmp);
+          nextMark = resetWeek(nextMark);
           break;
         }
         catch (IllegalFieldValueException ifve)
@@ -524,6 +524,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           // the next valid value
           nextMark = nextYear(nextMark);
           nextMark = resetMonth(nextMark);
+          nextMark = resetWeek(nextMark);
           nextMark = resetDay(nextMark);
           break;
         }

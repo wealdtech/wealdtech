@@ -364,7 +364,6 @@ public class ScheduleAccessorTest
       assertTrue(cur.getMillis() - last.getMillis() < (1000L*60*60*24*38), "Increase too large at iteration " + i + " (" + last + "->" + cur + ")");
       last = cur;
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2096, 10,  1, 9, 0));
   }
 
@@ -410,14 +409,16 @@ public class ScheduleAccessorTest
     final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  6, 30, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  9, 29, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  3, 30, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  6, 29, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  6, 29, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
       assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(accessor.next().getStart())), "Week of month at iteration " + i + " incorrect");
     }
     // FIXME check
-    assertEquals(accessor.next().getStart(), new DateTime(2096,  9, 25, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2254,  1, 29, 9, 0));
   }
 
   // Week of year-based tests

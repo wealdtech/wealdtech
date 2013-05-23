@@ -417,20 +417,12 @@ public class Schedule implements Comparable<Schedule>
 
   public static DateTime withAbsoluteWeekOfMonth(final DateTime datetime, final int week)
   {
-    int dayOfWeek = (1 + datetime.getDayOfYear() - ((getAbsoluteWeekOfMonth(datetime) - 1) * DateTimeConstants.DAYS_PER_WEEK)) % DateTimeConstants.DAYS_PER_WEEK;
-    if (dayOfWeek == 0)
-    {
-      dayOfWeek = 7;
-    }
+    int dayOfWeek = datetime.getDayOfWeek();
     int firstDayOfMonth = datetime.withDayOfMonth(1).getDayOfWeek();
-    int offset = dayOfWeek - 1 - firstDayOfMonth;
+    int offset = dayOfWeek + 1 - firstDayOfMonth;
     if (offset <= 0)
     {
       offset += 7;
-    }
-    if (offset == 0)
-    {
-      offset = 7;
     }
     return datetime.withDayOfMonth((week - 1) * DateTimeConstants.DAYS_PER_WEEK + offset);
   }
