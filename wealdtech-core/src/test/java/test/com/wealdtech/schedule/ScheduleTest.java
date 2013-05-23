@@ -22,6 +22,7 @@ import org.joda.time.Period;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
 
@@ -52,8 +53,9 @@ public class ScheduleTest
     final Schedule rs2 = new Schedule.Builder(rs1)
                                      .start(new DateTime(2012, 2, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
-                                     .monthsOfYear(2)
-                                     .daysOfMonth(5)
+                                     .monthsOfYear(2, 3)
+                                     .daysOfMonth(5, 6)
+                                     .yearGap(2)
                                      .build();
     assertNotNull(rs2);
     rs2.toString();
@@ -61,8 +63,86 @@ public class ScheduleTest
     assertNotEquals(null, rs2);
     assertEquals(rs2, rs2);
     assertNotEquals(rs1, rs2);
-  }
 
+    final Schedule rs3 = new Schedule.Builder()
+                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .duration(new Period(Hours.ONE))
+                                     .daysOfWeek(1, 2, 3)
+                                     .weeksOfMonth(1, 2)
+                                     .monthsOfYear(3, 5, 7)
+                                     .build();
+    assertNotNull(rs3);
+    rs3.toString();
+    rs3.hashCode();
+    assertNotEquals(null, rs3);
+    assertEquals(rs3, rs3);
+    assertNotEquals(rs1, rs3);
+
+    final Schedule rs4 = new Schedule.Builder()
+                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .duration(new Period(Hours.ONE))
+                                     .daysOfWeek(Schedule.ALL)
+                                     .weeksOfMonth(Schedule.ALL)
+                                     .monthsOfYear(Schedule.ALL)
+                                     .build();
+    assertNotNull(rs4);
+    rs4.toString();
+    rs4.hashCode();
+    assertNotEquals(null, rs4);
+    assertEquals(rs4, rs4);
+    assertNotEquals(rs1, rs4);
+
+    final Schedule rs5 = new Schedule.Builder()
+                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .duration(new Period(Hours.ONE))
+                                     .daysOfMonth(Schedule.ALL)
+                                     .monthsOfYear(Schedule.ALL)
+                                     .build();
+    assertNotNull(rs5);
+    rs5.toString();
+    rs5.hashCode();
+    assertNotEquals(null, rs5);
+    assertEquals(rs5, rs5);
+    assertNotEquals(rs1, rs5);
+
+    final Schedule rs6 = new Schedule.Builder()
+                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .duration(new Period(Hours.ONE))
+                                     .daysOfYear(Schedule.ALL)
+                                     .build();
+    assertNotNull(rs6);
+    rs6.toString();
+    rs6.hashCode();
+    assertNotEquals(null, rs6);
+    assertEquals(rs6, rs6);
+    assertNotEquals(rs1, rs6);
+}
+
+  @Test
+  public void testAlternateBuilder() throws Exception
+  {
+    new Schedule.Builder()
+                .start(new DateTime(2012, 1, 5, 1, 0))
+                .duration(new Period(Hours.ONE))
+                .weeksOfMonth(ImmutableList.<Integer>of())
+                .weeksOfYear(ImmutableList.<Integer>of())
+                .monthsOfYear(1)
+                .daysOfWeek(ImmutableList.<Integer>of())
+                .daysOfMonth(5)
+                .daysOfYear(ImmutableList.<Integer>of())
+                .build();
+
+    new Schedule.Builder()
+                .start(new DateTime(2012, 1, 1, 1, 0))
+                .duration(new Period(Hours.ONE))
+                .weeksOfMonth(ImmutableList.<Integer>of())
+                .weeksOfYear(ImmutableList.<Integer>of())
+                .monthsOfYear(ImmutableList.<Integer>of())
+                .daysOfWeek(ImmutableList.<Integer>of())
+                .daysOfMonth(ImmutableList.<Integer>of())
+                .daysOfYear(1)
+                .build();
+  }
   @Test
   public void testInvalidNoStartTime() throws Exception
   {
@@ -93,6 +173,182 @@ public class ScheduleTest
                   .weeksOfYear(5)
                   .build();
       fail("Created schedule with both month and week of year");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidIncompleteNoWeeksOf() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(1)
+                  .build();
+      fail("Created schedule with no weeksOf specifier");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidIncompleteNoMonthsOfYear1() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(1)
+                  .weeksOfMonth(1)
+                  .build();
+      fail("Created schedule with no monthsOfYear specifier");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidIncompleteNoMonthsOfYear2() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfMonth(1)
+                  .build();
+      fail("Created schedule with no monthsOfYear specifier");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMultipleDayOf1() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(5)
+                  .daysOfMonth(1)
+                  .weeksOfYear(5)
+                  .build();
+      fail("Created schedule with multiple daysOf entries");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMultipleDayOf2() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(5)
+                  .daysOfMonth(1)
+                  .monthsOfYear(5)
+                  .build();
+      fail("Created schedule with multiple daysOf entries");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMultipleDayOf3() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(5)
+                  .daysOfYear(1)
+                  .weeksOfYear(1)
+                  .build();
+      fail("Created schedule with multiple daysOf entries");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMultipleDayOf4() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(5)
+                  .daysOfYear(1)
+                  .weeksOfMonth(2)
+                  .monthsOfYear(1)
+                  .build();
+      fail("Created schedule with multiple daysOf entries");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMultipleDayOf5() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfMonth(5)
+                  .daysOfYear(1)
+                  .monthsOfYear(1)
+                  .build();
+      fail("Created schedule with multiple daysOf entries");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidMultipleWeeksOf1() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .daysOfWeek(5)
+                  .weeksOfMonth(2)
+                  .weeksOfYear(1)
+                  .build();
+      fail("Created schedule with multiple weeksOf entries");
     }
     catch (DataError.Bad de)
     {

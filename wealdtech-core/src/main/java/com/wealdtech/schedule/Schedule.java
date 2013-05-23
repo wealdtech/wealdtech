@@ -204,9 +204,9 @@ public class Schedule implements Comparable<Schedule>
     if (this.daysOfWeek.isPresent())
     {
       checkState(Collections2.filter(this.daysOfWeek.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of week must not contain negative values");
-      checkState(Collections2.filter(this.daysOfWeek.get(), Range.<Integer>greaterThan(7)).isEmpty(), "Days of week must not contain values greater than 7");
+      checkState(Collections2.filter(this.daysOfWeek.get(), Range.<Integer>greaterThan(DateTimeConstants.DAYS_PER_WEEK)).isEmpty(), "Days of week must not contain values greater than 7");
       checkState((this.weeksOfMonth.isPresent() && this.monthsOfYear.isPresent()) || this.weeksOfYear.isPresent(), "Schedule not complete");
-      checkState(!(this.daysOfMonth.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
+      checkState(!(this.daysOfMonth.isPresent() || this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
       checkState(!(this.weeksOfMonth.isPresent() && this.weeksOfYear.isPresent()), "Schedule cannot have multiple week items");
     }
 
@@ -215,24 +215,23 @@ public class Schedule implements Comparable<Schedule>
       checkState(Collections2.filter(this.daysOfMonth.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of month must not contain negative values");
       checkState(Collections2.filter(this.daysOfMonth.get(), Range.<Integer>greaterThan(31)).isEmpty(), "Days of month must not contain values greater than 31");
       checkState(this.monthsOfYear.isPresent(), "Schedule not complete");
-      checkState(!(this.daysOfWeek.isPresent() && this.daysOfYear.isPresent()), "Schedule cannot have multiple day items");
+      checkState(!this.daysOfYear.isPresent(), "Schedule cannot have multiple day items");
     }
 
     if (this.daysOfYear.isPresent())
     {
       checkState(Collections2.filter(this.daysOfYear.get(), Range.<Integer>lessThan(0)).isEmpty(), "Days of year must not contain negative values");
       checkState(Collections2.filter(this.daysOfYear.get(), Range.<Integer>greaterThan(366)).isEmpty(), "Days of year must not contain values greater than 366");
-      checkState(!(this.daysOfWeek.isPresent() && this.daysOfMonth.isPresent()), "Schedule cannot have multiple day items");
     }
 
     if (this.weeksOfMonth.isPresent())
     {
-      checkState(Collections2.filter(this.weeksOfMonth.get(), Range.<Integer>greaterThan(6)).isEmpty(), "Weeks of month must not contain values greater than 6");
+      checkState(Collections2.filter(this.weeksOfMonth.get(), Range.<Integer>greaterThan(5)).isEmpty(), "Weeks of month must not contain values greater than 4");
     }
 
     if (this.weeksOfYear.isPresent())
     {
-      checkState(Collections2.filter(this.weeksOfYear.get(), Range.<Integer>greaterThan(54)).isEmpty(), "Weeks of year must not contain values greater than 54");
+      checkState(Collections2.filter(this.weeksOfYear.get(), Range.<Integer>greaterThan(53)).isEmpty(), "Weeks of year must not contain values greater than 53");
     }
 
     if (this.monthsOfYear.isPresent())
@@ -275,7 +274,7 @@ public class Schedule implements Comparable<Schedule>
       return false;
     }
 
-    if (this.daysOfWeek.isPresent() && !this.daysOfWeek.get().contains(Schedule.ALL))
+    if (this.daysOfWeek.isPresent())
     {
       if (!this.daysOfWeek.get().contains(datetime.getDayOfWeek()))
       {
@@ -283,7 +282,7 @@ public class Schedule implements Comparable<Schedule>
       }
     }
 
-    if (this.daysOfMonth.isPresent() && !this.daysOfMonth.get().contains(Schedule.ALL))
+    if (this.daysOfMonth.isPresent())
     {
       if (!this.daysOfMonth.get().contains(datetime.getDayOfMonth()))
       {
@@ -291,7 +290,7 @@ public class Schedule implements Comparable<Schedule>
       }
     }
 
-    if (this.daysOfYear.isPresent() && !this.daysOfYear.get().contains(Schedule.ALL))
+    if (this.daysOfYear.isPresent())
     {
       if (!this.daysOfYear.get().contains(datetime.getDayOfYear()))
       {
@@ -299,12 +298,12 @@ public class Schedule implements Comparable<Schedule>
       }
     }
 
-    if (this.weeksOfMonth.isPresent() && !this.weeksOfMonth.get().contains(Schedule.ALL))
+    if (this.weeksOfMonth.isPresent())
     {
       // FIXME work this one out
     }
 
-    if (this.weeksOfYear.isPresent() && !this.weeksOfYear.get().contains(Schedule.ALL))
+    if (this.weeksOfYear.isPresent())
     {
       if (!this.weeksOfYear.get().contains(Schedule.getAbsoluteWeekOfYear(datetime)))
       {

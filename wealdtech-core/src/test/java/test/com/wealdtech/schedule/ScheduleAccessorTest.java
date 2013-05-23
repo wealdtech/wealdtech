@@ -338,6 +338,26 @@ public class ScheduleAccessorTest
 
 
   // Week of month-based tests
+  @Test
+  public void testFirstMondayOfMonth() throws Exception
+  {
+    // Ensure that a schedule with 1st Monday of month works
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
+    final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 7, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(daysOfWeek)
+                                          .weeksOfMonth(weeksOfMonth)
+                                          .monthsOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  4, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  4,  1, 9, 0));
+  }
+
 
   // Week of year-based tests
 
