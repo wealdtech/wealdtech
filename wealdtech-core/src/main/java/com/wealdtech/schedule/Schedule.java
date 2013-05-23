@@ -19,6 +19,7 @@ package com.wealdtech.schedule;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Period;
 
 import com.google.common.base.Objects;
@@ -321,25 +322,40 @@ public class Schedule implements Comparable<Schedule>
    */
   public static int getAbsoluteWeekOfYear(final DateTime datetime)
   {
-    return 1 + (datetime.getDayOfYear() - 1) / 7;
+    return 1 + (datetime.getDayOfYear() - 1) / DateTimeConstants.DAYS_PER_WEEK;
   }
 
   /**
    * Set the day of the week using the absolute week definition
    * as per {@link getAbsoluteWeekOfYear}.
    * @param datetime
-   * @return
+   * @param dayOfWeek The day of the week to set, Monday being 1 and Sunday being 7
+   * @return a datetime with the day of the week set accordingly
    */
-  public static DateTime withDayOfAbsoluteWeek(final DateTime datetime, final int day)
+  public static DateTime withDayOfAbsoluteWeek(final DateTime datetime, final int dayOfWeek)
   {
     final int weekOfYear = getAbsoluteWeekOfYear(datetime);
-    return datetime.withDayOfYear((weekOfYear - 1) * 7 + day);
+    final int firstDayOfWeek = datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1).getDayOfWeek();
+    final int dayOfWeekOffset = ((DateTimeConstants.DAYS_PER_WEEK - firstDayOfWeek) + dayOfWeek) % DateTimeConstants.DAYS_PER_WEEK;
+    return datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1 + dayOfWeekOffset);
+  }
+
+  /**
+   * Set the day to the first day of the week using the absolute week definition
+   * as per {@link getAbsoluteWeekOfYear}.
+   * @param datetime
+   * @return
+   */
+  public static DateTime withFirstDayOfAbsoluteWeek(final DateTime datetime)
+  {
+    final int weekOfYear = getAbsoluteWeekOfYear(datetime);
+    return datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1);
   }
 
   public static DateTime withAbsoluteWeekOfYear(final DateTime datetime, final int week)
   {
-    final int dayOfWeek = datetime.getDayOfYear() - ((getAbsoluteWeekOfYear(datetime) - 1) * 7);
-    return datetime.withDayOfYear((week - 1) * 7 + dayOfWeek );
+    final int dayOfWeek = datetime.getDayOfYear() - ((getAbsoluteWeekOfYear(datetime) - 1) * DateTimeConstants.DAYS_PER_WEEK);
+    return datetime.withDayOfYear((week - 1) * DateTimeConstants.DAYS_PER_WEEK + dayOfWeek);
   }
 
   // Standard object methods follow

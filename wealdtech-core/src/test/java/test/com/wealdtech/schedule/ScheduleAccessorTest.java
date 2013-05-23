@@ -150,10 +150,10 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 12, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(daysOfWeek.contains(accessor.next().getStart().getDayOfWeek()));
+      assertTrue(daysOfWeek.contains(accessor.next().getStart().getDayOfWeek()), "Iteration " + i + " failed");
     }
     // FIXME check
-    assertEquals(accessor.next().getStart(), new DateTime(2017,  10, 23, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2017,  10, 30, 9, 0));
   }
 
   @Test
@@ -333,7 +333,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  3, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  4, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  8, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  6, 9, 0));
   }
 
 

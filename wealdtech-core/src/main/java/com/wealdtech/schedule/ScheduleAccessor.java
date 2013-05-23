@@ -17,6 +17,7 @@
 package com.wealdtech.schedule;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.IllegalFieldValueException;
 
@@ -41,11 +42,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private transient Integer curDaysOfYearIndex;
   private transient Integer curDaysOfMonthIndex;
   private transient Integer curDaysOfWeekIndex;
-
-  // Internal information for when we are finding our next date
-  private transient boolean weekRolledOver;
-  private transient boolean monthRolledOver;
-  private transient boolean yearRolledOver;
 
   public ScheduleAccessor(final Schedule schedule)
   {
@@ -92,39 +88,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       this.curDaysOfWeekIndex = this.schedule.getDaysOfWeek().get().indexOf(this.mark.getDayOfWeek());
     }
     this.preset = true;
-  }
-
-  /**
-   * Generate a valid mark from the index information and the current mark
-   */
-  private DateTime generateMark(DateTime mark) throws IllegalFieldValueException
-  {
-    if (this.schedule.getMonthsOfYear().isPresent() && (!this.schedule.getMonthsOfYear().get().contains(Schedule.ALL)))
-    {
-      mark = mark.withMonthOfYear(this.schedule.getMonthsOfYear().get().get(this.curMonthsOfYearIndex));
-    }
-    if (this.schedule.getWeeksOfYear().isPresent() && (!this.schedule.getWeeksOfYear().get().contains(Schedule.ALL)))
-    {
-      // TODO need to handle this
-    }
-    if (this.schedule.getWeeksOfMonth().isPresent() && (!this.schedule.getWeeksOfMonth().get().contains(Schedule.ALL)))
-    {
-      // TOD need to  handle this
-    }
-    if (this.schedule.getDaysOfYear().isPresent() && (!this.schedule.getDaysOfYear().get().contains(Schedule.ALL)))
-    {
-      mark = mark.withDayOfYear(this.schedule.getDaysOfYear().get().get(this.curDaysOfYearIndex));
-    }
-    if (this.schedule.getDaysOfMonth().isPresent() && (!this.schedule.getDaysOfMonth().get().contains(Schedule.ALL)))
-    {
-      mark = mark.withDayOfMonth(this.schedule.getDaysOfMonth().get().get(this.curDaysOfMonthIndex));
-    }
-    if (this.schedule.getDaysOfWeek().isPresent() && (!this.schedule.getDaysOfWeek().get().contains(Schedule.ALL)))
-    {
-      // TODO this won't work if the change moved to a different week.  Need to consider this
-      mark = mark.withDayOfWeek(this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
-    }
-    return mark;
   }
 
   private DateTime resetWeek(final DateTime mark)
@@ -286,134 +249,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
   }
 
-  // Constrain the year to valid values.
-  // Note that there are two considerations here.  First, that the year fits
-  // the required interval.  Second, that the resultant date fits the required
-  // constraints.  For example, a schedule for the 366th day of the year will
-  // not meet its constraints every year so we need to find a suitable year.
-  private void constrainYear()
-  {
-    this.mark = this.mark.plusYears(this.schedule.getYearGap());
-    while (!this.schedule.isAScheduleStart(this.mark))
-    {
-      this.mark = this.mark.plusYears(this.schedule.getYearGap() + 1);
-      try
-      {
-        this.mark = generateMark(this.mark);
-      }
-      catch (IllegalFieldValueException ifve)
-      {
-        // Our attempt to reset the mark resulted in an illegal date, for
-        // example 29th Feb 2013.  That's okay, we'll move on to the next year
-      }
-    }
-  }
-
-  // Ensure that the updated month fits the current constraints, and if not then fix it so that it does
-  private void constrainMonth()
-  {
-    if (this.schedule.getMonthsOfYear().isPresent())
-    {
-      constrainMonthOfYear();
-    }
-  }
-
-  // Constrain the month of the year.  At this point the month has already
-  // been incremented so we need to ensure that the new date fits the
-  // constraints.
-  private void constrainMonthOfYear()
-  {
-    ImmutableList<Integer> monthsOfYear = this.schedule.getMonthsOfYear().get();
-    DateTime nextMark = this.mark;
-    if (!monthsOfYear.contains(Schedule.ALL))
-    {
-      try
-      {
-        if (this.curMonthsOfYearIndex == monthsOfYear.size() - 1)
-        {
-          // Reached the end of our specified months of the year; reset
-          throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
-        }
-        nextMark = nextMark.withMonthOfYear(monthsOfYear.get(++this.curMonthsOfYearIndex));
-        nextMark = resetDay(nextMark);
-      }
-      catch (IllegalFieldValueException ifve)
-      {
-        // Our attempt to increment the month caused an invalid value, which means that
-        // there are no more valid values for this year.  Roll the year over and find
-        // the next valid value
-        this.yearRolledOver = true;
-        this.curMonthsOfYearIndex = 0;
-        nextMark = this.mark.withMonthOfYear(1);
-        while (true)
-        {
-          nextMark = nextMark.plusYears(1);
-          try
-          {
-            nextMark = nextMark.withMonthOfYear(monthsOfYear.get(0));
-            nextMark = resetDay(nextMark);
-            break;
-          }
-          catch (IllegalFieldValueException ifve2)
-          {
-            // No luck with this year
-          }
-        }
-      }
-    }
-    this.yearRolledOver = (this.mark.getYear() != nextMark.getYear());
-    this.mark = nextMark;
-  }
-
-  // Ensure that the updated week fits the current constraints, and if not then fix it so that it does
-  private void constrainWeek()
-  {
-    if (this.schedule.getWeeksOfMonth().isPresent())
-    {
-      constrainWeekOfMonth();
-    }
-    else if (this.schedule.getWeeksOfYear().isPresent())
-    {
-      constrainWeekOfYear();
-    }
-  }
-
-  private void constrainWeekOfMonth()
-  {
-    // FIXME code!
-    return;
-  }
-
-  private void constrainWeekOfYear()
-  {
-    ImmutableList<Integer> weeksOfYear = this.schedule.getWeeksOfYear().get();
-    DateTime nextMark = null;
-    if (!weeksOfYear.contains(Schedule.ALL))
-    {
-      // Specific weeks
-      if (this.curWeeksOfYearIndex < weeksOfYear.size() - 1 && !this.yearRolledOver)
-      {
-        int weeks = weeksOfYear.get(this.curWeeksOfYearIndex + 1) - weeksOfYear.get(this.curWeeksOfYearIndex);
-        this.curWeeksOfYearIndex++;
-        // We have already rolled over so need to reduce the delta by 1 here
-        nextMark = this.mark.plusWeeks(weeks - 1);
-      }
-      else
-      {
-        int weeks = weeksOfYear.get(this.curWeeksOfYearIndex) - weeksOfYear.get(0);
-        this.curWeeksOfYearIndex = 0;
-        // Rolling over; reset the week to the first valid week of this year as per the schedule
-        // FIXME is this valid for consecutive years with different numbers of weeks?
-        nextMark = this.mark.plusYears(1).minusWeeks(weeks);
-      }
-    }
-    if (nextMark != null)
-    {
-      this.yearRolledOver = (this.mark.getYear() != nextMark.getYear());
-      this.mark = nextMark;
-    }
-  }
-
   // Get the next day for our schedule
   private void nextDay()
   {
@@ -456,18 +291,25 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
         // Specific schedule
         if (this.curDaysOfWeekIndex == daysOfWeek.size() - 1)
         {
-          // Reached the end of our specified days of the week; reset
-          throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
+          // Reached the end of our specified days of the week.  However, we do *not*
+          // reset here because it might be that the week starts on a day other than Monday
+          // and in this case we can start in the middle of the array
+          this.curDaysOfWeekIndex = -1;
         }
         final DateTime tmp = nextMark.withDayOfWeek(daysOfWeek.get(++this.curDaysOfWeekIndex));
-        if (tmp.isBefore(nextMark))
+        if (tmp.equals(nextMark) || tmp.isBefore(nextMark))
         {
-          // We went back in time, which isn't a smart move.  Go forward one week to reset
+          // We didn't move forwards, which isn't a smart move.  Go forward one week to reset
           nextMark = tmp.plusWeeks(1);
         }
         else
         {
           nextMark = tmp;
+        }
+        if (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark))
+        {
+          // We've moved in to next week; roll over
+          throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
         }
       }
     }
@@ -476,7 +318,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Our attempt to increment the day caused an invalid value, which
       // means that there are no more valid values for this week.  Roll the week
       // over and find the next valid value
-      this.curDaysOfWeekIndex = 0;
+      resetDaysOfWeekIndex(nextMark);
       if (this.schedule.getWeeksOfMonth().isPresent())
       {
         nextMark = nextWeekOfMonth(this.mark);
@@ -495,6 +337,26 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     this.mark = nextMark;
   }
 
+  // Reset the days of the week index to the value relating
+  // to the first day of the week in our schedule
+  private void resetDaysOfWeekIndex(final DateTime datetime)
+  {
+    if (this.curDaysOfWeekIndex != null)
+    {
+      final int weekOfYear = Schedule.getAbsoluteWeekOfYear(datetime);
+      int firstDayOfWeek = datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1).getDayOfWeek();
+      do
+      {
+        this.curDaysOfWeekIndex = this.schedule.getDaysOfWeek().get().indexOf(firstDayOfWeek++);
+        if (firstDayOfWeek == 8)
+        {
+          firstDayOfWeek = 1;
+        }
+      }
+      while (this.curDaysOfWeekIndex == -1);
+    }
+  }
+
   private DateTime nextWeekOfMonth(final DateTime mark)
   {
     // FIXME code
@@ -505,7 +367,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private DateTime nextWeekOfYear(final DateTime mark)
   {
     final ImmutableList<Integer> weeksOfYear = this.schedule.getWeeksOfYear().get();
-    DateTime nextMark = Schedule.withDayOfAbsoluteWeek(mark, 1);
+    DateTime nextMark = Schedule.withFirstDayOfAbsoluteWeek(mark);
     while (true)
     {
       try

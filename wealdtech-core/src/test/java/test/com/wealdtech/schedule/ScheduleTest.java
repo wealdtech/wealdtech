@@ -143,23 +143,23 @@ public class ScheduleTest
   public void testDayOfAbsoluteWeek() throws Exception
   {
     final DateTime dt = new DateTime(2012, 1, 1, 1, 0);
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 1), new DateTime(2012, 1, 1, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 2), new DateTime(2012, 1, 2, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 3), new DateTime(2012, 1, 3, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 4), new DateTime(2012, 1, 4, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 5), new DateTime(2012, 1, 5, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 6), new DateTime(2012, 1, 6, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 7), new DateTime(2012, 1, 7, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 1), new DateTime(2012, 1, 2, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 2), new DateTime(2012, 1, 3, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 3), new DateTime(2012, 1, 4, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 4), new DateTime(2012, 1, 5, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 5), new DateTime(2012, 1, 6, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 6), new DateTime(2012, 1, 7, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt, 7), new DateTime(2012, 1, 1, 1, 0));
 
 
-    final DateTime dt2 = new DateTime(2012, 1, 12, 1, 0);
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 1), new DateTime(2012, 1, 8, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 2), new DateTime(2012, 1, 9, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 3), new DateTime(2012, 1, 10, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 4), new DateTime(2012, 1, 11, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 5), new DateTime(2012, 1, 12, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 6), new DateTime(2012, 1, 13, 1, 0));
-    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 7), new DateTime(2012, 1, 14, 1, 0));
+    final DateTime dt2 = new DateTime(2012, 6, 28, 1, 0);
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 1), new DateTime(2012, 6, 25, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 2), new DateTime(2012, 6, 26, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 3), new DateTime(2012, 6, 27, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 4), new DateTime(2012, 6, 28, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 5), new DateTime(2012, 6, 29, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 6), new DateTime(2012, 6, 30, 1, 0));
+    assertEquals(Schedule.withDayOfAbsoluteWeek(dt2, 7), new DateTime(2012, 6, 24, 1, 0));
   }
 
   @Test
