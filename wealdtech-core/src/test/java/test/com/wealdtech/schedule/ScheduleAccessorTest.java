@@ -127,6 +127,30 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 29, 9, 0));
   }
 
+  @Test
+  public void testDaysOfMonthAndMonthsOfYear() throws Exception
+  {
+    // Combined days of month and months of year schedule
+    final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
+    final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 3, 3, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .monthsOfYear(monthsOfYear)
+                                          .daysOfMonth(daysOfMonth)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 4, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 5, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      final Occurrence ocl = accessor.next();
+      assertTrue(daysOfMonth.contains(ocl.getStart().getDayOfMonth()));
+      assertTrue(monthsOfYear.contains(ocl.getStart().getMonthOfYear()));
+    }
+    assertEquals(accessor.next().getStart(), new DateTime(2080, 3, 1, 9, 0));
+  }
   // Day-of-week tests
 
   @Test
@@ -317,6 +341,30 @@ public class ScheduleAccessorTest
   // Day-of-week tests
 
   @Test
+  public void testDaysOfWeek() throws Exception
+  {
+    // Simple days of week schedule
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2, 3, 5, 6);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(Schedule.ALL)
+                                          .daysOfWeek(daysOfWeek)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 4, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      final Occurrence ocl = accessor.next();
+      assertTrue(daysOfWeek.contains(ocl.getStart().getDayOfWeek()), "Date " + ocl.getStart() + " invalid at iteration " + i);
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2017, 10, 21, 9, 0));
+  }
+
+  @Test
   public void testLastWeekOfYear() throws Exception
   {
     // Ensure that the last week of the year is rolled over correctly
@@ -424,6 +472,101 @@ public class ScheduleAccessorTest
   // Week of year-based tests
 
   @Test
+  public void testWeeksOfYear() throws Exception
+  {
+    // Simple weeks of year schedule
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(Schedule.ALL)
+                                          .daysOfWeek(2)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 8, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 15, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      Occurrence ocl = accessor.next();
+      assertTrue(ocl.getStart().getDayOfWeek() == 2, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2032, 3, 23, 9, 0));
+  }
+
+  @Test
+  public void testWeeksOfYear2() throws Exception
+  {
+    // Simple weeks of year schedule
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(1)
+                                          .daysOfWeek(2)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2015, 1, 6, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      Occurrence ocl = accessor.next();
+      assertTrue(Schedule.getAbsoluteWeekOfYear(ocl.getStart()) == 1, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(3016, 1, 2, 9, 0));
+  }
+
+  @Test
+  public void testWeeksOfYear3() throws Exception
+  {
+    // Weeks of year schedule with multiple entries
+    final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(weeksOfYear)
+                                          .daysOfWeek(2)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 24, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      Occurrence ocl = accessor.next();
+      assertTrue(weeksOfYear.contains(Schedule.getAbsoluteWeekOfYear(ocl.getStart())), "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2514, 12, 25, 9, 0));
+  }
+
+  @Test
+  public void testWeeksOfYear4() throws Exception
+  {
+    // Weeks of year schedule with multiple entries and (often) out-of-range values
+    final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52, 53);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .weeksOfYear(weeksOfYear)
+                                          .daysOfWeek(2)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 24, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      Occurrence ocl = accessor.next();
+      assertTrue(weeksOfYear.contains(Schedule.getAbsoluteWeekOfYear(ocl.getStart())), "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+    }
+    // FIXME check
+    assertEquals(accessor.next().getStart(), new DateTime(2474,  1,  2, 9, 0));
+  }
+
+  @Test
   public void test53WeekOfYear() throws Exception
   {
     // Ensure that a schedule with 2nd day of 53rd week of year works
@@ -441,174 +584,5 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2036, 12, 30, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2041, 12, 31, 9, 0));
   }
-
-
-//  @Test
-//  public void testDaysOfMonthAndMonthsOfYear() throws Exception
-//  {
-//    // Combined days of month and months of year schedule
-//    final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
-//    final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
-//    final Schedule schedule = new Schedule.Builder()
-//                                          .start(new DateTime(2013, 3, 3, 9, 0))
-//                                          .duration(new Period(Hours.ONE))
-//                                          .monthsOfYear(monthsOfYear)
-//                                          .daysOfMonth(daysOfMonth)
-//                                          .build();
-//    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-//    Occurrence oc1 = accessor.next();
-//    assertEquals(oc1.getStart(), new DateTime(2013, 3, 3, 9, 0));
-//    Occurrence oc2 = accessor.next();
-//    assertEquals(oc2.getStart(), new DateTime(2013, 3, 4, 9, 0));
-//    Occurrence oc3 = accessor.next();
-//    assertEquals(oc3.getStart(), new DateTime(2013, 3, 5, 9, 0));
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      Occurrence ocl = accessor.next();
-//      assertTrue(daysOfMonth.contains(ocl.getStart().getDayOfMonth()));
-//      assertTrue(monthsOfYear.contains(ocl.getStart().getMonthOfYear()));
-//    }
-//    Occurrence oc4 = accessor.next();
-//    assertEquals(oc4.getStart(), new DateTime(2080, 3, 1, 9, 0));
-//  }
-//
-////  @Test
-//  public void testDaysOfWeek() throws Exception
-//  {
-//    // Simple days of week schedule
-//    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2, 3, 5, 6);
-//    final Schedule schedule = new Schedule.Builder()
-//                                          .start(new DateTime(2013, 1, 1, 9, 0))
-//                                          .duration(new Period(Hours.ONE))
-//                                          .weeksOfYear(Schedule.ALL)
-//                                          .daysOfWeek(daysOfWeek)
-//                                          .build();
-//    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-//    Occurrence oc1 = accessor.next();
-//    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
-//    Occurrence oc2 = accessor.next();
-//    assertEquals(oc2.getStart(), new DateTime(2013, 1, 2, 9, 0));
-//    Occurrence oc3 = accessor.next();
-//    assertEquals(oc3.getStart(), new DateTime(2013, 1, 4, 9, 0));
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      Occurrence ocl = accessor.next();
-//      System.err.println(ocl.getStart());
-//      assertTrue(daysOfWeek.contains(ocl.getStart().getDayOfWeek()), "Date " + ocl.getStart() + " invalid at iteration " + i);
-//    }
-//    Occurrence oc4 = accessor.next();
-//    // FIXME check
-//    assertEquals(oc4.getStart(), new DateTime(2017, 10, 27, 9, 0));
-//  }
-//
-//  @Test
-//  public void testWeeksOfYear() throws Exception
-//  {
-//    // Simple weeks of year schedule
-//    final Schedule schedule = new Schedule.Builder()
-//                                          .start(new DateTime(2013, 1, 1, 9, 0))
-//                                          .duration(new Period(Hours.ONE))
-//                                          .weeksOfYear(Schedule.ALL)
-//                                          .daysOfWeek(2)
-//                                          .build();
-//    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-//    Occurrence oc1 = accessor.next();
-//    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
-//    Occurrence oc2 = accessor.next();
-//    assertEquals(oc2.getStart(), new DateTime(2013, 1, 8, 9, 0));
-//    Occurrence oc3 = accessor.next();
-//    assertEquals(oc3.getStart(), new DateTime(2013, 1, 15, 9, 0));
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      Occurrence ocl = accessor.next();
-//      assertTrue(ocl.getStart().getDayOfWeek() == 2, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getRelativeWeekOfYear() returned " + Schedule.getRelativeWeekOfYear(ocl.getStart()));
-//    }
-//    Occurrence oc4 = accessor.next();
-//    // FIXME check
-//    assertEquals(oc4.getStart(), new DateTime(2032, 7, 6, 9, 0));
-//  }
-//
-//  @Test
-//  public void testWeeksOfYear2() throws Exception
-//  {
-//    // Simple weeks of year schedule
-//    final Schedule schedule = new Schedule.Builder()
-//                                          .start(new DateTime(2013, 1, 1, 9, 0))
-//                                          .duration(new Period(Hours.ONE))
-//                                          .weeksOfYear(1)
-//                                          .daysOfWeek(2)
-//                                          .build();
-//    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-//    Occurrence oc1 = accessor.next();
-//    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
-//    Occurrence oc2 = accessor.next();
-//    assertEquals(oc2.getStart(), new DateTime(2014, 1, 7, 9, 0));
-//    Occurrence oc3 = accessor.next();
-//    assertEquals(oc3.getStart(), new DateTime(2015, 1, 6, 9, 0));
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      Occurrence ocl = accessor.next();
-//      assertTrue(Schedule.getRelativeWeekOfYear(ocl.getStart()) == 1, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getRelativeWeekOfYear() returned " + Schedule.getRelativeWeekOfYear(ocl.getStart()));
-//    }
-//    Occurrence oc4 = accessor.next();
-//    // FIXME check
-//    assertEquals(oc4.getStart(), new DateTime(3016, 1, 2, 9, 0));
-//  }
-//
-//  @Test
-//  public void testWeeksOfYear3() throws Exception
-//  {
-//    // Weeks of year schedule with multiple entries
-//    final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52);
-//    final Schedule schedule = new Schedule.Builder()
-//                                          .start(new DateTime(2013, 1, 1, 9, 0))
-//                                          .duration(new Period(Hours.ONE))
-//                                          .weeksOfYear(weeksOfYear)
-//                                          .daysOfWeek(2)
-//                                          .build();
-//    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-//    Occurrence oc1 = accessor.next();
-//    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
-//    Occurrence oc2 = accessor.next();
-//    assertEquals(oc2.getStart(), new DateTime(2013, 12, 24, 9, 0));
-//    Occurrence oc3 = accessor.next();
-//    assertEquals(oc3.getStart(), new DateTime(2014, 1, 7, 9, 0));
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      Occurrence ocl = accessor.next();
-//      assertTrue(weeksOfYear.contains(Schedule.getRelativeWeekOfYear(ocl.getStart())), "Date " + ocl.getStart() + " invalid at iteration " + i + ", getRelativeWeekOfYear() returned " + Schedule.getRelativeWeekOfYear(ocl.getStart()));
-//    }
-//    Occurrence oc4 = accessor.next();
-//    // FIXME check
-//    assertEquals(oc4.getStart(), new DateTime(2514, 12, 25, 9, 0));
-//  }
-//
-//  @Test
-//  public void testWeeksOfYear4() throws Exception
-//  {
-//    // Weeks of year schedule with multiple entries and (often) out-of-range values
-//    final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52, 54);
-//    final Schedule schedule = new Schedule.Builder()
-//                                          .start(new DateTime(2013, 1, 1, 9, 0))
-//                                          .duration(new Period(Hours.ONE))
-//                                          .weeksOfYear(weeksOfYear)
-//                                          .daysOfWeek(2)
-//                                          .build();
-//    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-//    Occurrence oc1 = accessor.next();
-//    assertEquals(oc1.getStart(), new DateTime(2013, 1, 1, 9, 0));
-//    Occurrence oc2 = accessor.next();
-//    assertEquals(oc2.getStart(), new DateTime(2013, 12, 24, 9, 0));
-//    Occurrence oc3 = accessor.next();
-//    assertEquals(oc3.getStart(), new DateTime(2014, 1, 7, 9, 0));
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      Occurrence ocl = accessor.next();
-//      assertTrue(weeksOfYear.contains(Schedule.getRelativeWeekOfYear(ocl.getStart())), "Date " + ocl.getStart() + " invalid at iteration " + i + ", getRelativeWeekOfYear() returned " + Schedule.getRelativeWeekOfYear(ocl.getStart()));
-//    }
-//    Occurrence oc4 = accessor.next();
-//    // FIXME check
-//    assertEquals(oc4.getStart(), new DateTime(2514, 12, 25, 9, 0));
-//  }
 
 }
