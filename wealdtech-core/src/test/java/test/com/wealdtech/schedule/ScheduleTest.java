@@ -16,6 +16,8 @@
 
 package test.com.wealdtech.schedule;
 
+import static org.testng.Assert.*;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -25,8 +27,6 @@ import org.testng.annotations.Test;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
-
-import static org.testng.Assert.*;
 
 public class ScheduleTest
 {
@@ -55,7 +55,6 @@ public class ScheduleTest
                                      .duration(new Period(Hours.ONE))
                                      .monthsOfYear(2, 3)
                                      .daysOfMonth(5, 6)
-                                     .yearGap(2)
                                      .build();
     assertNotNull(rs2);
     rs2.toString();
@@ -364,7 +363,6 @@ public class ScheduleTest
       new Schedule.Builder()
                   .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
-                  .yearGap(-1)
                   .weeksOfYear(5)
                   .daysOfWeek(1)
                   .build();

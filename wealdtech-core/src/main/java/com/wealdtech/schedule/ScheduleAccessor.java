@@ -16,6 +16,8 @@
 
 package com.wealdtech.schedule;
 
+import java.util.NoSuchElementException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
@@ -43,11 +45,20 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private transient Integer curDaysOfMonthIndex;
   private transient Integer curDaysOfWeekIndex;
 
+  /**
+   * Create a new accessor starting from the schedule's start date
+   * @param schedule the schedule to access
+   */
   public ScheduleAccessor(final Schedule schedule)
   {
     this(schedule, schedule.getStart());
   }
 
+  /**
+   * Create a new accessor starting from a given mark
+   * @param schedule the schedule to access
+   * @param mark the first date in the schedule
+   */
   public ScheduleAccessor(final Schedule schedule, final DateTime mark)
   {
     this.schedule = schedule;
@@ -57,9 +68,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
 
   /**
    * Reset the indices tracking our schedule according to the current mark.
-   * Note that the current mark might not be a valid schedule, in which
-   * case we move it forward to the next valid occurrence prior to resetting
-   * the indices
    */
   private void resetIndices()
   {
@@ -175,6 +183,9 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     return Schedule.withDayOfAbsoluteWeek(mark, this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
   }
 
+  /**
+   * Reset the mark to provide the correct week of the month
+   */
   private DateTime resetDayOfWeekOfMonth(final DateTime mark)
   {
     return Schedule.withDayOfAbsoluteWeekOfMonth(mark, this.schedule.getDaysOfWeek().get().get(this.curDaysOfWeekIndex));
@@ -218,7 +229,23 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   @Override
   public boolean hasNext()
   {
-    return !this.schedule.terminates();
+    if (this.schedule.terminates())
+    {
+      try
+      {
+        next();
+      }
+      catch (NoSuchElementException nsee)
+      {
+        return false;
+      }
+      this.preset = true;
+      return true;
+    }
+    else
+    {
+      return true;
+    }
   }
 
   @Override
@@ -231,8 +258,12 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     else
     {
-      // We increment the day and then ensure that it continues to fit the additional constraints
+      // Find the next valid day in the schedule
       nextDay();
+    }
+    if (this.schedule.terminates() && this.mark.isAfter(this.schedule.getEnd().get()))
+    {
+      throw new NoSuchElementException("No more occurrences in this schedule");
     }
     return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
   }
@@ -358,8 +389,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
         try
         {
           // Our attempt to increment the week caused an invalid value, which
-         // means that there are no more valid values for this month.  Roll the
-         // month over and find the next valid value
+          // means that there are no more valid values for this month.  Roll the
+          // month over and find the next valid value
           this.curWeeksOfMonthIndex = 0;
           if (this.schedule.getMonthsOfYear().isPresent())
           {
@@ -426,7 +457,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     return nextMark;
   }
-
 
   // Get the next day for our days-per-month schedule
   private void nextDayOfMonth()
@@ -538,7 +568,6 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   }
 
   // Provide the next valid year.
-  // FIXME implement using the yeargap
   private DateTime nextYear(final DateTime mark)
   {
     DateTime nextMark = mark;

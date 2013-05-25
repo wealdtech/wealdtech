@@ -16,6 +16,8 @@
 
 package test.com.wealdtech.schedule;
 
+import static org.testng.Assert.*;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -25,8 +27,6 @@ import com.google.common.collect.ImmutableList;
 import com.wealdtech.schedule.Occurrence;
 import com.wealdtech.schedule.Schedule;
 import com.wealdtech.utils.Accessor;
-
-import static org.testng.Assert.*;
 
 public class ScheduleAccessorTest
 {
@@ -46,7 +46,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      accessor.next();
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     assertEquals(accessor.next().getStart(), new DateTime(2015, 10, 2, 9, 0));
   }
@@ -70,7 +70,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(daysOfYear.contains(accessor.next().getStart().getDayOfYear()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     assertEquals(accessor.next().getStart(), new DateTime(2347, 10, 27, 9, 0));
   }
@@ -95,7 +95,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  1, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(daysOfMonth.contains(accessor.next().getStart().getDayOfMonth()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     assertEquals(accessor.next().getStart(), new DateTime(2029,  10,  2, 9, 0));
   }
@@ -145,9 +145,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 5, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      final Occurrence ocl = accessor.next();
-      assertTrue(daysOfMonth.contains(ocl.getStart().getDayOfMonth()));
-      assertTrue(monthsOfYear.contains(ocl.getStart().getMonthOfYear()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     assertEquals(accessor.next().getStart(), new DateTime(2080, 3, 1, 9, 0));
   }
@@ -174,7 +172,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 12, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(daysOfWeek.contains(accessor.next().getStart().getDayOfWeek()), "Iteration " + i + " failed");
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2017,  10, 30, 9, 0));
@@ -197,7 +195,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(monthsOfYear.contains(accessor.next().getStart().getMonthOfYear()), "Month of year at iteration " + i + " incorrect");
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     assertEquals(accessor.next().getStart(), new DateTime(2023,  5, 12, 9, 0));
   }
@@ -357,8 +355,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 4, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      final Occurrence ocl = accessor.next();
-      assertTrue(daysOfWeek.contains(ocl.getStart().getDayOfWeek()), "Date " + ocl.getStart() + " invalid at iteration " + i);
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2017, 10, 21, 9, 0));
@@ -404,15 +401,11 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  4,  1, 9, 0));
-    DateTime last = accessor.next().getStart();
     for (int i = 0; i < 1000; i++)
     {
-      final DateTime cur = accessor.next().getStart();
-      assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(cur)), "Week of month at iteration " + i + " incorrect (" + cur + ")");
-      assertTrue(cur.getMillis() - last.getMillis() < (1000L*60*60*24*38), "Increase too large at iteration " + i + " (" + last + "->" + cur + ")");
-      last = cur;
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    assertEquals(accessor.next().getStart(), new DateTime(2096, 10,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2096,  9,  3, 9, 0));
   }
 
   @Test
@@ -435,7 +428,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013,  4, 23, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(accessor.next().getStart())), "Week of month at iteration " + i + " incorrect");
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2096,  9, 25, 9, 0));
@@ -463,7 +456,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2014,  6, 29, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(weeksOfMonth.contains(Schedule.getAbsoluteWeekOfMonth(accessor.next().getStart())), "Week of month at iteration " + i + " incorrect");
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2254,  1, 29, 9, 0));
@@ -487,8 +480,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 15, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      Occurrence ocl = accessor.next();
-      assertTrue(ocl.getStart().getDayOfWeek() == 2, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2032, 3, 23, 9, 0));
@@ -510,8 +502,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2015, 1, 6, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      Occurrence ocl = accessor.next();
-      assertTrue(Schedule.getAbsoluteWeekOfYear(ocl.getStart()) == 1, "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(3016, 1, 2, 9, 0));
@@ -534,8 +525,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      Occurrence ocl = accessor.next();
-      assertTrue(weeksOfYear.contains(Schedule.getAbsoluteWeekOfYear(ocl.getStart())), "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2514, 12, 25, 9, 0));
@@ -559,8 +549,7 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      Occurrence ocl = accessor.next();
-      assertTrue(weeksOfYear.contains(Schedule.getAbsoluteWeekOfYear(ocl.getStart())), "Date " + ocl.getStart() + " invalid at iteration " + i + ", getAbsoluteWeekOfYear() returned " + Schedule.getAbsoluteWeekOfYear(ocl.getStart()));
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2474,  1,  2, 9, 0));

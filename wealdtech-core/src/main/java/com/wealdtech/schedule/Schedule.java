@@ -16,6 +16,8 @@
 
 package com.wealdtech.schedule;
 
+import static com.wealdtech.Preconditions.*;
+
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -35,18 +37,26 @@ import com.google.common.collect.Range;
 import com.wealdtech.utils.Accessor;
 import com.wealdtech.utils.PeriodOrdering;
 
-import static com.wealdtech.Preconditions.*;
-
 /**
- * A Schedule is a statement of one or more {@link Occurrence} instances.
- * <p/>A simple schedule will contain a single start and end time.
- * More complex schedules will include recurrence on some set pattern,
- * resulting in multiple occurrences.  A recurring schedule may or may not
- * have an end time.
+ * A Schedule is a statement of one or more {@link Occurrence}s.
+ * <p/>A simple schedule will contain a single start and end time,
+ * referencing a single occurrence.  More complex schedules will include
+ * recurrence on some set pattern resulting in multiple occurrences.
+ * <p/>A schedule must have a day component, be it day of week, day of
+ * month, or day of year.
+ * <p/>If a schedule has a day of month component it must also have a
+ * month of year component.
+ * <p/>If a schedule has a day of week component it must also have either
+ * a week of year component or both a week of month component and a month
+ * of year component.
+ * <p/>A recurring schedule may or may not have an end time.  If it does not
+ * then it means that the schedule does not terminate.
  */
 public class Schedule implements Comparable<Schedule>
 {
-  // Shorthand for people building a schedule with all days of the week/months of the year/whatever
+  /**
+   * Used when creating schedules to specify that all valid values should be included
+   */
   public static Integer ALL = new Integer(0);
 
   // Arrays containing all days of week/months of the year/etc.
@@ -62,7 +72,6 @@ public class Schedule implements Comparable<Schedule>
 
   private final Period duration;
 
-  private final Integer yearGap;
   private final Optional<ImmutableList<Integer>> monthsOfYear;
   private final Optional<ImmutableList<Integer>> weeksOfYear;
   private final Optional<ImmutableList<Integer>> weeksOfMonth;
@@ -70,12 +79,9 @@ public class Schedule implements Comparable<Schedule>
   private final Optional<ImmutableList<Integer>> daysOfMonth;
   private final Optional<ImmutableList<Integer>> daysOfWeek;
 
-  // TODO hours and minutes
-
   private Schedule(final DateTime start,
                             final DateTime end,
                             final Period duration,
-                            final Integer yearGap,
                             final ImmutableList<Integer> monthsOfYear,
                             final ImmutableList<Integer> weeksOfYear,
                             final ImmutableList<Integer> weeksOfMonth,
@@ -86,14 +92,6 @@ public class Schedule implements Comparable<Schedule>
     this.start = start;
     this.end = Optional.fromNullable(end);
     this.duration = duration;
-    if (yearGap == null)
-    {
-      this.yearGap = 0;
-    }
-    else
-    {
-      this.yearGap = yearGap;
-    }
     if (monthsOfYear == null || monthsOfYear.isEmpty())
     {
       this.monthsOfYear = Optional.absent();
@@ -196,8 +194,6 @@ public class Schedule implements Comparable<Schedule>
     checkNotNull(this.start, "Schedule requires a start");
 
     checkNotNull(this.duration, "Schedule requires a duration");
-
-    checkState(this.yearGap >= 0, "Year gap cannot be negative");
 
     checkState(this.daysOfYear.isPresent() || this.daysOfMonth.isPresent() || this.daysOfWeek.isPresent(), "Schedule requires a day");
 
@@ -333,11 +329,6 @@ public class Schedule implements Comparable<Schedule>
     return this.duration;
   }
 
-  public Integer getYearGap()
-  {
-    return this.yearGap;
-  }
-
   public Optional<ImmutableList<Integer>> getMonthsOfYear()
   {
     return this.monthsOfYear;
@@ -449,7 +440,6 @@ public class Schedule implements Comparable<Schedule>
                   .add("start", this.getStart())
                   .add("end", this.getEnd())
                   .add("duration", this.getDuration())
-                  .add("yearsGap", this.getYearGap())
                   .add("monthsOfYear", this.getMonthsOfYear())
                   .add("weeksOfYear", this.getWeeksOfYear())
                   .add("weeksOfMonth", this.getWeeksOfMonth())
@@ -472,7 +462,6 @@ public class Schedule implements Comparable<Schedule>
     return Objects.hashCode(this.getStart(),
                             this.getEnd(),
                             this.getDuration(),
-                            this.getYearGap(),
                             this.getMonthsOfYear(),
                             this.getWeeksOfYear(),
                             this.getWeeksOfMonth(),
@@ -488,7 +477,6 @@ public class Schedule implements Comparable<Schedule>
                           .compare(this.getStart(), that.getStart())
                           .compare(this.getEnd().orNull(), that.getEnd().orNull(), Ordering.natural().nullsFirst())
                           .compare(this.getDuration(), that.getDuration(), new PeriodOrdering().nullsFirst())
-                          .compare(this.getYearGap(), that.getYearGap())
                           .compare(this.getMonthsOfYear().orNull(), that.getMonthsOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfYear().orNull(), that.getWeeksOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfMonth().orNull(), that.getWeeksOfMonth().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
@@ -503,7 +491,6 @@ public class Schedule implements Comparable<Schedule>
     private transient DateTime start;
     private transient DateTime end;
     private transient Period duration;
-    private transient Integer yearGap;
     private transient ImmutableList<Integer> monthsOfYear;
     private transient ImmutableList<Integer> weeksOfYear;
     private transient ImmutableList<Integer> weeksOfMonth;
@@ -521,7 +508,6 @@ public class Schedule implements Comparable<Schedule>
       this.start = prior.getStart();
       this.end = prior.getEnd().orNull();
       this.duration = prior.getDuration();
-      this.yearGap = prior.getYearGap();
       this.monthsOfYear = prior.getMonthsOfYear().orNull();
       this.weeksOfYear = prior.getWeeksOfYear().orNull();
       this.weeksOfMonth = prior.getWeeksOfMonth().orNull();
@@ -545,12 +531,6 @@ public class Schedule implements Comparable<Schedule>
     public Builder duration(final Period duration)
     {
       this.duration = duration;
-      return this;
-    }
-
-    public Builder yearGap(final Integer yearGap)
-    {
-      this.yearGap = yearGap;
       return this;
     }
 
@@ -670,7 +650,7 @@ public class Schedule implements Comparable<Schedule>
 
     public Schedule build()
     {
-      return new Schedule(this.start, this.end, this.duration, this.yearGap, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
+      return new Schedule(this.start, this.end, this.duration, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
     }
   }
 }
