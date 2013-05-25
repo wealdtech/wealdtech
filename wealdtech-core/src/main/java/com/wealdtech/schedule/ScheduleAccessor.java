@@ -210,13 +210,13 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   }
 
   @Override
-  public void setBaseItem(Occurrence mark)
+  public void setBaseItem(final Occurrence mark)
   {
     setBase(mark.getStart());
   }
 
   @Override
-  public void setBase(DateTime mark)
+  public void setBase(final DateTime mark)
   {
     if (!this.schedule.isAScheduleStart(mark))
     {
