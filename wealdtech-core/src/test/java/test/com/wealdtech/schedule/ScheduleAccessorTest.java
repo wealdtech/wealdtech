@@ -16,8 +16,6 @@
 
 package test.com.wealdtech.schedule;
 
-import static org.testng.Assert.*;
-
 import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
@@ -26,9 +24,12 @@ import org.joda.time.Period;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.DataError;
 import com.wealdtech.schedule.Occurrence;
 import com.wealdtech.schedule.Schedule;
 import com.wealdtech.utils.Accessor;
+
+import static org.testng.Assert.*;
 
 public class ScheduleAccessorTest
 {
@@ -179,7 +180,6 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2017,  10, 30, 9, 0));
   }
 
@@ -362,7 +362,6 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2017, 10, 21, 9, 0));
   }
 
@@ -436,7 +435,6 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2096,  9, 25, 9, 0));
   }
 
@@ -490,9 +488,34 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    assertEquals(accessor.next().getStart(), new DateTime(2096,  9,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2040, 11, 19, 9, 0));
   }
 
+  @Test
+  public void testFirstFiveMondaysOfMonth() throws Exception
+  {
+    // Ensure that a schedule with 1st five Mondays of month works
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
+    final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 7, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(daysOfWeek)
+                                          .weeksOfMonth(weeksOfMonth)
+                                          .monthsOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 14, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 21, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 28, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
+    }
+    assertEquals(accessor.next().getStart(), new DateTime(2032,  4, 12, 9, 0));
+  }
 
   // Week of year-based tests
 
@@ -514,7 +537,6 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2032, 3, 23, 9, 0));
   }
 
@@ -536,7 +558,6 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(3016, 1, 2, 9, 0));
   }
 
@@ -559,7 +580,6 @@ public class ScheduleAccessorTest
     {
       assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2514, 12, 25, 9, 0));
   }
 
@@ -659,6 +679,84 @@ public class ScheduleAccessorTest
       fail("Accessor went past schedule termination date");
     }
     catch (NoSuchElementException nsee)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testSetBase() throws Exception
+  {
+    // Ensure that we can reset the base
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
+    accessor.setBase(new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
+    accessor.setBaseItem(new Occurrence(new DateTime(2013,  1,  1, 9, 0), new DateTime(2013,  1,  1, 10, 0)));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
+  }
+
+  @Test
+  public void testSetInvalidBase() throws Exception
+  {
+    // Ensure that setting an invalid base is caught
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
+    try
+    {
+      accessor.setBase(null);
+      fail("Set accessor base to NULL");
+    }
+    catch (DataError.Missing de)
+    {
+      // Good
+    }
+    try
+    {
+      accessor.setBase(new DateTime(2013,  1,  1, 10, 0));
+      fail("Set accessor base to an invalid value");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+    try
+    {
+      accessor.setBaseItem(null);
+      fail("Set accessor base item to NULL");
+    }
+    catch (DataError.Missing de)
+    {
+      // Good
+    }
+    try
+    {
+      accessor.setBaseItem(new Occurrence(new DateTime(2013,  1,  1, 10, 0), new DateTime(2013,  1,  1, 11, 0)));
+      fail("Set accessor base item to an invalid value");
+    }
+    catch (DataError.Bad de)
     {
       // Good
     }

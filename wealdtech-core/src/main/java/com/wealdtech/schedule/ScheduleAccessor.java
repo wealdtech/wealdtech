@@ -28,6 +28,10 @@ import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
 import com.wealdtech.utils.Accessor;
 
+import static com.wealdtech.Preconditions.*;
+
+// TODO: implement Iterator if we don't need previous()
+
 /**
  * A ScheduleAccessor allows access to occurrences within a schedule
  */
@@ -212,12 +216,14 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   @Override
   public void setBaseItem(final Occurrence mark)
   {
+    checkNotNull(mark, "Occurrence must be specified");
     setBase(mark.getStart());
   }
 
   @Override
   public void setBase(final DateTime mark)
   {
+    checkNotNull(mark, "Mark must be specified");
     if (!this.schedule.isAScheduleStart(mark))
     {
       throw new DataError.Bad("Date is not a valid member of the schedule");
@@ -279,7 +285,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     {
       nextDayOfMonth();
     }
-    else if (this.schedule.getDaysOfYear().isPresent())
+    else
     {
       nextDayOfYear();
     }
@@ -383,6 +389,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           // We've moved in to next month; roll over
           throw new IllegalFieldValueException(DateTimeFieldType.monthOfYear(), null, null);
         }
+        break;
       }
       catch (IllegalFieldValueException ifve)
       {
@@ -392,17 +399,10 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           // means that there are no more valid values for this month.  Roll the
           // month over and find the next valid value
           this.curWeeksOfMonthIndex = 0;
-          if (this.schedule.getMonthsOfYear().isPresent())
-          {
-            nextMark = nextMonthOfYear(nextMark);
-            nextMark = resetDay(nextMark);
-            nextMark = resetWeek(nextMark);
-            break;
-          }
-          else
-          {
-            throw new ServerError("Invalid schedule format (WoM but no MoY)");
-          }
+          nextMark = nextMonthOfYear(this.mark);
+          nextMark = resetDay(nextMark);
+          nextMark = resetWeek(nextMark);
+          break;
         }
         catch (IllegalFieldValueException ifve2)
         {
