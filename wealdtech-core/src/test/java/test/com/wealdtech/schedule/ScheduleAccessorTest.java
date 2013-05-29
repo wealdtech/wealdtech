@@ -18,6 +18,8 @@ package test.com.wealdtech.schedule;
 
 import static org.testng.Assert.*;
 
+import java.util.NoSuchElementException;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -39,7 +41,9 @@ public class ScheduleAccessorTest
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(Schedule.ALL)
                                           .build();
+    assertFalse(schedule.terminates());
     final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertTrue(accessor.hasNext());
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
@@ -149,6 +153,7 @@ public class ScheduleAccessorTest
     }
     assertEquals(accessor.next().getStart(), new DateTime(2080, 3, 1, 9, 0));
   }
+
   // Day-of-week tests
 
   @Test
@@ -382,7 +387,8 @@ public class ScheduleAccessorTest
   }
 
 
-  // Week of month-based tests
+  // Week-of-month tests
+
   @Test
   public void testFirstMondayOfMonth() throws Exception
   {
@@ -461,6 +467,32 @@ public class ScheduleAccessorTest
     // FIXME check
     assertEquals(accessor.next().getStart(), new DateTime(2254,  1, 29, 9, 0));
   }
+
+  @Test
+  public void testFirstThreeMondaysOfMonth() throws Exception
+  {
+    // Ensure that a schedule with 1st three Mondays of month works
+    final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
+    final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1, 2, 3);
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2013, 1, 7, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(daysOfWeek)
+                                          .weeksOfMonth(weeksOfMonth)
+                                          .monthsOfYear(Schedule.ALL)
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 14, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 21, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
+    }
+    assertEquals(accessor.next().getStart(), new DateTime(2096,  9,  3, 9, 0));
+  }
+
 
   // Week of year-based tests
 
@@ -574,4 +606,61 @@ public class ScheduleAccessorTest
     assertEquals(accessor.next().getStart(), new DateTime(2041, 12, 31, 9, 0));
   }
 
+  @Test
+  public void testTerminatingSchedule1() throws Exception
+  {
+    // Ensure that a terminating schedule terminates correctly using the accessor
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2012, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(Schedule.ALL)
+                                          .weeksOfYear(Schedule.ALL)
+                                          .end(new DateTime(2012, 1, 4, 10, 0))
+                                          .build();
+    assertTrue(schedule.terminates());
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  3, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  4, 9, 0));
+    assertFalse(accessor.hasNext());
+    try
+    {
+      accessor.next();
+      fail("Accessor went past schedule termination date");
+    }
+    catch (NoSuchElementException nsee)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testTerminatingSchedule2() throws Exception
+  {
+    // Ensure that a terminating schedule with an endtime at the beginning of an
+    // instance terminates correctly
+    final Schedule schedule = new Schedule.Builder()
+                                          .start(new DateTime(2012, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(Schedule.ALL)
+                                          .weeksOfYear(Schedule.ALL)
+                                          .end(new DateTime(2012, 1, 3, 9, 0))
+                                          .build();
+    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
+    assertTrue(accessor.hasNext());
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  3, 9, 0));
+    assertFalse(accessor.hasNext());
+    try
+    {
+      accessor.next();
+      fail("Accessor went past schedule termination date");
+    }
+    catch (NoSuchElementException nsee)
+    {
+      // Good
+    }
+  }
 }
