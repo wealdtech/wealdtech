@@ -16,6 +16,8 @@
 
 package com.wealdtech.schedule;
 
+import static com.wealdtech.utils.Joda.*;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -28,18 +30,14 @@ import org.joda.time.base.BaseDateTime;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.ServerError;
 
-import static com.wealdtech.utils.Joda.*;
-
-// TODO: implement Iterator if we don't need previous()
-
 /**
  * A ScheduleAccessor allows access to occurrences within a schedule
  */
-public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedule<T>>
+public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Occurrence>
 {
   private final transient Schedule<T> schedule;
 
-  private transient T mark;
+  private transient DateTime mark;
   private transient boolean preset = false;
 
   private transient Integer curMonthsOfYearIndex;
@@ -55,7 +53,8 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
    */
   public ScheduleIterator(final Schedule<T> schedule)
   {
-    this(schedule, schedule.getStart());
+    // TODO add timezone
+    this(schedule, schedule.getStart().toDateTime());
   }
 
   /**
@@ -63,7 +62,7 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
    * @param schedule the schedule over which to iterate
    * @param mark the first date in the schedule
    */
-  public ScheduleIterator(final Schedule<T> schedule, final T mark)
+  public ScheduleIterator(final Schedule<T> schedule, final DateTime mark)
   {
     this.schedule = schedule;
     this.mark = mark;
@@ -122,14 +121,12 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
   {
     this.curWeeksOfMonthIndex = 0;
     return mark.withField(AbsWeekOfMonth, this.schedule.getWeeksOfMonth().get().get(0));
-//    return Schedule.withAbsoluteWeekOfMonth(mark, this.schedule.getWeeksOfMonth().get().get(0));
   }
 
   private DateTime resetWeekOfYear(final DateTime mark)
   {
       this.curWeeksOfYearIndex = 0;
       return mark.withField(AbsWeekOfYear, this.schedule.getWeeksOfYear().get().get(0));
-//      return Schedule.withAbsoluteWeekOfYear(mark, this.schedule.getWeeksOfYear().get().get(0));
   }
 
   private DateTime resetMonth(final DateTime mark)
@@ -215,25 +212,6 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
       return mark.withDayOfYear(this.schedule.getDaysOfYear().get().get(this.curDaysOfYearIndex));
   }
 
-//  @Override
-//  public void setBaseItem(final Occurrence mark)
-//  {
-//    checkNotNull(mark, "Occurrence must be specified");
-//    setBase(mark.getStart());
-//  }
-//
-//  @Override
-//  public void setBase(final DateTime mark)
-//  {
-//    checkNotNull(mark, "Mark must be specified");
-//    if (!this.schedule.isAScheduleStart(mark))
-//    {
-//      throw new DataError.Bad("Date is not a valid member of the schedule");
-//    }
-//    this.mark = mark;
-//    resetIndices();
-//  }
-
   @Override
   public boolean hasNext()
   {
@@ -271,8 +249,7 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
     }
     if (this.schedule.terminates())
     {
-      if ((this.schedule.isDateOnly() &&  this.mark.toLocalDate().isAfter(this.schedule.getEndDate())) ||
-          (!this.schedule.isDateOnly() && this.mark.isAfter(this.schedule.getEndDateTime())))
+      if (this.mark.isAfter(this.schedule.getEndDate()))
       {
         throw new NoSuchElementException("No more occurrences in this schedule");
       }
@@ -433,7 +410,6 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
           // Reached the end of our specified weeks of the year; reset
           throw new IllegalFieldValueException(DateTimeFieldType.weekOfWeekyear(), null, null);
         }
-//        final DateTime tmp = Schedule.withAbsoluteWeekOfYear(nextMark, weeksOfYear.get(++this.curWeeksOfYearIndex));
         final DateTime tmp = nextMark.withField(AbsWeekOfYear, weeksOfYear.get(++this.curWeeksOfYearIndex));
         try
         {
@@ -583,16 +559,8 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Schedu
   }
 
   @Override
-  public boolean hasPrevious()
+  public void remove()
   {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public Occurrence previous()
-  {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException("Schedule iterators are read-only");
   }
 }

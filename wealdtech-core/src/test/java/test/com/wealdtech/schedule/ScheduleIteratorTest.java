@@ -16,6 +16,9 @@
 
 package test.com.wealdtech.schedule;
 
+import static org.testng.Assert.*;
+
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
@@ -24,36 +27,32 @@ import org.joda.time.Period;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.DataError;
 import com.wealdtech.schedule.Occurrence;
 import com.wealdtech.schedule.Schedule;
-import com.wealdtech.utils.Accessor;
 
-import static org.testng.Assert.*;
-
-public class ScheduleAccessorTest
+public class ScheduleIteratorTest
 {
   @Test
   public void testSimple() throws Exception
   {
     // Simple daily schedule
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(Schedule.ALL)
                                           .build();
     assertFalse(schedule.terminates());
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertTrue(accessor.hasNext());
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
+    final Iterator<Occurrence> iterator = schedule.iterator();
+    assertTrue(iterator.hasNext());
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
+      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    assertEquals(accessor.next().getStart(), new DateTime(2015, 10, 2, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2015, 10, 2, 9, 0));
   }
 
   // Day-of-year tests
@@ -63,21 +62,21 @@ public class ScheduleAccessorTest
   {
     // Restrict to specific days of the year
     final ImmutableList<Integer> daysOfYear = ImmutableList.of(1, 60, 300);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .daysOfYear(daysOfYear)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013, 10, 27, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                                    .start(new DateTime(2013, 1, 1, 9, 0))
+                                                    .duration(new Period(Hours.ONE))
+                                                    .daysOfYear(daysOfYear)
+                                                    .build();
+    final Iterator<Occurrence> iterator = schedule.iterator();
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  3,  1, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013, 10, 27, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
+      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    assertEquals(accessor.next().getStart(), new DateTime(2347, 10, 27, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2347, 10, 27, 9, 0));
   }
 
   // Day-of-month tests
@@ -87,22 +86,22 @@ public class ScheduleAccessorTest
   {
     // Restrict to specific days of the month
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 3, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .monthsOfYear(Schedule.ALL)
-                                          .daysOfMonth(daysOfMonth)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  5, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  1, 9, 0));
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                                    .start(new DateTime(2013, 1, 3, 9, 0))
+                                                    .duration(new Period(Hours.ONE))
+                                                    .monthsOfYear(Schedule.ALL)
+                                                    .daysOfMonth(daysOfMonth)
+                                                    .build();
+    final Iterator<Occurrence> iterator = schedule.iterator();
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  5, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  2,  1, 9, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(schedule.isAScheduleStart(accessor.next().getStart()), "Iteration " + i + " resulted in illegal value");
+      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
     }
-    assertEquals(accessor.next().getStart(), new DateTime(2029,  10,  2, 9, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2029,  10,  2, 9, 0));
   }
 
   @Test
@@ -111,13 +110,13 @@ public class ScheduleAccessorTest
     // Ensure that a schedule for 28th and 29th February works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(28, 29);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(2);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2016,  2, 28, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2016,  2, 28, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 28, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2017,  2, 28, 9, 0));
@@ -138,13 +137,13 @@ public class ScheduleAccessorTest
     // Combined days of month and months of year schedule
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 3, 3, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 3, 3, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(daysOfMonth)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 3, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 5, 9, 0));
@@ -162,13 +161,13 @@ public class ScheduleAccessorTest
   {
     // Restrict to specific days of the week
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1, 2, 3, 6);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  5, 9, 0));
@@ -188,13 +187,13 @@ public class ScheduleAccessorTest
   {
     // Restrict to specific months of the year
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
@@ -210,12 +209,12 @@ public class ScheduleAccessorTest
   {
     // Ensure that the last day of the year is rolled over correctly
     final ImmutableList<Integer> daysOfYear = ImmutableList.of(1, 60, 365);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013,  1,  1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013,  1,  1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
@@ -229,12 +228,12 @@ public class ScheduleAccessorTest
   {
     // Ensure that a schedule with 366th day of year works
     final ImmutableList<Integer> daysOfYear = ImmutableList.of(366);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2016, 12, 31, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2016, 12, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2016, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2020, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2024, 12, 31, 9, 0));
@@ -247,13 +246,13 @@ public class ScheduleAccessorTest
     // Ensure that a schedule for 29th February works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(29);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(2);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2016,  2, 29, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2016,  2, 29, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 29, 9, 0));
@@ -265,13 +264,13 @@ public class ScheduleAccessorTest
   {
     // Ensure that a schedule for the 31st of the month works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(31);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2014,  1, 31, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2014,  1, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  3, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  5, 31, 9, 0));
@@ -294,13 +293,13 @@ public class ScheduleAccessorTest
   {
     // Ensure that a schedule which hits the last days of each month works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(28, 29, 30, 31);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2014,  1, 28, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2014,  1, 28, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 28, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 30, 9, 0));
@@ -322,13 +321,13 @@ public class ScheduleAccessorTest
     // year works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(29);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(1, 2);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013,  1, 29, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013,  1, 29, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2015,  1, 29, 9, 0));
@@ -348,13 +347,13 @@ public class ScheduleAccessorTest
   {
     // Simple days of week schedule
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2, 3, 5, 6);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 4, 9, 0));
@@ -370,13 +369,13 @@ public class ScheduleAccessorTest
   {
     // Ensure that the last week of the year is rolled over correctly
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1, 2, 3, 5, 6);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 12, 30, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 12, 30, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 30, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
@@ -394,14 +393,14 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 1st Monday of month works
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 7, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 7, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  4, 9, 0));
@@ -419,14 +418,14 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 4th Tuesday of month works
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(4);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 22, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 22, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 22, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2, 26, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 26, 9, 0));
@@ -444,14 +443,14 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 5th Sunday of month works
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(7);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(5);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 3, 31, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 3, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  6, 30, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  9, 29, 9, 0));
@@ -472,14 +471,14 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 1st three Mondays of month works
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1, 2, 3);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 7, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 7, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 14, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 21, 9, 0));
@@ -497,14 +496,14 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 1st five Mondays of month works
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 7, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 7, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 14, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 21, 9, 0));
@@ -523,13 +522,13 @@ public class ScheduleAccessorTest
   public void testWeeksOfYear() throws Exception
   {
     // Simple weeks of year schedule
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(2)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 8, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 15, 9, 0));
@@ -544,13 +543,13 @@ public class ScheduleAccessorTest
   public void testWeeksOfYear2() throws Exception
   {
     // Simple weeks of year schedule
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(1)
                                           .daysOfWeek(2)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2015, 1, 6, 9, 0));
@@ -566,13 +565,13 @@ public class ScheduleAccessorTest
   {
     // Weeks of year schedule with multiple entries
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(2)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 24, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
@@ -588,13 +587,13 @@ public class ScheduleAccessorTest
   {
     // Weeks of year schedule with multiple entries and (often) out-of-range values
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52, 53);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(2)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 24, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
@@ -613,13 +612,13 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 2nd day of 53rd week of year works
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(53);
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2024, 12, 31, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2024, 12, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2024, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2030, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2036, 12, 30, 9, 0));
@@ -630,15 +629,15 @@ public class ScheduleAccessorTest
   public void testTerminatingSchedule1() throws Exception
   {
     // Ensure that a terminating schedule terminates correctly using the accessor
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2012, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2012, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(Schedule.ALL)
                                           .weeksOfYear(Schedule.ALL)
-                                          .endDateTime(new DateTime(2012, 1, 4, 10, 0))
+                                          .end(new DateTime(2012, 1, 4, 10, 0))
                                           .build();
     assertTrue(schedule.terminates());
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  3, 9, 0));
@@ -660,14 +659,14 @@ public class ScheduleAccessorTest
   {
     // Ensure that a terminating schedule with an endtime at the beginning of an
     // instance terminates correctly
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2012, 1, 1, 9, 0))
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2012, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(Schedule.ALL)
                                           .weeksOfYear(Schedule.ALL)
-                                          .endDateTime(new DateTime(2012, 1, 3, 9, 0))
+                                          .end(new DateTime(2012, 1, 3, 9, 0))
                                           .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
+    final Iterator<Occurrence> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
     assertTrue(accessor.hasNext());
@@ -679,84 +678,6 @@ public class ScheduleAccessorTest
       fail("Accessor went past schedule termination date");
     }
     catch (NoSuchElementException nsee)
-    {
-      // Good
-    }
-  }
-
-  @Test
-  public void testSetBase() throws Exception
-  {
-    // Ensure that we can reset the base
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .daysOfYear(Schedule.ALL)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
-    accessor.setBase(new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
-    accessor.setBaseItem(new Occurrence(new DateTime(2013,  1,  1, 9, 0), new DateTime(2013,  1,  1, 10, 0)));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
-  }
-
-  @Test
-  public void testSetInvalidBase() throws Exception
-  {
-    // Ensure that setting an invalid base is caught
-    final Schedule schedule = new Schedule.Builder()
-                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
-                                          .duration(new Period(Hours.ONE))
-                                          .daysOfYear(Schedule.ALL)
-                                          .build();
-    final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
-    assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
-    try
-    {
-      accessor.setBase(null);
-      fail("Set accessor base to NULL");
-    }
-    catch (DataError.Missing de)
-    {
-      // Good
-    }
-    try
-    {
-      accessor.setBase(new DateTime(2013,  1,  1, 10, 0));
-      fail("Set accessor base to an invalid value");
-    }
-    catch (DataError.Bad de)
-    {
-      // Good
-    }
-    try
-    {
-      accessor.setBaseItem(null);
-      fail("Set accessor base item to NULL");
-    }
-    catch (DataError.Missing de)
-    {
-      // Good
-    }
-    try
-    {
-      accessor.setBaseItem(new Occurrence(new DateTime(2013,  1,  1, 10, 0), new DateTime(2013,  1,  1, 11, 0)));
-      fail("Set accessor base item to an invalid value");
-    }
-    catch (DataError.Bad de)
     {
       // Good
     }

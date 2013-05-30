@@ -16,6 +16,9 @@
 
 package com.wealdtech.schedule;
 
+import static com.wealdtech.Preconditions.*;
+import static com.wealdtech.utils.Joda.*;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,9 +40,6 @@ import com.google.common.collect.Range;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.PeriodOrdering;
 
-import static com.wealdtech.Preconditions.*;
-import static com.wealdtech.utils.Joda.*;
-
 /**
  * A Schedule is a statement of one or more {@link Occurrence}s.
  * <p/>A simple schedule will contain a single start and end time,
@@ -55,7 +55,7 @@ import static com.wealdtech.utils.Joda.*;
  * <p/>A recurring schedule may or may not have an end time.  If it does not
  * then it means that the schedule does not terminate.
  */
-public class Schedule<T extends BaseDateTime> implements Iterable<Schedule<T>>, Comparable<Schedule<T>>
+public class Schedule<T extends BaseDateTime> implements Iterable<Occurrence>, Comparable<Schedule<T>>
 {
   /**
    * Used when creating schedules to specify that all valid values should be included
@@ -394,24 +394,6 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Schedule<T>>, 
     return datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1);
   }
 
-//  public static DateTime withAbsoluteWeekOfYear(final DateTime datetime, final int week)
-//  {
-//    final int dayOfWeek = datetime.getDayOfYear() - ((datetime.get(AbsWeekOfYear) - 1) * DateTimeConstants.DAYS_PER_WEEK);
-//    return datetime.withDayOfYear((week - 1) * DateTimeConstants.DAYS_PER_WEEK + dayOfWeek);
-//  }
-
-//  public static DateTime withAbsoluteWeekOfMonth(final DateTime datetime, final int week)
-//  {
-//    int dayOfWeek = datetime.getDayOfWeek();
-//    int firstDayOfMonth = datetime.withDayOfMonth(1).getDayOfWeek();
-//    int offset = dayOfWeek + 1 - firstDayOfMonth;
-//    if (offset <= 0)
-//    {
-//      offset += 7;
-//    }
-//    return datetime.withDayOfMonth((week - 1) * DateTimeConstants.DAYS_PER_WEEK + offset);
-//  }
-
   public static DateTime withDayOfAbsoluteWeekOfMonth(final DateTime datetime, final int dayOfWeek)
   {
     final int weekOfMonth = datetime.get(AbsWeekOfMonth);
@@ -421,7 +403,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Schedule<T>>, 
   }
 
   @Override
-  public Iterator<Schedule<T>> iterator()
+  public Iterator<Occurrence> iterator()
   {
     return new ScheduleIterator<T>(this);
   }

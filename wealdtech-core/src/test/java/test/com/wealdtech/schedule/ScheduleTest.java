@@ -16,6 +16,9 @@
 
 package test.com.wealdtech.schedule;
 
+import static com.wealdtech.utils.Joda.*;
+import static org.testng.Assert.*;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -25,10 +28,6 @@ import org.testng.annotations.Test;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
-
-import static org.testng.Assert.*;
-
-import static com.wealdtech.utils.Joda.*;
 
 public class ScheduleTest
 {
@@ -448,14 +447,14 @@ public class ScheduleTest
     }
   }
 
-//  @Test
-//  public void testAbsWeekOfMonth() throws Exception
-//  {
-//    DateTime dt = new DateTime(2012, 1, 1, 9, 0);
-//    for (int i = 0; i < 1000; i++)
-//    {
-//      System.err.println(dt + ": " + (dt.getDayOfYear() - dt.withDayOfMonth(1).getDayOfYear()));
-//      dt = dt.plusDays(1);
-//    }
-//  }
+  @Test
+  public void testAbsWeekOfMonth() throws Exception
+  {
+    DateTime dt = new DateTime(2012, 1, 1, 9, 0);
+    for (int i = 0; i < 1000; i++)
+    {
+      assertEquals(dt.get(AbsWeekOfMonth), 1, "Date did not return absolute week of month as 1");
+      dt = dt.plusMonths(1);
+    }
+  }
 }
