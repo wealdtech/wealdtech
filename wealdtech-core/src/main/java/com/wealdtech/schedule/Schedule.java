@@ -238,7 +238,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Occurrence>, C
       checkState(Collections2.filter(this.monthsOfYear.get(), Range.<Integer>greaterThan(12)).isEmpty(), "Months of year must not contain values greater than 12");
     }
 
-    checkState(isAScheduleStart(this.getStart()), "Start is not a valid schedule start");
+    checkState(isAScheduleStart(this.getStart().toDateTime()), "Start is not a valid schedule start");
   }
 
   /**
@@ -255,7 +255,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Occurrence>, C
    * @param date the date to check
    * @return {@code true} if valid, {@code false} if not
    */
-  public boolean isAScheduleStart(final T date)
+  public boolean isAScheduleStart(final DateTime date)
   {
     // Check time
     // TODO wrap as required

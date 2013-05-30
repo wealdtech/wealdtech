@@ -21,8 +21,12 @@ import static org.testng.Assert.*;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
 import org.joda.time.Hours;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.testng.annotations.Test;
 
@@ -682,4 +686,73 @@ public class ScheduleIteratorTest
       // Good
     }
   }
+
+  @Test
+  public void testAllDay() throws Exception
+  {
+    // Simple all-day schedule
+    final Schedule<DateMidnight> schedule = new Schedule.Builder<DateMidnight>()
+                                                        .start(new DateMidnight(2013, 1, 1))
+                                                        .duration(new Period(Days.ONE))
+                                                        .daysOfMonth(1)
+                                                        .monthsOfYear(Schedule.ALL)
+                                                        .build();
+    assertFalse(schedule.terminates());
+    final Iterator<Occurrence> iterator = schedule.iterator();
+    assertTrue(iterator.hasNext());
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 0, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  2,  1, 0, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  3,  1, 0, 0));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  4,  1, 0, 0));
+    for (int i = 0; i < 1000; i++)
+    {
+      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
+    }
+    // FIXME check
+    assertEquals(iterator.next().getStart(), new DateTime(2096,  9,  1, 0, 0));
+  }
+
+  @Test
+  public void testAllDayTimezones() throws Exception
+  {
+    // Simple all-day schedule
+    final Schedule<DateMidnight> schedule = new Schedule.Builder<DateMidnight>()
+                                                        .start(new DateMidnight(2013, 1, 1, DateTimeZone.forID("America/New_York")))
+                                                        .duration(new Period(Days.TWO))
+                                                        .daysOfMonth(1)
+                                                        .monthsOfYear(Schedule.ALL)
+                                                        .build();
+    assertFalse(schedule.terminates());
+    final Iterator<Occurrence> iterator = schedule.iterator();
+    assertTrue(iterator.hasNext());
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 0, 0, DateTimeZone.forID("America/New_York")));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  2,  1, 0, 0, DateTimeZone.forID("America/New_York")));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  3,  1, 0, 0, DateTimeZone.forID("America/New_York")));
+    assertEquals(iterator.next().getStart(), new DateTime(2013,  4,  1, 0, 0, DateTimeZone.forID("America/New_York")));
+    for (int i = 0; i < 1000; i++)
+    {
+      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
+    }
+    // FIXME check
+    assertEquals(iterator.next().getStart(), new DateTime(2096,  9,  1, 0, 0, DateTimeZone.forID("America/New_York")));
+  }
+
+  @Test
+  public void testAllDayCrossTimezones() throws Exception
+  {
+    // Simple all-day schedule
+    final Schedule<DateMidnight> schedule = new Schedule.Builder<DateMidnight>()
+                                                        .start(new DateMidnight(2013, 1, 1, DateTimeZone.forID("America/Los_Angeles")))
+                                                        .duration(new Period(Days.TWO))
+                                                        .daysOfMonth(1)
+                                                        .monthsOfYear(Schedule.ALL)
+                                                        .build();
+    assertFalse(schedule.terminates());
+    final Iterator<Occurrence> iterator = schedule.iterator();
+    assertTrue(iterator.hasNext());
+    final Occurrence occurrence = iterator.next();
+    assertEquals(occurrence.getStart().toLocalDate(), new LocalDate(2013, 1, 1));
+    assertEquals(occurrence.getStart().toDateTime(DateTimeZone.forID("Asia/Tokyo")).toLocalDate(), new LocalDate(2013, 1, 1));
+  }
+
 }

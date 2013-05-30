@@ -19,7 +19,9 @@ package test.com.wealdtech.schedule;
 import static com.wealdtech.utils.Joda.*;
 import static org.testng.Assert.*;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.Period;
 import org.testng.annotations.BeforeClass;
@@ -433,6 +435,23 @@ public class ScheduleTest
     assertEquals(dt2.withField(AbsWeekOfYear, 30), new DateTime(2012, 7, 27, 1, 0));
     assertEquals(dt2.withField(AbsWeekOfYear, 35), new DateTime(2012, 8, 31, 1, 0));
     assertEquals(dt2.withField(AbsWeekOfYear, 52), new DateTime(2012, 12, 28, 1, 0));
+  }
+
+  @Test
+  public void testDateMidnight() throws Exception
+  {
+    final Schedule<DateMidnight> schedule = new Schedule.Builder<DateMidnight>()
+                                                        .start(new DateMidnight(2012, 1, 5))
+                                                        .duration(new Period(Days.ONE))
+                                                        .monthsOfYear(1)
+                                                        .daysOfMonth(5)
+                                                        .build();
+    assertNotNull(schedule);
+    schedule.toString();
+    schedule.hashCode();
+    assertNotEquals(null, schedule);
+    assertEquals(schedule, schedule);
+    assertNotEquals(schedule, null);
   }
 
   // Test for datetimetypefield extensions
