@@ -40,24 +40,24 @@ public class ScheduleTest
   @Test
   public void testModel() throws Exception
   {
-    final Schedule rs1 = new Schedule.Builder()
-                                     .startDateTime(new DateTime(2012, 1, 5, 1, 0))
-                                     .duration(new Period(Hours.ONE))
-                                     .monthsOfYear(1)
-                                     .daysOfMonth(5)
-                                     .build();
+    final Schedule<DateTime> rs1 = new Schedule.Builder<DateTime>()
+                                               .start(new DateTime(2012, 1, 5, 1, 0))
+                                               .duration(new Period(Hours.ONE))
+                                               .monthsOfYear(1)
+                                               .daysOfMonth(5)
+                                               .build();
     assertNotNull(rs1);
     rs1.toString();
     rs1.hashCode();
     assertNotEquals(null, rs1);
     assertEquals(rs1, rs1);
 
-    final Schedule rs2 = new Schedule.Builder(rs1)
-                                     .startDateTime(new DateTime(2012, 2, 5, 1, 0))
-                                     .duration(new Period(Hours.ONE))
-                                     .monthsOfYear(2, 3)
-                                     .daysOfMonth(5, 6)
-                                     .build();
+    final Schedule<DateTime> rs2 = new Schedule.Builder<DateTime>(rs1)
+                                               .start(new DateTime(2012, 2, 5, 1, 0))
+                                               .duration(new Period(Hours.ONE))
+                                               .monthsOfYear(2, 3)
+                                               .daysOfMonth(5, 6)
+                                               .build();
     assertNotNull(rs2);
     rs2.toString();
     rs2.hashCode();
@@ -65,13 +65,13 @@ public class ScheduleTest
     assertEquals(rs2, rs2);
     assertNotEquals(rs1, rs2);
 
-    final Schedule rs3 = new Schedule.Builder()
-                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
-                                     .duration(new Period(Hours.ONE))
-                                     .daysOfWeek(1, 2, 3)
-                                     .weeksOfMonth(1, 2)
-                                     .monthsOfYear(3, 5, 7)
-                                     .build();
+    final Schedule<DateTime> rs3 = new Schedule.Builder<DateTime>()
+                                               .start(new DateTime(2012, 3, 5, 1, 0))
+                                               .duration(new Period(Hours.ONE))
+                                               .daysOfWeek(1, 2, 3)
+                                               .weeksOfMonth(1, 2)
+                                               .monthsOfYear(3, 5, 7)
+                                               .build();
     assertNotNull(rs3);
     rs3.toString();
     rs3.hashCode();
@@ -79,13 +79,13 @@ public class ScheduleTest
     assertEquals(rs3, rs3);
     assertNotEquals(rs1, rs3);
 
-    final Schedule rs4 = new Schedule.Builder()
-                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
-                                     .duration(new Period(Hours.ONE))
-                                     .daysOfWeek(Schedule.ALL)
-                                     .weeksOfMonth(Schedule.ALL)
-                                     .monthsOfYear(Schedule.ALL)
-                                     .build();
+    final Schedule<DateTime> rs4 = new Schedule.Builder<DateTime>()
+                                               .start(new DateTime(2012, 3, 5, 1, 0))
+                                               .duration(new Period(Hours.ONE))
+                                               .daysOfWeek(Schedule.ALL)
+                                               .weeksOfMonth(Schedule.ALL)
+                                               .monthsOfYear(Schedule.ALL)
+                                               .build();
     assertNotNull(rs4);
     rs4.toString();
     rs4.hashCode();
@@ -93,12 +93,12 @@ public class ScheduleTest
     assertEquals(rs4, rs4);
     assertNotEquals(rs1, rs4);
 
-    final Schedule rs5 = new Schedule.Builder()
-                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
-                                     .duration(new Period(Hours.ONE))
-                                     .daysOfMonth(Schedule.ALL)
-                                     .monthsOfYear(Schedule.ALL)
-                                     .build();
+    final Schedule<DateTime> rs5 = new Schedule.Builder<DateTime>()
+                                               .start(new DateTime(2012, 3, 5, 1, 0))
+                                               .duration(new Period(Hours.ONE))
+                                               .daysOfMonth(Schedule.ALL)
+                                               .monthsOfYear(Schedule.ALL)
+                                               .build();
     assertNotNull(rs5);
     rs5.toString();
     rs5.hashCode();
@@ -106,11 +106,11 @@ public class ScheduleTest
     assertEquals(rs5, rs5);
     assertNotEquals(rs1, rs5);
 
-    final Schedule rs6 = new Schedule.Builder()
-                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
-                                     .duration(new Period(Hours.ONE))
-                                     .daysOfYear(Schedule.ALL)
-                                     .build();
+    final Schedule<DateTime> rs6 = new Schedule.Builder<DateTime>()
+                                               .start(new DateTime(2012, 3, 5, 1, 0))
+                                               .duration(new Period(Hours.ONE))
+                                               .daysOfYear(Schedule.ALL)
+                                               .build();
     assertNotNull(rs6);
     rs6.toString();
     rs6.hashCode();
@@ -122,8 +122,8 @@ public class ScheduleTest
   @Test
   public void testAlternateBuilder() throws Exception
   {
-    new Schedule.Builder()
-                .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+    new Schedule.Builder<DateTime>()
+                .start(new DateTime(2012, 1, 5, 1, 0))
                 .duration(new Period(Hours.ONE))
                 .weeksOfMonth(ImmutableList.<Integer>of())
                 .weeksOfYear(ImmutableList.<Integer>of())
@@ -133,8 +133,8 @@ public class ScheduleTest
                 .daysOfYear(ImmutableList.<Integer>of())
                 .build();
 
-    new Schedule.Builder()
-                .startDateTime(new DateTime(2012, 1, 1, 1, 0))
+    new Schedule.Builder<DateTime>()
+                .start(new DateTime(2012, 1, 1, 1, 0))
                 .duration(new Period(Hours.ONE))
                 .weeksOfMonth(ImmutableList.<Integer>of())
                 .weeksOfYear(ImmutableList.<Integer>of())
@@ -149,7 +149,7 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
+      new Schedule.Builder<DateTime>()
                   .duration(new Period(Hours.ONE))
                   .monthsOfYear(1)
                   .daysOfMonth(5)
@@ -167,8 +167,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .monthsOfYear(1)
                   .weeksOfYear(5)
@@ -186,8 +186,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(1)
                   .build();
@@ -204,8 +204,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(1)
                   .weeksOfMonth(1)
@@ -223,8 +223,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfMonth(1)
                   .build();
@@ -241,8 +241,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfMonth(1)
@@ -261,8 +261,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfMonth(1)
@@ -281,8 +281,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfYear(1)
@@ -301,8 +301,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfYear(1)
@@ -322,8 +322,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfMonth(5)
                   .daysOfYear(1)
@@ -342,8 +342,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .weeksOfMonth(2)
@@ -362,8 +362,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .weeksOfYear(5)
                   .daysOfWeek(1)
@@ -381,8 +381,8 @@ public class ScheduleTest
   {
     try
     {
-      new Schedule.Builder()
-                  .startDateTime(new DateTime(2012, 1, 3, 1, 0))
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 3, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .weeksOfYear(Schedule.ALL)
                   .daysOfWeek(1)

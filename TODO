@@ -1,3 +1,15 @@
 JettyServer
   - Create with full JAX-RS configuration
     - Stop subclassing/copying it
+
+Schedule
+  - Move to generic to handle LocalDate and DateTime more cleanly?
+  - Add exceptions, alterations and additions
+    - Generic alterations
+
+ScheduleAccessor
+  - Handle day-only schedules
+  - Move to iterator
+
+Occurrence
+  - Template to handle LocalDate or DateTime?

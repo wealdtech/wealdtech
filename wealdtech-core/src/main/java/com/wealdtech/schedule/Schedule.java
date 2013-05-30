@@ -16,14 +16,13 @@
 
 package com.wealdtech.schedule;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.joda.time.Period;
+import org.joda.time.base.BaseDateTime;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -36,7 +35,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.wealdtech.DataError;
-import com.wealdtech.utils.Accessor;
 import com.wealdtech.utils.PeriodOrdering;
 
 import static com.wealdtech.Preconditions.*;
@@ -57,7 +55,7 @@ import static com.wealdtech.utils.Joda.*;
  * <p/>A recurring schedule may or may not have an end time.  If it does not
  * then it means that the schedule does not terminate.
  */
-public class Schedule implements Comparable<Schedule>
+public class Schedule<T extends BaseDateTime> implements Iterable<Schedule<T>>, Comparable<Schedule<T>>
 {
   /**
    * Used when creating schedules to specify that all valid values should be included
@@ -72,12 +70,8 @@ public class Schedule implements Comparable<Schedule>
   private static final ImmutableList<Integer> ALL_MONTHS_OF_YEAR = ContiguousSet.create(Range.closed(1, 12), DiscreteDomain.integers()).asList();
   private static final ImmutableList<Integer> ALL_DAYS_OF_YEAR = ContiguousSet.create(Range.closed(1, 366), DiscreteDomain.integers()).asList();
 
-  private final LocalDate startDate;
-  private final Optional<LocalTime> startTime;
-  private final Optional<DateTimeZone> startTz;
-  private final Optional<LocalDate> endDate;
-  private final Optional<LocalTime> endTime;
-  private final Optional<DateTimeZone> endTz;
+  private final T start;
+  private final Optional<T> end;
 
   private final Period duration;
 
@@ -88,12 +82,8 @@ public class Schedule implements Comparable<Schedule>
   private final Optional<ImmutableList<Integer>> daysOfMonth;
   private final Optional<ImmutableList<Integer>> daysOfWeek;
 
-  private Schedule(final LocalDate startDate,
-                   final LocalTime startTime,
-                   final DateTimeZone startTz,
-                   final LocalDate endDate,
-                   final LocalTime endTime,
-                   final DateTimeZone endTz,
+  private Schedule(final T start,
+                   final T end,
                    final Period duration,
                    final ImmutableList<Integer> monthsOfYear,
                    final ImmutableList<Integer> weeksOfYear,
@@ -102,12 +92,8 @@ public class Schedule implements Comparable<Schedule>
                    final ImmutableList<Integer> daysOfMonth,
                    final ImmutableList<Integer> daysOfWeek)
   {
-    this.startDate = startDate;
-    this.endDate = Optional.fromNullable(endDate);
-    this.startTime = Optional.fromNullable(startTime);
-    this.endTime = Optional.fromNullable(endTime);
-    this.startTz = Optional.fromNullable(startTz);
-    this.endTz = Optional.fromNullable(endTz);
+    this.start = start;
+    this.end = Optional.fromNullable(end);
     this.duration = duration;
     if (monthsOfYear == null || monthsOfYear.isEmpty())
     {
@@ -208,24 +194,7 @@ public class Schedule implements Comparable<Schedule>
   // and will always provide values
   private void validate()
   {
-    checkNotNull(this.startDate, "Schedule requires a start date");
-    boolean dateAndTime = this.startTime.isPresent();
-    boolean terminates = this.endDate.isPresent();
-
-    if (dateAndTime)
-    {
-      checkNotNull(this.startTz.orNull(), "Date-and-time schedule requires a starting timezone");
-    }
-
-    if (terminates)
-    {
-      checkNotNull(this.endDate.orNull(), "Terminating schedule requires an end date");
-      if (dateAndTime)
-      {
-        checkNotNull(this.endTime.orNull(), "Terminating date-and-time schedule requires an ending time");
-        checkNotNull(this.endTz.orNull(), "Terminating date-and-time schedule requires an ending timezone");
-      }
-    }
+    checkNotNull(this.start, "Schedule requires a start");
 
     checkNotNull(this.duration, "Schedule requires a duration");
 
@@ -269,32 +238,16 @@ public class Schedule implements Comparable<Schedule>
       checkState(Collections2.filter(this.monthsOfYear.get(), Range.<Integer>greaterThan(12)).isEmpty(), "Months of year must not contain values greater than 12");
     }
 
-    if (dateAndTime)
-    {
-      checkState(isAScheduleStart(this.getStartDateTime()), "Start datetime is not a valid schedule start datetime");
-    }
-    else
-    {
-      checkState(isAScheduleStart(this.startDate), "Start date is not a valid schedule start date");
-    }
+    checkState(isAScheduleStart(this.getStart()), "Start is not a valid schedule start");
   }
 
   /**
-   * Returns {@code true} if this schedule terminates <em>i.e.</em> it has an end date
+   * Returns {@code true} if this schedule terminates <em>i.e.</em> it has an end
    * @return {@code true} if the schedule terminates
    */
   public boolean terminates()
   {
-    return (this.endDate.isPresent());
-  }
-
-  /**
-   * Provide an {@link Accessor} for this schedule.
-   * @return an accessor
-   */
-  public Accessor<Occurrence, DateTime> accessor()
-  {
-    return new ScheduleAccessor(this);
+    return (this.end.isPresent());
   }
 
   /**
@@ -302,79 +255,19 @@ public class Schedule implements Comparable<Schedule>
    * @param date the date to check
    * @return {@code true} if valid, {@code false} if not
    */
-  public boolean isAScheduleStart(final LocalDate localDate)
+  public boolean isAScheduleStart(final T date)
   {
-    if (!isDateOnly())
-    {
-      throw new DataError.Bad("Attempt to check start validitiy for date-and-time schedule with date");
-    }
-
-    if (this.daysOfWeek.isPresent())
-    {
-      if (!this.daysOfWeek.get().contains(localDate.getDayOfWeek()))
-      {
-        return false;
-      }
-    }
-
-    if (this.daysOfMonth.isPresent())
-    {
-      if (!this.daysOfMonth.get().contains(localDate.getDayOfMonth()))
-      {
-        return false;
-      }
-    }
-
-    if (this.daysOfYear.isPresent())
-    {
-      if (!this.daysOfYear.get().contains(localDate.getDayOfYear()))
-      {
-        return false;
-      }
-    }
-
-    if (this.weeksOfMonth.isPresent())
-    {
-      if (!this.weeksOfMonth.get().contains(localDate.get(AbsWeekOfMonth)))
-      {
-        return false;
-      }
-    }
-
-    if (this.weeksOfYear.isPresent())
-    {
-      if (!this.weeksOfYear.get().contains(localDate.get(AbsWeekOfYear)))
-      {
-        return false;
-      }
-    }
-
-    // All checks passed
-    return true;
-  }
-
-  /**
-   * Confirm if a given date/time is a valid start time for this schedule
-   * @param datetime the date/time to check
-   * @return {@code true} if valid, {@code false} if not
-   */
-  public boolean isAScheduleStart(final DateTime datetime)
-  {
-    if (isDateOnly())
-    {
-      throw new DataError.Bad("Attempt to check start validity for date-only schedule with datetime");
-    }
-
     // Check time
-    if ((datetime.getMinuteOfHour() != this.startTime.get().getMinuteOfHour()) ||
-        (datetime.getHourOfDay() != this.startTime.get().getHourOfDay()))
+    // TODO wrap as required
+    if ((date.getMinuteOfHour() != this.start.getMinuteOfHour()) ||
+        (date.getHourOfDay() != this.start.getHourOfDay()))
     {
       return false;
     }
 
     if (this.daysOfWeek.isPresent())
     {
-      if (!this.daysOfWeek.get().contains(datetime.getDayOfWeek()))
+      if (!this.daysOfWeek.get().contains(date.getDayOfWeek()))
       {
         return false;
       }
@@ -382,7 +275,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.daysOfMonth.isPresent())
     {
-      if (!this.daysOfMonth.get().contains(datetime.getDayOfMonth()))
+      if (!this.daysOfMonth.get().contains(date.getDayOfMonth()))
       {
         return false;
       }
@@ -390,7 +283,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.daysOfYear.isPresent())
     {
-      if (!this.daysOfYear.get().contains(datetime.getDayOfYear()))
+      if (!this.daysOfYear.get().contains(date.getDayOfYear()))
       {
         return false;
       }
@@ -398,7 +291,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfMonth.isPresent())
     {
-      if (!this.weeksOfMonth.get().contains(datetime.get(AbsWeekOfMonth)))
+      if (!this.weeksOfMonth.get().contains(date.get(AbsWeekOfMonth)))
       {
         return false;
       }
@@ -406,7 +299,7 @@ public class Schedule implements Comparable<Schedule>
 
     if (this.weeksOfYear.isPresent())
     {
-      if (!this.weeksOfYear.get().contains(datetime.get(AbsWeekOfYear)))
+      if (!this.weeksOfYear.get().contains(date.get(AbsWeekOfYear)))
       {
         return false;
       }
@@ -417,78 +310,26 @@ public class Schedule implements Comparable<Schedule>
   }
 
   /**
-   * State if this schedule is date-only or date-and-time
-   * @return {@code true} if the schedule is date-only
+   * Return the starting item for this schedule.
+   * @return the starting item
    */
-  public boolean isDateOnly()
+  public T getStart()
   {
-    return !this.startTime.isPresent();
+    return this.start;
   }
 
   /**
-   * Return the starting {@link LocalDate} for this schedule.
-   * @throws DataError.Bad if this schedule is date-and-time
-   * @return the starting {@link LocalDate}
-   */
-  public LocalDate getStartDate()
-  {
-    if (!isDateOnly())
-    {
-      throw new DataError.Bad("Attempt to get start date for date-and-time schedule");
-    }
-    return this.startDate;
-  }
-
-  /**
-   * Provide the starting {@link DateTime} for this schedule.
-   * @throws DataError.Bad if this schedule is date-only
-   * @return the starting {@link DateTime}
-   */
-  public DateTime getStartDateTime()
-  {
-    if (isDateOnly())
-    {
-      throw new DataError.Bad("Attempt to get start datetime for date-only schedule");
-    }
-    return this.startDate.toDateTime(this.startTime.get(), this.startTz.get());
-  }
-
-  /**
-   * Provide the ending {@link LocalDate} for this schedule.
-   * @throws DataError.Bad if this schedule is date-and-time
+   * Provide the ending item for this schedule.
    * @throws DataError.Missing if this schedule does not terminate
-   * @return the ending {@link LocalDate}
+   * @return the ending item
    */
-  public LocalDate getEndDate()
+  public T getEndDate()
   {
-    if (!isDateOnly())
-    {
-      throw new DataError.Bad("Attempt to get end date for date-and-time schedule");
-    }
-    if (!this.endDate.isPresent())
+    if (!this.end.isPresent())
     {
       throw new DataError.Missing("Attempt to get end date for non-terminating schedule");
     }
-    return this.endDate.get();
-  }
-
-  /**
-   * Provide the ending {@link DateTime} for this schedule.
-   * @throws DataError.Bad if this schedule is date-only
-   * @throws DataError.Missing if this schedule does not terminate
-   * @return the ending {@link DateTime}
-   */
-  public DateTime getEndDateTime()
-  {
-    if (isDateOnly())
-    {
-      throw new DataError.Bad("Attempt to get end datetime for date-only schedule");
-    }
-    if (!this.endDate.isPresent())
-    {
-      throw new DataError.Missing("Attempt to get end datetime for non-terminating schedule");
-    }
-    return this.endDate.get().toDateTime(this.endTime.get(), this.endTz.get());
+    return this.end.get();
   }
 
   public Period getDuration()
@@ -579,17 +420,19 @@ public class Schedule implements Comparable<Schedule>
     return datetime.withDayOfMonth((weekOfMonth - 1) * DateTimeConstants.DAYS_PER_WEEK + 1 + dayOfWeekOffset);
   }
 
+  @Override
+  public Iterator<Schedule<T>> iterator()
+  {
+    return new ScheduleIterator<T>(this);
+  }
+
   // Standard object methods follow
   @Override
   public String toString()
   {
     return Objects.toStringHelper(this)
-                  .add("startDate", this.startDate)
-                  .add("startTime", this.startTime.orNull())
-                  .add("startTz", this.startTz.orNull())
-                  .add("endDate", this.endDate.orNull())
-                  .add("endTime", this.endTime.orNull())
-                  .add("endTz", this.endTz.orNull())
+                  .add("start", this.start)
+                  .add("end", this.end.orNull())
                   .add("duration", this.getDuration())
                   .add("monthsOfYear", this.getMonthsOfYear())
                   .add("weeksOfYear", this.getWeeksOfYear())
@@ -604,18 +447,14 @@ public class Schedule implements Comparable<Schedule>
   @Override
   public boolean equals(final Object that)
   {
-    return that instanceof Schedule && this.compareTo((Schedule)that) == 0;
+    return that instanceof Schedule && this.compareTo((Schedule<T>)that) == 0;
   }
 
   @Override
   public int hashCode()
   {
-    return Objects.hashCode(this.startDate,
-                            this.startTime,
-                            this.startTz,
-                            this.endDate,
-                            this.endTime,
-                            this.endTz,
+    return Objects.hashCode(this.start,
+                            this.end,
                             this.getDuration(),
                             this.getMonthsOfYear(),
                             this.getWeeksOfYear(),
@@ -626,16 +465,11 @@ public class Schedule implements Comparable<Schedule>
   }
 
   @Override
-  public int compareTo(final Schedule that)
+  public int compareTo(final Schedule<T> that)
   {
-    // TODO DateTimeZone is not comparable.  Need to consider if this matters
     return ComparisonChain.start()
-                          .compare(this.startDate, that.startDate)
-                          .compare(this.startTime.orNull(), that.startTime.orNull(), Ordering.natural().nullsFirst())
-//                          .compare(this.startTz.orNull(), that.startTz.orNull(), Ordering.natural().nullsFirst())
-                          .compare(this.endDate.orNull(), that.endDate.orNull(), Ordering.natural().nullsFirst())
-                          .compare(this.endTime.orNull(), that.endTime.orNull(), Ordering.natural().nullsFirst())
-//                          .compare(this.endTz.orNull(), that.endTz.orNull(), Ordering.natural().nullsFirst())
+                          .compare(this.start, that.start)
+                          .compare(this.end.orNull(), that.end.orNull(), Ordering.natural().nullsFirst())
                           .compare(this.getDuration(), that.getDuration(), new PeriodOrdering().nullsFirst())
                           .compare(this.getMonthsOfYear().orNull(), that.getMonthsOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfYear().orNull(), that.getWeeksOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
@@ -646,14 +480,10 @@ public class Schedule implements Comparable<Schedule>
                           .result();
   }
 
-  public static class Builder
+  public static class Builder<T extends BaseDateTime>
   {
-    private transient LocalDate startDate;
-    private transient LocalTime startTime;
-    private transient DateTimeZone startTz;
-    private transient LocalDate endDate;
-    private transient LocalTime endTime;
-    private transient DateTimeZone endTz;
+    private transient T start;
+    private transient T end;
     private transient Period duration;
     private transient ImmutableList<Integer> monthsOfYear;
     private transient ImmutableList<Integer> weeksOfYear;
@@ -667,14 +497,10 @@ public class Schedule implements Comparable<Schedule>
       // Nothing to do
     }
 
-    public Builder(final Schedule prior)
+    public Builder(final Schedule<T> prior)
     {
-      this.startDate = prior.startDate;
-      this.startTime = prior.startTime.orNull();
-      this.startTz = prior.startTz.orNull();
-      this.endDate = prior.endDate.orNull();
-      this.endTime = prior.endTime.orNull();
-      this.endTz = prior.endTz.orNull();
+      this.start = prior.start;
+      this.end = prior.end.orNull();
       this.duration = prior.getDuration();
       this.monthsOfYear = prior.getMonthsOfYear().orNull();
       this.weeksOfYear = prior.getWeeksOfYear().orNull();
@@ -684,51 +510,31 @@ public class Schedule implements Comparable<Schedule>
       this.daysOfWeek= prior.getDaysOfWeek().orNull();
     }
 
-    public Builder startDateTime(final DateTime startDateTime)
+    public Builder<T> start(final T start)
     {
-      this.startDate = startDateTime.toLocalDate();
-      this.startTime = startDateTime.toLocalTime();
-      this.startTz = startDateTime.getZone();
+      this.start = start;
       return this;
     }
 
-    public Builder endDateTime(final DateTime endDateTime)
+    public Builder<T> end(final T end)
     {
-      this.endDate = endDateTime.toLocalDate();
-      this.endTime = endDateTime.toLocalTime();
-      this.endTz = endDateTime.getZone();
+      this.end = end;
       return this;
     }
 
-    public Builder startDate(final LocalDate startDate)
-    {
-      this.startDate = startDate;
-      this.startTime = null;
-      this.startTz = null;
-      return this;
-    }
-
-    public Builder endDate(final LocalDate endDate)
-    {
-      this.endDate = endDate;
-      this.endTime = null;
-      this.endTz = null;
-      return this;
-    }
-
-    public Builder duration(final Period duration)
+    public Builder<T> duration(final Period duration)
     {
       this.duration = duration;
       return this;
     }
 
-    public Builder monthsOfYear(final Integer firstMonthOfYear, final Integer ... subsequentMonthsOfYear)
+    public Builder<T> monthsOfYear(final Integer firstMonthOfYear, final Integer ... subsequentMonthsOfYear)
     {
       this.monthsOfYear = ImmutableList.copyOf(Lists.asList(firstMonthOfYear, subsequentMonthsOfYear));
       return this;
     }
 
-    public Builder monthsOfYear(final List<Integer> monthsOfYear)
+    public Builder<T> monthsOfYear(final List<Integer> monthsOfYear)
     {
       if (monthsOfYear == null)
       {
@@ -741,13 +547,13 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder weeksOfYear(final Integer firstWeekOfYear, final Integer ... subsequentWeeksOfYear)
+    public Builder<T> weeksOfYear(final Integer firstWeekOfYear, final Integer ... subsequentWeeksOfYear)
     {
       this.weeksOfYear = ImmutableList.copyOf(Lists.asList(firstWeekOfYear, subsequentWeeksOfYear));
       return this;
     }
 
-    public Builder weeksOfYear(final List<Integer> weeksOfYear)
+    public Builder<T> weeksOfYear(final List<Integer> weeksOfYear)
     {
       if (weeksOfYear == null)
       {
@@ -760,13 +566,13 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder weeksOfMonth(final Integer firstWeekOfMonth, final Integer ... subsequentWeeksOfMonth)
+    public Builder<T> weeksOfMonth(final Integer firstWeekOfMonth, final Integer ... subsequentWeeksOfMonth)
     {
       this.weeksOfMonth = ImmutableList.copyOf(Lists.asList(firstWeekOfMonth, subsequentWeeksOfMonth));
       return this;
     }
 
-    public Builder weeksOfMonth(final List<Integer> weeksOfMonth)
+    public Builder<T> weeksOfMonth(final List<Integer> weeksOfMonth)
     {
       if (weeksOfMonth == null)
       {
@@ -779,13 +585,13 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder daysOfYear(final Integer firstDayOfYear, final Integer ... subsequentDaysOfYear)
+    public Builder<T> daysOfYear(final Integer firstDayOfYear, final Integer ... subsequentDaysOfYear)
     {
       this.daysOfYear = ImmutableList.copyOf(Lists.asList(firstDayOfYear, subsequentDaysOfYear));
       return this;
     }
 
-    public Builder daysOfYear(final List<Integer> daysOfYear)
+    public Builder<T> daysOfYear(final List<Integer> daysOfYear)
     {
       if (daysOfYear == null)
       {
@@ -798,13 +604,13 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder daysOfMonth(final Integer firstDayOfMonth, final Integer ... subsequentDaysOfMonth)
+    public Builder<T> daysOfMonth(final Integer firstDayOfMonth, final Integer ... subsequentDaysOfMonth)
     {
       this.daysOfMonth = ImmutableList.copyOf(Lists.asList(firstDayOfMonth, subsequentDaysOfMonth));
       return this;
     }
 
-    public Builder daysOfMonth(final List<Integer> daysOfMonth)
+    public Builder<T> daysOfMonth(final List<Integer> daysOfMonth)
     {
       if (daysOfMonth == null)
       {
@@ -817,13 +623,13 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Builder daysOfWeek(final Integer firstDayOfWeek, final Integer ... subsequentDaysOfWeek)
+    public Builder<T> daysOfWeek(final Integer firstDayOfWeek, final Integer ... subsequentDaysOfWeek)
     {
       this.daysOfWeek = ImmutableList.copyOf(Lists.asList(firstDayOfWeek, subsequentDaysOfWeek));
       return this;
     }
 
-    public Builder daysOfWeek(final List<Integer> daysOfWeek)
+    public Builder<T> daysOfWeek(final List<Integer> daysOfWeek)
     {
       if (daysOfWeek == null)
       {
@@ -836,9 +642,9 @@ public class Schedule implements Comparable<Schedule>
       return this;
     }
 
-    public Schedule build()
+    public Schedule<T> build()
     {
-      return new Schedule(this.startDate, this.startTime, this.startTz, this.endDate, this.endTime, this.endTz, this.duration, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
+      return new Schedule<T>(this.start, this.end, this.duration, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
     }
   }
 }
