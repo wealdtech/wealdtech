@@ -122,13 +122,15 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   private DateTime resetWeekOfMonth(final DateTime mark)
   {
     this.curWeeksOfMonthIndex = 0;
-    return Schedule.withAbsoluteWeekOfMonth(mark, this.schedule.getWeeksOfMonth().get().get(0));
+    return mark.withField(AbsWeekOfMonth, this.schedule.getWeeksOfMonth().get().get(0));
+//    return Schedule.withAbsoluteWeekOfMonth(mark, this.schedule.getWeeksOfMonth().get().get(0));
   }
 
   private DateTime resetWeekOfYear(final DateTime mark)
   {
       this.curWeeksOfYearIndex = 0;
-      return Schedule.withAbsoluteWeekOfYear(mark, this.schedule.getWeeksOfYear().get().get(0));
+      return mark.withField(AbsWeekOfYear, this.schedule.getWeeksOfYear().get().get(0));
+//      return Schedule.withAbsoluteWeekOfYear(mark, this.schedule.getWeeksOfYear().get().get(0));
   }
 
   private DateTime resetMonth(final DateTime mark)
@@ -432,7 +434,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
           // Reached the end of our specified weeks of the year; reset
           throw new IllegalFieldValueException(DateTimeFieldType.weekOfWeekyear(), null, null);
         }
-        final DateTime tmp = Schedule.withAbsoluteWeekOfYear(nextMark, weeksOfYear.get(++this.curWeeksOfYearIndex));
+//        final DateTime tmp = Schedule.withAbsoluteWeekOfYear(nextMark, weeksOfYear.get(++this.curWeeksOfYearIndex));
+        final DateTime tmp = nextMark.withField(AbsWeekOfYear, weeksOfYear.get(++this.curWeeksOfYearIndex));
         try
         {
           nextMark = resetDay(tmp);

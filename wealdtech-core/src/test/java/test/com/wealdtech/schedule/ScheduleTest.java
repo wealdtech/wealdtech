@@ -422,18 +422,18 @@ public class ScheduleTest
   public void testWithAbsoluteWeekOfYear() throws Exception
   {
     final DateTime dt = new DateTime(2012, 1, 1, 1, 0); // Monday
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt, 1), new DateTime(2012, 1, 1, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt, 2), new DateTime(2012, 1, 8, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt, 3), new DateTime(2012, 1, 15, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt, 4), new DateTime(2012, 1, 22, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt, 5), new DateTime(2012, 1, 29, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt, 6), new DateTime(2012, 2, 5, 1, 0));
+    assertEquals(dt.withField(AbsWeekOfYear,  1), new DateTime(2012, 1, 1, 1, 0));
+    assertEquals(dt.withField(AbsWeekOfYear,  2), new DateTime(2012, 1, 8, 1, 0));
+    assertEquals(dt.withField(AbsWeekOfYear,  3), new DateTime(2012, 1, 15, 1, 0));
+    assertEquals(dt.withField(AbsWeekOfYear,  4), new DateTime(2012, 1, 22, 1, 0));
+    assertEquals(dt.withField(AbsWeekOfYear,  5), new DateTime(2012, 1, 29, 1, 0));
+    assertEquals(dt.withField(AbsWeekOfYear,  6), new DateTime(2012, 2, 5, 1, 0));
 
     final DateTime dt2 = new DateTime(2012, 6, 15, 1, 0); // Friday
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt2, 1), new DateTime(2012, 1, 6, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt2, 30), new DateTime(2012, 7, 27, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt2, 35), new DateTime(2012, 8, 31, 1, 0));
-    assertEquals(Schedule.withAbsoluteWeekOfYear(dt2, 52), new DateTime(2012, 12, 28, 1, 0));
+    assertEquals(dt2.withField(AbsWeekOfYear,  1), new DateTime(2012, 1, 6, 1, 0));
+    assertEquals(dt2.withField(AbsWeekOfYear, 30), new DateTime(2012, 7, 27, 1, 0));
+    assertEquals(dt2.withField(AbsWeekOfYear, 35), new DateTime(2012, 8, 31, 1, 0));
+    assertEquals(dt2.withField(AbsWeekOfYear, 52), new DateTime(2012, 12, 28, 1, 0));
   }
 
   // Test for datetimetypefield extensions

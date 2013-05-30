@@ -553,23 +553,23 @@ public class Schedule implements Comparable<Schedule>
     return datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1);
   }
 
-  public static DateTime withAbsoluteWeekOfYear(final DateTime datetime, final int week)
-  {
-    final int dayOfWeek = datetime.getDayOfYear() - ((datetime.get(AbsWeekOfYear) - 1) * DateTimeConstants.DAYS_PER_WEEK);
-    return datetime.withDayOfYear((week - 1) * DateTimeConstants.DAYS_PER_WEEK + dayOfWeek);
-  }
+//  public static DateTime withAbsoluteWeekOfYear(final DateTime datetime, final int week)
+//  {
+//    final int dayOfWeek = datetime.getDayOfYear() - ((datetime.get(AbsWeekOfYear) - 1) * DateTimeConstants.DAYS_PER_WEEK);
+//    return datetime.withDayOfYear((week - 1) * DateTimeConstants.DAYS_PER_WEEK + dayOfWeek);
+//  }
 
-  public static DateTime withAbsoluteWeekOfMonth(final DateTime datetime, final int week)
-  {
-    int dayOfWeek = datetime.getDayOfWeek();
-    int firstDayOfMonth = datetime.withDayOfMonth(1).getDayOfWeek();
-    int offset = dayOfWeek + 1 - firstDayOfMonth;
-    if (offset <= 0)
-    {
-      offset += 7;
-    }
-    return datetime.withDayOfMonth((week - 1) * DateTimeConstants.DAYS_PER_WEEK + offset);
-  }
+//  public static DateTime withAbsoluteWeekOfMonth(final DateTime datetime, final int week)
+//  {
+//    int dayOfWeek = datetime.getDayOfWeek();
+//    int firstDayOfMonth = datetime.withDayOfMonth(1).getDayOfWeek();
+//    int offset = dayOfWeek + 1 - firstDayOfMonth;
+//    if (offset <= 0)
+//    {
+//      offset += 7;
+//    }
+//    return datetime.withDayOfMonth((week - 1) * DateTimeConstants.DAYS_PER_WEEK + offset);
+//  }
 
   public static DateTime withDayOfAbsoluteWeekOfMonth(final DateTime datetime, final int dayOfWeek)
   {
