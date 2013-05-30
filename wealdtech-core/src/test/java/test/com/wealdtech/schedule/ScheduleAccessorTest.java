@@ -38,7 +38,7 @@ public class ScheduleAccessorTest
   {
     // Simple daily schedule
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(Schedule.ALL)
                                           .build();
@@ -64,7 +64,7 @@ public class ScheduleAccessorTest
     // Restrict to specific days of the year
     final ImmutableList<Integer> daysOfYear = ImmutableList.of(1, 60, 300);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
@@ -88,7 +88,7 @@ public class ScheduleAccessorTest
     // Restrict to specific days of the month
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 3, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 3, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(Schedule.ALL)
                                           .daysOfMonth(daysOfMonth)
@@ -112,7 +112,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(28, 29);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(2);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2016,  2, 28, 9, 0))
+                                          .startDateTime(new DateTime(2016,  2, 28, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
@@ -139,7 +139,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 3, 3, 9, 0))
+                                          .startDateTime(new DateTime(2013, 3, 3, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(daysOfMonth)
@@ -163,7 +163,7 @@ public class ScheduleAccessorTest
     // Restrict to specific days of the week
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1, 2, 3, 6);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
@@ -189,7 +189,7 @@ public class ScheduleAccessorTest
     // Restrict to specific months of the year
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(5, 3, 1);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(Schedule.ALL)
@@ -211,7 +211,7 @@ public class ScheduleAccessorTest
     // Ensure that the last day of the year is rolled over correctly
     final ImmutableList<Integer> daysOfYear = ImmutableList.of(1, 60, 365);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013,  1,  1, 9, 0))
+                                          .startDateTime(new DateTime(2013,  1,  1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
@@ -230,7 +230,7 @@ public class ScheduleAccessorTest
     // Ensure that a schedule with 366th day of year works
     final ImmutableList<Integer> daysOfYear = ImmutableList.of(366);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2016, 12, 31, 9, 0))
+                                          .startDateTime(new DateTime(2016, 12, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
@@ -248,7 +248,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(29);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(2);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2016,  2, 29, 9, 0))
+                                          .startDateTime(new DateTime(2016,  2, 29, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
@@ -266,7 +266,7 @@ public class ScheduleAccessorTest
     // Ensure that a schedule for the 31st of the month works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(31);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2014,  1, 31, 9, 0))
+                                          .startDateTime(new DateTime(2014,  1, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(Schedule.ALL)
@@ -295,7 +295,7 @@ public class ScheduleAccessorTest
     // Ensure that a schedule which hits the last days of each month works
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(28, 29, 30, 31);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2014,  1, 28, 9, 0))
+                                          .startDateTime(new DateTime(2014,  1, 28, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(Schedule.ALL)
@@ -323,7 +323,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfMonth = ImmutableList.of(29);
     final ImmutableList<Integer> monthsOfYear = ImmutableList.of(1, 2);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013,  1, 29, 9, 0))
+                                          .startDateTime(new DateTime(2013,  1, 29, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
@@ -349,7 +349,7 @@ public class ScheduleAccessorTest
     // Simple days of week schedule
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2, 3, 5, 6);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
@@ -371,7 +371,7 @@ public class ScheduleAccessorTest
     // Ensure that the last week of the year is rolled over correctly
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1, 2, 3, 5, 6);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 12, 30, 9, 0))
+                                          .startDateTime(new DateTime(2013, 12, 30, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
@@ -395,7 +395,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 7, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 7, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
@@ -420,7 +420,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(4);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 22, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 22, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
@@ -445,7 +445,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(7);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(5);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 3, 31, 9, 0))
+                                          .startDateTime(new DateTime(2013, 3, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
@@ -473,7 +473,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1, 2, 3);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 7, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 7, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
@@ -498,7 +498,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(1);
     final ImmutableList<Integer> weeksOfMonth = ImmutableList.of(1, 2, 3, 4, 5);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 7, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 7, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(daysOfWeek)
                                           .weeksOfMonth(weeksOfMonth)
@@ -524,7 +524,7 @@ public class ScheduleAccessorTest
   {
     // Simple weeks of year schedule
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(2)
@@ -545,7 +545,7 @@ public class ScheduleAccessorTest
   {
     // Simple weeks of year schedule
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(1)
                                           .daysOfWeek(2)
@@ -567,7 +567,7 @@ public class ScheduleAccessorTest
     // Weeks of year schedule with multiple entries
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(2)
@@ -589,7 +589,7 @@ public class ScheduleAccessorTest
     // Weeks of year schedule with multiple entries and (often) out-of-range values
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(1, 52, 53);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(2)
@@ -614,7 +614,7 @@ public class ScheduleAccessorTest
     final ImmutableList<Integer> daysOfWeek = ImmutableList.of(2);
     final ImmutableList<Integer> weeksOfYear = ImmutableList.of(53);
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2024, 12, 31, 9, 0))
+                                          .startDateTime(new DateTime(2024, 12, 31, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(daysOfWeek)
@@ -631,11 +631,11 @@ public class ScheduleAccessorTest
   {
     // Ensure that a terminating schedule terminates correctly using the accessor
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2012, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2012, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(Schedule.ALL)
                                           .weeksOfYear(Schedule.ALL)
-                                          .end(new DateTime(2012, 1, 4, 10, 0))
+                                          .endDateTime(new DateTime(2012, 1, 4, 10, 0))
                                           .build();
     assertTrue(schedule.terminates());
     final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
@@ -661,11 +661,11 @@ public class ScheduleAccessorTest
     // Ensure that a terminating schedule with an endtime at the beginning of an
     // instance terminates correctly
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2012, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2012, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfWeek(Schedule.ALL)
                                           .weeksOfYear(Schedule.ALL)
-                                          .end(new DateTime(2012, 1, 3, 9, 0))
+                                          .endDateTime(new DateTime(2012, 1, 3, 9, 0))
                                           .build();
     final Accessor<Occurrence, DateTime> accessor = schedule.accessor();
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
@@ -689,7 +689,7 @@ public class ScheduleAccessorTest
   {
     // Ensure that we can reset the base
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(Schedule.ALL)
                                           .build();
@@ -715,7 +715,7 @@ public class ScheduleAccessorTest
   {
     // Ensure that setting an invalid base is caught
     final Schedule schedule = new Schedule.Builder()
-                                          .start(new DateTime(2013, 1, 1, 9, 0))
+                                          .startDateTime(new DateTime(2013, 1, 1, 9, 0))
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(Schedule.ALL)
                                           .build();

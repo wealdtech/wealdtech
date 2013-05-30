@@ -29,6 +29,7 @@ import com.wealdtech.ServerError;
 import com.wealdtech.utils.Accessor;
 
 import static com.wealdtech.Preconditions.*;
+import static com.wealdtech.utils.Joda.*;
 
 // TODO: implement Iterator if we don't need previous()
 
@@ -55,7 +56,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
    */
   public ScheduleAccessor(final Schedule schedule)
   {
-    this(schedule, schedule.getStart());
+    this(schedule, schedule.getStartDateTime());
   }
 
   /**
@@ -81,7 +82,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
     }
     if (this.schedule.getWeeksOfYear().isPresent())
     {
-      this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(Schedule.getAbsoluteWeekOfYear(this.mark));
+      this.curWeeksOfYearIndex = this.schedule.getWeeksOfYear().get().indexOf(this.mark.get(AbsWeekOfYear));
     }
     if (this.schedule.getWeeksOfMonth().isPresent())
     {
@@ -267,9 +268,13 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       // Find the next valid day in the schedule
       nextDay();
     }
-    if (this.schedule.terminates() && this.mark.isAfter(this.schedule.getEnd().get()))
+    if (this.schedule.terminates())
     {
-      throw new NoSuchElementException("No more occurrences in this schedule");
+      if ((this.schedule.isDateOnly() &&  this.mark.toLocalDate().isAfter(this.schedule.getEndDate())) ||
+          (!this.schedule.isDateOnly() && this.mark.isAfter(this.schedule.getEndDateTime())))
+      {
+        throw new NoSuchElementException("No more occurrences in this schedule");
+      }
     }
     return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
   }
@@ -318,8 +323,8 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
       {
         nextMark = tmp;
       }
-      if (((this.curWeeksOfYearIndex != null) && (Schedule.getAbsoluteWeekOfYear(this.mark) != Schedule.getAbsoluteWeekOfYear(nextMark))) ||
-          ((this.curWeeksOfMonthIndex != null) && (Schedule.getAbsoluteWeekOfMonth(this.mark) != Schedule.getAbsoluteWeekOfMonth(nextMark))))
+      if (((this.curWeeksOfYearIndex != null) && (this.mark.get(AbsWeekOfYear) != nextMark.get(AbsWeekOfYear))) ||
+          ((this.curWeeksOfMonthIndex != null) && (this.mark.get(AbsWeekOfMonth) != nextMark.get(AbsWeekOfMonth))))
       {
         // We've moved in to next week; roll over
         throw new IllegalFieldValueException(DateTimeFieldType.dayOfWeek(), null, null);
@@ -355,7 +360,7 @@ public class ScheduleAccessor implements Accessor<Occurrence, DateTime>
   {
     if (this.curDaysOfWeekIndex != null)
     {
-      final int weekOfYear = Schedule.getAbsoluteWeekOfYear(datetime);
+      final int weekOfYear = datetime.get(AbsWeekOfYear);
       int firstDayOfWeek = datetime.withDayOfYear((weekOfYear - 1) * DateTimeConstants.DAYS_PER_WEEK + 1).getDayOfWeek();
       do
       {

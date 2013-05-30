@@ -16,8 +16,6 @@
 
 package test.com.wealdtech.schedule;
 
-import static org.testng.Assert.*;
-
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Period;
@@ -27,6 +25,10 @@ import org.testng.annotations.Test;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.schedule.Schedule;
+
+import static org.testng.Assert.*;
+
+import static com.wealdtech.utils.Joda.*;
 
 public class ScheduleTest
 {
@@ -39,7 +41,7 @@ public class ScheduleTest
   public void testModel() throws Exception
   {
     final Schedule rs1 = new Schedule.Builder()
-                                     .start(new DateTime(2012, 1, 5, 1, 0))
+                                     .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
                                      .monthsOfYear(1)
                                      .daysOfMonth(5)
@@ -51,7 +53,7 @@ public class ScheduleTest
     assertEquals(rs1, rs1);
 
     final Schedule rs2 = new Schedule.Builder(rs1)
-                                     .start(new DateTime(2012, 2, 5, 1, 0))
+                                     .startDateTime(new DateTime(2012, 2, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
                                      .monthsOfYear(2, 3)
                                      .daysOfMonth(5, 6)
@@ -64,7 +66,7 @@ public class ScheduleTest
     assertNotEquals(rs1, rs2);
 
     final Schedule rs3 = new Schedule.Builder()
-                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
                                      .daysOfWeek(1, 2, 3)
                                      .weeksOfMonth(1, 2)
@@ -78,7 +80,7 @@ public class ScheduleTest
     assertNotEquals(rs1, rs3);
 
     final Schedule rs4 = new Schedule.Builder()
-                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
                                      .daysOfWeek(Schedule.ALL)
                                      .weeksOfMonth(Schedule.ALL)
@@ -92,7 +94,7 @@ public class ScheduleTest
     assertNotEquals(rs1, rs4);
 
     final Schedule rs5 = new Schedule.Builder()
-                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
                                      .daysOfMonth(Schedule.ALL)
                                      .monthsOfYear(Schedule.ALL)
@@ -105,7 +107,7 @@ public class ScheduleTest
     assertNotEquals(rs1, rs5);
 
     final Schedule rs6 = new Schedule.Builder()
-                                     .start(new DateTime(2012, 3, 5, 1, 0))
+                                     .startDateTime(new DateTime(2012, 3, 5, 1, 0))
                                      .duration(new Period(Hours.ONE))
                                      .daysOfYear(Schedule.ALL)
                                      .build();
@@ -121,7 +123,7 @@ public class ScheduleTest
   public void testAlternateBuilder() throws Exception
   {
     new Schedule.Builder()
-                .start(new DateTime(2012, 1, 5, 1, 0))
+                .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                 .duration(new Period(Hours.ONE))
                 .weeksOfMonth(ImmutableList.<Integer>of())
                 .weeksOfYear(ImmutableList.<Integer>of())
@@ -132,7 +134,7 @@ public class ScheduleTest
                 .build();
 
     new Schedule.Builder()
-                .start(new DateTime(2012, 1, 1, 1, 0))
+                .startDateTime(new DateTime(2012, 1, 1, 1, 0))
                 .duration(new Period(Hours.ONE))
                 .weeksOfMonth(ImmutableList.<Integer>of())
                 .weeksOfYear(ImmutableList.<Integer>of())
@@ -166,7 +168,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .monthsOfYear(1)
                   .weeksOfYear(5)
@@ -185,7 +187,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(1)
                   .build();
@@ -203,7 +205,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(1)
                   .weeksOfMonth(1)
@@ -222,7 +224,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfMonth(1)
                   .build();
@@ -240,7 +242,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfMonth(1)
@@ -260,7 +262,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfMonth(1)
@@ -280,7 +282,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfYear(1)
@@ -300,7 +302,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .daysOfYear(1)
@@ -321,7 +323,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfMonth(5)
                   .daysOfYear(1)
@@ -341,7 +343,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .daysOfWeek(5)
                   .weeksOfMonth(2)
@@ -361,7 +363,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 5, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .weeksOfYear(5)
                   .daysOfWeek(1)
@@ -380,7 +382,7 @@ public class ScheduleTest
     try
     {
       new Schedule.Builder()
-                  .start(new DateTime(2012, 1, 3, 1, 0))
+                  .startDateTime(new DateTime(2012, 1, 3, 1, 0))
                   .duration(new Period(Hours.ONE))
                   .weeksOfYear(Schedule.ALL)
                   .daysOfWeek(1)
@@ -433,4 +435,27 @@ public class ScheduleTest
     assertEquals(Schedule.withAbsoluteWeekOfYear(dt2, 35), new DateTime(2012, 8, 31, 1, 0));
     assertEquals(Schedule.withAbsoluteWeekOfYear(dt2, 52), new DateTime(2012, 12, 28, 1, 0));
   }
+
+  // Test for datetimetypefield extensions
+  @Test
+  public void testAbsWeekOfYear() throws Exception
+  {
+    DateTime dt = new DateTime(2012, 1, 1, 9, 0);
+    for (int i = 0; i < 1000; i++)
+    {
+      assertEquals(dt.get(AbsWeekOfYear), 1, "Date did not return absolute week of year as 1");
+      dt = dt.plusYears(1);
+    }
+  }
+
+//  @Test
+//  public void testAbsWeekOfMonth() throws Exception
+//  {
+//    DateTime dt = new DateTime(2012, 1, 1, 9, 0);
+//    for (int i = 0; i < 1000; i++)
+//    {
+//      System.err.println(dt + ": " + (dt.getDayOfYear() - dt.withDayOfMonth(1).getDayOfYear()));
+//      dt = dt.plusDays(1);
+//    }
+//  }
 }
