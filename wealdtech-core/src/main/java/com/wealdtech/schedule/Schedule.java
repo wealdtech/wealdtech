@@ -76,6 +76,8 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
 
   private final Period duration;
 
+  private final Optional<ImmutableList<Alteration<T>>> alterations;
+
   private final Optional<ImmutableList<Integer>> monthsOfYear;
   private final Optional<ImmutableList<Integer>> weeksOfYear;
   private final Optional<ImmutableList<Integer>> weeksOfMonth;
@@ -86,16 +88,26 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
   private Schedule(final T start,
                    final T end,
                    final Period duration,
-                   final ImmutableList<Integer> monthsOfYear,
-                   final ImmutableList<Integer> weeksOfYear,
-                   final ImmutableList<Integer> weeksOfMonth,
-                   final ImmutableList<Integer> daysOfYear,
-                   final ImmutableList<Integer> daysOfMonth,
-                   final ImmutableList<Integer> daysOfWeek)
+                   final List<Alteration<T>> alterations,
+                   final List<Integer> monthsOfYear,
+                   final List<Integer> weeksOfYear,
+                   final List<Integer> weeksOfMonth,
+                   final List<Integer> daysOfYear,
+                   final List<Integer> daysOfMonth,
+                   final List<Integer> daysOfWeek)
   {
     this.start = start;
     this.end = Optional.fromNullable(end);
     this.duration = duration;
+    if (alterations == null)
+    {
+      this.alterations = Optional.absent();
+    }
+    else
+    {
+      this.alterations = Optional.of(ImmutableList.copyOf(Ordering.natural().immutableSortedCopy(alterations)));
+    }
+
     if (monthsOfYear == null || monthsOfYear.isEmpty())
     {
       this.monthsOfYear = Optional.absent();
@@ -239,7 +251,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
       checkState(Collections2.filter(this.monthsOfYear.get(), Range.<Integer>greaterThan(12)).isEmpty(), "Months of year must not contain values greater than 12");
     }
 
-    checkState(isAScheduleStart(this.getStart().toDateTime()), "Start is not a valid schedule start");
+    checkState(isAScheduleStart(this.getStart()), "Start is not a valid schedule start");
   }
 
   /**
@@ -256,10 +268,8 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
    * @param date the date to check
    * @return {@code true} if valid, {@code false} if not
    */
-  public boolean isAScheduleStart(final DateTime date)
+  public boolean isAScheduleStart(final T date)
   {
-    // Check time
-    // TODO wrap as required
     if ((date.getMinuteOfHour() != this.start.getMinuteOfHour()) ||
         (date.getHourOfDay() != this.start.getHourOfDay()))
     {
@@ -336,6 +346,11 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
   public Period getDuration()
   {
     return this.duration;
+  }
+
+  public Optional<ImmutableList<Alteration<T>>> getAlterations()
+  {
+    return this.alterations;
   }
 
   public Optional<ImmutableList<Integer>> getMonthsOfYear()
@@ -468,12 +483,13 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
     private transient T start;
     private transient T end;
     private transient Period duration;
-    private transient ImmutableList<Integer> monthsOfYear;
-    private transient ImmutableList<Integer> weeksOfYear;
-    private transient ImmutableList<Integer> weeksOfMonth;
-    private transient ImmutableList<Integer> daysOfYear;
-    private transient ImmutableList<Integer> daysOfMonth;
-    private transient ImmutableList<Integer> daysOfWeek;
+    private transient List<Alteration<T>> alterations;
+    private transient List<Integer> monthsOfYear;
+    private transient List<Integer> weeksOfYear;
+    private transient List<Integer> weeksOfMonth;
+    private transient List<Integer> daysOfYear;
+    private transient List<Integer> daysOfMonth;
+    private transient List<Integer> daysOfWeek;
 
     public Builder()
     {
@@ -485,6 +501,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
       this.start = prior.start;
       this.end = prior.end.orNull();
       this.duration = prior.getDuration();
+      this.alterations = prior.getAlterations().orNull();
       this.monthsOfYear = prior.getMonthsOfYear().orNull();
       this.weeksOfYear = prior.getWeeksOfYear().orNull();
       this.weeksOfMonth = prior.getWeeksOfMonth().orNull();
@@ -546,6 +563,12 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
       {
         this.weeksOfYear = ImmutableList.copyOf(weeksOfYear);
       }
+      return this;
+    }
+
+    public Builder<T> alterations(final List<Alteration<T>> alterations)
+    {
+      this.alterations = alterations;
       return this;
     }
 
@@ -627,7 +650,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
 
     public Schedule<T> build()
     {
-      return new Schedule<T>(this.start, this.end, this.duration, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
+      return new Schedule<T>(this.start, this.end, this.duration, this.alterations, this.monthsOfYear, this.weeksOfYear, this.weeksOfMonth, this.daysOfYear, this.daysOfMonth, this.daysOfWeek);
     }
   }
 }

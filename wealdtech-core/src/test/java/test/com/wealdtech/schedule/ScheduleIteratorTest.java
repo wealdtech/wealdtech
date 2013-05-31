@@ -706,7 +706,9 @@ public class ScheduleIteratorTest
     assertEquals(iterator.next().getStart(), new DateTime(2013,  4,  1, 0, 0));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
+      final Interval occurrence = iterator.next();
+      assertTrue(schedule.isAScheduleStart(occurrence.getStart().toDateMidnight()), "Iteration " + i + " resulted in illegal value");
+      assertEquals(occurrence.getStart().getMinuteOfDay(), 0);
     }
     // FIXME check
     assertEquals(iterator.next().getStart(), new DateTime(2096,  9,  1, 0, 0));
@@ -731,7 +733,9 @@ public class ScheduleIteratorTest
     assertEquals(iterator.next().getStart(), new DateTime(2013,  4,  1, 0, 0, DateTimeZone.forID("America/New_York")));
     for (int i = 0; i < 1000; i++)
     {
-      assertTrue(schedule.isAScheduleStart(iterator.next().getStart()), "Iteration " + i + " resulted in illegal value");
+      final Interval occurrence = iterator.next();
+      assertTrue(schedule.isAScheduleStart(occurrence.getStart().toDateMidnight()), "Iteration " + i + " resulted in illegal value");
+      assertEquals(occurrence.getStart().getMinuteOfDay(), 0);
     }
     // FIXME check
     assertEquals(iterator.next().getStart(), new DateTime(2096,  9,  1, 0, 0, DateTimeZone.forID("America/New_York")));

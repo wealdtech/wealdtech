@@ -19,6 +19,9 @@ package test.com.wealdtech.schedule;
 import static com.wealdtech.utils.Joda.*;
 import static org.testng.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -29,6 +32,8 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
+import com.wealdtech.schedule.Alteration;
+import com.wealdtech.schedule.Alteration.AlterationType;
 import com.wealdtech.schedule.Schedule;
 
 public class ScheduleTest
@@ -118,7 +123,7 @@ public class ScheduleTest
     assertNotEquals(null, rs6);
     assertEquals(rs6, rs6);
     assertNotEquals(rs1, rs6);
-}
+  }
 
   @Test
   public void testAlternateBuilder() throws Exception
@@ -145,6 +150,26 @@ public class ScheduleTest
                 .daysOfYear(1)
                 .build();
   }
+
+  @Test
+  public void testExceptions() throws Exception
+  {
+    final List<Alteration<DateTime>> alterations = new ArrayList<>();
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2012, 1, 6, 1, 0), null));
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                                    .start(new DateTime(2012, 1, 5, 1, 0))
+                                                    .duration(new Period(Hours.ONE))
+                                                    .alterations(alterations)
+                                                    .monthsOfYear(1)
+                                                    .daysOfMonth(5)
+                                                    .build();
+    assertNotNull(schedule);
+    schedule.toString();
+    schedule.hashCode();
+    assertNotEquals(null, schedule);
+    assertEquals(schedule, schedule);
+  }
+
   @Test
   public void testInvalidNoStartTime() throws Exception
   {
@@ -452,6 +477,18 @@ public class ScheduleTest
     assertNotEquals(null, schedule);
     assertEquals(schedule, schedule);
     assertNotEquals(schedule, null);
+  }
+
+  @Test
+  public void testDateMidnightStart() throws Exception
+  {
+    final Schedule<DateMidnight> schedule = new Schedule.Builder<DateMidnight>()
+                                                        .start(new DateMidnight(2012, 1, 5))
+                                                        .duration(new Period(Days.ONE))
+                                                        .monthsOfYear(1)
+                                                        .daysOfMonth(5)
+                                                        .build();
+    assertTrue(schedule.isAScheduleStart(new DateMidnight(2012, 1, 5)));
   }
 
   // Test for datetimetypefield extensions
