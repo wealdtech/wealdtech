@@ -18,7 +18,9 @@ package test.com.wealdtech.schedule;
 
 import static org.testng.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.joda.time.DateMidnight;
@@ -32,6 +34,8 @@ import org.joda.time.Period;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.schedule.Alteration;
+import com.wealdtech.schedule.Alteration.AlterationType;
 import com.wealdtech.schedule.Schedule;
 
 public class ScheduleIteratorTest
@@ -759,4 +763,39 @@ public class ScheduleIteratorTest
     assertEquals(occurrence.getStart().toDateTime(DateTimeZone.forID("Asia/Tokyo")).toLocalDate(), new LocalDate(2013, 1, 1));
   }
 
+  @Test
+  public void testExceptions() throws Exception
+  {
+    // Ensure that a schedule with exceptions works correctly
+    final List<Alteration<DateTime>> alterations = new ArrayList<>();
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2012, 1, 2, 1, 0), null));
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2012, 1, 3, 1, 0), null));
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2012, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(Schedule.ALL)
+                                          .weeksOfYear(Schedule.ALL)
+                                          .build();
+    final Iterator<Interval> accessor = schedule.iterator();
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  4, 9, 0));
+  }
+
+  @Test
+  public void testExceptionOnFirstOccurrence() throws Exception
+  {
+    // Ensure that a schedule with an exception on its first occurrence works correctly
+    final List<Alteration<DateTime>> alterations = new ArrayList<>();
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2012, 1, 1, 1, 0), null));
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2012, 1, 3, 1, 0), null));
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                          .start(new DateTime(2012, 1, 1, 9, 0))
+                                          .duration(new Period(Hours.ONE))
+                                          .daysOfWeek(Schedule.ALL)
+                                          .weeksOfYear(Schedule.ALL)
+                                          .build();
+    final Iterator<Interval> accessor = schedule.iterator();
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
+    assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  4, 9, 0));
+  }
 }

@@ -252,6 +252,14 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
     }
 
     checkState(isAScheduleStart(this.getStart()), "Start is not a valid schedule start");
+
+    if (this.alterations.isPresent())
+    {
+      for (Alteration<T> alteration : this.alterations.get())
+      {
+        checkState(isAScheduleStart(alteration.getStart()), "Alteration start is not a valid schedule start");
+      }
+    }
   }
 
   /**
@@ -311,6 +319,14 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
     if (this.weeksOfYear.isPresent())
     {
       if (!this.weeksOfYear.get().contains(date.get(AbsWeekOfYear)))
+      {
+        return false;
+      }
+    }
+
+    if (this.monthsOfYear.isPresent())
+    {
+      if (!this.monthsOfYear.get().contains(date.getMonthOfYear()))
       {
         return false;
       }

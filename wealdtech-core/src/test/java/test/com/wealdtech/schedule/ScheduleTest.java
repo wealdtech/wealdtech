@@ -155,7 +155,7 @@ public class ScheduleTest
   public void testExceptions() throws Exception
   {
     final List<Alteration<DateTime>> alterations = new ArrayList<>();
-    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2012, 1, 6, 1, 0), null));
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2014, 1, 5, 1, 0), null));
     final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
                                                     .start(new DateTime(2012, 1, 5, 1, 0))
                                                     .duration(new Period(Hours.ONE))
@@ -414,6 +414,28 @@ public class ScheduleTest
                   .daysOfWeek(1)
                   .build();
       fail("Created schedule with invalid start");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testInvalidBadAlterationStart() throws Exception
+  {
+    final List<Alteration<DateTime>> alterations = new ArrayList<>();
+    alterations.add(new Alteration<DateTime>(AlterationType.EXCEPTION, new DateTime(2014, 2, 5, 1, 0), null));
+    try
+    {
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 5, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .alterations(alterations)
+                  .monthsOfYear(1)
+                  .daysOfMonth(5)
+                  .build();
+      fail("Created schedule with invalid alteration start");
     }
     catch (DataError.Bad de)
     {
