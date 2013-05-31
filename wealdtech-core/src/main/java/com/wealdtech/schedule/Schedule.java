@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.base.BaseDateTime;
 
@@ -55,7 +56,7 @@ import com.wealdtech.utils.PeriodOrdering;
  * <p/>A recurring schedule may or may not have an end time.  If it does not
  * then it means that the schedule does not terminate.
  */
-public class Schedule<T extends BaseDateTime> implements Iterable<Occurrence>, Comparable<Schedule<T>>
+public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Comparable<Schedule<T>>
 {
   /**
    * Used when creating schedules to specify that all valid values should be included
@@ -403,7 +404,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Occurrence>, C
   }
 
   @Override
-  public Iterator<Occurrence> iterator()
+  public Iterator<Interval> iterator()
   {
     return new ScheduleIterator<T>(this);
   }

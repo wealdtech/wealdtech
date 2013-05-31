@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.IllegalFieldValueException;
+import org.joda.time.Interval;
 import org.joda.time.base.BaseDateTime;
 
 import com.google.common.collect.ImmutableList;
@@ -33,7 +34,7 @@ import com.wealdtech.ServerError;
 /**
  * A ScheduleAccessor allows access to occurrences within a schedule
  */
-public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Occurrence>
+public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interval>
 {
   private final transient Schedule<T> schedule;
 
@@ -235,7 +236,7 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Occurr
   }
 
   @Override
-  public Occurrence next()
+  public Interval next()
   {
     if (this.preset == true)
     {
@@ -254,7 +255,7 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Occurr
         throw new NoSuchElementException("No more occurrences in this schedule");
       }
     }
-    return new Occurrence(this.mark, this.mark.plus(this.schedule.getDuration()));
+    return new Interval(this.mark, this.schedule.getDuration());
   }
 
   // Get the next day for our schedule

@@ -26,12 +26,12 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.Hours;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.schedule.Occurrence;
 import com.wealdtech.schedule.Schedule;
 
 public class ScheduleIteratorTest
@@ -46,7 +46,7 @@ public class ScheduleIteratorTest
                                           .daysOfYear(Schedule.ALL)
                                           .build();
     assertFalse(schedule.terminates());
-    final Iterator<Occurrence> iterator = schedule.iterator();
+    final Iterator<Interval> iterator = schedule.iterator();
     assertTrue(iterator.hasNext());
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
@@ -71,7 +71,7 @@ public class ScheduleIteratorTest
                                                     .duration(new Period(Hours.ONE))
                                                     .daysOfYear(daysOfYear)
                                                     .build();
-    final Iterator<Occurrence> iterator = schedule.iterator();
+    final Iterator<Interval> iterator = schedule.iterator();
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(iterator.next().getStart(), new DateTime(2013,  3,  1, 9, 0));
     assertEquals(iterator.next().getStart(), new DateTime(2013, 10, 27, 9, 0));
@@ -96,7 +96,7 @@ public class ScheduleIteratorTest
                                                     .monthsOfYear(Schedule.ALL)
                                                     .daysOfMonth(daysOfMonth)
                                                     .build();
-    final Iterator<Occurrence> iterator = schedule.iterator();
+    final Iterator<Interval> iterator = schedule.iterator();
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  4, 9, 0));
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  5, 9, 0));
@@ -120,7 +120,7 @@ public class ScheduleIteratorTest
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 28, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2017,  2, 28, 9, 0));
@@ -147,7 +147,7 @@ public class ScheduleIteratorTest
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(daysOfMonth)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 3, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 3, 5, 9, 0));
@@ -171,7 +171,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  5, 9, 0));
@@ -197,7 +197,7 @@ public class ScheduleIteratorTest
                                           .monthsOfYear(monthsOfYear)
                                           .daysOfMonth(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  3, 9, 0));
@@ -218,7 +218,7 @@ public class ScheduleIteratorTest
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
@@ -237,7 +237,7 @@ public class ScheduleIteratorTest
                                           .duration(new Period(Hours.ONE))
                                           .daysOfYear(daysOfYear)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2016, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2020, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2024, 12, 31, 9, 0));
@@ -256,7 +256,7 @@ public class ScheduleIteratorTest
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2016,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2020,  2, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2024,  2, 29, 9, 0));
@@ -274,7 +274,7 @@ public class ScheduleIteratorTest
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  3, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  5, 31, 9, 0));
@@ -303,7 +303,7 @@ public class ScheduleIteratorTest
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 28, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 30, 9, 0));
@@ -331,7 +331,7 @@ public class ScheduleIteratorTest
                                           .daysOfMonth(daysOfMonth)
                                           .monthsOfYear(monthsOfYear)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1, 29, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2015,  1, 29, 9, 0));
@@ -357,7 +357,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 4, 9, 0));
@@ -379,7 +379,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 30, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014,  1,  1, 9, 0));
@@ -404,7 +404,7 @@ public class ScheduleIteratorTest
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2,  4, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3,  4, 9, 0));
@@ -429,7 +429,7 @@ public class ScheduleIteratorTest
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 22, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  2, 26, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 26, 9, 0));
@@ -454,7 +454,7 @@ public class ScheduleIteratorTest
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  3, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  6, 30, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  9, 29, 9, 0));
@@ -482,7 +482,7 @@ public class ScheduleIteratorTest
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 14, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 21, 9, 0));
@@ -507,7 +507,7 @@ public class ScheduleIteratorTest
                                           .weeksOfMonth(weeksOfMonth)
                                           .monthsOfYear(Schedule.ALL)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1,  7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 14, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013,  1, 21, 9, 0));
@@ -532,7 +532,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(Schedule.ALL)
                                           .daysOfWeek(2)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 8, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 15, 9, 0));
@@ -553,7 +553,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(1)
                                           .daysOfWeek(2)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2015, 1, 6, 9, 0));
@@ -575,7 +575,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(2)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 24, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2014, 1, 7, 9, 0));
@@ -597,7 +597,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(2)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2013, 1, 1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 24, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2013, 12, 31, 9, 0));
@@ -622,7 +622,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(weeksOfYear)
                                           .daysOfWeek(daysOfWeek)
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2024, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2030, 12, 31, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2036, 12, 30, 9, 0));
@@ -641,7 +641,7 @@ public class ScheduleIteratorTest
                                           .end(new DateTime(2012, 1, 4, 10, 0))
                                           .build();
     assertTrue(schedule.terminates());
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  3, 9, 0));
@@ -670,7 +670,7 @@ public class ScheduleIteratorTest
                                           .weeksOfYear(Schedule.ALL)
                                           .end(new DateTime(2012, 1, 3, 9, 0))
                                           .build();
-    final Iterator<Occurrence> accessor = schedule.iterator();
+    final Iterator<Interval> accessor = schedule.iterator();
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  1, 9, 0));
     assertEquals(accessor.next().getStart(), new DateTime(2012,  1,  2, 9, 0));
     assertTrue(accessor.hasNext());
@@ -698,7 +698,7 @@ public class ScheduleIteratorTest
                                                         .monthsOfYear(Schedule.ALL)
                                                         .build();
     assertFalse(schedule.terminates());
-    final Iterator<Occurrence> iterator = schedule.iterator();
+    final Iterator<Interval> iterator = schedule.iterator();
     assertTrue(iterator.hasNext());
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 0, 0));
     assertEquals(iterator.next().getStart(), new DateTime(2013,  2,  1, 0, 0));
@@ -723,7 +723,7 @@ public class ScheduleIteratorTest
                                                         .monthsOfYear(Schedule.ALL)
                                                         .build();
     assertFalse(schedule.terminates());
-    final Iterator<Occurrence> iterator = schedule.iterator();
+    final Iterator<Interval> iterator = schedule.iterator();
     assertTrue(iterator.hasNext());
     assertEquals(iterator.next().getStart(), new DateTime(2013,  1,  1, 0, 0, DateTimeZone.forID("America/New_York")));
     assertEquals(iterator.next().getStart(), new DateTime(2013,  2,  1, 0, 0, DateTimeZone.forID("America/New_York")));
@@ -748,9 +748,9 @@ public class ScheduleIteratorTest
                                                         .monthsOfYear(Schedule.ALL)
                                                         .build();
     assertFalse(schedule.terminates());
-    final Iterator<Occurrence> iterator = schedule.iterator();
+    final Iterator<Interval> iterator = schedule.iterator();
     assertTrue(iterator.hasNext());
-    final Occurrence occurrence = iterator.next();
+    final Interval occurrence = iterator.next();
     assertEquals(occurrence.getStart().toLocalDate(), new LocalDate(2013, 1, 1));
     assertEquals(occurrence.getStart().toDateTime(DateTimeZone.forID("Asia/Tokyo")).toLocalDate(), new LocalDate(2013, 1, 1));
   }
