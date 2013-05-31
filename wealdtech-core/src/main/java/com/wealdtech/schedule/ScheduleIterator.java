@@ -54,7 +54,6 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
    */
   public ScheduleIterator(final Schedule<T> schedule)
   {
-    // TODO add timezone
     this(schedule, schedule.getStart().toDateTime());
   }
 
@@ -261,17 +260,26 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
   // Get the next day for our schedule
   private void nextDay()
   {
-    if (this.schedule.getDaysOfWeek().isPresent())
+    while (true)
     {
-      nextDayOfWeek();
-    }
-    else if (this.schedule.getDaysOfMonth().isPresent())
-    {
-      nextDayOfMonth();
-    }
-    else
-    {
-      nextDayOfYear();
+      if (this.schedule.getDaysOfWeek().isPresent())
+      {
+        nextDayOfWeek();
+      }
+      else if (this.schedule.getDaysOfMonth().isPresent())
+      {
+        nextDayOfMonth();
+      }
+      else
+      {
+        nextDayOfYear();
+      }
+      // Mark is now valid as per the schedule, tweak as per exceptions
+      if (this.schedule.getAlterations().isPresent())
+      {
+
+      }
+      break;
     }
   }
 
