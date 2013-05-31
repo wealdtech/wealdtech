@@ -61,12 +61,12 @@ public class Alteration<T> implements Comparable<Alteration<T>>
      * Alteration is a value which returns something other than
      * the predefined value
      */
-    ALTERATION,
-    /**
-     * Addition is a value which returns something in addition to
-     * the predefined values
-     */
-    ADDITION;
+    ALTERATION;
+//    /**
+//     * Addition is a value which returns something in addition to
+//     * the predefined values
+//     */
+//    ADDITION;
 
     @Override
     @JsonValue

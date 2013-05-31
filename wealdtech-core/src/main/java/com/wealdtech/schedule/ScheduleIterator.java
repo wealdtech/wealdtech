@@ -16,8 +16,6 @@
 
 package com.wealdtech.schedule;
 
-import static com.wealdtech.utils.Joda.*;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -30,6 +28,8 @@ import org.joda.time.base.BaseDateTime;
 
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.ServerError;
+
+import static com.wealdtech.utils.Joda.*;
 
 /**
  * A ScheduleAccessor allows access to occurrences within a schedule
@@ -47,6 +47,9 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
   private transient Integer curDaysOfYearIndex;
   private transient Integer curDaysOfMonthIndex;
   private transient Integer curDaysOfWeekIndex;
+
+  private Iterator<Alteration<T>> alterationItr;
+  private Alteration<T> alteration;
 
   /**
    * Create a new iterator starting from the schedule's start date
@@ -66,6 +69,16 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
   {
     this.schedule = schedule;
     this.mark = mark;
+    if (this.schedule.getAlterations().isPresent())
+    {
+      this.alterationItr = this.schedule.getAlterations().get().iterator();
+      this.alteration = this.alterationItr.next();
+    }
+    else
+    {
+      this.alterationItr = null;
+      this.alteration = null;
+    }
     resetIndices();
   }
 
@@ -237,15 +250,82 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
   @Override
   public Interval next()
   {
-    if (this.preset == true)
+    Interval result = null;
+    while (result == null)
     {
-      // Use the preset value
-      this.preset = false;
+      if (this.preset == true)
+      {
+        // Use the preset value
+        this.preset = false;
+      }
+      else
+      {
+        // Find the next valid day in the schedule
+        nextDay();
+      }
+      // Mark is now valid as per the base schedule; tweak as per alterations
+      updateAlteration();
+
+      if ((this.alteration == null) || (!this.alteration.getStart().isEqual(this.mark)))
+      {
+        result = new Interval(this.mark, this.schedule.getDuration());
+        break;
+      }
+      else
+      {
+        // Found a valid alteration, handle it
+        switch (this.alteration.getType())
+        {
+          case EXCEPTION:
+            // Ignore the exception
+            break;
+          case ALTERATION:
+            // Change the result to fit the alteration
+            result = new Interval(this.alteration.getReplacement().get());
+            break;
+          default:
+            throw new ServerError("Unhandled alteration type " + this.alteration.getType());
+        }
+      }
+    }
+    return result;
+  }
+
+  // Update the alteration to match the next required
+  private void updateAlteration()
+  {
+    if (this.alteration != null)
+    {
+      while (this.alteration.getStart().isBefore(this.mark))
+      {
+        try
+        {
+          this.alteration = this.alterationItr.next();
+        }
+        catch (NoSuchElementException nsee)
+        {
+          // End of alterations
+          this.alteration = null;
+          break;
+        }
+      }
+    }
+  }
+
+  // Get the next day for our schedule
+  private void nextDay()
+  {
+    if (this.schedule.getDaysOfWeek().isPresent())
+    {
+      nextDayOfWeek();
+    }
+    else if (this.schedule.getDaysOfMonth().isPresent())
+    {
+      nextDayOfMonth();
     }
     else
     {
-      // Find the next valid day in the schedule
-      nextDay();
+      nextDayOfYear();
     }
     if (this.schedule.terminates())
     {
@@ -253,33 +333,6 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
       {
         throw new NoSuchElementException("No more occurrences in this schedule");
       }
-    }
-    return new Interval(this.mark, this.schedule.getDuration());
-  }
-
-  // Get the next day for our schedule
-  private void nextDay()
-  {
-    while (true)
-    {
-      if (this.schedule.getDaysOfWeek().isPresent())
-      {
-        nextDayOfWeek();
-      }
-      else if (this.schedule.getDaysOfMonth().isPresent())
-      {
-        nextDayOfMonth();
-      }
-      else
-      {
-        nextDayOfYear();
-      }
-      // Mark is now valid as per the schedule, tweak as per exceptions
-      if (this.schedule.getAlterations().isPresent())
-      {
-
-      }
-      break;
     }
   }
 
