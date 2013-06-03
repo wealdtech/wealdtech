@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import com.wealdtech.DataError;
 import com.wealdtech.configuration.ConfigurationSource;
 
-public class TestConfiguration
+public class ConfigurationTest
 {
   @Test
   public void testConfiguration() throws Exception
