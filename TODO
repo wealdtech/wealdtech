@@ -1,3 +1,7 @@
 JettyServer
   - Create with full JAX-RS configuration
     - Stop subclassing/copying it
+
+Schedule
+  - Add exceptions, alterations and additions
+    - Generic alterations
