@@ -16,9 +16,6 @@
 
 package test.com.wealdtech.schedule;
 
-import static com.wealdtech.utils.Joda.*;
-import static org.testng.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +32,10 @@ import com.wealdtech.DataError;
 import com.wealdtech.schedule.Alteration;
 import com.wealdtech.schedule.Alteration.AlterationType;
 import com.wealdtech.schedule.Schedule;
+
+import static org.testng.Assert.*;
+
+import static com.wealdtech.utils.Joda.*;
 
 public class ScheduleTest
 {
@@ -168,6 +169,32 @@ public class ScheduleTest
     schedule.hashCode();
     assertNotEquals(null, schedule);
     assertEquals(schedule, schedule);
+  }
+
+  @Test
+  public void testNullBuilder() throws Exception
+  {
+    new Schedule.Builder<DateTime>()
+                .start(new DateTime(2012, 1, 5, 1, 0))
+                .duration(new Period(Hours.ONE))
+                .weeksOfMonth(null)
+                .weeksOfYear(null)
+                .monthsOfYear(1)
+                .daysOfWeek(null)
+                .daysOfMonth(5)
+                .daysOfYear(null)
+                .build();
+
+    new Schedule.Builder<DateTime>()
+                .start(new DateTime(2012, 1, 1, 1, 0))
+                .duration(new Period(Hours.ONE))
+                .weeksOfMonth(null)
+                .weeksOfYear(null)
+                .monthsOfYear(null)
+                .daysOfWeek(null)
+                .daysOfMonth(null)
+                .daysOfYear(1)
+                .build();
   }
 
   @Test
@@ -422,6 +449,26 @@ public class ScheduleTest
   }
 
   @Test
+  public void testInvalidEndBeforeStart() throws Exception
+  {
+    try
+    {
+      new Schedule.Builder<DateTime>()
+                  .start(new DateTime(2012, 1, 3, 1, 0))
+                  .end(new DateTime(2012, 1, 2, 1, 0))
+                  .duration(new Period(Hours.ONE))
+                  .weeksOfYear(Schedule.ALL)
+                  .daysOfWeek(1)
+                  .build();
+      fail("Created schedule with end before start");
+    }
+    catch (DataError.Bad de)
+    {
+      // Good
+    }
+  }
+
+  @Test
   public void testInvalidBadAlterationStart() throws Exception
   {
     final List<Alteration<DateTime>> alterations = new ArrayList<>();
@@ -513,7 +560,34 @@ public class ScheduleTest
     assertTrue(schedule.isAScheduleStart(new DateMidnight(2012, 1, 5)));
   }
 
+  @Test
+  public void testEnd() throws Exception
+  {
+    final Schedule<DateTime> schedule = new Schedule.Builder<DateTime>()
+                                                    .start(new DateTime(2012, 5, 5, 9, 0))
+                                                    .duration(new Period(Hours.TWO))
+                                                    .daysOfYear(Schedule.ALL)
+                                                    .build();
+    try
+    {
+      schedule.getEndDate();
+      fail("Obtained end date for non-terminating schedule");
+    }
+    catch (DataError.Missing de)
+    {
+      // Good
+    }
+
+    final Schedule<DateTime> schedule2 = new Schedule.Builder<DateTime>()
+                                                     .start(new DateTime(2012, 5, 5, 9, 0))
+                                                     .end(new DateTime(2012, 7, 5, 9, 0))
+                                                     .duration(new Period(Hours.TWO))
+                                                     .daysOfYear(Schedule.ALL)
+                                                     .build();
+    assertNotNull(schedule2.getEndDate());
+  }
   // Test for datetimetypefield extensions
+
   @Test
   public void testAbsWeekOfYear() throws Exception
   {

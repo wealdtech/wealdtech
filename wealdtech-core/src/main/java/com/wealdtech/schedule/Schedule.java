@@ -16,9 +16,6 @@
 
 package com.wealdtech.schedule;
 
-import static com.wealdtech.Preconditions.*;
-import static com.wealdtech.utils.Joda.*;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +37,9 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.PeriodOrdering;
+
+import static com.wealdtech.Preconditions.*;
+import static com.wealdtech.utils.Joda.*;
 
 /**
  * A Schedule is a statement of one or more {@link Occurrence}s.
@@ -249,6 +249,11 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
     if (this.monthsOfYear.isPresent())
     {
       checkState(Collections2.filter(this.monthsOfYear.get(), Range.<Integer>greaterThan(12)).isEmpty(), "Months of year must not contain values greater than 12");
+    }
+
+    if (this.end.isPresent())
+    {
+      checkState(this.start.isBefore(this.end.get()), "End of schedule prior to start");
     }
 
     checkState(isAScheduleStart(this.getStart()), "Start is not a valid schedule start");
@@ -484,7 +489,7 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
     return ComparisonChain.start()
                           .compare(this.start, that.start)
                           .compare(this.end.orNull(), that.end.orNull(), Ordering.natural().nullsFirst())
-                          .compare(this.getDuration(), that.getDuration(), new PeriodOrdering().nullsFirst())
+                          .compare(this.getDuration(), that.getDuration(), PeriodOrdering.INSTANCE.nullsFirst())
                           .compare(this.getMonthsOfYear().orNull(), that.getMonthsOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfYear().orNull(), that.getWeeksOfYear().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())
                           .compare(this.getWeeksOfMonth().orNull(), that.getWeeksOfMonth().orNull(), Ordering.<Integer>natural().lexicographical().nullsFirst())

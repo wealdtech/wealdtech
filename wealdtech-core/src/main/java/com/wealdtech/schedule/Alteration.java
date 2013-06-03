@@ -3,14 +3,25 @@ package com.wealdtech.schedule;
 import java.util.Locale;
 
 import org.joda.time.Interval;
+import org.joda.time.base.BaseDateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Optional;
+import com.google.common.collect.ComparisonChain;
 import com.wealdtech.DataError;
+import com.wealdtech.utils.IntervalOrdering;
 import com.wealdtech.utils.StringUtils;
 
-public class Alteration<T> implements Comparable<Alteration<T>>
+import static com.wealdtech.Preconditions.*;
+
+/**
+ * An alteration is a mechanism to alter a specific entry
+ * in a schedule.  Specifically, a specific entry can be considered
+ * an exception and ignored, or an alteration and an alternative
+ * returned in its place.
+ */
+public class Alteration<T extends BaseDateTime> implements Comparable<Alteration<T>>
 {
   private final AlterationType type;
   private final T start;
@@ -26,7 +37,16 @@ public class Alteration<T> implements Comparable<Alteration<T>>
 
   private void validate()
   {
-    // TODO
+    checkNotNull(this.type, "Alteration requires a type");
+    checkNotNull(this.start, "Alteration requires a start");
+    if (this.type == AlterationType.EXCEPTION)
+    {
+      checkState(!this.replacement.isPresent(), "Exception alterations should not have a replacement");
+    }
+    else
+    {
+      checkNotNull(this.replacement, "Non-exception alterations require a replacement");
+    }
   }
 
   public AlterationType getType()
@@ -46,8 +66,11 @@ public class Alteration<T> implements Comparable<Alteration<T>>
   @Override
   public int compareTo(Alteration<T> that)
   {
-    // TODO Auto-generated method stub
-    return 0;
+    return ComparisonChain.start()
+                          .compare(this.type, that.type)
+                          .compare(this.start, that.start)
+                          .compare(this.replacement.orNull(), that.replacement.orNull(), IntervalOrdering.INSTANCE.nullsFirst())
+                          .result();
   }
 
   public enum AlterationType
@@ -62,11 +85,6 @@ public class Alteration<T> implements Comparable<Alteration<T>>
      * the predefined value
      */
     ALTERATION;
-//    /**
-//     * Addition is a value which returns something in addition to
-//     * the predefined values
-//     */
-//    ADDITION;
 
     @Override
     @JsonValue
