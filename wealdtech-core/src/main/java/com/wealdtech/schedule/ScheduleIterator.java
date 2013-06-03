@@ -329,7 +329,7 @@ public class ScheduleIterator<T extends BaseDateTime> implements Iterator<Interv
     }
     if (this.schedule.terminates())
     {
-      if (this.mark.isAfter(this.schedule.getEndDate()))
+      if (this.mark.isAfter(this.schedule.getEnd().get()))
       {
         throw new NoSuchElementException("No more occurrences in this schedule");
       }

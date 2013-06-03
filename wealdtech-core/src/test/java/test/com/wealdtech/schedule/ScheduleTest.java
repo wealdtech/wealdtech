@@ -570,7 +570,7 @@ public class ScheduleTest
                                                     .build();
     try
     {
-      schedule.getEndDate();
+      schedule.getEnd();
       fail("Obtained end date for non-terminating schedule");
     }
     catch (DataError.Missing de)
@@ -584,7 +584,7 @@ public class ScheduleTest
                                                      .duration(new Period(Hours.TWO))
                                                      .daysOfYear(Schedule.ALL)
                                                      .build();
-    assertNotNull(schedule2.getEndDate());
+    assertNotNull(schedule2.getEnd());
   }
   // Test for datetimetypefield extensions
 
