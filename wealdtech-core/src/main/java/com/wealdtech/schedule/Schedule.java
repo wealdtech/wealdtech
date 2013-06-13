@@ -35,7 +35,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
-import com.wealdtech.DataError;
 import com.wealdtech.utils.PeriodOrdering;
 
 import static com.wealdtech.Preconditions.*;
@@ -85,16 +84,16 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
   private final Optional<ImmutableList<Integer>> daysOfMonth;
   private final Optional<ImmutableList<Integer>> daysOfWeek;
 
-  private Schedule(final T start,
-                   final T end,
-                   final Period duration,
-                   final List<Alteration<T>> alterations,
-                   final List<Integer> monthsOfYear,
-                   final List<Integer> weeksOfYear,
-                   final List<Integer> weeksOfMonth,
-                   final List<Integer> daysOfYear,
-                   final List<Integer> daysOfMonth,
-                   final List<Integer> daysOfWeek)
+  public Schedule(final T start,
+                  final T end,
+                  final Period duration,
+                  final List<Alteration<T>> alterations,
+                  final List<Integer> monthsOfYear,
+                  final List<Integer> weeksOfYear,
+                  final List<Integer> weeksOfMonth,
+                  final List<Integer> daysOfYear,
+                  final List<Integer> daysOfMonth,
+                  final List<Integer> daysOfWeek)
   {
     this.start = start;
     this.end = Optional.fromNullable(end);
@@ -351,17 +350,12 @@ public class Schedule<T extends BaseDateTime> implements Iterable<Interval>, Com
   }
 
   /**
-   * Provide the ending item for this schedule.
-   * @throws DataError.Missing if this schedule does not terminate
+   * Provide the ending item for this schedule, if present
    * @return the ending item
    */
-  public T getEndDate()
+  public Optional<T> getEnd()
   {
-    if (!this.end.isPresent())
-    {
-      throw new DataError.Missing("Attempt to get end date for non-terminating schedule");
-    }
-    return this.end.get();
+    return this.end;
   }
 
   public Period getDuration()

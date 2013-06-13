@@ -27,11 +27,12 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.jetty9.InstrumentedQueuedThreadPool;
+import com.codahale.metrics.servlets.AdminServlet;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
@@ -39,9 +40,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.wealdtech.http.JettyServerConfiguration.ThreadPoolConfiguration;
 import com.wealdtech.jersey.filters.BodyPrefetchFilter;
 import com.wealdtech.jersey.filters.ThreadNameFilter;
-import com.yammer.metrics.reporting.AdminServlet;
-//import com.yammer.metrics.jetty.InstrumentedBlockingChannelConnector;
-//import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
+import com.wealdtech.utils.WealdMetrics;
 
 public class JettyServer
 {
@@ -61,8 +60,7 @@ public class JettyServer
 
     final int port = this.configuration.getPort();
     LOGGER.info("Starting http server on port {}", port);
-//    this.server = new Server(createThreadPool());
-    this.server = new Server();
+    this.server = new Server(createThreadPool());
 
     setConnectors();
 
@@ -164,8 +162,7 @@ public class JettyServer
    */
   private ThreadPool createThreadPool()
   {
-//    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool();
-  final QueuedThreadPool pool = new QueuedThreadPool();
+    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool(WealdMetrics.defaultRegistry());
 
     final ThreadPoolConfiguration threadPoolConfiguration = this.configuration.getThreadPoolConfiguration();
 

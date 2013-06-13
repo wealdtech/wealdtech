@@ -18,6 +18,7 @@ package com.wealdtech.utils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
@@ -49,15 +50,8 @@ public class HashConfiguration implements Configuration
   private HashConfiguration(@JsonProperty("cache") final CacheConfiguration cacheConfiguration,
                             @JsonProperty("strength") final Integer strength)
   {
-    if (cacheConfiguration != null)
-    {
-      this.cacheConfiguration = cacheConfiguration;
-    }
-
-    if (strength != null)
-    {
-      this.strength = strength;
-    }
+    this.cacheConfiguration = Objects.firstNonNull(cacheConfiguration, this.cacheConfiguration);
+    this.strength = Objects.firstNonNull(strength, this.strength);
     validate();
   }
 

@@ -2,6 +2,7 @@ package com.wealdtech.jersey;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
@@ -27,20 +28,9 @@ public class CORSConfiguration implements Configuration
                             @JsonProperty("allowcredentials") final Boolean allowCredentials,
                             @JsonProperty("allowedmethods") final String allowedMethods)
   {
-    if (origin != null)
-    {
-      this.origin = origin;
-    }
-
-    if (allowCredentials != null)
-    {
-      this.allowCredentials = allowCredentials;
-    }
-
-    if (allowedMethods != null)
-    {
-      this.allowedMethods = allowedMethods;
-    }
+    this.origin = Objects.firstNonNull(origin, this.origin);
+    this.allowCredentials = Objects.firstNonNull(allowCredentials, this.allowCredentials);
+    this.allowedMethods = Objects.firstNonNull(allowedMethods, this.allowedMethods);
   }
 
   public String getOrigin()
