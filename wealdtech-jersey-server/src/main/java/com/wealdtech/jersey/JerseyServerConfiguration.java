@@ -2,6 +2,7 @@ package com.wealdtech.jersey;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
@@ -22,10 +23,7 @@ public class JerseyServerConfiguration implements Configuration
   @JsonCreator
   private JerseyServerConfiguration(@JsonProperty("cors") final CORSConfiguration corsConfiguration)
   {
-    if (corsConfiguration != null)
-    {
-      this.corsConfiguration = corsConfiguration;
-    }
+    this.corsConfiguration = Objects.firstNonNull(corsConfiguration, this.corsConfiguration);
   }
 
   public CORSConfiguration getCORSConfiguration()

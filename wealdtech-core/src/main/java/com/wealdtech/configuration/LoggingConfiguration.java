@@ -20,6 +20,7 @@ import ch.qos.logback.classic.Level;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
 /**
@@ -38,10 +39,7 @@ public class LoggingConfiguration implements Configuration
   @JsonCreator
   private LoggingConfiguration(@JsonProperty("level") final Level level)
   {
-    if (level != null)
-    {
-      this.level = level;
-    }
+    this.level = Objects.firstNonNull(level, this.level);
   }
 
   public Level getLevel()

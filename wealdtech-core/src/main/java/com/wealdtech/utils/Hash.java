@@ -48,7 +48,7 @@ public enum Hash
   private static final LoadingCache<TwoTuple<String, String>, Boolean> CACHE;
 
   // Metrics
-  private static final Meter CACHEMISSES;
+  private static final Meter LOOKUPS, MISSES;
   private static final Timer GETS;
 
   private static final HashConfiguration CONFIGURATION;
@@ -58,7 +58,8 @@ public enum Hash
     // TODO where to obtain this from?
     CONFIGURATION = new HashConfiguration();
 
-    CACHEMISSES = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "cache-misses", "lookups"));
+    LOOKUPS = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
+    MISSES = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
     GETS = WealdMetrics.defaultRegistry().timer(com.codahale.metrics.MetricRegistry.name(Hash.class, "gets"));
     final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder()
                                                         .maximumSize(CONFIGURATION.getCacheConfiguration().getMaxEntries())
@@ -68,7 +69,7 @@ public enum Hash
       @Override
       public Boolean load(final TwoTuple<String, String> input)
       {
-        CACHEMISSES.mark();
+        MISSES.mark();
         return calculateMatches(input.getS(), input.getT());
       }
     });
@@ -94,6 +95,7 @@ public enum Hash
   public static boolean matches(final String input, final String hashed)
   {
     checkNotNull(hashed, "Cannot compare NULL");
+    LOOKUPS.mark();
     final Context context = GETS.time();
     try
     {

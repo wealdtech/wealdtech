@@ -18,6 +18,7 @@ package com.wealdtech.utils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
@@ -48,14 +49,8 @@ public class CacheConfiguration implements Configuration
   private CacheConfiguration(@JsonProperty("maxentries") final Integer maxEntries,
                              @JsonProperty("maxduration") final Integer maxDuration)
   {
-    if (maxEntries != null)
-    {
-      this.maxEntries = maxEntries;
-    }
-    if (maxDuration != null)
-    {
-      this.maxDuration = maxDuration;
-    }
+    this.maxEntries = Objects.firstNonNull(maxEntries, this.maxEntries);
+    this.maxDuration = Objects.firstNonNull(maxDuration, this.maxDuration);
     validate();
   }
 

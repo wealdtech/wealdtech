@@ -79,13 +79,18 @@ public class HashTest
     // Ensure that the cache is operational
     final String fredHash = Hash.hash("Fred");
     final MetricRegistry registry = WealdMetrics.defaultRegistry();
-    final Meter misses = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "cache-misses", "lookups"));
-    long initialCount = misses.getCount();
+    final Meter lookups = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
+    long initialLookupCount = lookups.getCount();
+    final Meter misses = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
+    long initialMissCount = misses.getCount();
     Hash.matches("Fred", fredHash);
-    assertEquals(misses.getCount() - initialCount, 1);
+    assertEquals(lookups.getCount() - initialLookupCount, 1);
+    assertEquals(misses.getCount() - initialMissCount, 1);
     Hash.matches("Fred", fredHash);
-    assertEquals(misses.getCount() - initialCount, 1);
+    assertEquals(lookups.getCount() - initialLookupCount, 2);
+    assertEquals(misses.getCount() - initialMissCount, 1);
     Hash.matches("Joe", fredHash);
-    assertEquals(misses.getCount() - initialCount, 2);
+    assertEquals(lookups.getCount() - initialLookupCount, 3);
+    assertEquals(misses.getCount() - initialMissCount, 2);
   }
 }
