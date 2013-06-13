@@ -16,35 +16,29 @@
 
 package com.wealdtech.jersey.providers;
 
-import java.lang.reflect.Type;
+import javax.ws.rs.ext.Provider;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-
+import com.codahale.metrics.MetricRegistry;
 import com.sun.jersey.api.core.HttpContext;
+import com.wealdtech.utils.WealdMetrics;
 
 /**
- * Provide details of an authenticated principal. Most of the heavy lifting is
- * carried out by the authentication filter, so we're just here as a convenience
- * to make the information easily accessible.
- *
- * @param <E>
+ * Provide a Metric registry.
  */
-//@Provider
-public class AuthenticatedPrincipalProvider<E> extends AbstractInjectableProvider<E>
+@Provider
+public class MetricRegistryProvider extends AbstractInjectableProvider<MetricRegistry>
 {
-  @Context
-  private transient HttpServletRequest servletrequest;
-
-  public AuthenticatedPrincipalProvider(final Type t)
+  public MetricRegistryProvider()
   {
-    super(t);
+    super(MetricRegistry.class);
   }
 
-  @SuppressWarnings("unchecked")
+  /**
+   * Provide object mapper.
+   */
   @Override
-  public E getValue(final HttpContext c)
+  public MetricRegistry getValue(final HttpContext c)
   {
-    return (E)this.servletrequest.getAttribute("com.wealdtech.authenticatedprincipal");
+    return WealdMetrics.defaultRegistry();
   }
 }
