@@ -32,6 +32,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.servlets.AdminServlet;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
@@ -39,7 +40,6 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.wealdtech.http.JettyServerConfiguration.ThreadPoolConfiguration;
 import com.wealdtech.jersey.filters.BodyPrefetchFilter;
 import com.wealdtech.jersey.filters.ThreadNameFilter;
-import com.yammer.metrics.reporting.AdminServlet;
 //import com.yammer.metrics.jetty.InstrumentedBlockingChannelConnector;
 //import com.yammer.metrics.jetty.InstrumentedQueuedThreadPool;
 
