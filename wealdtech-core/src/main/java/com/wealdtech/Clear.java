@@ -28,7 +28,7 @@ final class Clear extends TriVal<Object> {
   }
 
   @Override public Object get() {
-    throw new IllegalStateException("Absent.get() cannot be called on an clear value");
+    throw new IllegalStateException("Clear.get() cannot be called on an clear value");
   }
 
   @Override public Object or(Object defaultValue) {
@@ -55,7 +55,7 @@ final class Clear extends TriVal<Object> {
 
   @Override public <V> TriVal<V> transform(Function<Object, V> function) {
     checkNotNull(function);
-    return TriVal.absent();
+    return TriVal.clear();
   }
 
   @Override public boolean equals(@Nullable Object object) {
