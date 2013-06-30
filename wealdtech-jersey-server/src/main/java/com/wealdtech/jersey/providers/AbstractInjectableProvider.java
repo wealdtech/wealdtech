@@ -19,6 +19,7 @@ package com.wealdtech.jersey.providers;
 import java.lang.reflect.Type;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.ContextResolver;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -26,7 +27,7 @@ import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
-public abstract class AbstractInjectableProvider<E> extends AbstractHttpContextInjectable<E> implements InjectableProvider<Context, Type>
+public abstract class AbstractInjectableProvider<E> extends AbstractHttpContextInjectable<E> implements InjectableProvider<Context, Type>, ContextResolver<E>
 {
   private final transient Type t;
 
@@ -57,5 +58,17 @@ public abstract class AbstractInjectableProvider<E> extends AbstractHttpContextI
   public ComponentScope getScope()
   {
     return ComponentScope.PerRequest;
+  }
+
+  @Override
+  public E getValue()
+  {
+    return getValue(null);
+  }
+
+  @Override
+  public E getContext(Class<?> type)
+  {
+    return getValue();
   }
 }

@@ -22,14 +22,13 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.wealdtech.TwoTuple;
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Meter;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
 
 import static com.wealdtech.Preconditions.*;
 
@@ -49,7 +48,7 @@ public enum Hash
   private static final LoadingCache<TwoTuple<String, String>, Boolean> CACHE;
 
   // Metrics
-  private static final Meter CACHEMISSES;
+  private static final Meter LOOKUPS, MISSES;
   private static final Timer GETS;
 
   private static final HashConfiguration CONFIGURATION;
@@ -59,8 +58,9 @@ public enum Hash
     // TODO where to obtain this from?
     CONFIGURATION = new HashConfiguration();
 
-    CACHEMISSES = Metrics.defaultRegistry().newMeter(Hash.class, "cache-misses", "lookups", TimeUnit.SECONDS);
-    GETS = Metrics.defaultRegistry().newTimer(Hash.class, "gets", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
+    LOOKUPS = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
+    MISSES = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
+    GETS = WealdMetrics.defaultRegistry().timer(com.codahale.metrics.MetricRegistry.name(Hash.class, "gets"));
     final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder()
                                                         .maximumSize(CONFIGURATION.getCacheConfiguration().getMaxEntries())
                                                         .expireAfterWrite(CONFIGURATION.getCacheConfiguration().getMaxDuration(),  TimeUnit.SECONDS);
@@ -69,7 +69,7 @@ public enum Hash
       @Override
       public Boolean load(final TwoTuple<String, String> input)
       {
-        CACHEMISSES.mark();
+        MISSES.mark();
         return calculateMatches(input.getS(), input.getT());
       }
     });
@@ -95,7 +95,8 @@ public enum Hash
   public static boolean matches(final String input, final String hashed)
   {
     checkNotNull(hashed, "Cannot compare NULL");
-    final TimerContext context = GETS.time();
+    LOOKUPS.mark();
+    final Context context = GETS.time();
     try
     {
       boolean result = false;

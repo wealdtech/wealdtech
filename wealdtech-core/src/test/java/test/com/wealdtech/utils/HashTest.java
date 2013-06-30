@@ -2,8 +2,11 @@ package test.com.wealdtech.utils;
 
 import org.testng.annotations.Test;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.Hash;
+import com.wealdtech.utils.WealdMetrics;
 
 import static org.testng.Assert.*;
 
@@ -68,5 +71,26 @@ public class HashTest
     {
       // Good
     }
+  }
+
+  @Test
+  public void testCache() throws Exception
+  {
+    // Ensure that the cache is operational
+    final String fredHash = Hash.hash("Fred");
+    final MetricRegistry registry = WealdMetrics.defaultRegistry();
+    final Meter lookups = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
+    long initialLookupCount = lookups.getCount();
+    final Meter misses = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
+    long initialMissCount = misses.getCount();
+    Hash.matches("Fred", fredHash);
+    assertEquals(lookups.getCount() - initialLookupCount, 1);
+    assertEquals(misses.getCount() - initialMissCount, 1);
+    Hash.matches("Fred", fredHash);
+    assertEquals(lookups.getCount() - initialLookupCount, 2);
+    assertEquals(misses.getCount() - initialMissCount, 1);
+    Hash.matches("Joe", fredHash);
+    assertEquals(lookups.getCount() - initialLookupCount, 3);
+    assertEquals(misses.getCount() - initialMissCount, 2);
   }
 }

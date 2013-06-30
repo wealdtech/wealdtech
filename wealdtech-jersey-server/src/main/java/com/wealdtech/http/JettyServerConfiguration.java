@@ -18,6 +18,7 @@ package com.wealdtech.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 import com.wealdtech.jersey.JerseyServerConfiguration;
@@ -48,30 +49,12 @@ public final class JettyServerConfiguration implements Configuration
                                    @JsonProperty("connector") final ConnectorConfiguration connectorConfiguration,
                                    @JsonProperty("threadpool") final ThreadPoolConfiguration threadPoolConfiguration)
   {
-    if (host != null)
-    {
-      this.host = host;
-    }
-    if (port != null)
-    {
-      this.port = port;
-    }
-    if (responseConfiguration != null)
-    {
-      this.responseConfiguration = responseConfiguration;
-    }
-    if (jerseyConfiguration != null)
-    {
-      this.jerseyConfiguration = jerseyConfiguration;
-    }
-    if (connectorConfiguration != null)
-    {
-      this.connectorConfiguration = connectorConfiguration;
-    }
-    if (threadPoolConfiguration != null)
-    {
-      this.threadPoolConfiguration = threadPoolConfiguration;
-    }
+    this.host = Objects.firstNonNull(host, this.host);
+    this.port = Objects.firstNonNull(port, this.port);
+    this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
+    this.jerseyConfiguration = Objects.firstNonNull(jerseyConfiguration, this.jerseyConfiguration);
+    this.connectorConfiguration = Objects.firstNonNull(connectorConfiguration, this.connectorConfiguration);
+    this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
   }
 
   public String getHost()
@@ -191,14 +174,8 @@ public final class JettyServerConfiguration implements Configuration
     private JettyResponseConfiguration(@JsonProperty("servername") final String serverName,
                                        @JsonProperty("retryperiod") final Integer retryPeriod)
     {
-      if (serverName != null)
-      {
-        this.serverName = serverName;
-      }
-      if (retryPeriod != null)
-      {
-        this.retryPeriod = retryPeriod;
-      }
+      this.serverName = Objects.firstNonNull(serverName, this.serverName);
+      this.retryPeriod = Objects.firstNonNull(retryPeriod, this.retryPeriod);
     }
 
     public String getServerName()
@@ -233,22 +210,10 @@ public final class JettyServerConfiguration implements Configuration
                                    @JsonProperty("usedirectbuffers") final Boolean usedirectbuffers,
                                    @JsonProperty("lowresourcesconnections") final Integer lowresourcesconnections)
     {
-      if (acceptors != null)
-      {
-        this.acceptors = acceptors;
-      }
-      if (acceptqueuesize != null)
-      {
-        this.acceptqueuesize = acceptqueuesize;
-      }
-      if (usedirectbuffers != null)
-      {
-        this.usedirectbuffers = usedirectbuffers;
-      }
-      if (lowresourcesconnections != null)
-      {
-        this.lowresourcesconnections = lowresourcesconnections;
-      }
+      this.acceptors = Objects.firstNonNull(acceptors, this.acceptors);
+      this.acceptqueuesize = Objects.firstNonNull(acceptqueuesize, this.acceptqueuesize);
+      this.usedirectbuffers = Objects.firstNonNull(usedirectbuffers, this.usedirectbuffers);
+      this.lowresourcesconnections = Objects.firstNonNull(lowresourcesconnections, this.lowresourcesconnections);
     }
 
     public int getAcceptors()
@@ -287,14 +252,8 @@ public final class JettyServerConfiguration implements Configuration
     private ThreadPoolConfiguration(@JsonProperty("minthreads") final Integer minthreads,
                                     @JsonProperty("maxidletimems") final Integer maxidletimems)
     {
-      if (minthreads != null)
-      {
-        this.minthreads = minthreads;
-      }
-      if (maxidletimems != null)
-      {
-        this.maxidletimems = maxidletimems;
-      }
+      this.minthreads = Objects.firstNonNull(minthreads, this.minthreads);
+      this.maxidletimems = Objects.firstNonNull(maxidletimems, this.maxidletimems);
     }
 
     public int getMinThreads()

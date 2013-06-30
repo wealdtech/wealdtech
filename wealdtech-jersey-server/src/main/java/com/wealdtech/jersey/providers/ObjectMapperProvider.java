@@ -16,11 +16,10 @@
 
 package com.wealdtech.jersey.providers;
 
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
+import com.sun.jersey.api.core.HttpContext;
 import com.wealdtech.jackson.WealdMapper;
 
 /**
@@ -31,19 +30,19 @@ import com.wealdtech.jackson.WealdMapper;
  * those configuration options will override the default.
  */
 @Provider
-public class ObjectMapperProvider implements ContextResolver<ObjectMapper>
+public class ObjectMapperProvider extends AbstractInjectableProvider<ObjectMapper>
 {
-  private final transient ObjectMapper mapper;
-
-  @Inject
   public ObjectMapperProvider()
   {
-    this.mapper = WealdMapper.getServerMapper();
+    super(ObjectMapper.class);
   }
 
+  /**
+   * Provide object mapper.
+   */
   @Override
-  public ObjectMapper getContext(final Class<?> type)
+  public ObjectMapper getValue(final HttpContext c)
   {
-    return this.mapper;
+    return WealdMapper.getServerMapper();
   }
 }
