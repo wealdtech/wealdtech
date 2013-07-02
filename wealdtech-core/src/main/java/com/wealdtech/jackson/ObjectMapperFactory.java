@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.wealdtech.jackson.modules.TriValModule;
 import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
 import com.wealdtech.jackson.modules.WealdMiscModule;
@@ -53,6 +54,8 @@ public class ObjectMapperFactory
     DEFAULTMAPPER.registerModule(new WealdJodaModule());
     // Use Guava custom serializers and deserializers
     DEFAULTMAPPER.registerModule(new GuavaModule());
+    // Handle the Weald TriVal
+    DEFAULTMAPPER.registerModule(new TriValModule());
     // Handle the Weald ID
     DEFAULTMAPPER.registerModule(new WealdIDModule());
     // Handle various other types

@@ -16,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Prefetch and store the full body of the request so that it can be read by
  * subsequent filters without upsetting message body readers.
@@ -24,6 +27,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class BodyPrefetchFilter implements Filter
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BodyPrefetchFilter.class);
+
   @Override
   public void init(final FilterConfig filterConfig) throws ServletException
   {
@@ -65,6 +70,8 @@ public class BodyPrefetchFilter implements Filter
         baos.write(buf, 0, bytesRead);
       }
       this.body = baos.toByteArray();
+
+      LOGGER.debug("Body of request is \"{}\"", new String(this.body, "UTF-8"));
     }
 
     @Override
