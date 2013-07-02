@@ -71,7 +71,10 @@ public class BodyPrefetchFilter implements Filter
       }
       this.body = baos.toByteArray();
 
-      LOGGER.debug("Body of request is \"{}\"", new String(this.body, "UTF-8"));
+      if (this.body.length > 0)
+      {
+        LOGGER.debug("Body of request is \"{}\"", new String(this.body, "UTF-8"));
+      }
     }
 
     @Override

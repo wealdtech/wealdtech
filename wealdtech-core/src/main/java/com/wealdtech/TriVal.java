@@ -16,11 +16,6 @@ import static com.wealdtech.Preconditions.*;
 public abstract class TriVal<T> implements Serializable
 {
   /**
-   * Text-based representation of {@code clear} for systems which do not support it
-   */
-  public final transient static String CLEAR_TEXT = "__clear";
-
-  /**
    * Returns an {@code TriVal} instance to clear.
    */
   @SuppressWarnings("unchecked")
@@ -172,6 +167,11 @@ public abstract class TriVal<T> implements Serializable
    */
   @Override
   public abstract String toString();
+
+  /**
+   * Returns a string representation which hides the detail of the trival itself
+   */
+  public abstract String toSimpleString();
 
   /**
    * Returns the value of each present instance from the supplied {@code TriVals}, in order,

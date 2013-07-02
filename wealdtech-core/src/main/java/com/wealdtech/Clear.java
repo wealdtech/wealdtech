@@ -70,6 +70,10 @@ final class Clear extends TriVal<Object> {
     return "TriVal.clear()";
   }
 
+  @Override public String toSimpleString() {
+    return "<clear>";
+  }
+
   private Object readResolve() {
     return INSTANCE;
   }

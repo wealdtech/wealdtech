@@ -77,5 +77,9 @@ final class Present<T> extends TriVal<T> {
     return "TriVal.of(" + reference + ")";
   }
 
+  @Override public String toSimpleString() {
+    return reference.toString();
+  }
+
   private static final long serialVersionUID = 0;
 }
