@@ -22,12 +22,19 @@ import java.util.List;
 import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 
+import org.eclipse.jetty.http.HttpScheme;
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +50,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.wealdtech.jersey.filters.BodyPrefetchFilter;
 import com.wealdtech.jersey.filters.ThreadNameFilter;
 import com.wealdtech.jetty.JettyServerConfiguration.ConnectorConfiguration;
+import com.wealdtech.jetty.JettyServerConfiguration.SslConfiguration;
 import com.wealdtech.jetty.JettyServerConfiguration.ThreadPoolConfiguration;
 import com.wealdtech.utils.WealdMetrics;
 
@@ -70,7 +78,8 @@ public class JettyServer
 
     this.server = new Server(createThreadPool());
 
-    this.server.setConnectors(createConnectors(configuration.getConnectorConfigurations()));
+    final SslContextFactory sslContextFactory = createSslContextFactory(configuration.getSslConfiguration());
+    this.server.setConnectors(createConnectors(configuration.getConnectorConfigurations(), sslContextFactory));
 
     HandlerCollection handlers = new HandlerCollection();
 
@@ -132,51 +141,76 @@ public class JettyServer
   }
 
   /**
+   * Create the SSL context factory, used for secure connections
+   */
+  public SslContextFactory createSslContextFactory(final SslConfiguration configuration)
+  {
+    final SslContextFactory sslContextFactory = new SslContextFactory();
+    sslContextFactory.setKeyStorePath(configuration.getKeyStorePath());
+    sslContextFactory.setKeyStorePassword(configuration.getKeyStorePassword());
+    sslContextFactory.setKeyManagerPassword(configuration.getKeyManagerPassword());
+    return sslContextFactory;
+  }
+
+  /**
    * Create the connectors for a server
    */
-  private Connector[] createConnectors(final ImmutableList<ConnectorConfiguration> configurations)
+  private Connector[] createConnectors(final ImmutableList<ConnectorConfiguration> configurations, final SslContextFactory sslContextFactory)
   {
     List<Connector> connectors = Lists.newArrayList();
+
     for (final ConnectorConfiguration configuration : configurations)
     {
-      connectors.add(createConnector(configuration));
+      connectors.add(createConnector(configuration, sslContextFactory));
     }
     return connectors.toArray(new Connector[0]);
   }
 
-  private Connector createConnector(final ConnectorConfiguration configuration)
+  private Connector createConnector(final ConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
   {
-    final ServerConnector connector = new ServerConnector(this.server);
-    LOGGER.debug("Connector listening on port {}", configuration.getPort());
+    final HttpConfiguration httpConfig = createHttpConfiguration(configuration);
+    SslConnectionFactory sslConnectionFactory = null;
+
+    // Specific configuration for secure/insecure connectors
+    if (!configuration.isSecure())
+    {
+      // TODO httpConfig.setSecurePort();
+      httpConfig.setSecureScheme(HttpScheme.HTTPS.asString());
+    }
+    else
+    {
+      sslConnectionFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+      httpConfig.addCustomizer(new SecureRequestCustomizer());
+    }
+    final HttpConnectionFactory httpConnectionFactory = createConnectionFactory(configuration, httpConfig);
+    final ServerConnector connector = new ServerConnector(this.server, sslConnectionFactory, httpConnectionFactory);
+
+    // Common configuration
+    connector.setName(configuration.getName());
     connector.setPort(configuration.getPort());
+    connector.setHost(configuration.getHost());
+    connector.setIdleTimeout(configuration.getIdleTimeout());
+    connector.setAcceptQueueSize(configuration.getAcceptQueueSize());
+    connector.setReuseAddress(configuration.getReuseAddress());
+    connector.setSoLingerTime(configuration.getSoLingerTime());
+
+    LOGGER.debug("Connector listening on port {}", configuration.getPort());
     return connector;
   }
 
-//  private void setConnector()
-//  {
+  private HttpConfiguration createHttpConfiguration(final ConnectorConfiguration configuration)
+  {
+    final HttpConfiguration httpConfig = new HttpConfiguration();
+    // TODO configuration parameters
+    return httpConfig;
+  }
 
-    // TODO Handle configuration
-//    final ConnectorConfiguration connectorConfiguration = this.configuration.getConnectorConfiguration();
-
-    // Blocking connector
-//    connector = new InstrumentedBlockingChannelConnector(this.configuration.getPort());
-
-//    if (connector instanceof SelectChannelConnector)
-//    {
-//      ((SelectChannelConnector)connector).setLowResourcesConnections(connectorConfiguration.getLowResourcesConnections());
-//    }
-//
-//    if (connector instanceof AbstractNIOConnector)
-//    {
-//      ((AbstractNIOConnector)connector).setUseDirectBuffers(connectorConfiguration.getUseDirectBuffers());
-//    }
-
-//    connector.setAcceptors(connectorConfiguration.getAcceptors());
-//
-//    connector.setAcceptQueueSize(connectorConfiguration.getAcceptQueueSize());
-
-//    return connector;
-//  }
+  private HttpConnectionFactory createConnectionFactory(final ConnectorConfiguration configuration, final HttpConfiguration httpConfig)
+  {
+    final HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfig);
+    httpConnectionFactory.setInputBufferSize(configuration.getInputBufferSize());
+    return httpConnectionFactory;
+  }
 
   /**
    * Create a thread pool.

@@ -31,7 +31,7 @@ import com.wealdtech.jersey.JerseyServerConfiguration;
  */
 public final class JettyServerConfiguration implements Configuration
 {
-  private String host = "localhost";
+  private final String host = "localhost";
   private final SslConfiguration sslConfiguration = new SslConfiguration();
   private ImmutableList<ConnectorConfiguration> connectorConfigurations = ImmutableList.of(new ConnectorConfiguration());
   private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
@@ -45,14 +45,14 @@ public final class JettyServerConfiguration implements Configuration
   }
 
   @JsonCreator
-  private JettyServerConfiguration(@JsonProperty("host") final String host,
+  private JettyServerConfiguration(@JsonProperty("name") final String name,
+                                   @JsonProperty("host") final String host,
                                    @JsonProperty("threadpool") final ThreadPoolConfiguration threadPoolConfiguration,
                                    @JsonProperty("ssl") final SslConfiguration sslConfiguration,
                                    @JsonProperty("connectors") final List<ConnectorConfiguration> connectorConfigurations,
                                    @JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
                                    @JsonProperty("jersey") final JerseyServerConfiguration jerseyConfiguration)
   {
-    this.host = Objects.firstNonNull(host, this.host);
     this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
     this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.jerseyConfiguration = Objects.firstNonNull(jerseyConfiguration, this.jerseyConfiguration);
@@ -142,17 +142,17 @@ public final class JettyServerConfiguration implements Configuration
       this.keymanagerpasswd = Objects.firstNonNull(keymanagerpasswd, this.keymanagerpasswd);
     }
 
-    public String getKeystorePath()
+    public String getKeyStorePath()
     {
       return this.keystorepath;
     }
 
-    public String getKeystorePassword()
+    public String getKeyStorePassword()
     {
       return this.keystorepasswd;
     }
 
-    public String getManagerPassword()
+    public String getKeyManagerPassword()
     {
       return this.keymanagerpasswd;
     }
@@ -160,17 +160,15 @@ public final class JettyServerConfiguration implements Configuration
 
   public static class ConnectorConfiguration implements Configuration
   {
-    private int acceptors = 4;
-
-    private int acceptqueuesize = -1;
-
-    private boolean usedirectbuffers = true;
-
-    private int lowresourcesconnections = 0;
-
+    private String name;
+    private String host;
     private int port = 8080;
-
     private boolean secure = false;
+    private int acceptqueuesize = -1;
+    private long idletimeout = 50000;
+    private boolean reuseaddress = false;
+    private int solingertime = 60;
+    private int inputbuffersize = 2048;
 
     public ConnectorConfiguration()
     {
@@ -178,42 +176,35 @@ public final class JettyServerConfiguration implements Configuration
     }
 
     @JsonCreator
-    private ConnectorConfiguration(@JsonProperty("acceptors") final Integer acceptors,
-                                   @JsonProperty("acceptqueuesize") final Integer acceptqueuesize,
-                                   @JsonProperty("usedirectbuffers") final Boolean usedirectbuffers,
-                                   @JsonProperty("lowresourcesconnections") final Integer lowresourcesconnections,
+    private ConnectorConfiguration(@JsonProperty("name") final String name,
+                                   @JsonProperty("host") final String host,
                                    @JsonProperty("port") final Integer port,
                                    @JsonProperty("secure") final Boolean secure,
-                                   @JsonProperty("keystorepath") final String keystorepath,
-                                   @JsonProperty("keystorepasswd") final String keystorepasswd,
-                                   @JsonProperty("keymanagerpasswd") final String keymanagerpasswd)
+                                   @JsonProperty("acceptqueuesize") final Integer acceptqueuesize,
+                                   @JsonProperty("idletimeout") final Long idletimeout,
+                                   @JsonProperty("reuseaddress") final Boolean reuseaddress,
+                                   @JsonProperty("solingertime") final Integer solingertime,
+                                   @JsonProperty("inputbuffersize") final Integer inputbuffersize)
     {
-      this.acceptors = Objects.firstNonNull(acceptors, this.acceptors);
-      this.acceptqueuesize = Objects.firstNonNull(acceptqueuesize, this.acceptqueuesize);
-      this.usedirectbuffers = Objects.firstNonNull(usedirectbuffers, this.usedirectbuffers);
-      this.lowresourcesconnections = Objects.firstNonNull(lowresourcesconnections, this.lowresourcesconnections);
+      this.name = Objects.firstNonNull(name, this.name);
+      this.host = Objects.firstNonNull(host, this.host);
       this.port = Objects.firstNonNull(port, this.port);
       this.secure = Objects.firstNonNull(secure, this.secure);
+      this.acceptqueuesize = Objects.firstNonNull(acceptqueuesize, this.acceptqueuesize);
+      this.idletimeout = Objects.firstNonNull(idletimeout, this.idletimeout);
+      this.reuseaddress = Objects.firstNonNull(reuseaddress, this.reuseaddress);
+      this.solingertime = Objects.firstNonNull(solingertime, this.solingertime);
+      this.inputbuffersize = Objects.firstNonNull(inputbuffersize, this.inputbuffersize);
     }
 
-    public int getAcceptors()
+    public String getName()
     {
-      return this.acceptors;
+      return this.name;
     }
 
-    public int getAcceptQueueSize()
+    public String getHost()
     {
-      return this.acceptqueuesize;
-    }
-
-    public boolean getUseDirectBuffers()
-    {
-      return this.usedirectbuffers;
-    }
-
-    public int getLowResourcesConnections()
-    {
-      return this.lowresourcesconnections;
+      return this.host;
     }
 
     public int getPort()
@@ -224,6 +215,31 @@ public final class JettyServerConfiguration implements Configuration
     public boolean isSecure()
     {
       return this.secure;
+    }
+
+    public int getAcceptQueueSize()
+    {
+      return this.acceptqueuesize;
+    }
+
+    public long getIdleTimeout()
+    {
+      return this.idletimeout;
+    }
+
+    public boolean getReuseAddress()
+    {
+      return this.reuseaddress;
+    }
+
+    public int getSoLingerTime()
+    {
+      return this.solingertime;
+    }
+
+    public int getInputBufferSize()
+    {
+      return this.inputbuffersize;
     }
   }
 
