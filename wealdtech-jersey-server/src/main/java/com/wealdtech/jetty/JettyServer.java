@@ -14,9 +14,10 @@
  *   limitations under the License.
  */
 
-package com.wealdtech.http;
+package com.wealdtech.jetty;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
@@ -33,15 +34,24 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.jetty9.InstrumentedQueuedThreadPool;
 import com.codahale.metrics.servlets.AdminServlet;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.wealdtech.http.JettyServerConfiguration.ThreadPoolConfiguration;
 import com.wealdtech.jersey.filters.BodyPrefetchFilter;
 import com.wealdtech.jersey.filters.ThreadNameFilter;
+import com.wealdtech.jetty.JettyServerConfiguration.ConnectorConfiguration;
+import com.wealdtech.jetty.JettyServerConfiguration.ThreadPoolConfiguration;
 import com.wealdtech.utils.WealdMetrics;
 
+/**
+ * JettyServer sets up a Jetty server.
+ * <p>
+ * It uses information from a configuration to enable and tune various aspects
+ * such as SSL, and which connectors listen to what.
+ */
 public class JettyServer
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
@@ -58,11 +68,9 @@ public class JettyServer
     this.injector = injector;
     this.configuration = configuration;
 
-    final int port = this.configuration.getPort();
-    LOGGER.info("Starting http server on port {}", port);
     this.server = new Server(createThreadPool());
 
-    setConnectors();
+    this.server.setConnectors(createConnectors(configuration.getConnectorConfigurations()));
 
     HandlerCollection handlers = new HandlerCollection();
 
@@ -80,9 +88,9 @@ public class JettyServer
         return JettyServer.this.injector;
       }
     });
+    root.addFilter(GuiceFilter.class, "/*", null);
     root.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
     root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-    root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
     handlers.addHandler(root);
 
@@ -124,18 +132,32 @@ public class JettyServer
   }
 
   /**
-   * Set the connectors for a server
+   * Create the connectors for a server
    */
-  private void setConnectors()
+  private Connector[] createConnectors(final ImmutableList<ConnectorConfiguration> configurations)
   {
-    final ServerConnector connector;
+    List<Connector> connectors = Lists.newArrayList();
+    for (final ConnectorConfiguration configuration : configurations)
+    {
+      connectors.add(createConnector(configuration));
+    }
+    return connectors.toArray(new Connector[0]);
+  }
+
+  private Connector createConnector(final ConnectorConfiguration configuration)
+  {
+    final ServerConnector connector = new ServerConnector(this.server);
+    LOGGER.debug("Connector listening on port {}", configuration.getPort());
+    connector.setPort(configuration.getPort());
+    return connector;
+  }
+
+//  private void setConnector()
+//  {
 
     // TODO Handle configuration
 //    final ConnectorConfiguration connectorConfiguration = this.configuration.getConnectorConfiguration();
 
-    connector = new ServerConnector(this.server);
-    connector.setPort(this.configuration.getPort());
-    this.server.setConnectors(new Connector[]{connector});
     // Blocking connector
 //    connector = new InstrumentedBlockingChannelConnector(this.configuration.getPort());
 
@@ -154,7 +176,7 @@ public class JettyServer
 //    connector.setAcceptQueueSize(connectorConfiguration.getAcceptQueueSize());
 
 //    return connector;
-  }
+//  }
 
   /**
    * Create a thread pool.

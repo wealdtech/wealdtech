@@ -27,8 +27,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.wealdtech.http.JettyServer;
 import com.wealdtech.jersey.guice.JerseyServletModule;
+import com.wealdtech.jetty.JettyServer;
 
 /**
  * A simple Jetty container to test Weald Jetty and Jersey changes

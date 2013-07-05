@@ -1,0 +1,18 @@
+{
+	"ssl":
+	{
+		"keystorepath":			"keystore",
+		"keystorepassword": 	"password",
+		"keymanagerpassword":	"password"
+	},
+	"connectors":
+	[
+		{
+			"port":	8080
+		},
+		{
+			"port":	8443,
+			"secure": true
+		}
+	]
+}

@@ -14,11 +14,14 @@
  *   limitations under the License.
  */
 
-package com.wealdtech.http;
+package com.wealdtech.jetty;
+
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 import com.wealdtech.jersey.JerseyServerConfiguration;
@@ -29,10 +32,10 @@ import com.wealdtech.jersey.JerseyServerConfiguration;
 public final class JettyServerConfiguration implements Configuration
 {
   private String host = "localhost";
-  private int port = 8080;
+  private final SslConfiguration sslConfiguration = new SslConfiguration();
+  private ImmutableList<ConnectorConfiguration> connectorConfigurations = ImmutableList.of(new ConnectorConfiguration());
   private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
-  private ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration();
   private ThreadPoolConfiguration threadPoolConfiguration = new ThreadPoolConfiguration();
 
   @Inject
@@ -43,18 +46,17 @@ public final class JettyServerConfiguration implements Configuration
 
   @JsonCreator
   private JettyServerConfiguration(@JsonProperty("host") final String host,
-                                   @JsonProperty("port") final Integer port,
+                                   @JsonProperty("threadpool") final ThreadPoolConfiguration threadPoolConfiguration,
+                                   @JsonProperty("ssl") final SslConfiguration sslConfiguration,
+                                   @JsonProperty("connectors") final List<ConnectorConfiguration> connectorConfigurations,
                                    @JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
-                                   @JsonProperty("jersey") final JerseyServerConfiguration jerseyConfiguration,
-                                   @JsonProperty("connector") final ConnectorConfiguration connectorConfiguration,
-                                   @JsonProperty("threadpool") final ThreadPoolConfiguration threadPoolConfiguration)
+                                   @JsonProperty("jersey") final JerseyServerConfiguration jerseyConfiguration)
   {
     this.host = Objects.firstNonNull(host, this.host);
-    this.port = Objects.firstNonNull(port, this.port);
+    this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
     this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.jerseyConfiguration = Objects.firstNonNull(jerseyConfiguration, this.jerseyConfiguration);
-    this.connectorConfiguration = Objects.firstNonNull(connectorConfiguration, this.connectorConfiguration);
-    this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
+    this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
   }
 
   public String getHost()
@@ -62,9 +64,19 @@ public final class JettyServerConfiguration implements Configuration
     return this.host;
   }
 
-  public int getPort()
+  public ThreadPoolConfiguration getThreadPoolConfiguration()
   {
-    return this.port;
+    return this.threadPoolConfiguration;
+  }
+
+  public SslConfiguration getSslConfiguration()
+  {
+    return this.sslConfiguration;
+  }
+
+  public ImmutableList<ConnectorConfiguration> getConnectorConfigurations()
+  {
+    return this.connectorConfigurations;
   }
 
   public JettyResponseConfiguration getResponseConfiguration()
@@ -75,88 +87,6 @@ public final class JettyServerConfiguration implements Configuration
   public JerseyServerConfiguration getJerseyConfiguration()
   {
     return this.jerseyConfiguration;
-  }
-
-  public ConnectorConfiguration getConnectorConfiguration()
-  {
-    return this.connectorConfiguration;
-  }
-
-  public ThreadPoolConfiguration getThreadPoolConfiguration()
-  {
-    return this.threadPoolConfiguration;
-  }
-
-  public static class Builder
-  {
-    private String host;
-    private Integer port;
-    private JettyResponseConfiguration responseConfiguration;
-    private JerseyServerConfiguration jerseyConfiguration;
-    private ConnectorConfiguration connectorConfiguration;
-    private ThreadPoolConfiguration threadPoolConfiguration;
-
-    /**
-     * Start to build a Jetty server configuration.
-     */
-    public Builder()
-    {
-    }
-
-    /**
-     * Start to build a Jetty server configuration based on a prior configuration.
-     * @param prior the prior configuration.
-     */
-    public Builder(final JettyServerConfiguration prior)
-    {
-      this.host = prior.host;
-      this.port = prior.port;
-      this.responseConfiguration = prior.responseConfiguration;
-      this.jerseyConfiguration = prior.jerseyConfiguration;
-      this.connectorConfiguration = prior.connectorConfiguration;
-      this.threadPoolConfiguration = prior.threadPoolConfiguration;
-    }
-
-    public Builder host(final String host)
-    {
-      this.host = host;
-      return this;
-    }
-
-    public Builder port(final Integer port)
-    {
-      this.port = port;
-      return this;
-    }
-
-    public Builder responseConfiguration(final JettyResponseConfiguration responseConfiguration)
-    {
-      this.responseConfiguration = responseConfiguration;
-      return this;
-    }
-
-    public Builder jerseyConfiguration(final JerseyServerConfiguration jerseyConfiguration)
-    {
-      this.jerseyConfiguration = jerseyConfiguration;
-      return this;
-    }
-
-    public Builder connectorConfiguration(final ConnectorConfiguration connectorConfiguration)
-    {
-      this.connectorConfiguration = connectorConfiguration;
-      return this;
-    }
-
-    public Builder threadPoolConfiguration(final ThreadPoolConfiguration threadPoolConfiguration)
-    {
-      this.threadPoolConfiguration = threadPoolConfiguration;
-      return this;
-    }
-
-    public JettyServerConfiguration build()
-    {
-      return new JettyServerConfiguration(this.host, this.port, this.responseConfiguration, this.jerseyConfiguration, this.connectorConfiguration, this.threadPoolConfiguration);
-    }
   }
 
   public static class JettyResponseConfiguration implements Configuration
@@ -189,6 +119,45 @@ public final class JettyServerConfiguration implements Configuration
     }
   }
 
+  public static class SslConfiguration implements Configuration
+  {
+    private String keystorepath = "/etc/keystore";
+
+    private String keystorepasswd = "test";
+
+    private String keymanagerpasswd = "test";
+
+    public SslConfiguration()
+    {
+      // Just use defaults
+    }
+
+    @JsonCreator
+    private SslConfiguration(@JsonProperty("keystorepath") final String keystorepath,
+                             @JsonProperty("keystorepassword") final String keystorepasswd,
+                             @JsonProperty("keymanagerpassword") final String keymanagerpasswd)
+    {
+      this.keystorepath = Objects.firstNonNull(keystorepath, this.keystorepath);
+      this.keystorepasswd = Objects.firstNonNull(keystorepasswd, this.keystorepasswd);
+      this.keymanagerpasswd = Objects.firstNonNull(keymanagerpasswd, this.keymanagerpasswd);
+    }
+
+    public String getKeystorePath()
+    {
+      return this.keystorepath;
+    }
+
+    public String getKeystorePassword()
+    {
+      return this.keystorepasswd;
+    }
+
+    public String getManagerPassword()
+    {
+      return this.keymanagerpasswd;
+    }
+  }
+
   public static class ConnectorConfiguration implements Configuration
   {
     private int acceptors = 4;
@@ -199,6 +168,10 @@ public final class JettyServerConfiguration implements Configuration
 
     private int lowresourcesconnections = 0;
 
+    private int port = 8080;
+
+    private boolean secure = false;
+
     public ConnectorConfiguration()
     {
       // Just use defaults
@@ -208,12 +181,19 @@ public final class JettyServerConfiguration implements Configuration
     private ConnectorConfiguration(@JsonProperty("acceptors") final Integer acceptors,
                                    @JsonProperty("acceptqueuesize") final Integer acceptqueuesize,
                                    @JsonProperty("usedirectbuffers") final Boolean usedirectbuffers,
-                                   @JsonProperty("lowresourcesconnections") final Integer lowresourcesconnections)
+                                   @JsonProperty("lowresourcesconnections") final Integer lowresourcesconnections,
+                                   @JsonProperty("port") final Integer port,
+                                   @JsonProperty("secure") final Boolean secure,
+                                   @JsonProperty("keystorepath") final String keystorepath,
+                                   @JsonProperty("keystorepasswd") final String keystorepasswd,
+                                   @JsonProperty("keymanagerpasswd") final String keymanagerpasswd)
     {
       this.acceptors = Objects.firstNonNull(acceptors, this.acceptors);
       this.acceptqueuesize = Objects.firstNonNull(acceptqueuesize, this.acceptqueuesize);
       this.usedirectbuffers = Objects.firstNonNull(usedirectbuffers, this.usedirectbuffers);
       this.lowresourcesconnections = Objects.firstNonNull(lowresourcesconnections, this.lowresourcesconnections);
+      this.port = Objects.firstNonNull(port, this.port);
+      this.secure = Objects.firstNonNull(secure, this.secure);
     }
 
     public int getAcceptors()
@@ -234,6 +214,16 @@ public final class JettyServerConfiguration implements Configuration
     public int getLowResourcesConnections()
     {
       return this.lowresourcesconnections;
+    }
+
+    public int getPort()
+    {
+      return this.port;
+    }
+
+    public boolean isSecure()
+    {
+      return this.secure;
     }
   }
 
