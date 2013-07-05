@@ -1,7 +1,6 @@
 JettyServer
   - Create with full JAX-RS configuration
     - Stop subclassing/copying it
-
-Schedule
-  - Add exceptions, alterations and additions
-    - Generic alterations
+  - Sort out configuration
+    - Modularise the existing JettyServer at the connection level
+    - Tidy up servlet setup, move to configuration

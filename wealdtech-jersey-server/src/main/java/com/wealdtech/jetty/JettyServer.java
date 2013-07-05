@@ -57,8 +57,7 @@ import com.wealdtech.utils.WealdMetrics;
 /**
  * JettyServer sets up a Jetty server.
  * <p>
- * It uses information from a configuration to enable and tune various aspects
- * such as SSL, and which connectors listen to what.
+ * Configuration of the Jetty server is through a configuration object
  */
 public class JettyServer
 {
@@ -166,6 +165,9 @@ public class JettyServer
     return connectors.toArray(new Connector[0]);
   }
 
+  /**
+   * Create a connector for a server
+   */
   private Connector createConnector(final ConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
   {
     final HttpConfiguration httpConfig = createHttpConfiguration(configuration);
