@@ -169,6 +169,11 @@ public abstract class TriVal<T> implements Serializable
   public abstract String toString();
 
   /**
+   * Returns a string representation which hides the detail of the trival itself
+   */
+  public abstract String toSimpleString();
+
+  /**
    * Returns the value of each present instance from the supplied {@code TriVals}, in order,
    * skipping over occurrences of {@link TriVal#absent}. Iterators are unmodifiable and are
    * evaluated lazily.

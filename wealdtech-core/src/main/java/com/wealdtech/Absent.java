@@ -70,6 +70,10 @@ final class Absent extends TriVal<Object> {
     return "TriVal.absent()";
   }
 
+  @Override public String toSimpleString() {
+    return null;
+  }
+
   private Object readResolve() {
     return INSTANCE;
   }
