@@ -16,43 +16,35 @@
 
 package com.wealdtech.jetty;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
 import java.util.List;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 
-import org.eclipse.jetty.http.HttpScheme;
-import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.jetty9.InstrumentedQueuedThreadPool;
 import com.codahale.metrics.servlets.AdminServlet;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
+import com.wealdtech.DataError;
 import com.wealdtech.jersey.filters.BodyPrefetchFilter;
 import com.wealdtech.jersey.filters.ThreadNameFilter;
-import com.wealdtech.jetty.JettyServerConfiguration.ConnectorConfiguration;
-import com.wealdtech.jetty.JettyServerConfiguration.SslConfiguration;
-import com.wealdtech.jetty.JettyServerConfiguration.ThreadPoolConfiguration;
-import com.wealdtech.utils.WealdMetrics;
+import com.wealdtech.jetty.config.JettyConnectorConfiguration;
+import com.wealdtech.jetty.config.JettyInstanceConfiguration;
+import com.wealdtech.jetty.config.JettyServerConfiguration;
 
 /**
  * JettyServer sets up a Jetty server.
@@ -65,44 +57,28 @@ public class JettyServer
 
   private transient Server server;
 
-  private final transient JettyServerConfiguration configuration;
-
   private final transient Injector injector;
 
+  /**
+   * Create a Jetty server with a specific configuration
+   * @param injector a Guice injector
+   * @param configuration configuration for the Jetty server
+   */
   @Inject
   public JettyServer(final Injector injector, final JettyServerConfiguration configuration)
   {
+    // Needed to access the injector
     this.injector = injector;
-    this.configuration = configuration;
 
-    this.server = new Server(createThreadPool());
-
-    final SslContextFactory sslContextFactory = createSslContextFactory(configuration.getSslConfiguration());
-    this.server.setConnectors(createConnectors(configuration.getConnectorConfigurations(), sslContextFactory));
-
-    HandlerCollection handlers = new HandlerCollection();
-
-    final ServletContextHandler admin = new ServletContextHandler();
-    admin.setContextPath("/admin");
-    admin.addServlet(AdminServlet.class, "/*");
-    handlers.addHandler(admin);
-
-    final ServletContextHandler root = new ServletContextHandler();
-    root.addEventListener(new GuiceServletContextListener()
+    // Create the server and set up the instances
+    this.server = new Server();
+    for (final JettyInstanceConfiguration instanceConfiguration : configuration.getInstanceConfigurations())
     {
-      @Override
-      protected Injector getInjector()
-      {
-        return JettyServer.this.injector;
-      }
-    });
-    root.addFilter(GuiceFilter.class, "/*", null);
-    root.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-    root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-    root.addServlet(DefaultServlet.class, "/");
-    handlers.addHandler(root);
+      configureInstance(this.server, instanceConfiguration);
+    }
 
-    this.server.setHandler(handlers);
+    // Add the handlers
+    this.server.setHandler(createHandlers());
   }
 
   public void start() throws Exception // NOPMD
@@ -139,96 +115,60 @@ public class JettyServer
     }
   }
 
-  /**
-   * Create the SSL context factory, used for secure connections
-   */
-  public SslContextFactory createSslContextFactory(final SslConfiguration configuration)
+  private void configureInstance(final Server server, final JettyInstanceConfiguration configuration)
   {
-    final SslContextFactory sslFactory = new SslContextFactory();
-    sslFactory.setKeyStorePath(configuration.getKeyStorePath());
-    sslFactory.setKeyStorePassword(configuration.getKeyStorePassword());
-    sslFactory.setKeyManagerPassword(configuration.getKeyManagerPassword());
-    return sslFactory;
-  }
+    // We have a single SSL context factory for each instance
+    final SslContextFactory sslContextFactory = JettySslContextFactoryFactory.build(configuration.getSslConfiguration());
 
-  /**
-   * Create the connectors for a server
-   */
-  private Connector[] createConnectors(final ImmutableList<ConnectorConfiguration> configurations, final SslContextFactory sslFactory)
-  {
-    List<Connector> connectors = Lists.newArrayList();
-
-    for (final ConnectorConfiguration configuration : configurations)
+    // Create each connector
+    final List<Connector> connectors = Lists.newArrayList();
+    for (final JettyConnectorConfiguration connectorConfiguration : configuration.getConnectorConfigurations())
     {
-      connectors.add(createConnector(configuration, sslFactory));
+      JettyConnectorFactory factory;
+      try
+      {
+        final Constructor<? extends JettyConnectorFactory> ctor = connectorConfiguration.getType().getDeclaredConstructor();
+        ctor.setAccessible(true);
+        factory = ctor.newInstance();
+      }
+      catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+      {
+        throw new DataError.Bad("Failed to set up connector type \"" + connectorConfiguration.getType() + "\"");
+      }
+      connectors.add(factory.build(connectorConfiguration, sslContextFactory));
     }
-    return connectors.toArray(new Connector[0]);
+    server.setConnectors(connectors.toArray(new Connector[0]));
   }
 
   /**
-   * Create a connector for a server
+   * This sets the basic handlers
+   * @return
    */
-  private Connector createConnector(final ConnectorConfiguration configuration, final SslContextFactory sslFactory)
+  private HandlerCollection createHandlers()
   {
-    // Fetch the connector
-    Class<? extends JettyConnector> connectorClass = configuration.getType();
-    final HttpConfiguration httpConfig = createHttpConfiguration(configuration);
-    SslConnectionFactory sslConnectionFactory = null;
+    final HandlerCollection handlers = new HandlerCollection();
 
-    // Specific configuration for secure/insecure connectors
-    if (!configuration.isSecure())
+    final ServletContextHandler admin = new ServletContextHandler();
+    admin.setContextPath("/admin");
+    admin.addServlet(AdminServlet.class, "/*");
+    handlers.addHandler(admin);
+
+    final ServletContextHandler root = new ServletContextHandler();
+    root.addEventListener(new GuiceServletContextListener()
     {
-      // TODO httpConfig.setSecurePort();
-      httpConfig.setSecureScheme(HttpScheme.HTTPS.asString());
-    }
-    else
-    {
-      sslConnectionFactory = new SslConnectionFactory(sslFactory, HttpVersion.HTTP_1_1.asString());
-      httpConfig.addCustomizer(new SecureRequestCustomizer());
-    }
-    final HttpConnectionFactory httpFactory = createConnectionFactory(configuration, httpConfig);
-    final ServerConnector connector = new ServerConnector(this.server, sslConnectionFactory, httpFactory);
-    // Common configuration
-    connector.setName(configuration.getName());
-    connector.setPort(configuration.getPort());
-    connector.setHost(configuration.getHost());
-    connector.setIdleTimeout(configuration.getIdleTimeout());
-    connector.setAcceptQueueSize(configuration.getAcceptQueueSize());
-    connector.setReuseAddress(configuration.getReuseAddress());
-    connector.setSoLingerTime(configuration.getSoLingerTime());
+      @Override
+      protected Injector getInjector()
+      {
+        return JettyServer.this.injector;
+      }
+    });
+    root.addFilter(GuiceFilter.class, "/*", null);
+    root.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+    root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+    root.addServlet(DefaultServlet.class, "/");
+    handlers.addHandler(root);
 
-    LOGGER.debug("Connector listening on port {}", configuration.getPort());
-    return connector;
-  }
-
-  private HttpConfiguration createHttpConfiguration(final ConnectorConfiguration configuration)
-  {
-    final HttpConfiguration httpConfig = new HttpConfiguration();
-    // TODO configuration parameters
-    return httpConfig;
-  }
-
-  private HttpConnectionFactory createConnectionFactory(final ConnectorConfiguration configuration, final HttpConfiguration httpConfig)
-  {
-    final HttpConnectionFactory httpFactory = new HttpConnectionFactory(httpConfig);
-    httpFactory.setInputBufferSize(configuration.getInputBufferSize());
-    return httpFactory;
-  }
-
-  /**
-   * Create a thread pool.
-   * @return The thread pool
-   */
-  private ThreadPool createThreadPool()
-  {
-    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool(WealdMetrics.defaultRegistry());
-
-    final ThreadPoolConfiguration threadPoolConfiguration = this.configuration.getThreadPoolConfiguration();
-
-    pool.setMinThreads(threadPoolConfiguration.getMinThreads());
-    pool.setIdleTimeout(threadPoolConfiguration.getMaxIdleTimeMs());
-//    pool.setMaxIdleTimeMs(threadPoolConfiguration.getMaxIdleTimeMs());
-    return pool;
+    return handlers;
   }
 
 

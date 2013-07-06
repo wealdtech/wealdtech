@@ -18,7 +18,7 @@ package com.wealdtech.jersey.exceptions;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.inject.Inject;
-import com.wealdtech.jetty.JettyServerConfiguration;
+import com.wealdtech.jetty.config.JettyServerConfiguration;
 
 /**
  * Exception for requests which the server cannot handle for now.

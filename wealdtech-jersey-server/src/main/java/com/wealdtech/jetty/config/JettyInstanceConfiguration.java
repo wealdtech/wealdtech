@@ -1,0 +1,88 @@
+/*
+ *    Copyright 2013 Weald Technology Trading Limited
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+package com.wealdtech.jetty.config;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.Inject;
+import com.wealdtech.configuration.Configuration;
+import com.wealdtech.jersey.JerseyServerConfiguration;
+
+/**
+ * Configuration for a Jetty instance.
+ * <p>
+ * A Jetty instance consists of a number of connectors which share a common threadpool
+ * and serve a common set of resources.
+ */
+public final class JettyInstanceConfiguration implements Configuration
+{
+  private String name = "server";
+  private JettyThreadPoolConfiguration threadPoolConfiguration = new JettyThreadPoolConfiguration();
+  private final JettySslConfiguration sslConfiguration = new JettySslConfiguration();
+  private ImmutableList<JettyConnectorConfiguration> connectorConfigurations = ImmutableList.of(new JettyConnectorConfiguration());
+  private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
+  private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
+
+  @Inject
+  public JettyInstanceConfiguration()
+  {
+    // 0-configuration injection
+  }
+
+  @JsonCreator
+  private JettyInstanceConfiguration(@JsonProperty("name") final String name,
+                                     @JsonProperty("threadpool") final JettyThreadPoolConfiguration threadPoolConfiguration,
+                                     @JsonProperty("connectors") final List<JettyConnectorConfiguration> connectorConfigurations,
+                                     @JsonProperty("ssl") final JettySslConfiguration sslConfiguration,
+                                     @JsonProperty("response") final JettyResponseConfiguration responseConfiguration)
+  {
+    this.name = Objects.firstNonNull(name, this.name);
+    this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
+    this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
+    this.jerseyConfiguration = Objects.firstNonNull(this.jerseyConfiguration, this.jerseyConfiguration);
+    this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
+  }
+
+  public String getName()
+  {
+    return this.name;
+  }
+
+  public JettyThreadPoolConfiguration getThreadPoolConfiguration()
+  {
+    return this.threadPoolConfiguration;
+  }
+
+  public ImmutableList<JettyConnectorConfiguration> getConnectorConfigurations()
+  {
+    return this.connectorConfigurations;
+  }
+
+  public JettySslConfiguration getSslConfiguration()
+  {
+    return this.sslConfiguration;
+  }
+
+  public JettyResponseConfiguration getResponseConfiguration()
+  {
+    return this.responseConfiguration;
+  }
+}

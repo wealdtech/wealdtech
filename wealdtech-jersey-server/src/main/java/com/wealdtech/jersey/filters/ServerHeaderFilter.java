@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
-import com.wealdtech.jetty.JettyServerConfiguration;
+import com.wealdtech.jetty.config.JettyServerConfiguration;
 
 /**
  * Filter to add a 'Server' header to outgoing responses.
