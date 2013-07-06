@@ -18,6 +18,9 @@ package com.wealdtech.jetty;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
@@ -31,6 +34,8 @@ import com.wealdtech.jersey.JerseyServerConfiguration;
  */
 public final class JettyServerConfiguration implements Configuration
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(JettyServerConfiguration.class);
+
   private final String host = "localhost";
   private final SslConfiguration sslConfiguration = new SslConfiguration();
   private ImmutableList<ConnectorConfiguration> connectorConfigurations = ImmutableList.of(new ConnectorConfiguration());
@@ -160,10 +165,10 @@ public final class JettyServerConfiguration implements Configuration
 
   public static class ConnectorConfiguration implements Configuration
   {
-    private String name;
-    private String host;
+    private String name = "Server";
+    private String host = "localhost";
     private int port = 8080;
-    private boolean secure = false;
+    private Class<? extends JettyConnector> type = JettyHttpConnector.class;
     private int acceptqueuesize = -1;
     private long idletimeout = 50000;
     private boolean reuseaddress = false;
@@ -179,7 +184,7 @@ public final class JettyServerConfiguration implements Configuration
     private ConnectorConfiguration(@JsonProperty("name") final String name,
                                    @JsonProperty("host") final String host,
                                    @JsonProperty("port") final Integer port,
-                                   @JsonProperty("secure") final Boolean secure,
+                                   @JsonProperty("type") final String type,
                                    @JsonProperty("acceptqueuesize") final Integer acceptqueuesize,
                                    @JsonProperty("idletimeout") final Long idletimeout,
                                    @JsonProperty("reuseaddress") final Boolean reuseaddress,
@@ -189,12 +194,36 @@ public final class JettyServerConfiguration implements Configuration
       this.name = Objects.firstNonNull(name, this.name);
       this.host = Objects.firstNonNull(host, this.host);
       this.port = Objects.firstNonNull(port, this.port);
-      this.secure = Objects.firstNonNull(secure, this.secure);
+      this.type = Objects.firstNonNull(classFromType(type), this.type);
       this.acceptqueuesize = Objects.firstNonNull(acceptqueuesize, this.acceptqueuesize);
       this.idletimeout = Objects.firstNonNull(idletimeout, this.idletimeout);
       this.reuseaddress = Objects.firstNonNull(reuseaddress, this.reuseaddress);
       this.solingertime = Objects.firstNonNull(solingertime, this.solingertime);
       this.inputbuffersize = Objects.firstNonNull(inputbuffersize, this.inputbuffersize);
+    }
+
+    /**
+     * Obtain a Jetty connector given a type name
+     */
+    private Class<? extends JettyConnector> classFromType(final String type)
+    {
+      Class<? extends JettyConnector> klazz = null;
+      if (type != null)
+      {
+        switch (type.toLowerCase())
+        {
+          case "http":
+            klazz = JettyHttpConnector.class;
+            break;
+          case "https":
+            klazz =  JettyHttpsConnector.class;
+            break;
+          default:
+            LOGGER.error("Unknown connector type \"{}\"", type);
+            break;
+        }
+      }
+      return klazz;
     }
 
     public String getName()
@@ -212,9 +241,9 @@ public final class JettyServerConfiguration implements Configuration
       return this.port;
     }
 
-    public boolean isSecure()
+    public Class<? extends JettyConnector> getType()
     {
-      return this.secure;
+      return this.type;
     }
 
     public int getAcceptQueueSize()

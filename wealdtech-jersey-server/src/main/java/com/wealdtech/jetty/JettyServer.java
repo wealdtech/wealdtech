@@ -144,23 +144,23 @@ public class JettyServer
    */
   public SslContextFactory createSslContextFactory(final SslConfiguration configuration)
   {
-    final SslContextFactory sslContextFactory = new SslContextFactory();
-    sslContextFactory.setKeyStorePath(configuration.getKeyStorePath());
-    sslContextFactory.setKeyStorePassword(configuration.getKeyStorePassword());
-    sslContextFactory.setKeyManagerPassword(configuration.getKeyManagerPassword());
-    return sslContextFactory;
+    final SslContextFactory sslFactory = new SslContextFactory();
+    sslFactory.setKeyStorePath(configuration.getKeyStorePath());
+    sslFactory.setKeyStorePassword(configuration.getKeyStorePassword());
+    sslFactory.setKeyManagerPassword(configuration.getKeyManagerPassword());
+    return sslFactory;
   }
 
   /**
    * Create the connectors for a server
    */
-  private Connector[] createConnectors(final ImmutableList<ConnectorConfiguration> configurations, final SslContextFactory sslContextFactory)
+  private Connector[] createConnectors(final ImmutableList<ConnectorConfiguration> configurations, final SslContextFactory sslFactory)
   {
     List<Connector> connectors = Lists.newArrayList();
 
     for (final ConnectorConfiguration configuration : configurations)
     {
-      connectors.add(createConnector(configuration, sslContextFactory));
+      connectors.add(createConnector(configuration, sslFactory));
     }
     return connectors.toArray(new Connector[0]);
   }
@@ -168,8 +168,10 @@ public class JettyServer
   /**
    * Create a connector for a server
    */
-  private Connector createConnector(final ConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
+  private Connector createConnector(final ConnectorConfiguration configuration, final SslContextFactory sslFactory)
   {
+    // Fetch the connector
+    Class<? extends JettyConnector> connectorClass = configuration.getType();
     final HttpConfiguration httpConfig = createHttpConfiguration(configuration);
     SslConnectionFactory sslConnectionFactory = null;
 
@@ -181,12 +183,11 @@ public class JettyServer
     }
     else
     {
-      sslConnectionFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+      sslConnectionFactory = new SslConnectionFactory(sslFactory, HttpVersion.HTTP_1_1.asString());
       httpConfig.addCustomizer(new SecureRequestCustomizer());
     }
-    final HttpConnectionFactory httpConnectionFactory = createConnectionFactory(configuration, httpConfig);
-    final ServerConnector connector = new ServerConnector(this.server, sslConnectionFactory, httpConnectionFactory);
-
+    final HttpConnectionFactory httpFactory = createConnectionFactory(configuration, httpConfig);
+    final ServerConnector connector = new ServerConnector(this.server, sslConnectionFactory, httpFactory);
     // Common configuration
     connector.setName(configuration.getName());
     connector.setPort(configuration.getPort());
@@ -209,9 +210,9 @@ public class JettyServer
 
   private HttpConnectionFactory createConnectionFactory(final ConnectorConfiguration configuration, final HttpConfiguration httpConfig)
   {
-    final HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfig);
-    httpConnectionFactory.setInputBufferSize(configuration.getInputBufferSize());
-    return httpConnectionFactory;
+    final HttpConnectionFactory httpFactory = new HttpConnectionFactory(httpConfig);
+    httpFactory.setInputBufferSize(configuration.getInputBufferSize());
+    return httpFactory;
   }
 
   /**

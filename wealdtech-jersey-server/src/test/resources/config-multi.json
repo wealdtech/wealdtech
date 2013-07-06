@@ -8,9 +8,11 @@
 	"connectors":
 	[
 		{
+			"name": "insecure",
 			"port":	8080
 		},
 		{
+			"name": "secure",
 			"port":	8443,
 			"secure": true
 		}
