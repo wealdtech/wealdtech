@@ -39,8 +39,8 @@ public final class JettySslConfiguration implements Configuration
 
   @JsonCreator
   private JettySslConfiguration(@JsonProperty("keystorepath") final String keystorepath,
-                               @JsonProperty("keystorepassword") final String keystorepasswd,
-                               @JsonProperty("keymanagerpassword") final String keymanagerpasswd)
+                                @JsonProperty("keystorepassword") final String keystorepasswd,
+                                @JsonProperty("keymanagerpassword") final String keymanagerpasswd)
   {
     this.keystorepath = Objects.firstNonNull(keystorepath, this.keystorepath);
     this.keystorepasswd = Objects.firstNonNull(keystorepasswd, this.keystorepasswd);

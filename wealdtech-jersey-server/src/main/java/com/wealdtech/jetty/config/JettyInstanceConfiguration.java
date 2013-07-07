@@ -36,7 +36,7 @@ public final class JettyInstanceConfiguration implements Configuration
 {
   private String name = "server";
   private JettyThreadPoolConfiguration threadPoolConfiguration = new JettyThreadPoolConfiguration();
-  private final JettySslConfiguration sslConfiguration = new JettySslConfiguration();
+  private JettySslConfiguration sslConfiguration = new JettySslConfiguration();
   private ImmutableList<JettyConnectorConfiguration> connectorConfigurations = ImmutableList.of(new JettyConnectorConfiguration());
   private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
@@ -56,9 +56,10 @@ public final class JettyInstanceConfiguration implements Configuration
   {
     this.name = Objects.firstNonNull(name, this.name);
     this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
+    this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
+    this.sslConfiguration = Objects.firstNonNull(sslConfiguration, this.sslConfiguration);
     this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.jerseyConfiguration = Objects.firstNonNull(this.jerseyConfiguration, this.jerseyConfiguration);
-    this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
   }
 
   public String getName()

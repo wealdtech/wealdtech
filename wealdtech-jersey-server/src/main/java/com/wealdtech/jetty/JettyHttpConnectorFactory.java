@@ -41,10 +41,9 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
     final ConnectionFactory instrumentedConnectionFactory = new InstrumentedConnectionFactory(httpConnectionFactory, WealdMetrics.defaultRegistry().timer(timerName));
     // And create the connection itself
     return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, instrumentedConnectionFactory);
-//    return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, new HttpConnectionFactory(httpConfig));
   }
 
-  private HttpConfiguration buildHttpConfiguration()
+  protected HttpConfiguration buildHttpConfiguration()
   {
     final HttpConfiguration httpConfig = new HttpConfiguration();
     // FIXME configuration variables
@@ -83,7 +82,7 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
     return connector;
   }
 
-  final ByteBufferPool buildBufferPool(final JettyConnectorConfiguration configuration)
+  protected ByteBufferPool buildBufferPool(final JettyConnectorConfiguration configuration)
   {
     // FIXME configuration variables
     return new ArrayByteBufferPool(1024, 4096, 1048576);
