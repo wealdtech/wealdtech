@@ -30,6 +30,7 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +73,12 @@ public class JettyServer
 
     // Create the server and set up the instances
     this.server = new Server();
+    final List<Connector> connectors = Lists.newArrayList();
     for (final JettyInstanceConfiguration instanceConfiguration : configuration.getInstanceConfigurations())
     {
-      configureInstance(this.server, instanceConfiguration);
+      connectors.addAll(configureInstance(this.server, instanceConfiguration));
     }
+    this.server.setConnectors(connectors.toArray(new Connector[0]));
 
     // Add the handlers
     this.server.setHandler(createHandlers());
@@ -115,15 +118,17 @@ public class JettyServer
     }
   }
 
-  private void configureInstance(final Server server, final JettyInstanceConfiguration configuration)
+  private List<Connector> configureInstance(final Server server, final JettyInstanceConfiguration configuration)
   {
-    // We have a single SSL context factory for each instance
+    // We have a single SSL context factory and thread pool for each instance
     final SslContextFactory sslContextFactory = JettySslContextFactoryFactory.build(configuration.getSslConfiguration());
+    final ThreadPool threadPool = JettyThreadPoolFactory.build(configuration.getThreadPoolConfiguration());
 
     // Create each connector
     final List<Connector> connectors = Lists.newArrayList();
     for (final JettyConnectorConfiguration connectorConfiguration : configuration.getConnectorConfigurations())
     {
+      LOGGER.debug("Creating connector {}:{} for instance \"{}\"", connectorConfiguration.getBindHost(), connectorConfiguration.getPort(), configuration.getName());
       JettyConnectorFactory factory;
       try
       {
@@ -135,9 +140,9 @@ public class JettyServer
       {
         throw new DataError.Bad("Failed to set up connector type \"" + connectorConfiguration.getType() + "\"");
       }
-      connectors.add(factory.build(connectorConfiguration, sslContextFactory));
+      connectors.add(factory.build(server, threadPool, configuration.getName(), connectorConfiguration, sslContextFactory));
     }
-    server.setConnectors(connectors.toArray(new Connector[0]));
+    return connectors;
   }
 
   /**

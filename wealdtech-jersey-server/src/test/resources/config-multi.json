@@ -2,10 +2,10 @@
 	"instances":
 	[
 		{
-			"name":	"server",
+			"name":	"main",
 			"threadpool":
 			{
-			}
+			},
 			"ssl":
 			{
 				"keystorepath":			"keystore",
@@ -15,29 +15,31 @@
 			"connectors":
 			[
 				{
-					"name": "insecure",
-					"bindhost": "0.0.0.0"
+					"type": "http",
+					"bindhost": "0.0.0.0",
 					"port":	8080
 				},
 				{
-					"name": "secure",
-					"bindhost": "0.0.0.0"
-					"port":	8443,
-					"secure": true
+					"type": "http",
+					"bindhost": "0.0.0.0",
+					"port":	8443
 				}
-			]
+			],
+			"response":
+			{
+			}
 		},
 		{
 			"name": "admin",
 			"threadpool":
 			{
-			}
+			},
 			"connectors":
 			[
 				{
-					"name": "insecure",
-					"bindhost": "0.0.0.0"
-					"port":	8111
+					"type": "http",
+					"bindhost": "127.0.0.1",
+					"port":	8081
 				}
 			]
 		}

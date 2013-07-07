@@ -3,16 +3,21 @@ package com.wealdtech.jetty;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
-import com.wealdtech.jetty.config.JettyServerConfiguration.ConnectorConfiguration;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.jetty9.InstrumentedConnectionFactory;
+import com.wealdtech.jetty.config.JettyConnectorConfiguration;
+import com.wealdtech.utils.WealdMetrics;
 
 public class JettyHttpConnectorFactory implements JettyConnectorFactory
 {
@@ -21,56 +26,69 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
   }
 
   @Override
-  public Connector build(final Server server, final ThreadPool threadPool, final ConnectorConfiguration configuration)
+  public Connector build(final Server server, final ThreadPool threadPool, final String name, final JettyConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
   {
     // Start off building the HTTP connection
     final HttpConfiguration httpConfig = buildHttpConfiguration();
     final HttpConnectionFactory httpConnectionFactory = buildHttpConnectionFactory(httpConfig);
 
+    // Add scheduler and buffer pool
     final Scheduler scheduler = new ScheduledExecutorScheduler();
+    final ByteBufferPool bufferPool = buildBufferPool(configuration);
 
-    final ByteBufferPool bufferPool = buildBufferPool();
-
-    return buildConnector(server, scheduler, bufferPool, configuration.getName(), threadPool, null, httpConnectionFactory);
+    // Instrument the connections
+    final String timerName = MetricRegistry.name(HttpConnectionFactory.class, configuration.getBindHost(), Integer.toString(configuration.getPort()), "connections");
+    final ConnectionFactory instrumentedConnectionFactory = new InstrumentedConnectionFactory(httpConnectionFactory, WealdMetrics.defaultRegistry().timer(timerName));
+    // And create the connection itself
+    return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, instrumentedConnectionFactory);
+//    return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, new HttpConnectionFactory(httpConfig));
   }
 
   private HttpConfiguration buildHttpConfiguration()
   {
     final HttpConfiguration httpConfig = new HttpConfiguration();
-    httpConfig.setHeaderCacheSize(headerCacheSize);
-    httpConfig.setOutputBufferSize(outputBufferSize);
-    httpConfig.setRequestHeaderSize(maxRequestHeaderSize);
-    httpConfig.setResponseHeaderSize(maxResponseHeaderSize);
-    httpConfig.setSendDateHeader(useDateHeader);
-    httpConfig.setSendServerVersion(useServerHeader);
-    if (useForwardedHeaders)
-    {
-      httpConfig.addCustomizer(new ForwardedRequestCustomizer());
-    }
-    return httpConfig;
+    // FIXME configuration variables
+//    httpConfig.setHeaderCacheSize(headerCacheSize);
+//    httpConfig.setOutputBufferSize(outputBufferSize);
+//    httpConfig.setRequestHeaderSize(maxRequestHeaderSize);
+//    httpConfig.setResponseHeaderSize(maxResponseHeaderSize);
+//    httpConfig.setSendDateHeader(useDateHeader);
+//    httpConfig.setSendServerVersion(useServerHeader);
+//    if (useForwardedHeaders)
+//    {
+//      httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+//    }
     httpConfig.setSecureScheme(HttpScheme.HTTPS.asString());
+    return httpConfig;
   }
 
-  private HttpConnectionFactory buildHttpConnectionFactory(final HttpConfiguration httpConfig)
+  protected HttpConnectionFactory buildHttpConnectionFactory(final HttpConfiguration httpConfig)
   {
-    return null;
+    // FIXME configuration
+    return new HttpConnectionFactory(httpConfig);
   }
 
-  final ByteBufferPool buildBufferPool(final ConnectorConfiguration configuration)
+  protected Connector buildConnector(final Server server, final ThreadPool threadPool, final Scheduler scheduler, final ByteBufferPool bufferPool, final String name, final JettyConnectorConfiguration configuration, final ConnectionFactory... connectionFactories)
   {
-      return new ArrayByteBufferPool(minBufferPoolSize, bufferPoolIncrement, maxBufferPoolSize);
-  }
+    // FIXME configuration parameters
+    final ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, 0, 0, connectionFactories);
 
-  final ServerConnector connector = new ServerConnector(server, sslConnectionFactory, httpFactory);
-    // Common configuration
-    connector.setName(this.configuration.getName());
-    connector.setPort(this.configuration.getPort());
-    connector.setHost(this.configuration.getHost());
-    connector.setIdleTimeout(this.configuration.getIdleTimeout());
-    connector.setAcceptQueueSize(this.configuration.getAcceptQueueSize());
-    connector.setReuseAddress(this.configuration.getReuseAddress());
-    connector.setSoLingerTime(this.configuration.getSoLingerTime());
+    connector.setName(name);
+    connector.setPort(configuration.getPort());
+    connector.setHost(configuration.getBindHost());
+    connector.setIdleTimeout(configuration.getIdleTimeout());
+    connector.setAcceptQueueSize(configuration.getAcceptQueueSize());
+    connector.setReuseAddress(configuration.getReuseAddress());
+    connector.setSoLingerTime(configuration.getSoLingerTime());
     return connector;
   }
+
+  final ByteBufferPool buildBufferPool(final JettyConnectorConfiguration configuration)
+  {
+    // FIXME configuration variables
+    return new ArrayByteBufferPool(1024, 4096, 1048576);
+//      return new ArrayByteBufferPool(minBufferPoolSize, bufferPoolIncrement, maxBufferPoolSize);
+  }
+
 
 }

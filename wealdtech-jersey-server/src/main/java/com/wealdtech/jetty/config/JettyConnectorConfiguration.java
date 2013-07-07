@@ -110,7 +110,7 @@ public final class JettyConnectorConfiguration implements Configuration
   }
 
   /**
-   * Obtain a Jetty connector given a type name
+   * Obtain a Jetty connector given a type name.
    */
   private Class<? extends JettyConnectorFactory> classFromType(final String type)
   {
