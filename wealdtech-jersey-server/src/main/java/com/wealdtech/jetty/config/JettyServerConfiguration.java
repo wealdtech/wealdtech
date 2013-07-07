@@ -34,6 +34,7 @@ import com.wealdtech.configuration.Configuration;
  */
 public final class JettyServerConfiguration implements Configuration
 {
+  private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private ImmutableList<JettyInstanceConfiguration> instanceConfigurations = ImmutableList.of(new JettyInstanceConfiguration());
 
   @Inject
@@ -43,9 +44,16 @@ public final class JettyServerConfiguration implements Configuration
   }
 
   @JsonCreator
-  private JettyServerConfiguration(@JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations)
+  private JettyServerConfiguration(@JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
+                                   @JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations)
   {
+    this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.instanceConfigurations = ImmutableList.copyOf(Objects.firstNonNull(instanceConfigurations, this.instanceConfigurations));
+  }
+
+  public JettyResponseConfiguration getResponseConfiguration()
+  {
+    return this.responseConfiguration;
   }
 
   public ImmutableList<JettyInstanceConfiguration> getInstanceConfigurations()

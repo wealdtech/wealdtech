@@ -4,7 +4,6 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -26,7 +25,7 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
   }
 
   @Override
-  public Connector build(final Server server, final ThreadPool threadPool, final String name, final JettyConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
+  public ServerConnector build(final Server server, final ThreadPool threadPool, final String name, final JettyConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
   {
     // Start off building the HTTP connection
     final HttpConfiguration httpConfig = buildHttpConfiguration();
@@ -67,11 +66,16 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
     return new HttpConnectionFactory(httpConfig);
   }
 
-  protected Connector buildConnector(final Server server, final ThreadPool threadPool, final Scheduler scheduler, final ByteBufferPool bufferPool, final String name, final JettyConnectorConfiguration configuration, final ConnectionFactory... connectionFactories)
+  protected ServerConnector buildConnector(final Server server, final ThreadPool threadPool, final Scheduler scheduler, final ByteBufferPool bufferPool, final String name, final JettyConnectorConfiguration configuration, final ConnectionFactory... connectionFactories)
   {
     // FIXME configuration parameters
     final ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, 0, 0, connectionFactories);
+    setConnectorProperties(connector, name, configuration);
+    return connector;
+  }
 
+  protected void setConnectorProperties(final ServerConnector connector, final String name, final JettyConnectorConfiguration configuration)
+  {
     connector.setName(name);
     connector.setPort(configuration.getPort());
     connector.setHost(configuration.getBindHost());
@@ -79,7 +83,6 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
     connector.setAcceptQueueSize(configuration.getAcceptQueueSize());
     connector.setReuseAddress(configuration.getReuseAddress());
     connector.setSoLingerTime(configuration.getSoLingerTime());
-    return connector;
   }
 
   protected ByteBufferPool buildBufferPool(final JettyConnectorConfiguration configuration)

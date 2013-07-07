@@ -3,11 +3,11 @@ package com.wealdtech.jetty;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -22,7 +22,7 @@ import com.wealdtech.utils.WealdMetrics;
 public class JettyHttpsConnectorFactory extends JettyHttpConnectorFactory
 {
   @Override
-  public Connector build(final Server server, final ThreadPool threadPool, final String name, final JettyConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
+  public ServerConnector build(final Server server, final ThreadPool threadPool, final String name, final JettyConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
   {
     // Start off building the HTTP connection
     final HttpConfiguration httpConfig = buildHttpConfiguration();
@@ -43,10 +43,10 @@ public class JettyHttpsConnectorFactory extends JettyHttpConnectorFactory
   }
 
   @Override
-  protected Connector buildConnector(final Server server, final ThreadPool threadPool, final Scheduler scheduler, final ByteBufferPool bufferPool, final String name, final JettyConnectorConfiguration configuration, final ConnectionFactory... connectionFactories)
+  protected ServerConnector buildConnector(final Server server, final ThreadPool threadPool, final Scheduler scheduler, final ByteBufferPool bufferPool, final String name, final JettyConnectorConfiguration configuration, final ConnectionFactory... connectionFactories)
   {
-    final Connector connector = super.buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, connectionFactories);
-
+    final ServerConnector connector = super.buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, connectionFactories);
+    super.setConnectorProperties(connector, name, configuration);
     return connector;
   }
 

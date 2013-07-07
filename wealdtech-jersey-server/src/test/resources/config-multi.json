@@ -1,4 +1,7 @@
 {
+	"response":
+	{
+	},
 	"instances":
 	[
 		{
@@ -24,10 +27,7 @@
 					"bindhost": "0.0.0.0",
 					"port":	8443
 				}
-			],
-			"response":
-			{
-			}
+			]
 		},
 		{
 			"name": "admin",

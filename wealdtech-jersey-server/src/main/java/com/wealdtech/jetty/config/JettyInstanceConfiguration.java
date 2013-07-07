@@ -38,7 +38,6 @@ public final class JettyInstanceConfiguration implements Configuration
   private JettyThreadPoolConfiguration threadPoolConfiguration = new JettyThreadPoolConfiguration();
   private JettySslConfiguration sslConfiguration = new JettySslConfiguration();
   private ImmutableList<JettyConnectorConfiguration> connectorConfigurations = ImmutableList.of(new JettyConnectorConfiguration());
-  private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
 
   @Inject
@@ -51,14 +50,12 @@ public final class JettyInstanceConfiguration implements Configuration
   private JettyInstanceConfiguration(@JsonProperty("name") final String name,
                                      @JsonProperty("threadpool") final JettyThreadPoolConfiguration threadPoolConfiguration,
                                      @JsonProperty("connectors") final List<JettyConnectorConfiguration> connectorConfigurations,
-                                     @JsonProperty("ssl") final JettySslConfiguration sslConfiguration,
-                                     @JsonProperty("response") final JettyResponseConfiguration responseConfiguration)
+                                     @JsonProperty("ssl") final JettySslConfiguration sslConfiguration)
   {
     this.name = Objects.firstNonNull(name, this.name);
     this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
     this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
     this.sslConfiguration = Objects.firstNonNull(sslConfiguration, this.sslConfiguration);
-    this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.jerseyConfiguration = Objects.firstNonNull(this.jerseyConfiguration, this.jerseyConfiguration);
   }
 
@@ -80,10 +77,5 @@ public final class JettyInstanceConfiguration implements Configuration
   public JettySslConfiguration getSslConfiguration()
   {
     return this.sslConfiguration;
-  }
-
-  public JettyResponseConfiguration getResponseConfiguration()
-  {
-    return this.responseConfiguration;
   }
 }
