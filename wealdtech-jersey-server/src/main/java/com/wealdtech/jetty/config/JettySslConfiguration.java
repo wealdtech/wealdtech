@@ -16,10 +16,16 @@
 
 package com.wealdtech.jetty.config;
 
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.wealdtech.configuration.Configuration;
+import com.wealdtech.utils.ResourceLoader;
 
 /**
  * Configuration for Jetty SSL.
@@ -28,6 +34,8 @@ import com.wealdtech.configuration.Configuration;
  */
 public final class JettySslConfiguration implements Configuration
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(JettySslConfiguration.class);
+
   private String keystorepath = "/etc/keystore";
   private String keystorepasswd = "password";
   private String keymanagerpasswd = "password";
@@ -42,9 +50,25 @@ public final class JettySslConfiguration implements Configuration
                                 @JsonProperty("keystorepassword") final String keystorepasswd,
                                 @JsonProperty("keymanagerpassword") final String keymanagerpasswd)
   {
-    this.keystorepath = Objects.firstNonNull(keystorepath, this.keystorepath);
+    this.keystorepath = resolvePath(Objects.firstNonNull(keystorepath, this.keystorepath));
     this.keystorepasswd = Objects.firstNonNull(keystorepasswd, this.keystorepasswd);
     this.keymanagerpasswd = Objects.firstNonNull(keymanagerpasswd, this.keymanagerpasswd);
+  }
+
+  private String resolvePath(final String input)
+  {
+    String result = input;
+    if (!input.startsWith("/"))
+    {
+      // This is a relative path so look for the file in our resources are
+      final URL resourceUrl = ResourceLoader.getResource(input);
+      if (resourceUrl != null)
+      {
+        result = resourceUrl.getPath();
+      }
+    }
+    LOGGER.debug("Resolved path from \"{}\" to \"{}\"", input, result);
+    return result;
   }
 
   public String getKeyStorePath()
