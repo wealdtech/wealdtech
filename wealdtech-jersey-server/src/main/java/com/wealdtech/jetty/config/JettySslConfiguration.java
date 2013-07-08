@@ -36,9 +36,13 @@ public final class JettySslConfiguration implements Configuration
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(JettySslConfiguration.class);
 
-  private String keystorepath = "/etc/keystore";
-  private String keystorepasswd = "password";
-  private String keymanagerpasswd = "password";
+  private String keyStorePath = "/etc/keystore";
+  private String keyStorePasswd = "password";
+  private String keyManagerPasswd = "password";
+  private boolean renegotiationAllowed = true;
+  private boolean sessionCachingEnabled = true;
+  private int sessionCacheSize = 1024;
+  private int sessionTimeout = 120;
 
   public JettySslConfiguration()
   {
@@ -46,13 +50,21 @@ public final class JettySslConfiguration implements Configuration
   }
 
   @JsonCreator
-  private JettySslConfiguration(@JsonProperty("keystorepath") final String keystorepath,
-                                @JsonProperty("keystorepassword") final String keystorepasswd,
-                                @JsonProperty("keymanagerpassword") final String keymanagerpasswd)
+  private JettySslConfiguration(@JsonProperty("keystorepath") final String keyStorePath,
+                                @JsonProperty("keystorepassword") final String keyStorePasswd,
+                                @JsonProperty("keymanagerpassword") final String keyManagerPasswd,
+                                @JsonProperty("renegotiationallowed") final Boolean renegotiationAllowed,
+                                @JsonProperty("sessioncachingenabled") final Boolean sessionCachingEnabled,
+                                @JsonProperty("sessioncachesize") final Integer sessionCacheSize,
+                                @JsonProperty("sessiontimeout") final Integer sessionTimeout)
   {
-    this.keystorepath = resolvePath(Objects.firstNonNull(keystorepath, this.keystorepath));
-    this.keystorepasswd = Objects.firstNonNull(keystorepasswd, this.keystorepasswd);
-    this.keymanagerpasswd = Objects.firstNonNull(keymanagerpasswd, this.keymanagerpasswd);
+    this.keyStorePath = resolvePath(Objects.firstNonNull(keyStorePath, this.keyStorePath));
+    this.keyStorePasswd = Objects.firstNonNull(keyStorePasswd, this.keyStorePasswd);
+    this.keyManagerPasswd = Objects.firstNonNull(keyManagerPasswd, this.keyManagerPasswd);
+    this.renegotiationAllowed = Objects.firstNonNull(renegotiationAllowed, this.renegotiationAllowed);
+    this.sessionCachingEnabled = Objects.firstNonNull(sessionCachingEnabled, this.sessionCachingEnabled);
+    this.sessionCacheSize = Objects.firstNonNull(sessionCacheSize, this.sessionCacheSize);
+    this.sessionTimeout = Objects.firstNonNull(sessionTimeout, this.sessionTimeout);
   }
 
   private String resolvePath(final String input)
@@ -73,16 +85,36 @@ public final class JettySslConfiguration implements Configuration
 
   public String getKeyStorePath()
   {
-    return this.keystorepath;
+    return this.keyStorePath;
   }
 
   public String getKeyStorePassword()
   {
-    return this.keystorepasswd;
+    return this.keyStorePasswd;
   }
 
   public String getKeyManagerPassword()
   {
-    return this.keymanagerpasswd;
+    return this.keyManagerPasswd;
+  }
+
+  public boolean isRenegotiationAllowed()
+  {
+    return this.renegotiationAllowed;
+  }
+
+  public boolean isSessionCachingEnabled()
+  {
+    return this.sessionCachingEnabled;
+  }
+
+  public int getSessionCacheSize()
+  {
+    return this.sessionCacheSize;
+  }
+
+  public int getSessionTimeout()
+  {
+    return this.sessionTimeout;
   }
 }

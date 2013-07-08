@@ -1,9 +1,26 @@
+/*
+ *    Copyright 2013 Weald Technology Trading Limited
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package com.wealdtech.jetty;
 
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -18,6 +35,11 @@ import com.codahale.metrics.jetty9.InstrumentedConnectionFactory;
 import com.wealdtech.jetty.config.JettyConnectorConfiguration;
 import com.wealdtech.utils.WealdMetrics;
 
+/**
+ * A Jetty connector factory using the HTTP protocol.
+ *
+ * @see ServerConnector
+ */
 public class JettyHttpConnectorFactory implements JettyConnectorFactory
 {
   public JettyHttpConnectorFactory()
@@ -28,8 +50,8 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
   public ServerConnector build(final Server server, final ThreadPool threadPool, final String name, final JettyConnectorConfiguration configuration, final SslContextFactory sslContextFactory)
   {
     // Start off building the HTTP connection
-    final HttpConfiguration httpConfig = buildHttpConfiguration();
-    final HttpConnectionFactory httpConnectionFactory = buildHttpConnectionFactory(httpConfig);
+    final HttpConfiguration httpConfig = buildHttpConfiguration(configuration);
+    final HttpConnectionFactory httpConnectionFactory = buildHttpConnectionFactory(httpConfig, configuration);
 
     // Add scheduler and buffer pool
     final Scheduler scheduler = new ScheduledExecutorScheduler();
@@ -42,34 +64,33 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
     return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, instrumentedConnectionFactory);
   }
 
-  protected HttpConfiguration buildHttpConfiguration()
+  protected HttpConfiguration buildHttpConfiguration(final JettyConnectorConfiguration configuration)
   {
     final HttpConfiguration httpConfig = new HttpConfiguration();
-    // FIXME configuration variables
-//    httpConfig.setHeaderCacheSize(headerCacheSize);
-//    httpConfig.setOutputBufferSize(outputBufferSize);
-//    httpConfig.setRequestHeaderSize(maxRequestHeaderSize);
-//    httpConfig.setResponseHeaderSize(maxResponseHeaderSize);
-//    httpConfig.setSendDateHeader(useDateHeader);
-//    httpConfig.setSendServerVersion(useServerHeader);
-//    if (useForwardedHeaders)
-//    {
-//      httpConfig.addCustomizer(new ForwardedRequestCustomizer());
-//    }
+    httpConfig.setHeaderCacheSize(configuration.getHeaderCacheSize());
+    httpConfig.setOutputBufferSize(configuration.getOutputBufferSize());
+    httpConfig.setRequestHeaderSize(configuration.getRequestHeaderSize());
+    httpConfig.setResponseHeaderSize(configuration.getResponseHeaderSize());
+    httpConfig.setSendDateHeader(configuration.getSendDateHeader());
+    httpConfig.setSendServerVersion(configuration.getSendServerVersion());
+    if (configuration.useForwardedHeaders())
+    {
+      httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+    }
     httpConfig.setSecureScheme(HttpScheme.HTTPS.asString());
     return httpConfig;
   }
 
-  protected HttpConnectionFactory buildHttpConnectionFactory(final HttpConfiguration httpConfig)
+  protected HttpConnectionFactory buildHttpConnectionFactory(final HttpConfiguration httpConfig, final JettyConnectorConfiguration configuration)
   {
-    // FIXME configuration
-    return new HttpConnectionFactory(httpConfig);
+    final HttpConnectionFactory factory = new HttpConnectionFactory(httpConfig);
+    factory.setInputBufferSize(configuration.getInputBufferSize());
+    return factory;
   }
 
   protected ServerConnector buildConnector(final Server server, final ThreadPool threadPool, final Scheduler scheduler, final ByteBufferPool bufferPool, final String name, final JettyConnectorConfiguration configuration, final ConnectionFactory... connectionFactories)
   {
-    // FIXME configuration parameters
-    final ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, 0, 0, connectionFactories);
+    final ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, configuration.getAcceptorThreads(), configuration.getSelectorThreads(), connectionFactories);
     setConnectorProperties(connector, name, configuration);
     return connector;
   }
@@ -87,9 +108,7 @@ public class JettyHttpConnectorFactory implements JettyConnectorFactory
 
   protected ByteBufferPool buildBufferPool(final JettyConnectorConfiguration configuration)
   {
-    // FIXME configuration variables
-    return new ArrayByteBufferPool(1024, 4096, 1048576);
-//      return new ArrayByteBufferPool(minBufferPoolSize, bufferPoolIncrement, maxBufferPoolSize);
+    return new ArrayByteBufferPool(configuration.getMinBufferPoolSize(), configuration.getBufferPoolIncrement(), configuration.getMaxBufferPoolSize());
   }
 
 

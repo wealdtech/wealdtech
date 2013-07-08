@@ -35,14 +35,26 @@ public final class JettyConnectorConfiguration implements Configuration
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(JettyConnectorConfiguration.class);
 
-  private String bindhost = "localhost";
+  private String bindHost = "localhost";
   private int port = 8080;
   private Class<? extends JettyConnectorFactory> type = JettyHttpConnectorFactory.class;
-  private int acceptqueuesize = -1;
-  private long idletimeout = 50000;
-  private boolean reuseaddress = false;
-  private int solingertime = 60;
-  private int inputbuffersize = 2048;
+  private int acceptQueueSize = -1;
+  private long idleTimeout = 50000;
+  private boolean reuseAddress = false;
+  private int soLingerTime = 60;
+  private int inputBufferSize = 32768;
+  private int outputBufferSize = 32768;
+  private int requestHeaderSize = 8192;
+  private int responseHeaderSize = 8192;
+  private int headerCacheSize = 512;
+  private boolean sendServerVersion = true;
+  private boolean sendDateHeader = true;
+  private boolean useForwardedHeaders = true;
+  private int acceptorThreads = 8;
+  private int selectorThreads = 8;
+  private int minBufferPoolSize = 64;
+  private int bufferPoolIncrement = 2048;
+  private int maxBufferPoolSize = 65536;
 
   public JettyConnectorConfiguration()
   {
@@ -50,28 +62,52 @@ public final class JettyConnectorConfiguration implements Configuration
   }
 
   @JsonCreator
-  private JettyConnectorConfiguration(@JsonProperty("bindhost") final String bindhost,
+  private JettyConnectorConfiguration(@JsonProperty("bindhost") final String bindHost,
                                       @JsonProperty("port") final Integer port,
                                       @JsonProperty("type") final String type,
-                                      @JsonProperty("acceptqueuesize") final Integer acceptqueuesize,
-                                      @JsonProperty("idletimeout") final Long idletimeout,
-                                      @JsonProperty("reuseaddress") final Boolean reuseaddress,
-                                      @JsonProperty("solingertime") final Integer solingertime,
-                                      @JsonProperty("inputbuffersize") final Integer inputbuffersize)
+                                      @JsonProperty("acceptqueuesize") final Integer acceptQueueSize,
+                                      @JsonProperty("idletimeout") final Long idleTimeout,
+                                      @JsonProperty("reuseaddress") final Boolean reuseAddress,
+                                      @JsonProperty("solingertime") final Integer soLingerTime,
+                                      @JsonProperty("headercachesize") final Integer headerCacheSize,
+                                      @JsonProperty("inputbuffersize") final Integer inputBufferSize,
+                                      @JsonProperty("outputbuffersize") final Integer outputBufferSize,
+                                      @JsonProperty("requestheadersize") final Integer requestHeaderSize,
+                                      @JsonProperty("responseheadersize") final Integer responseHeaderSize,
+                                      @JsonProperty("sendserverversion") final Boolean sendServerVersion,
+                                      @JsonProperty("senddateheader") final Boolean sendDateHeader,
+                                      @JsonProperty("useforwardedheaders") final Boolean userForwardedHeaders,
+                                      @JsonProperty("acceptorthreads") final Integer acceptorThreads,
+                                      @JsonProperty("selectorthreads") final Integer selectorThreads,
+                                      @JsonProperty("minbufferpoolsize") final Integer minBufferPoolSize,
+                                      @JsonProperty("bufferpoolincrement") final Integer bufferPoolIncremenet,
+                                      @JsonProperty("maxbufferpoolsize") final Integer maxBufferPoolSize)
   {
-    this.bindhost = Objects.firstNonNull(bindhost, this.bindhost);
+    this.bindHost = Objects.firstNonNull(bindHost, this.bindHost);
     this.port = Objects.firstNonNull(port, this.port);
     this.type = Objects.firstNonNull(classFromType(type), this.type);
-    this.acceptqueuesize = Objects.firstNonNull(acceptqueuesize, this.acceptqueuesize);
-    this.idletimeout = Objects.firstNonNull(idletimeout, this.idletimeout);
-    this.reuseaddress = Objects.firstNonNull(reuseaddress, this.reuseaddress);
-    this.solingertime = Objects.firstNonNull(solingertime, this.solingertime);
-    this.inputbuffersize = Objects.firstNonNull(inputbuffersize, this.inputbuffersize);
+    this.acceptQueueSize = Objects.firstNonNull(acceptQueueSize, this.acceptQueueSize);
+    this.idleTimeout = Objects.firstNonNull(idleTimeout, this.idleTimeout);
+    this.reuseAddress = Objects.firstNonNull(reuseAddress, this.reuseAddress);
+    this.soLingerTime = Objects.firstNonNull(soLingerTime, this.soLingerTime);
+    this.requestHeaderSize = Objects.firstNonNull(requestHeaderSize, this.requestHeaderSize);
+    this.responseHeaderSize = Objects.firstNonNull(responseHeaderSize, this.responseHeaderSize);
+    this.headerCacheSize = Objects.firstNonNull(inputBufferSize, this.headerCacheSize);
+    this.inputBufferSize = Objects.firstNonNull(inputBufferSize, this.inputBufferSize);
+    this.outputBufferSize = Objects.firstNonNull(outputBufferSize, this.outputBufferSize);
+    this.sendServerVersion = Objects.firstNonNull(sendServerVersion, this.sendServerVersion);
+    this.sendDateHeader = Objects.firstNonNull(sendDateHeader, this.sendDateHeader);
+    this.useForwardedHeaders = Objects.firstNonNull(useForwardedHeaders, this.useForwardedHeaders);
+    this.acceptorThreads = Objects.firstNonNull(acceptorThreads, this.acceptorThreads);
+    this.selectorThreads = Objects.firstNonNull(selectorThreads, this.selectorThreads);
+    this.minBufferPoolSize = Objects.firstNonNull(minBufferPoolSize, this.minBufferPoolSize);
+    this.bufferPoolIncrement = Objects.firstNonNull(bufferPoolIncrement, this.bufferPoolIncrement);
+    this.maxBufferPoolSize = Objects.firstNonNull(maxBufferPoolSize, this.maxBufferPoolSize);
   }
 
   public String getBindHost()
   {
-    return this.bindhost;
+    return this.bindHost;
   }
 
   public int getPort()
@@ -86,27 +122,87 @@ public final class JettyConnectorConfiguration implements Configuration
 
   public int getAcceptQueueSize()
   {
-    return this.acceptqueuesize;
+    return this.acceptQueueSize;
   }
 
   public long getIdleTimeout()
   {
-    return this.idletimeout;
+    return this.idleTimeout;
   }
 
   public boolean getReuseAddress()
   {
-    return this.reuseaddress;
+    return this.reuseAddress;
   }
 
   public int getSoLingerTime()
   {
-    return this.solingertime;
+    return this.soLingerTime;
+  }
+
+  public int getRequestHeaderSize()
+  {
+    return this.requestHeaderSize;
+  }
+
+  public int getResponseHeaderSize()
+  {
+    return this.responseHeaderSize;
+  }
+
+  public int getHeaderCacheSize()
+  {
+    return this.headerCacheSize;
   }
 
   public int getInputBufferSize()
   {
-    return this.inputbuffersize;
+    return this.inputBufferSize;
+  }
+
+  public int getOutputBufferSize()
+  {
+    return this.outputBufferSize;
+  }
+
+  public boolean getSendServerVersion()
+  {
+    return this.sendServerVersion;
+  }
+
+  public boolean getSendDateHeader()
+  {
+    return this.sendDateHeader;
+  }
+
+  public boolean useForwardedHeaders()
+  {
+    return this.useForwardedHeaders;
+  }
+
+  public int getAcceptorThreads()
+  {
+    return this.acceptorThreads;
+  }
+
+  public int getSelectorThreads()
+  {
+    return this.selectorThreads;
+  }
+
+  public int getMinBufferPoolSize()
+  {
+    return this.minBufferPoolSize;
+  }
+
+  public int getBufferPoolIncrement()
+  {
+    return this.bufferPoolIncrement;
+  }
+
+  public int getMaxBufferPoolSize()
+  {
+    return this.maxBufferPoolSize;
   }
 
   /**

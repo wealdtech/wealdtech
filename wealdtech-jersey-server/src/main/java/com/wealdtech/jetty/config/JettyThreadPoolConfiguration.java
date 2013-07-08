@@ -31,7 +31,7 @@ public final class JettyThreadPoolConfiguration implements Configuration
 {
   private int minThreads = 8;
   private int maxThreads = 256;
-  private int maxIdleTime = 120000;
+  private int idleTimeout = 120000;
 
   public JettyThreadPoolConfiguration()
   {
@@ -41,11 +41,11 @@ public final class JettyThreadPoolConfiguration implements Configuration
   @JsonCreator
   private JettyThreadPoolConfiguration(@JsonProperty("minthreads") final Integer minThreads,
                                        @JsonProperty("maxthreads") final Integer maxThreads,
-                                       @JsonProperty("maxidletime") final Integer maxIdleTime)
+                                       @JsonProperty("idletimeout") final Integer idleTimeout)
   {
     this.minThreads = Objects.firstNonNull(minThreads, this.minThreads);
     this.maxThreads = Objects.firstNonNull(maxThreads, this.maxThreads);
-    this.maxIdleTime = Objects.firstNonNull(maxIdleTime, this.maxIdleTime);
+    this.idleTimeout = Objects.firstNonNull(idleTimeout, this.idleTimeout);
   }
 
   public int getMinThreads()
@@ -58,8 +58,8 @@ public final class JettyThreadPoolConfiguration implements Configuration
     return this.maxThreads;
   }
 
-  public int getMaxIdleTime()
+  public int getIdleTimeout()
   {
-    return this.maxIdleTime;
+    return this.idleTimeout;
   }
 }

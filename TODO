@@ -2,4 +2,4 @@ JettyServer
   - Create with full JAX-RS configuration
     - Stop subclassing/copying it
     - Tidy up servlet setup, move to configuration
-  - Separate out Jetty and Jersey
+  - Add SPDY connector

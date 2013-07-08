@@ -24,7 +24,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
-import com.wealdtech.jersey.JerseyServerConfiguration;
 
 /**
  * Configuration for a Jetty instance.
@@ -38,7 +37,6 @@ public final class JettyInstanceConfiguration implements Configuration
   private JettyThreadPoolConfiguration threadPoolConfiguration = new JettyThreadPoolConfiguration();
   private JettySslConfiguration sslConfiguration = new JettySslConfiguration();
   private ImmutableList<JettyConnectorConfiguration> connectorConfigurations = ImmutableList.of(new JettyConnectorConfiguration());
-  private JerseyServerConfiguration jerseyConfiguration = new JerseyServerConfiguration();
 
   @Inject
   public JettyInstanceConfiguration()
@@ -56,7 +54,6 @@ public final class JettyInstanceConfiguration implements Configuration
     this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
     this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
     this.sslConfiguration = Objects.firstNonNull(sslConfiguration, this.sslConfiguration);
-    this.jerseyConfiguration = Objects.firstNonNull(this.jerseyConfiguration, this.jerseyConfiguration);
   }
 
   public String getName()

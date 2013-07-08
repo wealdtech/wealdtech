@@ -122,7 +122,7 @@ public class JettyServer
   {
     // We have a single SSL context factory and thread pool for each instance
     final SslContextFactory sslContextFactory = JettySslContextFactoryFactory.build(configuration.getSslConfiguration());
-    final ThreadPool threadPool = JettyThreadPoolFactory.build(configuration.getThreadPoolConfiguration());
+    final ThreadPool threadPool = JettyThreadPoolFactory.build(configuration.getName(), configuration.getThreadPoolConfiguration());
 
     // Create each connector
     final List<Connector> connectors = Lists.newArrayList();
@@ -146,8 +146,9 @@ public class JettyServer
   }
 
   /**
-   * This sets the basic handlers
-   * @return
+   * This sets the basic handlers, including filters, to allow for Guice injection in to servlets
+   *
+   * @return A handler collection containing the basic handlers
    */
   private HandlerCollection createHandlers()
   {
