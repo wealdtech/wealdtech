@@ -41,9 +41,17 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
   @Override
   public MessageObjects<? extends Object> deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException
   {
-    // This assumes a strict JSON format of _type, followed by prior and current (if they exist)
+    // This assumes a strict JSON format of userId followed by _type followed by prior and current (if they exist)
     jp.nextToken();
     String fieldname = jp.getCurrentName();
+    if (!"userid".equals(fieldname))
+    {
+      throw new IOException("Unexpected key \"" + fieldname + "\"; expected userid");
+    }
+    jp.nextToken();
+    final Long userId = Long.parseLong(jp.getText());
+    jp.nextToken();
+    fieldname = jp.getCurrentName();
     if (!"_type".equals(fieldname))
     {
       throw new IOException("Unexpected key \"" + fieldname + "\"; expected _type");
@@ -84,7 +92,7 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
     // And build our return object
     try
     {
-      return new MessageObjects<>(prior, current);
+      return new MessageObjects<>(userId, prior, current);
     }
     catch (DataError de)
     {

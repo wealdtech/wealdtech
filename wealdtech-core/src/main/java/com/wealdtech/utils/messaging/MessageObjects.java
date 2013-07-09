@@ -22,16 +22,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wealdtech.DataError;
 
+import static com.wealdtech.Preconditions.*;
+
 /**
- * MessageObjects contain prior and current state of an object.
- * This can be used to pass around detailed state change information
- * without having to use additional services to obtain details of
- * what has changed.
+ * MessageObjects contain prior and current state of an object, along with an identifier related to the user who initiated the
+ * change of state.  This can be used to pass around detailed state change information without having to use additional services
+ * to obtain details of what has changed.
  */
 public class MessageObjects<T extends Object> implements Serializable
 {
   private static final long serialVersionUID = 6306799063373268531L;
 
+  private final transient Long userId;
   private final transient T prior;
   private final transient T current;
 
@@ -42,15 +44,23 @@ public class MessageObjects<T extends Object> implements Serializable
    * @throws DataError if the objects passed do not match a valid state
    */
   @JsonCreator
-  public MessageObjects(@JsonProperty("prior") final T prior,
+  public MessageObjects(@JsonProperty("userid") final Long userId,
+                        @JsonProperty("prior") final T prior,
                         @JsonProperty("current") final T current)
   {
-    if ((prior == null) && (current == null))
-    {
-      throw new DataError("At least one object must be non-NULL");
-    }
+    checkState(prior != null || current != null, "At least one object must be present");
+
+    this.userId = userId;
     this.prior = prior;
     this.current = current;
+  }
+
+  /**
+   * Obtain the ID of the user who initiated the change of state of the object.
+   */
+  public Long getUserId()
+  {
+    return this.userId;
   }
 
   /**
