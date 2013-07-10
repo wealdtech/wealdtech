@@ -1,5 +1,7 @@
 package com.wealdtech;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -7,8 +9,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
-
-import static com.google.common.base.Preconditions.*;
 
 final class Absent extends TriVal<Object> {
   static final Absent INSTANCE = new Absent();
@@ -37,7 +37,7 @@ final class Absent extends TriVal<Object> {
 
   @SuppressWarnings("unchecked") // safe covariant cast
   @Override public TriVal<Object> or(TriVal<?> secondChoice) {
-    return (TriVal) checkNotNull(secondChoice);
+    return (TriVal<Object>) checkNotNull(secondChoice);
   }
 
   @Override public Object or(Supplier<?> supplier) {
@@ -78,5 +78,9 @@ final class Absent extends TriVal<Object> {
     return INSTANCE;
   }
 
+  public int compareTo(TriVal<?> that)
+  {
+    return 0;
+  }
   private static final long serialVersionUID = 0;
 }
