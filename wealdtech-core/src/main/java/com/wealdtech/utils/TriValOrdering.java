@@ -25,17 +25,19 @@ import com.wealdtech.TriVal;
  * Note that as the ordering chosen is arbitrary but consistent.  The ordering is absent(),
  * then clear(), then the natural ordering of the value held by the TriVal.
  */
-public class TriValOrdering<T extends Comparable<T>> extends Ordering<TriVal<T>>
+public class TriValOrdering extends Ordering<TriVal<?>>
 {
-//  public static final TriValOrdering<?> INSTANCE = new TriValOrdering<T>();
-//
-//  public TriValOrdering()
-//  {
-//  }
+  public static final TriValOrdering INSTANCE = new TriValOrdering();
 
+  private TriValOrdering()
+  {
+    // Avoid instantiation
+  }
+
+  @SuppressWarnings({"rawtypes",
+   "unchecked"})
   @Override
-//  public int compare(final TriVal<? extends Comparable<?>> left, final TriVal<? extends Comparable<?>> right)
-  public int compare(final TriVal<T> left, final TriVal<T> right)
+  public int compare(final TriVal<?> left, final TriVal<?> right)
   {
     int result = 0;
     if (left.isAbsent())
@@ -64,7 +66,7 @@ public class TriValOrdering<T extends Comparable<T>> extends Ordering<TriVal<T>>
       }
       else
       {
-        return left.get().compareTo(right.get());
+        return ((Comparable)left.get()).compareTo((right.get()));
       }
     }
     return result;
