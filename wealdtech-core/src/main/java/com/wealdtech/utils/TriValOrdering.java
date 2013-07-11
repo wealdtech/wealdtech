@@ -16,6 +16,7 @@
 
 package com.wealdtech.utils;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.wealdtech.TriVal;
 
@@ -62,11 +63,18 @@ public class TriValOrdering extends Ordering<TriVal<?>>
     {
       if (!right.isPresent())
       {
-        return 1;
+        result = 1;
       }
       else
       {
-        return ((Comparable)left.get()).compareTo((right.get()));
+        if (left instanceof Comparable && right instanceof Comparable)
+        {
+          result = ((Comparable)left.get()).compareTo((right.get()));
+        }
+        else if (left instanceof Iterable && right instanceof Iterable)
+        {
+          result = ComparisonChain.start().compare((Iterable<Comparable>)left.get(), (Iterable<Comparable>)right.get(), Ordering.<Comparable>natural().lexicographical().nullsFirst()).result();
+        }
       }
     }
     return result;
