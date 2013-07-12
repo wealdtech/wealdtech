@@ -67,11 +67,11 @@ public class TriValOrdering extends Ordering<TriVal<?>>
       }
       else
       {
-        if (left instanceof Comparable && right instanceof Comparable)
+        if (left.get() instanceof Comparable && right.get() instanceof Comparable)
         {
           result = ((Comparable)left.get()).compareTo((right.get()));
         }
-        else if (left instanceof Iterable && right instanceof Iterable)
+        else if (left.get() instanceof Iterable && right.get() instanceof Iterable)
         {
           result = ComparisonChain.start().compare((Iterable<Comparable>)left.get(), (Iterable<Comparable>)right.get(), Ordering.<Comparable>natural().lexicographical().nullsFirst()).result();
         }

@@ -1,13 +1,13 @@
 package test.com.wealdtech;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.TriVal;
 import com.wealdtech.utils.TriValOrdering;
-
-import static org.testng.Assert.*;
 
 public class TriValTest
 {
@@ -31,7 +31,7 @@ public class TriValTest
     assertEquals(ComparisonChain.start().compare(triTest1, triClear, TriValOrdering.INSTANCE).result(), 1);
     assertEquals(ComparisonChain.start().compare(triTest1, triTest1, TriValOrdering.INSTANCE).result(), 0);
     assertEquals(ComparisonChain.start().compare(triTest1, triTest1Again, TriValOrdering.INSTANCE).result(), 0);
-    assertEquals(ComparisonChain.start().compare(triTest2, triTest1Again, TriValOrdering.INSTANCE).result(), 0);
+    assertEquals(ComparisonChain.start().compare(triTest2, triTest1Again, TriValOrdering.INSTANCE).result(), 1);
   }
 
   @Test
@@ -53,6 +53,6 @@ public class TriValTest
     assertEquals(ComparisonChain.start().compare(triTest1, triClear, TriValOrdering.INSTANCE).result(), 1);
     assertEquals(ComparisonChain.start().compare(triTest1, triTest1, TriValOrdering.INSTANCE).result(), 0);
     assertEquals(ComparisonChain.start().compare(triTest1, triTest1Again, TriValOrdering.INSTANCE).result(), 0);
-    assertEquals(ComparisonChain.start().compare(triTest2, triTest1Again, TriValOrdering.INSTANCE).result(), 0);
+    assertEquals(ComparisonChain.start().compare(triTest2, triTest1Again, TriValOrdering.INSTANCE).result(), 1);
   }
 }
