@@ -75,6 +75,24 @@ public class TriValOrdering extends Ordering<TriVal<?>>
         {
           result = ComparisonChain.start().compare((Iterable<Comparable>)left.get(), (Iterable<Comparable>)right.get(), Ordering.<Comparable>natural().lexicographical().nullsFirst()).result();
         }
+        else
+        {
+          // No sane way found to compare the items, use hashCode as a fallback
+          final int leftHc = left.get().hashCode();
+          final int rightHc = right.get().hashCode();
+          if (leftHc == rightHc)
+          {
+            result = 0;
+          }
+          else if (leftHc < rightHc)
+          {
+            result = -1;
+          }
+          else
+          {
+            result = 1;
+          }
+        }
       }
     }
     return result;
