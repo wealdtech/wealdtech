@@ -104,6 +104,22 @@ public final class Preconditions
   }
 
   /**
+   * Ensures a permission is met.
+   *
+   * @param expression
+   *          a boolean expression
+   * @throws DataError.Permission
+   *           if {@code expression} is false
+   */
+  public static void checkPermission(boolean expression, String msg)
+  {
+    if (!expression)
+    {
+      throw new DataError.Permission(msg);
+    }
+  }
+
+  /**
    * Ensures the truth of an expression involving one or more parameters to the
    * calling method.
    *
