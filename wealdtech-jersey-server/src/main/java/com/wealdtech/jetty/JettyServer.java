@@ -18,10 +18,8 @@ package com.wealdtech.jetty;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.EnumSet;
 import java.util.List;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Connector;
@@ -168,9 +166,9 @@ public class JettyServer
         return JettyServer.this.injector;
       }
     });
+    root.addFilter(ThreadNameFilter.class, "/*", null);
+    root.addFilter(BodyPrefetchFilter.class, "/*", null);
     root.addFilter(GuiceFilter.class, "/*", null);
-    root.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-    root.addFilter(BodyPrefetchFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
     root.addServlet(DefaultServlet.class, "/");
     handlers.addHandler(root);
 
