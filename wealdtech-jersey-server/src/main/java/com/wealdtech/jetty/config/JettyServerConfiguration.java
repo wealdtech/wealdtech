@@ -34,6 +34,8 @@ import com.wealdtech.configuration.Configuration;
  */
 public final class JettyServerConfiguration implements Configuration
 {
+  private boolean bodyPrefetch = true;
+  private boolean detailedThreadName = true;
   private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private ImmutableList<JettyInstanceConfiguration> instanceConfigurations = ImmutableList.of(new JettyInstanceConfiguration());
 
@@ -44,11 +46,25 @@ public final class JettyServerConfiguration implements Configuration
   }
 
   @JsonCreator
-  private JettyServerConfiguration(@JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
+  private JettyServerConfiguration(@JsonProperty("bodyprefetchenabled") final Boolean bodyPrefetch,
+                                   @JsonProperty("detailedthreadnameenabled") final Boolean detailedThreadName,
+                                   @JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
                                    @JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations)
   {
+    this.bodyPrefetch = Objects.firstNonNull(bodyPrefetch, this.bodyPrefetch);
+    this.detailedThreadName = Objects.firstNonNull(detailedThreadName, this.detailedThreadName);
     this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.instanceConfigurations = ImmutableList.copyOf(Objects.firstNonNull(instanceConfigurations, this.instanceConfigurations));
+  }
+
+  public boolean getBodyPrefetch()
+  {
+    return this.bodyPrefetch;
+  }
+
+  public boolean getDetailedThreadName()
+  {
+    return this.detailedThreadName;
   }
 
   public JettyResponseConfiguration getResponseConfiguration()
@@ -60,4 +76,6 @@ public final class JettyServerConfiguration implements Configuration
   {
     return this.instanceConfigurations;
   }
+
+
 }

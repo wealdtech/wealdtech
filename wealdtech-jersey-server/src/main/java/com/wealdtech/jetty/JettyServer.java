@@ -79,7 +79,7 @@ public class JettyServer
     this.server.setConnectors(connectors.toArray(new Connector[0]));
 
     // Add the handlers
-    this.server.setHandler(createHandlers());
+    this.server.setHandler(createHandlers(configuration));
   }
 
   public void start() throws Exception // NOPMD
@@ -148,7 +148,7 @@ public class JettyServer
    *
    * @return A handler collection containing the basic handlers
    */
-  private HandlerCollection createHandlers()
+  private HandlerCollection createHandlers(final JettyServerConfiguration configuration)
   {
     final HandlerCollection handlers = new HandlerCollection();
 
@@ -166,8 +166,14 @@ public class JettyServer
         return JettyServer.this.injector;
       }
     });
-    root.addFilter(ThreadNameFilter.class, "/*", null);
-    root.addFilter(BodyPrefetchFilter.class, "/*", null);
+    if (configuration.getDetailedThreadName())
+    {
+      root.addFilter(ThreadNameFilter.class, "/*", null);
+    }
+    if (configuration.getBodyPrefetch())
+    {
+      root.addFilter(BodyPrefetchFilter.class, "/*", null);
+    }
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
     handlers.addHandler(root);
