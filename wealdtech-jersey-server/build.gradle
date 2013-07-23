@@ -15,11 +15,11 @@ dependencies
     compile 'javax.ws.rs:jsr311-api:1.1.1'
 
     // Jetty
-    compile 'org.eclipse.jetty:jetty-server:9.0.3.v20130506'
-    compile 'org.eclipse.jetty:jetty-servlet:9.0.3.v20130506'
-    compile 'org.eclipse.jetty.websocket:websocket-common:9.0.3.v20130506'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.0.3.v20130506'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.0.3.v20130506'
+    compile 'org.eclipse.jetty:jetty-server:9.0.4.v20130625'
+    compile 'org.eclipse.jetty:jetty-servlet:9.0.4.v20130625'
+    compile 'org.eclipse.jetty.websocket:websocket-common:9.0.4.v20130625'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.0.4.v20130625'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.0.4.v20130625'
 
     // Instrumentation
     compile 'com.codahale.metrics:metrics-servlets:3.0.0'
