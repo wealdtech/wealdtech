@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
-import com.wealdtech.jersey.CORSConfiguration;
+import com.wealdtech.jersey.config.CORSConfiguration;
 
 /**
  * Filter to handle cross-origin resource sharing.

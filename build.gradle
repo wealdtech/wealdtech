@@ -1,6 +1,6 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
+    apply plugin: 'idea'
     apply plugin: 'maven'
     apply plugin: 'signing'
 
@@ -9,8 +9,12 @@ subprojects {
         mavenCentral()
     }
 
+    dependencies {
+        testCompile 'org.testng:testng:6.+'
+    }
+
     group = 'com.wealdtech'
-    version = '1.7.0'
+    version = '1.8.0'
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
@@ -31,7 +35,14 @@ subprojects {
     signing {
         sign configurations.archives
     }
+    signArchives.onlyIf { gradle.taskGraph.hasTask(uploadArchives) }
 
+    if (!project.hasProperty('sonatypeUsername')) {
+        ext.sonatypeUsername = ''
+    }
+    if (!project.hasProperty('sonatypePassword')) {
+        sonatypePassword = ''
+    }
     uploadArchives {
         repositories {
             mavenDeployer {

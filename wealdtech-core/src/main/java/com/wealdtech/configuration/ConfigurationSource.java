@@ -76,7 +76,7 @@ public class ConfigurationSource<T>
       {
         throw new DataError("Failed to find resource \"" + filename + "\"");
       }
-      String line = null;
+      String line;
       while ((line = reader.readLine()) != null)
       {
         content.append(line).append(linefeed);

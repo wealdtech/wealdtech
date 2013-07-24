@@ -22,11 +22,19 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.AbstractModule;
 import com.wealdtech.DataError;
 import com.wealdtech.configuration.ConfigurationSource;
-import com.wealdtech.http.JettyServerConfiguration;
+import com.wealdtech.jetty.config.JettyServerConfiguration;
 
 public class ApplicationModule extends AbstractModule
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationModule.class);
+
+  private String configfile = "config-test.json";
+
+  public ApplicationModule(final String configfile)
+  {
+    super();
+    this.configfile = configfile;
+  }
 
   @Override
   protected void configure()
@@ -34,7 +42,7 @@ public class ApplicationModule extends AbstractModule
     try
     {
       // Bind configuration information
-      final JettyServerConfiguration configuration = new ConfigurationSource<JettyServerConfiguration>().getConfiguration("config-test.json", JettyServerConfiguration.class);
+      final JettyServerConfiguration configuration = new ConfigurationSource<JettyServerConfiguration>().getConfiguration(this.configfile, JettyServerConfiguration.class);
       bind(JettyServerConfiguration.class).toInstance(configuration);
     }
     catch (DataError de)

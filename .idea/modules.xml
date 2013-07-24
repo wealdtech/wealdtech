@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" filepath="$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" filepath="$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" />
+    </modules>
+  </component>
+</project>
+

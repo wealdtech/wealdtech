@@ -27,12 +27,11 @@ import static com.wealdtech.Preconditions.*;
 
 /**
  * A message item contains a {@link MessageObjects} along with details of
- * the message to send
- *
+ * the message to send.
  */
 public class MessageItem
 {
-  private final transient Type msgtype;
+  private final transient Type msgType;
   private final transient String destination;
   private final transient MessageObjects<?> objects;
 
@@ -74,14 +73,14 @@ public class MessageItem
 
   public MessageItem(final Type msgtype, final String destination, final MessageObjects<?> objects)
   {
-    this.msgtype = msgtype;
+    this.msgType = msgtype;
     this.destination = destination;
     this.objects = objects;
   }
 
   public Type getMsgType()
   {
-    return this.msgtype;
+    return this.msgType;
   }
 
   public String getDestination()

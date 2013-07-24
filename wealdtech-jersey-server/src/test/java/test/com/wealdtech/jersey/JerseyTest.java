@@ -14,8 +14,8 @@ import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.wealdtech.http.JettyServer;
 import com.wealdtech.jersey.guice.JerseyServletModule;
+import com.wealdtech.jetty.JettyServer;
 
 public class JerseyTest
 {
