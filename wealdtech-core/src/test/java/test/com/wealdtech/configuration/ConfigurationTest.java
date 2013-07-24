@@ -15,7 +15,7 @@ public class ConfigurationTest
     SampleConfiguration sc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test.json", SampleConfiguration.class);
     assertEquals(sc.getString(), "twenty three");
     assertEquals(sc.getInt(), 23);
-    assertEquals(sc.getOptional(), "Default");
+    assertEquals(sc.getOptional().orNull(), null);
     assertEquals(sc.getSubConfiguration().getString(), "sub string");
   }
 
@@ -25,7 +25,17 @@ public class ConfigurationTest
     SampleConfiguration sc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test2.json", SampleConfiguration.class);
     assertEquals(sc.getString(), "twenty three");
     assertEquals(sc.getInt(), 23);
-    assertEquals(sc.getOptional(), "Another string");
+    assertEquals(sc.getOptional().orNull(), "Another string");
+    assertEquals(sc.getSubConfiguration().getString(), "sub string");
+  }
+
+  @Test
+  public void testConfiguration3() throws Exception
+  {
+    SampleConfiguration sc = new ConfigurationSource<SampleConfiguration>().getConfiguration("config-test2.json", SampleConfiguration.class);
+    assertEquals(sc.getString(), "twenty three");
+    assertEquals(sc.getInt(), 23);
+    assertEquals(sc.getOptional().orNull(), "Another string");
     assertEquals(sc.getSubConfiguration().getString(), "sub string");
   }
 

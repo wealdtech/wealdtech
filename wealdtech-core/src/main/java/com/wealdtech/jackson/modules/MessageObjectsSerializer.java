@@ -40,6 +40,7 @@ public class MessageObjectsSerializer extends StdSerializer<MessageObjects<? ext
                         final SerializerProvider provider) throws IOException
   {
     jgen.writeStartObject();
+    provider.defaultSerializeField("userid", mo.getUserId(), jgen);
     provider.defaultSerializeField("_type", mo.getType().getName(), jgen);
     if (mo.getPrior() != null)
     {

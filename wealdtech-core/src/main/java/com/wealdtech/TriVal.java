@@ -1,5 +1,7 @@
 package com.wealdtech;
 
+import static com.wealdtech.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
@@ -10,8 +12,6 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.AbstractIterator;
-
-import static com.wealdtech.Preconditions.*;
 
 public abstract class TriVal<T> implements Serializable
 {
@@ -193,8 +193,8 @@ public abstract class TriVal<T> implements Serializable
 
           @Override
           protected T computeNext() {
-            while (iterator.hasNext()) {
-              TriVal<? extends T> TriVal = iterator.next();
+            while (this.iterator.hasNext()) {
+              TriVal<? extends T> TriVal = this.iterator.next();
               if (TriVal.isPresent()) {
                 return TriVal.get();
               }

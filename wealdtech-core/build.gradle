@@ -11,7 +11,6 @@ dependencies
     compile 'joda-time:joda-time:2.2'
     compile 'com.codahale.metrics:metrics-core:3.0.0'
     compile 'org.mindrot:jbcrypt:0.3m'
-    testCompile 'org.testng:testng:6.8'
 }
 
 uploadArchives {

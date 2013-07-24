@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * Prefetch and store the full body of the request so that it can be read by
  * subsequent filters without upsetting message body readers.
  * <p/>Required if authentication systems, logging filters, or anything else
- * wnats access to the body of the request.
+ * that wants access to the body of the request.
  */
 public class BodyPrefetchFilter implements Filter
 {
@@ -32,13 +32,11 @@ public class BodyPrefetchFilter implements Filter
   @Override
   public void init(final FilterConfig filterConfig) throws ServletException
   {
-    // TODO details of which content types and file sizes should be read
   }
 
   @Override
   public void destroy()
   {
-    // TODO
   }
 
   @Override

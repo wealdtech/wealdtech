@@ -1,0 +1,47 @@
+{
+	"response":
+	{
+	},
+	"instances":
+	[
+		{
+			"name":	"main",
+			"threadpool":
+			{
+			},
+			"ssl":
+			{
+				"keystorepath":			"keystore",
+				"keystorepassword": 	"password",
+				"keymanagerpassword":	"password"
+			},
+			"connectors":
+			[
+				{
+					"type": "http",
+					"bindhost": "0.0.0.0",
+					"port":	8080
+				},
+				{
+					"type": "https",
+					"bindhost": "0.0.0.0",
+					"port":	8443
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"threadpool":
+			{
+			},
+			"connectors":
+			[
+				{
+					"type": "http",
+					"bindhost": "127.0.0.1",
+					"port":	8081
+				}
+			]
+		}
+	]
+}

@@ -1,12 +1,16 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
+    apply plugin: 'idea'
     apply plugin: 'maven'
     apply plugin: 'signing'
 
     repositories {
         mavenLocal()
         mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'org.testng:testng:6.+'
     }
 
     group = 'com.wealdtech'
