@@ -16,6 +16,10 @@ subprojects {
     group = 'com.wealdtech'
     version = '1.8.1'
 
+    test {
+        useTestNG()
+    }
+
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from 'build/docs/javadoc'
