@@ -43,6 +43,18 @@ public class ContinuumTest
   }
 
   @Test
+  public void testDecrement() throws Exception
+  {
+    Continuum cnt = Continuum.fromInt(200);
+    assertEquals(cnt.getElement(), 2);
+    assertEquals(cnt.getLevel(), -50);
+
+    cnt = cnt.decrement();
+    assertEquals(cnt.getElement(), 1);
+    assertEquals(cnt.getLevel(), 49);
+  }
+
+  @Test
   public void testToString() throws Exception
   {
     final Continuum cnt = Continuum.fromInt(103);

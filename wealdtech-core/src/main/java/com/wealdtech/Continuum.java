@@ -12,7 +12,6 @@ package com.wealdtech;
 
 import com.google.common.collect.*;
 
-import static com.wealdtech.Preconditions.checkNotNull;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
@@ -23,7 +22,7 @@ import static com.wealdtech.Preconditions.checkState;
  * be prioritised attendance levels, where there are discrete levels such as 'like to attend' and 'must attend' but there needs to
  * be a way of ordering multiple 'like to attend' items without creating an arbitrary number of enums.
  * <p/>
- * To create your own continuum simply subclass this and set your own values for {@code levels} and {@elements}
+ * To create your own continuum simply subclass this and set your own values for {@code levels} and {@code elements}
  */
 public class Continuum
 {
@@ -33,8 +32,10 @@ public class Continuum
 
   static
   {
-    levels = Range.closedOpen(-50, 50);
+    levels = Range.open(-50, 50);
     elements = ImmutableList.of("One", "Two", "Three");
+    ImmutableSet levelSet = ContiguousSet.create(levels, DiscreteDomain.integers());
+    System.err.println("Number of levels: " + levelSet.size());
     levelSize = ContiguousSet.create(levels, DiscreteDomain.integers()).size();
   }
 
