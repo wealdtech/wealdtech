@@ -16,18 +16,6 @@
 
 package test.com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,6 +23,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Optional;
 import com.wealdtech.jackson.ObjectMapperFactory;
+import org.joda.time.*;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 import static org.testng.Assert.*;
 
@@ -274,6 +269,28 @@ public class JacksonModulesTest
   }
 
   @Test
+  public void testDeserDateTimeZone() throws Exception
+  {
+    // Complete serialization
+    final DateTimeZone dtz = this.mapper.readValue("\"America/New_York\"", DateTimeZone.class);
+    assertEquals(dtz, DateTimeZone.forID("America/New_York"));
+  }
+
+  @Test
+  public void testDeserDateTimeZoneInvalid() throws Exception
+  {
+    try
+    {
+      this.mapper.readValue("\"Bad/Bad\"", DateTimeZone.class);
+      fail("Managed to deserialize invalid timezone");
+    }
+    catch (IOException ioe)
+    {
+      // Good
+    }
+  }
+
+  @Test
   public void testSerAbsent() throws Exception
   {
     final String value = this.mapper.writeValueAsString(Optional.absent());
@@ -366,4 +383,13 @@ public class JacksonModulesTest
     final String value = this.mapper.writeValueAsString(p1);
     assertEquals(value, "\"PT2H20M\"");
   }
+
+  @Test
+  public void testSerDateTimeZone() throws Exception
+  {
+    final DateTimeZone dtz = DateTimeZone.forID("America/New_York");
+    final String value = this.mapper.writeValueAsString(dtz);
+    assertEquals(value, "\"America/New_York\"");
+  }
+
 }
