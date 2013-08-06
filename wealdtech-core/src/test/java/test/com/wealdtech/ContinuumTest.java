@@ -10,55 +10,19 @@
 
 package test.com.wealdtech;
 
-import com.wealdtech.Continuum;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 
 public class ContinuumTest
 {
   @Test
-  public void testFromInt() throws Exception
+  public void testComparison() throws Exception
   {
-    final Continuum cnt = Continuum.fromInt(220);
-    assertEquals(cnt.getElement(), 2);
-    assertEquals(cnt.getLevel(), -30);
-  }
-
-  @Test
-  public void testIncrement() throws Exception
-  {
-    Continuum cnt = Continuum.fromInt(199);
-    assertEquals(cnt.getElement(), 1);
-    assertEquals(cnt.getLevel(), 49);
-
-    cnt = cnt.increment();
-    assertEquals(cnt.getElement(), 2);
-    assertEquals(cnt.getLevel(), -50);
-
-    cnt = cnt.decrement();
-    assertEquals(cnt.getElement(), 1);
-    assertEquals(cnt.getLevel(), 49);
-  }
-
-  @Test
-  public void testDecrement() throws Exception
-  {
-    Continuum cnt = Continuum.fromInt(200);
-    assertEquals(cnt.getElement(), 2);
-    assertEquals(cnt.getLevel(), -50);
-
-    cnt = cnt.decrement();
-    assertEquals(cnt.getElement(), 1);
-    assertEquals(cnt.getLevel(), 49);
-  }
-
-  @Test
-  public void testToString() throws Exception
-  {
-    final Continuum cnt = Continuum.fromInt(103);
-    assertEquals(cnt.toString(), "Two (-47)");
+    final IntegerContinuum c1 = new IntegerContinuum(150);
+    final IntegerContinuum c2 = new IntegerContinuum(151);
+    assertTrue(c1.compareTo(c2) < 0);
   }
 }
 

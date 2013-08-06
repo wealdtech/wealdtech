@@ -33,8 +33,7 @@ import java.util.Comparator;
  *   </li>
  * </ul>
  */
-@SuppressWarnings("rawtypes")
-public class RangeComparator<C extends Comparable> implements Comparator<Range<C>>
+public class RangeComparator<C extends Comparable<C>> implements Comparator<Range<C>>
 {
   @Override
   public int compare(Range<C> range1, Range<C> range2)
