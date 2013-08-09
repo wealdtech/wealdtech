@@ -1,19 +1,17 @@
 package test.com.wealdtech.configuration.guice;
 
-import static org.testng.Assert.assertEquals;
-
-import org.testng.annotations.Test;
-
-import test.com.wealdtech.configuration.SampleConfiguration;
-import test.com.wealdtech.configuration.SampleSubConfiguration;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.wealdtech.configuration.ConfigurationSource;
+import org.testng.annotations.Test;
+import test.com.wealdtech.configuration.SampleConfiguration;
+import test.com.wealdtech.configuration.SampleSubConfiguration;
 
-public class TestConfigurationModule
+import static org.testng.Assert.assertEquals;
+
+public class ConfigurationModuleTest
 {
   @Test
   public void testInjection() throws Exception
