@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Optional;
 import com.wealdtech.jackson.ObjectMapperFactory;
+import com.wealdtech.utils.WealdInterval;
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class JacksonModulesTest
 {
@@ -291,6 +293,19 @@ public class JacksonModulesTest
   }
 
   @Test
+  public void testDeserWealdInterval() throws Exception
+  {
+    final WealdInterval int1 = this.mapper.readValue("{\"start\":{\"datetime\":\"2013-08-08T01:02:03+0200\",\"timezone\":\"Europe/Paris\"},\"end\":{\"datetime\":\"2013-08-08T01:02:05+0100\",\"timezone\":\"Europe/London\"}}", WealdInterval.class);
+
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final WealdInterval int2 = new WealdInterval(fromDt, toDt);
+    assertEquals(int1, int2);
+  }
+
+  @Test
   public void testSerAbsent() throws Exception
   {
     final String value = this.mapper.writeValueAsString(Optional.absent());
@@ -392,4 +407,16 @@ public class JacksonModulesTest
     assertEquals(value, "\"America/New_York\"");
   }
 
+  @Test
+  public void testSerWealdInterval() throws Exception
+  {
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final WealdInterval interval = new WealdInterval(fromDt, toDt);
+
+    final String value = this.mapper.writeValueAsString(interval);
+    assertEquals(value, "{\"start\":{\"datetime\":\"2013-08-08T01:02:03+0200\",\"timezone\":\"Europe/Paris\"},\"end\":{\"datetime\":\"2013-08-08T01:02:05+0100\",\"timezone\":\"Europe/London\"}}");
+  }
 }
