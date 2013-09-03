@@ -16,15 +16,16 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Custom serializer for Joda DateTime objects.
@@ -36,6 +37,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 public class DateTimeSerializer extends StdSerializer<DateTime>
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeSerializer.class);
+
   private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 
   public DateTimeSerializer()
@@ -46,6 +49,7 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   @Override
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
+    LOGGER.debug("Serializing {}@{}", value.toString(), value.getZone().toString());
     gen.writeStartObject();
     gen.writeStringField("datetime", formatter.print(value));
     gen.writeStringField("timezone", value.getZone().toString());
