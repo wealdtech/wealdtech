@@ -6,13 +6,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import static com.wealdtech.Preconditions.checkNotNull;
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * A WealdInterval is similar to a Joda {@link org.joda.time.Interval} except that it retains the timezones of both the start and
- * the end times.  It also implements {@link Comparable} as per {@link IntervalOrdering}
+ * the end times.  It also implements {@link Comparable} as per {@link IntervalOrdering}.
+ * <p/>
+ * A WealdInterval is considered to be a closed-open range, and as such the end must be after the start.
  */
 public class WealdInterval implements Comparable<WealdInterval>
 {
@@ -28,10 +33,25 @@ public class WealdInterval implements Comparable<WealdInterval>
     validate();
   }
 
+  public WealdInterval(final DateTime start,
+                       final Duration duration)
+  {
+    this.start = start;
+    this.end = start.plus(duration);
+  }
+
+  public WealdInterval(final DateTime start,
+                       final Period period)
+  {
+    this.start = start;
+    this.end = start.plus(period);
+  }
+
   private void validate()
   {
     checkNotNull(start, "Start must be specified");
     checkNotNull(end, "End must be specified");
+    checkState(start.isBefore(end), "End must be after start");
   }
 
   public DateTime getStart()
