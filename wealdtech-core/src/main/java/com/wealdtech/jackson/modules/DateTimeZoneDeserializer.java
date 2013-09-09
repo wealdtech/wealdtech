@@ -45,7 +45,7 @@ public class DateTimeZoneDeserializer extends JsonDeserializer<DateTimeZone>
     catch (IllegalArgumentException iae)
     {
       LOGGER.warn("Attempt to deserialize invalid datetimezone {}", node.textValue());
-      throw new IOException("Invalid datetimezone value", iae);
+      throw new IOException("Invalid datetimezone value \"" + node.textValue() + "\"", iae);
     }
     return result;
   }

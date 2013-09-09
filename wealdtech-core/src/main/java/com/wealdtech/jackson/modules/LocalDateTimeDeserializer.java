@@ -16,19 +16,18 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
 
 public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime>
 {
@@ -49,7 +48,7 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime>
     catch (IllegalArgumentException iae)
     {
       LOGGER.warn("Attempt to deserialize invalid localdatetime {}", node.textValue());
-      throw new IOException("Invalid localdatetime value", iae);
+      throw new IOException("Invalid localdatetime value \"" + node.textValue() + "\"", iae);
     }
     return result;
   }

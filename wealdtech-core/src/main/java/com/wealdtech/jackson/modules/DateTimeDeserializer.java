@@ -16,8 +16,11 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -25,11 +28,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
 
 public class DateTimeDeserializer extends JsonDeserializer<DateTime>
 {
@@ -73,7 +72,7 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
     catch (IllegalArgumentException iae)
     {
       LOGGER.warn("Attempt to deserialize invalid datetime {},{}", datetime, timezone);
-      throw new IOException("Invalid datetime value", iae);
+      throw new IOException("Invalid datetime value \"" + datetime + "," + timezone + "\"", iae);
     }
     return result;
   }
