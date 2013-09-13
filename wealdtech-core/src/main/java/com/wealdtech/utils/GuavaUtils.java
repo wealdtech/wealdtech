@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public class GuavaUtils
 {
-  public static Collection<?> emptyToNull(final Collection<?> cl)
+  public static <T> Collection<T> emptyToNull(final Collection<T> cl)
   {
     if (cl == null || cl.isEmpty())
     {

@@ -49,7 +49,6 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   @Override
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    LOGGER.debug("Serializing {}@{}", value.toString(), value.getZone().toString());
     gen.writeStartObject();
     gen.writeStringField("datetime", formatter.print(value));
     gen.writeStringField("timezone", value.getZone().toString());
