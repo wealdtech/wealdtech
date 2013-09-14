@@ -93,8 +93,7 @@ public class WealdInterval implements Comparable<WealdInterval>
   @Override
   public int hashCode()
   {
-    return Objects.hashCode(super.hashCode(),
-                            this.start,
+    return Objects.hashCode(this.start,
                             this.end);
   }
 
