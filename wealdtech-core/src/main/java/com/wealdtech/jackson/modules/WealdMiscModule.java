@@ -16,13 +16,14 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.net.InetSocketAddress;
-
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import com.google.common.collect.Range;
 import com.wealdtech.utils.messaging.MessageObjects;
+
+import java.net.InetSocketAddress;
 
 /**
  * Custom serializers and deserializers for miscellaneous types.
@@ -55,10 +56,12 @@ public class WealdMiscModule extends Module
     final SimpleSerializers serializers = new SimpleSerializers();
     serializers.addSerializer(new InetSocketAddressSerializer());
     serializers.addSerializer(new MessageObjectsSerializer());
+    serializers.addSerializer(new RangeSerializer());
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
     deserializers.addDeserializer(MessageObjects.class, new MessageObjectsDeserializer());
+    deserializers.addDeserializer(Range.class, new DateTimeRangeDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);
