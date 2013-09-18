@@ -35,7 +35,8 @@ import java.util.Iterator;
 class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
-  private static final char INFINITY = '\u221e';
+  private static final String NEGATIVE_INFINITY = "-∞";
+  private static final String POSITIVE_INFINITY = "+∞";
   private static final char TWODOT = '\u2025';
   private static final Splitter TWODOT_SPLITTER = Splitter.on(TWODOT);
   private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -51,6 +52,7 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     {
       return null;
     }
+    final int txtLen = txt.length();
 
     boolean lowerClosed;
     if (txt.charAt(0) == '[')
@@ -66,13 +68,28 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
       throw new DataError.Bad("Unexpected first character in range \"" + txt + "\"");
     }
 
-    final Iterator<String> dateTimes = TWODOT_SPLITTER.split(txt.substring(1, txt.length() - 1)).iterator();
+    boolean upperClosed;
+    if (txt.charAt(txtLen - 1) == ']')
+    {
+      upperClosed = true;
+    }
+    else if (txt.charAt(txtLen - 1) == ')')
+    {
+      upperClosed = false;
+    }
+    else
+    {
+      throw new DataError.Bad("Unexpected last character in range \"" + txt + "\"");
+    }
+
+
+    final Iterator<String> dateTimes = TWODOT_SPLITTER.split(txt.substring(1, txtLen - 1)).iterator();
     String start = dateTimes.next();
     String end = dateTimes.next();
 
     boolean lowerBound;
     DateTime lowerPoint;
-    if (start.equals(INFINITY))
+    if (start.equals(NEGATIVE_INFINITY))
     {
       lowerBound = false;
       lowerPoint = null;
@@ -85,7 +102,7 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
 
     boolean upperBound;
     DateTime upperPoint;
-    if (start.equals(INFINITY))
+    if (end.equals(POSITIVE_INFINITY))
     {
       upperBound = false;
       upperPoint = null;
@@ -93,10 +110,63 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     else
     {
       upperBound = true;
-      upperPoint = formatter.parseDateTime(start);
+      upperPoint = formatter.parseDateTime(end);
     }
 
-    return null;
+    if (lowerBound == false && upperBound == false)
+    {
+      return Range.all();
+    }
+    else if (lowerBound == false)
+    {
+      // Upper present
+      if (upperClosed == true)
+      {
+        return Range.lessThan(upperPoint);
+      }
+      else
+      {
+        return Range.atMost(upperPoint);
+      }
+    }
+    else if (upperBound == false)
+    {
+      // Lower present
+      if (lowerClosed == true)
+      {
+        return Range.atLeast(lowerPoint);
+      }
+      else
+      {
+        return Range.greaterThan(lowerPoint);
+      }
+    }
+    else
+    {
+      // Both present
+      if (lowerClosed == true)
+      {
+        if (upperClosed == true)
+        {
+          return Range.closed(lowerPoint, upperPoint);
+        }
+        else
+        {
+          return Range.closedOpen(lowerPoint, upperPoint);
+        }
+      }
+      else
+      {
+        if (upperClosed == true)
+        {
+          return Range.openClosed(lowerPoint, upperPoint);
+        }
+        else
+        {
+          return Range.open(lowerPoint, upperPoint);
+        }
+      }
+    }
   }
 
 

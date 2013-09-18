@@ -48,6 +48,24 @@ public class MiscModuleTest
     assertEquals(deser, new InetSocketAddress("www.wealdtech.com", 12345));
   }
 
+
+  @Test
+  public void testDeserRange() throws Exception
+  {
+    final String ser = "\"[2013-01-02T03:00:00Z‥2013-01-02T04:00:00Z)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser,  Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC),
+                                          new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.UTC)));
+  }
+
+  @Test
+  public void testDeserUnboundedRange() throws Exception
+  {
+    final String ser = "\"[2013-01-02T03:00:00Z‥+∞)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser, Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC)));
+  }
+
   @Test
   public void testDeserInfiniteRange() throws Exception
   {
