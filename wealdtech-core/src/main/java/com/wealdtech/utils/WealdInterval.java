@@ -51,7 +51,7 @@ public class WealdInterval implements Comparable<WealdInterval>
   {
     checkNotNull(start, "Start must be specified");
     checkNotNull(end, "End must be specified");
-    checkState(start.isBefore(end), "End must be after start");
+    checkState(!end.isBefore(start), "End cannot be before start");
   }
 
   public DateTime getStart()
