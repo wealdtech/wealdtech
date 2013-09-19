@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Range;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -45,6 +46,11 @@ public class WealdInterval implements Comparable<WealdInterval>
   {
     this.start = start;
     this.end = start.plus(period);
+  }
+
+  public static WealdInterval fromRange(final Range<DateTime> range)
+  {
+    return new WealdInterval(range.lowerEndpoint(), range.upperEndpoint());
   }
 
   private void validate()
