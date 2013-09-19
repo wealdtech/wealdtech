@@ -88,7 +88,7 @@ public class MiscModuleTest
     final Range<DateTime> range = Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC),
                                                    new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.UTC));
     final String ser = this.mapper.writeValueAsString(range);
-    assertEquals(ser, "\"[2013-01-02T03:00:00.000Z‥2013-01-02T04:00:00.000Z)\"");
+    assertEquals(ser, "\"[2013-01-02T03:00:00+0000‥2013-01-02T04:00:00+0000)\"");
   }
 
   @Test
@@ -96,7 +96,7 @@ public class MiscModuleTest
   {
     final Range<DateTime> range = Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC));
     final String ser = this.mapper.writeValueAsString(range);
-    assertEquals(ser, "\"[2013-01-02T03:00:00.000Z‥+∞)\"");
+    assertEquals(ser, "\"[2013-01-02T03:00:00+0000‥+∞)\"");
   }
 
   @Test
