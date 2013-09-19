@@ -83,6 +83,11 @@ public class WealdInterval implements Comparable<WealdInterval>
     return new Interval(this.start, this.end);
   }
 
+  public Range<DateTime> toRange()
+  {
+    return Range.closedOpen(this.start, this.end);
+  }
+
   // Standard object methods follow
   @Override
   public String toString()
