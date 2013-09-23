@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleKeyDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.wealdtech.WID;
+import com.wealdtech.utils.CompoundWID;
 
 /**
  * Custom serializers and deserializers for Joda types.
@@ -53,16 +54,20 @@ public class WealdIDModule extends Module
     // Serializers and deserializers alter values
     final SimpleSerializers serializers = new SimpleSerializers();
     serializers.addSerializer(new WIDSerializer());
+    serializers.addSerializer(new CompoundWIDSerializer());
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(WID.class, new WIDDeserializer());
+    deserializers.addDeserializer(CompoundWID.class, new CompoundWIDDeserializer());
 
     // Key serializers alter the field name
     final SimpleSerializers keySerializers = new SimpleSerializers();
     keySerializers.addSerializer(new WIDKeySerializer());
+    keySerializers.addSerializer(new CompoundWIDKeySerializer());
 
     final SimpleKeyDeserializers keyDeserializers = new SimpleKeyDeserializers();
     keyDeserializers.addDeserializer(WID.class, new WIDKeyDeserializer());
+    keyDeserializers.addDeserializer(CompoundWID.class, new CompoundWIDKeyDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

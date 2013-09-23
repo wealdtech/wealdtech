@@ -16,26 +16,22 @@
 
 package com.wealdtech.jackson.modules;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.wealdtech.WID;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
+import com.wealdtech.utils.CompoundWID;
 
-import java.io.IOException;
-
-/**
- * Serialize a WID as a map key
- */
-public class WIDKeySerializer extends StdSerializer<WID<?>>
+public class CompoundWIDKeyDeserializer extends StdKeyDeserializer
 {
-  public WIDKeySerializer()
+  private static final long serialVersionUID = -9206684533148783990L;
+
+  public CompoundWIDKeyDeserializer()
   {
-    super(WID.class, true);
+    super(CompoundWID.class);
   }
 
   @Override
-  public void serialize(final WID<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
+  protected Object _parse(String key, DeserializationContext ctxt) throws Exception
   {
-    gen.writeFieldName(value.toString());
+    return CompoundWID.fromString(key);
   }
 }

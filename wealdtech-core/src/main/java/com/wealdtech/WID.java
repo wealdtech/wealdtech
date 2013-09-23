@@ -16,13 +16,14 @@
 
 package com.wealdtech;
 
-import static com.wealdtech.Preconditions.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.primitives.Longs;
 
 import java.io.Serializable;
 import java.util.Random;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.primitives.Longs;
+import static com.wealdtech.Preconditions.checkArgument;
+import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * A sharded and time-localized ID system that uses generics
@@ -72,7 +73,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
     this.id = wid;
   }
 
-  /*
+  /**
    * Obtain the shard ID from a WID.
    * <p/>
    * @return the shard ID
@@ -83,7 +84,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
     return (this.id & SHARDMASK) >> SHARDOFFSET;
   }
 
-  /*
+  /**
    * Obtain the timestamp from a WID.
    * <p/>
    * @return the timestamp in milliseconds
@@ -94,7 +95,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
     return ((this.id & TIMESTAMPMASK) >> TIMESTAMPOFFSET) + EPOCH;
   }
 
-  /*
+  /**
    * Obtain the internal ID from a WID.
    * <p/>
    * @return the internal ID
@@ -192,7 +193,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   /**
    * Note that due to type erasure we can't confirm that
    * WID&lt;A&gt; != WID&lt;B&gt; when they hold the same
-   * underling ID.  This should not matter given the ID
+   * underlying ID.  This should not matter given the ID
    * generation mechanism, but do be aware of this if you're
    * relying on this somewhere.
    */
