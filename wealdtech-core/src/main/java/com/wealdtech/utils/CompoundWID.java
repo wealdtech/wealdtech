@@ -29,8 +29,8 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
 
   /**
    * Create a new compound WID given an ID and instance ID
-   * @param id
-   * @param instanceId
+   * @param id the ID
+   * @param instanceId the instance ID
    */
   public CompoundWID(final long id, final long instanceId)
   {
@@ -39,7 +39,18 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   }
 
   /**
-   * Obtain the instance ID.
+   * Obtain the (W)ID
+   * <p/>
+   * @return the WID
+   */
+  @JsonIgnore
+  public WID<T> getId()
+  {
+    return this.id;
+  }
+
+  /**
+   * Obtain the instance ID
    * <p/>
    * @return the instance ID
    */
@@ -57,7 +68,7 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
       final Iterator<String> it = Splitter.on('.').split(input).iterator();
       final long id = Long.valueOf(it.next(), RADIX);
       final long instanceId = Long.valueOf(it.next(), RADIX);
-      return new CompoundWID(id, instanceId);
+      return new CompoundWID<>(id, instanceId);
     }
     catch (Exception e)
     {
