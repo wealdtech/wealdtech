@@ -61,6 +61,11 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
     return this.instanceId;
   }
 
+  public static <T> CompoundWID<T> fromLongs(final Long id, final Long instanceId)
+  {
+    return new CompoundWID<T>(id, instanceId);
+  }
+
   public static <T> CompoundWID<T> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
@@ -116,7 +121,7 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   @Override
   public boolean equals(final Object that)
   {
-    return (that instanceof CompoundWID) && (this.id == ((CompoundWID<?>)that).id);
+    return ((that instanceof CompoundWID) && this.compareTo((CompoundWID<T>)that) == 0);
   }
 
   @Override
