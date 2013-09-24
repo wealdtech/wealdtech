@@ -68,9 +68,9 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
 
   private final long id;
 
-  public WID(final long wid)
+  public WID(final long id)
   {
-    this.id = wid;
+    this.id = id;
   }
 
   /**

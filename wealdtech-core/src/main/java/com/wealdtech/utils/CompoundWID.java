@@ -2,6 +2,7 @@ package com.wealdtech.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
@@ -22,7 +23,7 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   private static final long serialVersionUID = 1203541025301978079L;
 
   private final WID<T> id;
-  private final long instanceId;
+  private final Optional<Long> instanceId;
 
   // Radix for WID - hex
   private static final int RADIX = 16;
@@ -32,10 +33,10 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
    * @param id the ID
    * @param instanceId the instance ID
    */
-  public CompoundWID(final long id, final long instanceId)
+  public CompoundWID(final long id, final Long instanceId)
   {
     this.id = WID.fromLong(id);
-    this.instanceId = instanceId;
+    this.instanceId = Optional.fromNullable(instanceId);
   }
 
   /**
@@ -55,7 +56,7 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
    * @return the instance ID
    */
   @JsonIgnore
-  public long getInstanceId()
+  public Optional<Long> getInstanceId()
   {
     return this.instanceId;
   }
@@ -67,7 +68,15 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
     {
       final Iterator<String> it = Splitter.on('.').split(input).iterator();
       final long id = Long.valueOf(it.next(), RADIX);
-      final long instanceId = Long.valueOf(it.next(), RADIX);
+      Long instanceId = null;
+      if (it.hasNext())
+      {
+        final String next = it.next();
+        if (next != null && !next.equals(""))
+        {
+          instanceId = Long.valueOf(next, RADIX);
+        }
+      }
       return new CompoundWID<>(id, instanceId);
     }
     catch (Exception e)
@@ -83,8 +92,11 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   {
     final StringBuilder sb = new StringBuilder(32);
     sb.append(this.id.toString());
-    sb.append('.');
-    sb.append(Long.toHexString(this.instanceId));
+    if (this.instanceId.isPresent())
+    {
+      sb.append('.');
+      sb.append(Long.toHexString(this.instanceId.get()));
+    }
     return sb.toString();
   }
 
@@ -111,9 +123,9 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   public int compareTo(final CompoundWID<T> that)
   {
     int result = this.id.compareTo(that.id);
-    if (result == 0)
+    if (result == 0 && this.instanceId.isPresent())
     {
-       result = (this.instanceId < that.instanceId ? -1 : (this.instanceId > that.instanceId ? 1 : 0));
+       result = (this.instanceId.get() < that.instanceId.get() ? -1 : (this.instanceId.get() > that.instanceId.get() ? 1 : 0));
     }
     return result;
   }

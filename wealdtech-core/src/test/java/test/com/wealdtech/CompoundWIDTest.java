@@ -16,7 +16,7 @@ public class CompoundWIDTest
   @Test
   public void testClass() throws Exception
   {
-    final CompoundWID<Date> testWid1 = new CompoundWID<>(1, 2);
+    final CompoundWID<Date> testWid1 = new CompoundWID<>(1, 2L);
     testWid1.toString();
     testWid1.hashCode();
     assertEquals(testWid1, testWid1);
@@ -24,7 +24,7 @@ public class CompoundWIDTest
     assertNotEquals(null, testWid1);
     assertTrue(testWid1.compareTo(testWid1) == 0);
 
-    final CompoundWID<Date> testWid2 = new CompoundWID<>(2, 3);
+    final CompoundWID<Date> testWid2 = new CompoundWID<>(2, 3L);
     assertTrue(testWid2.compareTo(testWid1) != 0);
     assertTrue(testWid1.compareTo(testWid2) != 0);
     assertNotEquals(testWid1, testWid2);
@@ -33,7 +33,7 @@ public class CompoundWIDTest
   @Test
   public void testFromString() throws Exception
   {
-    final CompoundWID<Date> testWid = CompoundWID.<Date>fromString("7edcba09f7654321.2");
+    final CompoundWID<Date> testWid = CompoundWID.fromString("7edcba09f7654321.2");
     testWid.toString();
     testWid.hashCode();
     assertEquals(testWid, testWid);
@@ -54,6 +54,7 @@ public class CompoundWIDTest
     try
     {
       CompoundWID.<Date>fromString("invalid");
+      fail("Managed to create a WID from an invalid string input");
     }
     catch (DataError.Bad de)
     {
@@ -63,25 +64,8 @@ public class CompoundWIDTest
     // Ensure that partial IDs don't work
     try
     {
-      CompoundWID.<Date>fromString("7edcba09f7654321");
-    }
-    catch (DataError.Bad de)
-    {
-      // Good
-    }
-
-    try
-    {
-      CompoundWID.<Date>fromString("7edcba09f7654321.");
-    }
-    catch (DataError.Bad de)
-    {
-      // Good
-    }
-
-    try
-    {
       CompoundWID.<Date>fromString(".2");
+      fail("Managed to create a WID from an invalid string input");
     }
     catch (DataError.Bad de)
     {
@@ -90,13 +74,33 @@ public class CompoundWIDTest
   }
 
   @Test
-  public void testSerialization() throws Exception
+  public void testSerialization1() throws Exception
   {
     final String input = "123456789abcdef.1b7d66a823c";
     final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final CompoundWID<Date> testWid = CompoundWID.<Date>fromString(input);
+    final CompoundWID<Date> testWid = CompoundWID.fromString(input);
     final String output = mapper.writeValueAsString(testWid);
     assertEquals(output, "\"" + input + "\"");
+  }
+
+  @Test
+  public void testSerialization2() throws Exception
+  {
+    final String input = "123456789abcdef";
+    final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
+    final CompoundWID<Date> testWid = CompoundWID.fromString(input);
+    final String output = mapper.writeValueAsString(testWid);
+    assertEquals(output, "\"" + input + "\"");
+  }
+
+  @Test
+  public void testSerialization3() throws Exception
+  {
+    final String input = "123456789abcdef.";
+    final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
+    final CompoundWID<Date> testWid = CompoundWID.fromString(input);
+    final String output = mapper.writeValueAsString(testWid);
+    assertEquals(output, "\"123456789abcdef\"");
   }
 
   @Test
