@@ -18,7 +18,7 @@ import static com.wealdtech.Preconditions.checkNotNull;
  *
  * Normal form for
  */
-public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
+public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Serializable
 {
   private static final long serialVersionUID = 1203541025301978079L;
 
@@ -36,6 +36,17 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   public CompoundWID(final long id, final Long instanceId)
   {
     this.id = WID.fromLong(id);
+    this.instanceId = Optional.fromNullable(instanceId);
+  }
+
+  /**
+   * Create a new compound WID given a WID and instance ID
+   * @param id the WID
+   * @param instanceId the instance ID
+   */
+  public CompoundWID(final WID<T> id, final Long instanceId)
+  {
+    this.id = id;
     this.instanceId = Optional.fromNullable(instanceId);
   }
 
@@ -61,12 +72,17 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
     return this.instanceId;
   }
 
-  public static <T> CompoundWID<T> fromLongs(final Long id, final Long instanceId)
+  public static <T, U> CompoundWID<T, U> fromLongs(final Long id, final Long instanceId)
   {
-    return new CompoundWID<T>(id, instanceId);
+    return new CompoundWID<>(id, instanceId);
   }
 
-  public static <T> CompoundWID<T> fromString(final String input)
+  public static <T, U> CompoundWID<T, U> fromWIDAndLong(final WID<T> id, final Long instanceId)
+  {
+    return new CompoundWID<>(id, instanceId);
+  }
+
+  public static <T, U> CompoundWID<T, U> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
     try
@@ -121,11 +137,11 @@ public class CompoundWID<T> implements Comparable<CompoundWID<T>>, Serializable
   @Override
   public boolean equals(final Object that)
   {
-    return ((that instanceof CompoundWID) && this.compareTo((CompoundWID<T>)that) == 0);
+    return ((that instanceof CompoundWID) && this.compareTo((CompoundWID<T, U>)that) == 0);
   }
 
   @Override
-  public int compareTo(final CompoundWID<T> that)
+  public int compareTo(final CompoundWID<T, U> that)
   {
     int result = this.id.compareTo(that.id);
     if (result == 0 && this.instanceId.isPresent())

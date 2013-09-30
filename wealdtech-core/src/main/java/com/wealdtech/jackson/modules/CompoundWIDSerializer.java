@@ -23,7 +23,7 @@ import com.wealdtech.utils.CompoundWID;
 
 import java.io.IOException;
 
-public class CompoundWIDSerializer extends StdSerializer<CompoundWID<?>>
+public class CompoundWIDSerializer extends StdSerializer<CompoundWID<?, ?>>
 {
   public CompoundWIDSerializer()
   {
@@ -31,7 +31,7 @@ public class CompoundWIDSerializer extends StdSerializer<CompoundWID<?>>
   }
 
   @Override
-  public void serialize(final CompoundWID<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
+  public void serialize(final CompoundWID<?, ?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(value.toString());
   }

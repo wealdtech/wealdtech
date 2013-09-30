@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * Serialize a compound WID as a map key
  */
-public class CompoundWIDKeySerializer extends StdSerializer<CompoundWID<?>>
+public class CompoundWIDKeySerializer extends StdSerializer<CompoundWID<?, ?>>
 {
   public CompoundWIDKeySerializer()
   {
@@ -34,7 +34,7 @@ public class CompoundWIDKeySerializer extends StdSerializer<CompoundWID<?>>
   }
 
   @Override
-  public void serialize(final CompoundWID<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
+  public void serialize(final CompoundWID<?, ?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeFieldName(value.toString());
   }

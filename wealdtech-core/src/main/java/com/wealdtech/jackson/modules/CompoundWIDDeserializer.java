@@ -22,7 +22,7 @@ import com.wealdtech.utils.CompoundWID;
 
 import java.io.IOException;
 
-public class CompoundWIDDeserializer extends FromStringDeserializer<CompoundWID<?>>
+public class CompoundWIDDeserializer extends FromStringDeserializer<CompoundWID<?, ?>>
 {
   private static final long serialVersionUID = -8771787639009660187L;
 
@@ -32,7 +32,7 @@ public class CompoundWIDDeserializer extends FromStringDeserializer<CompoundWID<
   }
 
   @Override
-  protected CompoundWID<?> _deserialize(String value, DeserializationContext ctxt) throws IOException
+  protected CompoundWID<?, ?> _deserialize(String value, DeserializationContext ctxt) throws IOException
   {
     return CompoundWID.fromString(value);
   }

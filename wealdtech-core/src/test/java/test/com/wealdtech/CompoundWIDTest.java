@@ -16,7 +16,7 @@ public class CompoundWIDTest
   @Test
   public void testClass() throws Exception
   {
-    final CompoundWID<Date> testWid1 = new CompoundWID<>(1, 2L);
+    final CompoundWID<Date, String> testWid1 = new CompoundWID<>(1, 2L);
     testWid1.toString();
     testWid1.hashCode();
     assertEquals(testWid1, testWid1);
@@ -24,7 +24,7 @@ public class CompoundWIDTest
     assertNotEquals(null, testWid1);
     assertTrue(testWid1.compareTo(testWid1) == 0);
 
-    final CompoundWID<Date> testWid2 = new CompoundWID<>(2, 3L);
+    final CompoundWID<Date, String> testWid2 = new CompoundWID<>(2, 3L);
     assertTrue(testWid2.compareTo(testWid1) != 0);
     assertTrue(testWid1.compareTo(testWid2) != 0);
     assertNotEquals(testWid1, testWid2);
@@ -33,7 +33,7 @@ public class CompoundWIDTest
   @Test
   public void testFromString() throws Exception
   {
-    final CompoundWID<Date> testWid = CompoundWID.fromString("7edcba09f7654321.2");
+    final CompoundWID<Date, String> testWid = CompoundWID.fromString("7edcba09f7654321.2");
     testWid.toString();
     testWid.hashCode();
     assertEquals(testWid, testWid);
@@ -43,7 +43,7 @@ public class CompoundWIDTest
     // Ensure that NULL IDs don't work
     try
     {
-      CompoundWID.<Date>fromString(null);
+      CompoundWID.<Date, String>fromString(null);
     }
     catch (DataError.Missing de)
     {
@@ -53,7 +53,7 @@ public class CompoundWIDTest
     // Ensure that invalid IDs don't work
     try
     {
-      CompoundWID.<Date>fromString("invalid");
+      CompoundWID.<Date, String>fromString("invalid");
       fail("Managed to create a WID from an invalid string input");
     }
     catch (DataError.Bad de)
@@ -64,7 +64,7 @@ public class CompoundWIDTest
     // Ensure that partial IDs don't work
     try
     {
-      CompoundWID.<Date>fromString(".2");
+      CompoundWID.<Date, String>fromString(".2");
       fail("Managed to create a WID from an invalid string input");
     }
     catch (DataError.Bad de)
@@ -78,7 +78,7 @@ public class CompoundWIDTest
   {
     final String input = "123456789abcdef.1b7d66a823c";
     final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final CompoundWID<Date> testWid = CompoundWID.fromString(input);
+    final CompoundWID<Date, String> testWid = CompoundWID.fromString(input);
     final String output = mapper.writeValueAsString(testWid);
     assertEquals(output, "\"" + input + "\"");
   }
@@ -88,7 +88,7 @@ public class CompoundWIDTest
   {
     final String input = "123456789abcdef";
     final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final CompoundWID<Date> testWid = CompoundWID.fromString(input);
+    final CompoundWID<Date, String> testWid = CompoundWID.fromString(input);
     final String output = mapper.writeValueAsString(testWid);
     assertEquals(output, "\"" + input + "\"");
   }
@@ -98,7 +98,7 @@ public class CompoundWIDTest
   {
     final String input = "123456789abcdef.";
     final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final CompoundWID<Date> testWid = CompoundWID.fromString(input);
+    final CompoundWID<Date, String> testWid = CompoundWID.fromString(input);
     final String output = mapper.writeValueAsString(testWid);
     assertEquals(output, "\"123456789abcdef\"");
   }
@@ -108,7 +108,7 @@ public class CompoundWIDTest
   {
     final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
     final String input = "\"123456789abcdef.1b7d66a823c\"";
-    final CompoundWID<Date> testWid = mapper.readValue(input, new TypeReference<CompoundWID<Date>>(){});
+    final CompoundWID<Date, String> testWid = mapper.readValue(input, new TypeReference<CompoundWID<Date, String>>(){});
     assertEquals("\"" + testWid.toString() + "\"", input);
   }
 }
