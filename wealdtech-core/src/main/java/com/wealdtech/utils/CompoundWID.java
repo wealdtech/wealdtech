@@ -15,14 +15,16 @@ import static com.wealdtech.Preconditions.checkNotNull;
 /**
  * Sometimes a compound ID is required, for example when an item has multiple instances.  CompoundWID extends {@link WID} to provide
  * an additional instance ID.
- *
- * Normal form for
+ * <p/>
+ * The generic parameters for the class are first the class and second the class of the WID.  For example, if {@code Instance} is a
+ * class representing a {@code Product} the signature for {@code Instance} CompoundWIDs would be {@code CompoundWID&lt;Instance,
+ * Product&gt;}
  */
 public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Serializable
 {
   private static final long serialVersionUID = 1203541025301978079L;
 
-  private final WID<T> id;
+  private final WID<U> id;
   private final Optional<Long> instanceId;
 
   // Radix for WID - hex
@@ -44,7 +46,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
    * @param id the WID
    * @param instanceId the instance ID
    */
-  public CompoundWID(final WID<T> id, final Long instanceId)
+  public CompoundWID(final WID<U> id, final Long instanceId)
   {
     this.id = id;
     this.instanceId = Optional.fromNullable(instanceId);
@@ -56,7 +58,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
    * @return the WID
    */
   @JsonIgnore
-  public WID<T> getId()
+  public WID<U> getId()
   {
     return this.id;
   }
@@ -77,7 +79,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
     return new CompoundWID<>(id, instanceId);
   }
 
-  public static <T, U> CompoundWID<T, U> fromWIDAndLong(final WID<T> id, final Long instanceId)
+  public static <T, U> CompoundWID<T, U> fromWIDAndLong(final WID<U> id, final Long instanceId)
   {
     return new CompoundWID<>(id, instanceId);
   }
