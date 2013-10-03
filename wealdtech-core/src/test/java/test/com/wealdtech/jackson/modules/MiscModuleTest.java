@@ -52,24 +52,24 @@ public class MiscModuleTest
   @Test
   public void testDeserRange() throws Exception
   {
-    final String ser = "\"[2013-01-02T03:00:00Z‥2013-01-02T04:00:00Z)\"";
+    final String ser = "\"[2013-01-02T03:00:00Z Europe/London,2013-01-02T04:00:00Z Europe/London)\"";
     final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
-    assertEquals(deser,  Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC),
-                                          new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.UTC)));
+    assertEquals(deser,  Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London")),
+                                          new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London"))));
   }
 
   @Test
   public void testDeserUnboundedRange() throws Exception
   {
-    final String ser = "\"[2013-01-02T03:00:00Z‥+∞)\"";
+    final String ser = "\"[2013-01-02T03:00:00+13:45 Pacific/Chatham,+∞)\"";
     final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
-    assertEquals(deser, Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC)));
+    assertEquals(deser, Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Pacific/Chatham"))));
   }
 
   @Test
   public void testDeserInfiniteRange() throws Exception
   {
-    final String ser = "\"(-∞‥+∞)\"";
+    final String ser = "\"(-∞,+∞)\"";
     final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
     assertEquals(deser, Range.<DateTime>all());
   }
@@ -85,10 +85,10 @@ public class MiscModuleTest
   @Test
   public void testSerRange() throws Exception
   {
-    final Range<DateTime> range = Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC),
-                                                   new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.UTC));
+    final Range<DateTime> range = Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London")),
+                                                   new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.forID("America/New_York")));
     final String ser = this.mapper.writeValueAsString(range);
-    assertEquals(ser, "\"[2013-01-02T03:00:00+0000‥2013-01-02T04:00:00+0000)\"");
+    assertEquals(ser, "\"[2013-01-02T03:00:00+0000 Europe/London,2013-01-02T04:00:00-0500 America/New_York)\"");
   }
 
   @Test
@@ -96,7 +96,7 @@ public class MiscModuleTest
   {
     final Range<DateTime> range = Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC));
     final String ser = this.mapper.writeValueAsString(range);
-    assertEquals(ser, "\"[2013-01-02T03:00:00+0000‥+∞)\"");
+    assertEquals(ser, "\"[2013-01-02T03:00:00+0000 UTC,+∞)\"");
   }
 
   @Test
@@ -104,6 +104,6 @@ public class MiscModuleTest
   {
     final Range<DateTime> range = Range.all();
     final String ser = this.mapper.writeValueAsString(range);
-    assertEquals(ser, "\"(-∞‥+∞)\"");
+    assertEquals(ser, "\"(-∞,+∞)\"");
   }
 }

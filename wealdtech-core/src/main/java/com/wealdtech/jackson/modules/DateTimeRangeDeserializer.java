@@ -37,9 +37,8 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
-  private static final char TWODOT = '\u2025';
-  private static final Splitter TWODOT_SPLITTER = Splitter.on(TWODOT);
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+  private static final Splitter SPLITTER = Splitter.on(',');
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZ");
   private static DateTimeZone utczone = DateTimeZone.forID("UTC");
 
   private Class<?> targetClass;
@@ -83,7 +82,7 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     }
 
 
-    final Iterator<String> dateTimes = TWODOT_SPLITTER.split(txt.substring(1, txtLen - 1)).iterator();
+    final Iterator<String> dateTimes = SPLITTER.split(txt.substring(1, txtLen - 1)).iterator();
     String start = dateTimes.next();
     String end = dateTimes.next();
 
@@ -168,44 +167,4 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
       }
     }
   }
-
-
-
-//    final ObjectCodec oc = jp.getCodec();
-//    final JsonNode node = oc.readTree(jp);
-//
-//    final JsonNode datetimenode = node.get("datetime");
-//    if (datetimenode == null)
-//    {
-//      LOGGER.warn("Attempt to deserialize malformed datetime");
-//      throw new IOException("Invalid datettime value");
-//    }
-//    final String datetime = datetimenode.textValue();
-//    // Obtain values
-//    final JsonNode tznode = node.get("timezone");
-//    String timezone = null;
-//    if (tznode != null)
-//    {
-//      timezone = tznode.textValue();
-//    }
-//
-//    DateTime result = null;
-//    try
-//    {
-//      if ((timezone == null) || ("UTC".equals(timezone)))
-//      {
-//        result = formatter.parseDateTime(datetime).withZone(utczone);
-//      }
-//      else
-
-//      {
-//        result = formatter.parseDateTime(datetime).withZone(DateTimeZone.forID(timezone));
-//      }
-//    }
-//    catch (IllegalArgumentException iae)
-//    {
-//      LOGGER.warn("Attempt to deserialize invalid datetime {},{}", datetime, timezone);
-//      throw new IOException("Invalid datetime value \"" + datetime + "," + timezone + "\"", iae);
-//    }
-//    return result;
 }

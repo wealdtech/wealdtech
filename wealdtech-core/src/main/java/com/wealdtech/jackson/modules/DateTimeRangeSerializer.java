@@ -31,8 +31,7 @@ public class DateTimeRangeSerializer extends StdSerializer<Range<DateTime>>
 {
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
-  private static final char TWODOT = '\u2025';
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZ");
 
   public DateTimeRangeSerializer()
   {
@@ -62,7 +61,8 @@ public class DateTimeRangeSerializer extends StdSerializer<Range<DateTime>>
         sb.append('(');
         sb.append(NEGATIVE_INFINITY);
       }
-      sb.append(TWODOT);
+      sb.append(',');
+
       if (value.hasUpperBound())
       {
         sb.append(formatter.print(value.upperEndpoint()));
