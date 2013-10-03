@@ -17,10 +17,8 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -33,47 +31,31 @@ import java.io.IOException;
 public class DateTimeDeserializer extends JsonDeserializer<DateTime>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-  private static DateTimeZone utczone = DateTimeZone.forID("UTC");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZZ");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER_NO_TZ = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+  private static final DateTimeZone UTC = DateTimeZone.forID("UTC");
 
   @Override
-  public DateTime deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException
+  public DateTime deserialize(final JsonParser jp, final DeserializationContext deserializationContext) throws IOException
   {
-    final ObjectCodec oc = jsonParser.getCodec();
-    final JsonNode node = oc.readTree(jsonParser);
-
-    final JsonNode datetimenode = node.get("datetime");
-    if (datetimenode == null)
+    final String txt = jp.getText();
+    if (txt == null)
     {
-      LOGGER.warn("Attempt to deserialize malformed datetime");
-      throw new IOException("Invalid datettime value");
-    }
-    final String datetime = datetimenode.textValue();
-    // Obtain values
-    final JsonNode tznode = node.get("timezone");
-    String timezone = null;
-    if (tznode != null)
-    {
-      timezone = tznode.textValue();
+      return null;
     }
 
-    DateTime result = null;
-    try
+    DateTime result;
+    if (txt.indexOf(' ') == -1)
     {
-      if ((timezone == null) || ("UTC".equals(timezone)))
-      {
-        result = formatter.parseDateTime(datetime).withZone(utczone);
-      }
-      else
-      {
-        result = formatter.parseDateTime(datetime).withZone(DateTimeZone.forID(timezone));
-      }
+      // No timezone, use the no-tz formatter and UTC timezone
+      result = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(txt).withZone(UTC);
     }
-    catch (IllegalArgumentException iae)
+    else
     {
-      LOGGER.warn("Attempt to deserialize invalid datetime {},{}", datetime, timezone);
-      throw new IOException("Invalid datetime value \"" + datetime + "," + timezone + "\"", iae);
+      // Timezone supplied
+      result = DATE_TIME_FORMATTER.parseDateTime(txt);
     }
+
     return result;
   }
 }

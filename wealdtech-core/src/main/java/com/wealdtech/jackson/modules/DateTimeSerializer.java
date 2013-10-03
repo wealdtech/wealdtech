@@ -39,7 +39,7 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeSerializer.class);
 
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZ");
 
   public DateTimeSerializer()
   {
@@ -49,9 +49,10 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   @Override
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeStartObject();
-    gen.writeStringField("datetime", formatter.print(value));
-    gen.writeStringField("timezone", value.getZone().toString());
-    gen.writeEndObject();
+    gen.writeString(formatter.print(value));
+//    gen.writeStartObject();
+//    gen.writeStringField("datetime", formatter.print(value));
+//    gen.writeStringField("timezone", value.getZone().toString());
+//    gen.writeEndObject();
   }
 }
