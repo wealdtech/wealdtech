@@ -16,16 +16,19 @@
 
 package test.com.wealdtech.jackson.modules;
 
-import java.net.InetSocketAddress;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.collect.Range;
+import com.wealdtech.jackson.ObjectMapperFactory;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.wealdtech.jackson.ObjectMapperFactory;
+import java.net.InetSocketAddress;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class MiscModuleTest
 {
@@ -45,11 +48,62 @@ public class MiscModuleTest
     assertEquals(deser, new InetSocketAddress("www.wealdtech.com", 12345));
   }
 
+
+  @Test
+  public void testDeserRange() throws Exception
+  {
+    final String ser = "\"[2013-01-02T03:00:00Z Europe/London,2013-01-02T04:00:00Z Europe/London)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser,  Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London")),
+                                          new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London"))));
+  }
+
+  @Test
+  public void testDeserUnboundedRange() throws Exception
+  {
+    final String ser = "\"[2013-01-02T03:00:00+13:45 Pacific/Chatham,+∞)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser, Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Pacific/Chatham"))));
+  }
+
+  @Test
+  public void testDeserInfiniteRange() throws Exception
+  {
+    final String ser = "\"(-∞,+∞)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser, Range.<DateTime>all());
+  }
+
   @Test
   public void testSerInetSocketAddress() throws Exception
   {
     final InetSocketAddress addr = new InetSocketAddress("www.wealdtech.com", 23456);
     final String ser = this.mapper.writeValueAsString(addr);
     assertEquals(ser, "\"www.wealdtech.com:23456\"");
+  }
+
+  @Test
+  public void testSerRange() throws Exception
+  {
+    final Range<DateTime> range = Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London")),
+                                                   new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.forID("America/New_York")));
+    final String ser = this.mapper.writeValueAsString(range);
+    assertEquals(ser, "\"[2013-01-02T03:00:00+0000 Europe/London,2013-01-02T04:00:00-0500 America/New_York)\"");
+  }
+
+  @Test
+  public void testSerUnboundedRange() throws Exception
+  {
+    final Range<DateTime> range = Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.UTC));
+    final String ser = this.mapper.writeValueAsString(range);
+    assertEquals(ser, "\"[2013-01-02T03:00:00+0000 UTC,+∞)\"");
+  }
+
+  @Test
+  public void testSerInfiniteRange() throws Exception
+  {
+    final Range<DateTime> range = Range.all();
+    final String ser = this.mapper.writeValueAsString(range);
+    assertEquals(ser, "\"(-∞,+∞)\"");
   }
 }

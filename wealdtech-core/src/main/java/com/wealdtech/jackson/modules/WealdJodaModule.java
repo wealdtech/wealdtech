@@ -16,16 +16,11 @@
 
 package com.wealdtech.jackson.modules;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Period;
-
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import org.joda.time.*;
 
 /**
  * Custom serializers and deserializers for Joda types.
@@ -67,6 +62,8 @@ public class WealdJodaModule extends Module
     deserializers.addDeserializer(LocalDate.class, new LocalDateDeserializer());
     serializers.addSerializer(new IntervalSerializer());
     deserializers.addDeserializer(Interval.class, new IntervalDeserializer());
+    serializers.addSerializer(new DateTimeZoneSerializer());
+    deserializers.addDeserializer(DateTimeZone.class, new DateTimeZoneDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

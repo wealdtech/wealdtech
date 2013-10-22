@@ -34,6 +34,8 @@ public class CORSConfiguration implements Configuration
 
   private String allowedMethods = "GET, POST, PUT, DELETE, OPTIONS";
 
+  private Boolean reflectRequest = false;
+
   @Inject
   public CORSConfiguration()
   {
@@ -42,11 +44,13 @@ public class CORSConfiguration implements Configuration
   @JsonCreator
   private CORSConfiguration(@JsonProperty("origin") final String origin,
                             @JsonProperty("allowcredentials") final Boolean allowCredentials,
-                            @JsonProperty("allowedmethods") final String allowedMethods)
+                            @JsonProperty("allowedmethods") final String allowedMethods,
+                            @JsonProperty("reflectrequest") final Boolean reflectRequest)
   {
     this.origin = Objects.firstNonNull(origin, this.origin);
     this.allowCredentials = Objects.firstNonNull(allowCredentials, this.allowCredentials);
     this.allowedMethods = Objects.firstNonNull(allowedMethods, this.allowedMethods);
+    this.reflectRequest = Objects.firstNonNull(reflectRequest, this.reflectRequest);
   }
 
   public String getOrigin()
@@ -62,5 +66,10 @@ public class CORSConfiguration implements Configuration
   public String getAllowedMethods()
   {
     return this.allowedMethods;
+  }
+
+  public boolean reflectRequest()
+  {
+    return this.reflectRequest;
   }
 }

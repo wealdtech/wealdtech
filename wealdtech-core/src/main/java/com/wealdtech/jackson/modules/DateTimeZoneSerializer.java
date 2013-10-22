@@ -19,23 +19,26 @@ package com.wealdtech.jackson.modules;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.wealdtech.WID;
+import org.joda.time.DateTimeZone;
 
 import java.io.IOException;
 
 /**
- * Serialize a WID as a map key
+ * Custom serializer for Joda DateTimeZone objects.
+ * This serializer uses the full name of the DateTimeZone for serialization.
+ *
+ * @see DateTimeZone
  */
-public class WIDKeySerializer extends StdSerializer<WID<?>>
+public class DateTimeZoneSerializer extends StdSerializer<DateTimeZone>
 {
-  public WIDKeySerializer()
+  public DateTimeZoneSerializer()
   {
-    super(WID.class, true);
+    super(DateTimeZone.class, true);
   }
 
   @Override
-  public void serialize(final WID<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
+  public void serialize(final DateTimeZone value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeFieldName(value.toString());
+    gen.writeString(value.getID());
   }
 }

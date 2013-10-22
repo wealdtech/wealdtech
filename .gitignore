@@ -18,11 +18,14 @@ out
 #
 build
 .gradle
+gradle/
 
 #
 # IntelliJ
 #
 workspace.xml
+libraries/
+*.iml
 
 #
 # TestNG

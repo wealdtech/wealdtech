@@ -14,7 +14,11 @@ subprojects {
     }
 
     group = 'com.wealdtech'
-    version = '1.8.0'
+    version = '1.8.1'
+
+    test {
+        useTestNG()
+    }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
@@ -80,6 +84,12 @@ subprojects {
                     }
                 }
             }
+        }
+    }
+
+    idea.module.iml {
+        beforeMerged { module ->
+            module.dependencies.clear()
         }
     }
 }

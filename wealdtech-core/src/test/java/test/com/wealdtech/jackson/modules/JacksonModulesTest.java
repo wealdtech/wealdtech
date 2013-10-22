@@ -16,18 +16,6 @@
 
 package test.com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,8 +23,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Optional;
 import com.wealdtech.jackson.ObjectMapperFactory;
+import com.wealdtech.utils.WealdInterval;
+import org.joda.time.*;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class JacksonModulesTest
 {
@@ -112,26 +109,26 @@ public class JacksonModulesTest
   @Test
   public void testDeserDateTime() throws Exception
   {
-    final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ssZZ");
+    final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ssZ ZZZ");
 
     // Complete serialization
-    final DateTime dt1 = this.mapper.readValue("{\"datetime\":\"2012-02-03T04:05:06+0100\",\"timezone\":\"Europe/Paris\"}", DateTime.class);
-    final DateTime basedt1 = DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("Europe/Paris"));
+    final DateTime dt1 = this.mapper.readValue("\"2012-02-03T04:05:06+0100 Europe/Paris\"", DateTime.class);
+    final DateTime basedt1 = DateTime.parse("2012-02-03 04:05:06+0100 Europe/Paris", fmt);
     assertEquals(dt1, basedt1);
 
     // Serialization without timezone (== UTC)
-    final DateTime dt2 = this.mapper.readValue("{\"datetime\":\"2012-02-03T04:05:06+0100\"}", DateTime.class);
-    final DateTime basedt2 = DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("UTC"));
+    final DateTime dt2 = this.mapper.readValue("\"2012-02-03T04:05:06+0100\"", DateTime.class);
+    final DateTime basedt2 = DateTime.parse("2012-02-03 04:05:06+0100 UTC", fmt);
     assertEquals(dt2, basedt2);
 
     // Serialization with UTC timezone
-    final DateTime dt3 = this.mapper.readValue("{\"datetime\":\"2012-02-03T04:05:06+0100\",\"timezone\":\"UTC\"}", DateTime.class);
-    final DateTime basedt3 = DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("UTC"));
+    final DateTime dt3 = this.mapper.readValue("\"2012-02-03T04:05:06+0100 UTC\"}", DateTime.class);
+    final DateTime basedt3 = DateTime.parse("2012-02-03 04:05:06+0100 UTC", fmt);
     assertEquals(dt3, basedt3);
 
-    // Serialization with differing timezones
-    final DateTime dt4 = this.mapper.readValue("{\"datetime\":\"2012-02-03T04:05:06+0800\",\"timezone\":\"Europe/Paris\"}", DateTime.class);
-    final DateTime basedt4 = DateTime.parse("2012-02-03 04:05:06+0800", fmt).withZone(DateTimeZone.forID("Europe/Paris"));
+    // Serialization with differing timezone to offset
+    final DateTime dt4 = this.mapper.readValue("\"2012-02-03T04:05:06+0800 Europe/Paris\"}", DateTime.class);
+    final DateTime basedt4 = DateTime.parse("2012-02-03 04:05:06+0800 Europe/Paris", fmt);
     assertEquals(dt4, basedt4);
 
   }
@@ -167,11 +164,11 @@ public class JacksonModulesTest
     // Invalid timezone
     try
     {
-      this.mapper.readValue("{\"datetime\":\"20120203T040506+0100\",\"timezone\":\"Neverwhere\"}", DateTime.class);
+      this.mapper.readValue("\"20120203T040506+0100 Neverwhere\"", DateTime.class);
       // Should not reach here
       fail();
     }
-    catch (IOException ioe) // NOPMD
+    catch (IllegalArgumentException iae) // NOPMD
     {
       // Good
     }
@@ -179,11 +176,11 @@ public class JacksonModulesTest
     // No datetime
     try
     {
-      this.mapper.readValue("{\"timezone\":\"Europe/Paris\"}", DateTime.class);
+      this.mapper.readValue("\" Europe/Paris\"", DateTime.class);
       // Should not reach here
       fail();
     }
-    catch (IOException ioe) // NOPMD
+    catch (IllegalArgumentException iae) // NOPMD
     {
       // Good
     }
@@ -191,11 +188,11 @@ public class JacksonModulesTest
     // Invalid datettime
     try
     {
-      this.mapper.readValue("{\"datetime\":\"20121503T040506+0100\",\"timezone\":\"Europe/Paris\"}", DateTime.class);
+      this.mapper.readValue("\"20121503T040506+0100 Europe/Paris\"", DateTime.class);
       // Should not reach here
       fail();
     }
-    catch (IOException ioe) // NOPMD
+    catch (IllegalArgumentException iae) // NOPMD
     {
       // Good
     }
@@ -274,6 +271,41 @@ public class JacksonModulesTest
   }
 
   @Test
+  public void testDeserDateTimeZone() throws Exception
+  {
+    // Complete serialization
+    final DateTimeZone dtz = this.mapper.readValue("\"America/New_York\"", DateTimeZone.class);
+    assertEquals(dtz, DateTimeZone.forID("America/New_York"));
+  }
+
+  @Test
+  public void testDeserDateTimeZoneInvalid() throws Exception
+  {
+    try
+    {
+      this.mapper.readValue("\"Bad/Bad\"", DateTimeZone.class);
+      fail("Managed to deserialize invalid timezone");
+    }
+    catch (IOException ioe)
+    {
+      // Good
+    }
+  }
+
+  @Test
+  public void testDeserWealdInterval() throws Exception
+  {
+    final WealdInterval int1 = this.mapper.readValue("{\"start\":\"2013-08-08T01:02:03+0200 Europe/Paris\",\"end\":\"2013-08-08T01:02:05+0100 Europe/London\"}", WealdInterval.class);
+
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final WealdInterval int2 = new WealdInterval(fromDt, toDt);
+    assertEquals(int1, int2);
+  }
+
+  @Test
   public void testSerAbsent() throws Exception
   {
     final String value = this.mapper.writeValueAsString(Optional.absent());
@@ -340,7 +372,7 @@ public class JacksonModulesTest
   {
     final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100");
     final String value = this.mapper.writeValueAsString(dt1);
-    assertEquals(value, "{\"datetime\":\"2012-02-03T04:05:06+0100\",\"timezone\":\"+01:00\"}");
+    assertEquals(value, "\"2012-02-03T04:05:06+0100 +01:00\"");
   }
 
   @Test
@@ -365,5 +397,26 @@ public class JacksonModulesTest
     final Period p1 = Period.parse("PT2H20M");
     final String value = this.mapper.writeValueAsString(p1);
     assertEquals(value, "\"PT2H20M\"");
+  }
+
+  @Test
+  public void testSerDateTimeZone() throws Exception
+  {
+    final DateTimeZone dtz = DateTimeZone.forID("America/New_York");
+    final String value = this.mapper.writeValueAsString(dtz);
+    assertEquals(value, "\"America/New_York\"");
+  }
+
+  @Test
+  public void testSerWealdInterval() throws Exception
+  {
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final WealdInterval interval = new WealdInterval(fromDt, toDt);
+
+    final String value = this.mapper.writeValueAsString(interval);
+    assertEquals(value, "{\"start\":\"2013-08-08T01:02:03+0200 Europe/Paris\",\"end\":\"2013-08-08T01:02:05+0100 Europe/London\"}");
   }
 }
