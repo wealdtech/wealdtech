@@ -131,6 +131,10 @@ public class JacksonModulesTest
     final DateTime basedt4 = DateTime.parse("2012-02-03 04:05:06+0800 Europe/Paris", fmt);
     assertEquals(dt4, basedt4);
 
+    // Serialization with : in the timezone offset
+    final DateTime dt5 = this.mapper.readValue("\"2013-11-04T16:00:00+01:00 Europe/Paris\"", DateTime.class);
+    final DateTime basedt5 = DateTime.parse("2013-11-04 16:00:00+01:00 Europe/Paris", fmt);
+    assertEquals(dt5, basedt5);
   }
 
   @Test
