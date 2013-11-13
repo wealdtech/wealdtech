@@ -376,7 +376,7 @@ public class JacksonModulesTest
   {
     final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100");
     final String value = this.mapper.writeValueAsString(dt1);
-    assertEquals(value, "\"2012-02-03T04:05:06+0100 +01:00\"");
+    assertEquals(value, "\"2012-02-03T04:05:06+01:00 +01:00\"");
   }
 
   @Test
@@ -421,6 +421,6 @@ public class JacksonModulesTest
     final WealdInterval interval = new WealdInterval(fromDt, toDt);
 
     final String value = this.mapper.writeValueAsString(interval);
-    assertEquals(value, "{\"start\":\"2013-08-08T01:02:03+0200 Europe/Paris\",\"end\":\"2013-08-08T01:02:05+0100 Europe/London\"}");
+    assertEquals(value, "{\"start\":\"2013-08-08T01:02:03+02:00 Europe/Paris\",\"end\":\"2013-08-08T01:02:05+01:00 Europe/London\"}");
   }
 }

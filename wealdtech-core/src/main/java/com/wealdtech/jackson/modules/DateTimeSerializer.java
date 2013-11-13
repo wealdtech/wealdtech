@@ -39,7 +39,7 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeSerializer.class);
 
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZ");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ ZZZ");
 
   public DateTimeSerializer()
   {
