@@ -31,7 +31,7 @@ public class DateTimeRangeSerializer extends StdSerializer<Range<DateTime>>
 {
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZ");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ ZZZ");
 
   public DateTimeRangeSerializer()
   {

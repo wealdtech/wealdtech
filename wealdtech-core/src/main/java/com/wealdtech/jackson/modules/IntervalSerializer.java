@@ -36,7 +36,7 @@ import java.io.IOException;
  */
 public class IntervalSerializer extends StdSerializer<Interval>
 {
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ ZZZ");
 
   public IntervalSerializer()
   {
