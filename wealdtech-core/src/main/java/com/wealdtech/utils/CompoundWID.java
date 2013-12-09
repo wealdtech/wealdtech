@@ -7,6 +7,7 @@ import com.google.common.base.Splitter;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Iterator;
 
@@ -24,7 +25,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
 {
   private static final long serialVersionUID = 1203541025301978079L;
 
-  private final WID<U> id;
+  private final WID<T> id;
   private final Optional<Long> instanceId;
 
   // Radix for WID - hex
@@ -46,7 +47,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
    * @param id the WID
    * @param instanceId the instance ID
    */
-  public CompoundWID(final WID<U> id, final Long instanceId)
+  public CompoundWID(final WID<T> id, final Long instanceId)
   {
     this.id = id;
     this.instanceId = Optional.fromNullable(instanceId);
@@ -58,7 +59,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
    * @return the WID
    */
   @JsonIgnore
-  public WID<U> getId()
+  public WID<T> getId()
   {
     return this.id;
   }
@@ -79,7 +80,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
     return new CompoundWID<>(id, instanceId);
   }
 
-  public static <T, U> CompoundWID<T, U> fromWIDAndLong(final WID<U> id, final Long instanceId)
+  public static <T, U> CompoundWID<T, U> fromWIDAndLong(final WID<T> id, final Long instanceId)
   {
     return new CompoundWID<>(id, instanceId);
   }
@@ -143,7 +144,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
   }
 
   @Override
-  public int compareTo(final CompoundWID<T, U> that)
+  public int compareTo(@Nonnull final CompoundWID<T, U> that)
   {
     int result = this.id.compareTo(that.id);
     if (result == 0 && this.instanceId.isPresent())

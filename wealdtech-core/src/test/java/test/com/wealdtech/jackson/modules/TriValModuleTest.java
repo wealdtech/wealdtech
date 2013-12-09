@@ -102,7 +102,7 @@ public class TriValModuleTest
 
     final TriVal<DateTime> trv = TriVal.<DateTime>of(DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("Europe/Paris")));
     final String ser = this.mapper.writeValueAsString(trv);
-    assertEquals(ser, "\"2012-02-03T04:05:06+0100 Europe/Paris\"");
+    assertEquals(ser, "\"2012-02-03T04:05:06+01:00 Europe/Paris\"");
   }
 
   @Test
