@@ -70,6 +70,7 @@ public class CompoundWID<T, U> implements Comparable<CompoundWID<T, U>>, Seriali
    * @return the instance ID
    */
   @JsonIgnore
+  @Nonnull
   public Optional<Long> getInstanceId()
   {
     return this.instanceId;

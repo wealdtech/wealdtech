@@ -3,6 +3,7 @@ package test.com.wealdtech;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wealdtech.DataError;
+import com.wealdtech.WID;
 import com.wealdtech.jackson.ObjectMapperFactory;
 import com.wealdtech.utils.CompoundWID;
 import org.testng.annotations.Test;
@@ -24,10 +25,32 @@ public class CompoundWIDTest
     assertNotEquals(null, testWid1);
     assertTrue(testWid1.compareTo(testWid1) == 0);
 
+    final CompoundWID<Date, String> testWid1Alt1 = CompoundWID.fromLongs(1L, 2L);
+    assertEquals(testWid1, testWid1Alt1);
+
+    final CompoundWID<Date, String> testWid1Alt2 = CompoundWID.fromWIDAndLong(WID.<Date>fromLong(1L), 2L);
+    assertEquals(testWid1, testWid1Alt2);
+    assertEquals(testWid1.getId(), WID.<Date>fromLong(1L));
+
     final CompoundWID<Date, String> testWid2 = new CompoundWID<>(2, 3L);
     assertTrue(testWid2.compareTo(testWid1) != 0);
     assertTrue(testWid1.compareTo(testWid2) != 0);
     assertNotEquals(testWid1, testWid2);
+
+    final CompoundWID<Date, String> testWid3 = new CompoundWID<>(WID.<Date>fromLong(3L), 3L);
+    assertTrue(testWid3.compareTo(testWid1) != 0);
+    assertTrue(testWid3.compareTo(testWid2) != 0);
+    assertEquals(testWid3, testWid3);
+
+    assertEquals(testWid2.getInstanceId().orNull(), testWid3.getInstanceId().orNull());
+
+  }
+
+  @Test
+  public void testNullity()
+  {
+    final CompoundWID<Date, String> testWid1 = new CompoundWID<>(1, 2L);
+    assertNotNull(testWid1.getInstanceId().orNull());
   }
 
   @Test
