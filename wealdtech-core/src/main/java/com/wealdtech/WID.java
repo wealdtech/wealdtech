@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ *    Copyright 2013, 2014 Weald Technology Trading Limited
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,17 +17,20 @@
 package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
+import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import com.google.common.primitives.Longs;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Random;
 
 import static com.wealdtech.Preconditions.checkArgument;
 import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
- * A sharded and time-localized ID system that uses generics
- * to ensure type safety.
+ * A sharded and time-localized ID system that uses generics to ensure type safety.
  * <p/>
  * The Weald ID contains three components: a shard ID, a
  * timestamp and an individual ID.  The components are:
@@ -40,10 +43,14 @@ import static com.wealdtech.Preconditions.checkNotNull;
  * </ul>
  * The ranges of valid values for each of these components are as follows:
  * TODO
+ * <p/>
+ * WIDs can have sub-IDs as well, which are simple longs.  Sub-IDs are optional.
  */
 public class WID<T> implements Comparable<WID<T>>, Serializable
 {
   private static final long serialVersionUID = 6897379549693105270L;
+
+  private static final String WID_SEPARATOR = ".";
 
   // The epoch of our timestamp, relative to the actual epoch
   public static final long EPOCH = 1325376000000L;
@@ -68,9 +75,17 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
 
   private final long id;
 
+  private final Optional<Long> subId;
+
   public WID(final long id)
   {
+    this(id, null);
+  }
+
+  public WID(final long id, final Long subId)
+  {
     this.id = id;
+    this.subId = Optional.fromNullable(subId);
   }
 
   /**
@@ -107,12 +122,26 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   }
 
   /**
-   * Generate a simple long value for the ID
+   * Get the ID value as a long
    * @return a simple long value for the ID
    */
-  public long toLong()
+  public long getId()
   {
     return this.id;
+  }
+
+  /**
+   * Get the subID value as an optional long
+   * @return an optional long value for the subID
+   */
+  public Optional<Long> getSubId()
+  {
+    return this.subId;
+  }
+
+  public boolean hasSubId()
+  {
+    return this.subId.isPresent();
   }
 
   /**
@@ -124,13 +153,28 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   public static <T> WID<T> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
-    try
+    if (input.contains(WID_SEPARATOR))
     {
-      return new WID<T>(Long.valueOf(input, RADIX));
+      final Iterator<String> ids = Splitter.on(WID_SEPARATOR).split(input).iterator();
+      try
+      {
+        return new WID<>(Long.valueOf(ids.next(), RADIX), Long.valueOf(ids.next(), RADIX));
+      }
+      catch (NumberFormatException nfe)
+      {
+        throw new DataError.Bad("Failed to parse WID \"" + input + "\"", nfe);
+      }
     }
-    catch (NumberFormatException nfe)
+    else
     {
-      throw new DataError.Bad("Failed to parse WID \"" + input + "\"", nfe);
+      try
+      {
+        return new WID<>(Long.valueOf(input, RADIX));
+      }
+      catch (NumberFormatException nfe)
+      {
+        throw new DataError.Bad("Failed to parse WID \"" + input + "\"", nfe);
+      }
     }
   }
 
@@ -143,24 +187,47 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    */
   public static <T> WID<T> fromComponents(final long shardId, final long timestamp, final long id)
   {
+    return fromComponents(shardId, timestamp, id, null);
+  }
+
+  /**
+   * Create an ID given the component parts
+   * @param shardId a shard ID, in the range 0 to 8191
+   * @param timestamp the timestamp, in milliseconds from the epoch
+   * @param id an ID, the range 0 to 1023
+   * @return A new ID made out of the components
+   */
+  public static <T> WID<T> fromComponents(final long shardId, final long timestamp, final long id, final Long subId)
+  {
     final long adjustedTimestamp = timestamp - EPOCH;
     checkArgument(shardId >=0 && shardId < MAX_SHARD, "Shard ID %s out of range %s", shardId);
     checkArgument(timestamp >= EPOCH && adjustedTimestamp < MAX_TIMESTAMP, "Timestamp %s out of range %s", timestamp, MAX_TIMESTAMP);
     checkArgument(id >=0 && id < MAX_IID, "ID %s out of range", id);
-    return new WID<T>(((shardId << SHARDOFFSET) & SHARDMASK) |
+    return new WID<>(((shardId << SHARDOFFSET) & SHARDMASK) |
                       ((adjustedTimestamp << TIMESTAMPOFFSET) & TIMESTAMPMASK) |
-                      (id & IIDMASK));
+                      (id & IIDMASK), subId);
   }
 
   /**
    * Create an ID given a long representation.
-   * @param input a long representing the WID
+   * @param id a long representing the WID
    * @return The WID.
    */
-  public static <T> WID<T> fromLong(final Long input)
+  public static <T> WID<T> fromLong(final Long id)
   {
-    checkNotNull(input, "Passed NULL WID");
-    return new WID<T>(input);
+    checkNotNull(id, "Passed NULL WID");
+    return new WID<>(id, null);
+  }
+
+  /**
+   * Create an ID given a long representation.
+   * @param id a long representing the WID
+   * @return The WID.
+   */
+  public static <T> WID<T> fromLongs(final Long id, final Long subId)
+  {
+    checkNotNull(id, "Passed NULL WID");
+    return new WID<>(id, subId);
   }
 
   /**
@@ -176,18 +243,66 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
     return fromComponents(shardId, timestamp, id);
   }
 
+  /**
+   * Generate a WID with random shard ID, ID and subID
+   * @return a random WID
+   */
+  public static <T> WID<T> randomWIDWithSubId()
+  {
+    final Random random = new Random();
+    final long shardId = random.nextInt((int)MAX_SHARD);
+    final long timestamp = System.currentTimeMillis();
+    final long id = random.nextInt((int)MAX_IID);
+    return fromComponents(shardId, timestamp, id, random.nextLong());
+  }
+
+  /**
+   * Set the WID to have a specific subID.
+   * @param subId The subID.  Can be NULL to remove an existing subId
+   * @return a new WID with the specified subID
+   */
+  public WID<T> withSubId(final Long subId)
+  {
+    return new WID<>(this.getId(), subId);
+  }
+
+  /**
+   * Recast a WID to another type
+   * @param wid the existing wid
+   * @param <T> the type to cast it to
+   * @return a new WID of the correct type
+   */
+  public static<T> WID<T> recast(WID<?> wid)
+  {
+    return (WID<T>)wid;
+  }
+
   // Standard object methods
 
   @Override
   public String toString()
   {
-    return Long.toHexString(this.id);
+    if (hasSubId())
+    {
+      return Long.toHexString(this.id) + WID_SEPARATOR + Long.toHexString(this.subId.get());
+    }
+    else
+    {
+      return Long.toHexString(this.id);
+    }
   }
 
   @Override
   public int hashCode()
   {
-    return Longs.hashCode(this.id);
+    if (hasSubId())
+    {
+      return Objects.hashCode(this.id, this.subId.get());
+    }
+    else
+    {
+      return Longs.hashCode(this.id);
+    }
   }
 
   /**
@@ -200,14 +315,42 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   @Override
   public boolean equals(final Object that)
   {
-    return (that instanceof WID) && (this.id == ((WID<?>)that).id);
+    if (!(that instanceof WID))
+    {
+      return false;
+    }
+
+    final WID<?> cThat = (WID<?>)that;
+
+    return this.id == cThat.id && this.getSubId().equals(cThat.getSubId());
   }
 
   @Override
   public int compareTo(final WID<T> that)
   {
-    return (this.id < that.id ? -1 :
-            (this.id > that.id ? 1 :
-             0));
+    if (this.id > that.id)
+    {
+      return 1;
+    }
+    else if (this.id < that.id)
+    {
+      return -1;
+    }
+    else if (this.hasSubId() && !that.hasSubId())
+    {
+      return 1;
+    }
+    else if (!this.hasSubId() && that.hasSubId())
+    {
+      return -1;
+    }
+    else if (!this.hasSubId() && !that.hasSubId())
+    {
+      return 0;
+    }
+    else
+    {
+      return this.getSubId().get().compareTo(that.getSubId().get());
+    }
   }
 }
