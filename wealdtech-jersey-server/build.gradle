@@ -2,6 +2,9 @@ dependencies
 {
     // Utilities
     compile project(':wealdtech-core')
+    compile project(':wealdtech-jackson')
+    compile project(':wealdtech-configuration')
+
     compile 'ch.qos.logback:logback-classic:1.0.2'
     compile 'org.slf4j:jul-to-slf4j:1.6.1'
 
@@ -26,8 +29,9 @@ dependencies
     compile 'com.codahale.metrics:metrics-jersey:3.0.1'
     compile 'com.codahale.metrics:metrics-jetty9:3.0.1'
 
+    // Testing
     testCompile 'com.sun.jersey:jersey-grizzly2:1.18'
-    testCompile 'org.eclipse.jetty.websocket:websocket-client:9.1.2.v20430410'
+    // testCompile 'org.eclipse.jetty.websocket:websocket-client:9.1.2.v20430410'
 }
 
 uploadArchives {

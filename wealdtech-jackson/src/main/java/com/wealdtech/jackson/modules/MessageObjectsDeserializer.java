@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.wealdtech.DataError;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.utils.messaging.MessageObjects;
+import messaging.MessageObjects;
 
 public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?>>
 {

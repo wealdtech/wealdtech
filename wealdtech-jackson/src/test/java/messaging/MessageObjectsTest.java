@@ -14,12 +14,7 @@
  *   limitations under the License.
  */
 
-package test.com.wealdtech.utils.messaging;
-
-import java.io.IOException;
-
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+package messaging;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -29,9 +24,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.utils.messaging.MessageObjects;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import java.io.IOException;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 public class MessageObjectsTest
 {
@@ -48,7 +47,7 @@ public class MessageObjectsTest
   {
     final MessageObjects<TestData> testmo = new MessageObjects<>(12345L, new TestData("Prior string", 0), new TestData("Current string", 1));
     final String ser = mapper.writeValueAsString(testmo);
-    assertEquals(ser,  "{\"userid\":12345,\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
+    assertEquals(ser,  "{\"userid\":12345,\"_type\":\"messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
   }
 
   @Test
@@ -56,7 +55,7 @@ public class MessageObjectsTest
   {
     final MessageObjects<TestData> testmo = new MessageObjects<>(12345L, null, new TestData("Current string", 1));
     final String ser = mapper.writeValueAsString(testmo);
-    assertEquals(ser,  "{\"userid\":12345,\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
+    assertEquals(ser,  "{\"userid\":12345,\"_type\":\"messaging.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}");
   }
 
   @Test
@@ -64,13 +63,13 @@ public class MessageObjectsTest
   {
     final MessageObjects<TestData> testmo = new MessageObjects<>(12345L, new TestData("Prior string", 0), null);
     final String ser = mapper.writeValueAsString(testmo);
-    assertEquals(ser,  "{\"userid\":12345,\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}");
+    assertEquals(ser,  "{\"userid\":12345,\"_type\":\"messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}");
   }
 
   @Test
   public void testDeser() throws Exception
   {
-    final String ser = "{\"userid\":12345,\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
+    final String ser = "{\"userid\":12345,\"_type\":\"messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
     final TypeReference<MessageObjects<TestData>> type = new TypeReference<MessageObjects<TestData>>(){};
     final MessageObjects<TestData> mo = mapper.readValue(ser, type);
     assertEquals(mapper.writeValueAsString(mo), ser);
@@ -79,7 +78,7 @@ public class MessageObjectsTest
   @Test
   public void testDeserNullPrior() throws Exception
   {
-    final String ser = "{\"userid\":12345,\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
+    final String ser = "{\"userid\":12345,\"_type\":\"messaging.MessageObjectsTest$TestData\",\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
     final TypeReference<MessageObjects<TestData>> type = new TypeReference<MessageObjects<TestData>>(){};
     final MessageObjects<TestData> mo = mapper.readValue(ser, type);
     assertEquals(mapper.writeValueAsString(mo), ser);
@@ -88,7 +87,7 @@ public class MessageObjectsTest
   @Test
   public void testDeserNullCurrent() throws Exception
   {
-    final String ser = "{\"userid\":12345,\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}";
+    final String ser = "{\"userid\":12345,\"_type\":\"messaging.MessageObjectsTest$TestData\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0}}";
     final TypeReference<MessageObjects<TestData>> type = new TypeReference<MessageObjects<TestData>>(){};
     final MessageObjects<TestData> mo = mapper.readValue(ser, type);
     assertEquals(mapper.writeValueAsString(mo), ser);
@@ -112,7 +111,7 @@ public class MessageObjectsTest
     }
 
     // Unknown type
-    final String ser2 = "{\"_type\":\"test.com.wealdtech.utils.messaging.UnknownClass\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
+    final String ser2 = "{\"_type\":\"messaging.UnknownClass\",\"prior\":{\"mystr\":\"Prior string\",\"myint\":0},\"current\":{\"mystr\":\"Current string\",\"myint\":1}}";
     try
     {
        mapper.readValue(ser2, type);
@@ -125,7 +124,7 @@ public class MessageObjectsTest
     }
 
     // Both null
-    final String ser3 = "{\"_type\":\"test.com.wealdtech.utils.messaging.MessageObjectsTest$TestData\"}";
+    final String ser3 = "{\"_type\":\"messaging.MessageObjectsTest$TestData\"}";
     try
     {
        mapper.readValue(ser3, type);

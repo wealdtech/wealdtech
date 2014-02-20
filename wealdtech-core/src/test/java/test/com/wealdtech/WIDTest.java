@@ -1,14 +1,9 @@
 package test.com.wealdtech;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
-import com.wealdtech.jackson.ObjectMapperFactory;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Date;
 
 import static org.testng.Assert.*;
@@ -175,43 +170,6 @@ public class WIDTest
     final WID<Date> testWid = WID.fromComponents(shardId, timestamp, id);
     assertEquals(testWid.getTimestamp(), timestamp);
     assertEquals(testWid.getShardId(), shardId);
-  }
-
-  @Test
-  public void testSerialization()
-  {
-    final String input = "123456789abcdef";
-    final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final WID<Date> testWid = WID.fromString(input);
-    final String output;
-    try
-    {
-      output = mapper.writeValueAsString(testWid);
-      assertEquals(output, "\"" + input + "\"");
-    }
-    catch (JsonProcessingException e)
-    {
-      fail("Failed to serialize " + input);
-    }
-  }
-
-  @Test
-  public void testDeserialization()
-  {
-    final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final String input = "\"123456789abcdef\"";
-    final WID<Date> testWid;
-    try
-    {
-      testWid = mapper.readValue(input, new TypeReference<WID<Date>>()
-      {
-      });
-      assertEquals("\"" + testWid.toString() + "\"", input);
-    }
-    catch (IOException e)
-    {
-      fail("Failed to deserialize " + input);
-    }
   }
 
   @Test

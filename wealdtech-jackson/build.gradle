@@ -1,0 +1,19 @@
+dependencies
+{
+    compile project(':wealdtech-core')
+    compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.2.3'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-jackson'
+            pom.project {
+                name 'Wealdtech Jackson'
+                description 'Weald Technology Jackson libraries and utilities'
+            }
+        }
+    }
+}

@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" filepath="$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" filepath="$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" filepath="$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" filepath="$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" filepath="$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" />
     </modules>
   </component>
