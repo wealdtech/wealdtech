@@ -1,6 +1,7 @@
 dependencies
 {
     compile project(':wealdtech-jackson')
+    compile 'com.google.inject:guice:3.0'
 }
 
 uploadArchives {
