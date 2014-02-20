@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package messaging;
+package com.wealdtech.utils.messaging;
 
 import java.io.Serializable;
 

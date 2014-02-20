@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package messaging;
+package com.wealdtech.utils.messaging;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wealdtech.DataError;
 import com.wealdtech.jackson.WealdMapper;
-import messaging.MessageItem.Type;
+import com.wealdtech.utils.messaging.MessageItem.Type;
 
 import static org.testng.Assert.*;
 
