@@ -1,0 +1,17 @@
+dependencies
+{
+    compile project(':wealdtech-core')
+    compile 'com.codahale.metrics:metrics-core:3.0.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-metrics'
+            pom.project {
+                name 'Wealdtech Metrics'
+                description 'Weald Technology metrics files'
+            }
+        }
+    }
+}

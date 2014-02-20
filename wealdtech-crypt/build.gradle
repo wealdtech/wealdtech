@@ -1,6 +1,7 @@
 dependencies
 {
     compile project(':wealdtech-configuration')
+    compile project(':wealdtech-metrics')
     // bcrypt functions
     compile 'org.mindrot:jbcrypt:0.3m'
 }

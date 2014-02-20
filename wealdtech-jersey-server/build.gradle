@@ -4,8 +4,7 @@ dependencies
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
-
-    compile 'org.slf4j:jul-to-slf4j:1.7.6'
+    compile project(':wealdtech-metrics')
 
     // JAX-RS
     compile 'com.sun.jersey:jersey-core:1.18'
