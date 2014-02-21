@@ -2,7 +2,7 @@ package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.datatype.guava.MultimapTypeModifier;
+import com.fasterxml.jackson.datatype.guava.GuavaTypeModifier;
 import com.fasterxml.jackson.datatype.guava.PackageVersion;
 
 public class TriValModule extends Module
@@ -31,7 +31,7 @@ public class TriValModule extends Module
   {
       context.addDeserializers(new TriValDeserializers());
       context.addSerializers(new TriValSerializers());
-      context.addTypeModifier(new MultimapTypeModifier());
+      context.addTypeModifier(new GuavaTypeModifier());
       context.addBeanSerializerModifier(new TriValBeanSerializerModifier());
   }
 }
