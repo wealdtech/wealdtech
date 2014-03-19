@@ -156,6 +156,13 @@ public class RangeFormatter
     return sb.toString();
   }
 
+  public String formatTime(final DateTime dateTime)
+  {
+    final Details timeDetails = new Details();
+    timeDetails.showTime = true;
+    return doFormat(dateTime, timeDetails);
+  }
+
   /**
    * Format the date of a single date/time
    * @param dateTime the date/time to format
@@ -259,7 +266,7 @@ public class RangeFormatter
       builder.appendMinuteOfHour(2);
     }
 
-    return datetime.toString(builder.toFormatter());
+    return datetime.toString(builder.toFormatter().withLocale(locale));
   }
 
   private boolean isSameMinute(final DateTime lower, final DateTime upper)

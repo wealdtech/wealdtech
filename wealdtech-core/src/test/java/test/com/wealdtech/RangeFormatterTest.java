@@ -16,6 +16,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
+import java.util.Locale;
+
 import static org.testng.Assert.assertEquals;
 
 
@@ -77,6 +79,13 @@ public class RangeFormatterTest
   }
 
   @Test
+  public void testSingleDateNonDefaultLocale()
+  {
+    final RangeFormatter formatter = new RangeFormatter(Locale.FRANCE, true);
+    assertEquals(formatter.formatDateTime(testDateTime1), "sam. 1 mars 00:00");
+  }
+
+  @Test
   public void testSingleDateTimeLongForm()
   {
     final RangeFormatter formatter = new RangeFormatter(false);
@@ -95,6 +104,20 @@ public class RangeFormatterTest
   {
     final RangeFormatter formatter = new RangeFormatter(false);
     assertEquals(formatter.formatDateTime(testDateTime5), "Saturday 2 March 2013 08:00");
+  }
+
+  @Test
+  public void testSingleTime()
+  {
+    final RangeFormatter formatter = new RangeFormatter();
+    assertEquals(formatter.formatTime(testDateTime3), "06:00");
+  }
+
+  @Test
+  public void testSingleTimeNonDefaultLocale()
+  {
+    final RangeFormatter formatter = new RangeFormatter(Locale.CANADA, true);
+    assertEquals(formatter.formatTime(testDateTime3), "06:00");
   }
 
   @Test
