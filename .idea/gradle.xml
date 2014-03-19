@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
             <option value="$PROJECT_DIR$/wealdtech-jersey-server" />
+            <option value="$PROJECT_DIR$/wealdtech-metrics" />
           </set>
         </option>
       </GradleProjectSettings>
