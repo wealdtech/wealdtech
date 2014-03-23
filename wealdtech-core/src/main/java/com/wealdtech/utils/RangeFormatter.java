@@ -46,6 +46,7 @@ public class RangeFormatter
 
   /**
    * Format the date and time of a date/time range.
+   *
    * @param range the range to format
    * @return a formatted range
    */
@@ -69,8 +70,7 @@ public class RangeFormatter
       lowerDetails.showDayOfMonth = true;
       lowerDetails.showMonthOfYear = true;
     }
-    if ((!isSameYear(lower, upper)) ||
-        (!isSameYear(lower, curDateTime)))
+    if ((!isSameYear(lower, upper)) || (!isSameYear(lower, curDateTime)))
     {
       lowerDetails.showYear = true;
     }
@@ -88,8 +88,7 @@ public class RangeFormatter
         upperDetails.showDayOfMonth = true;
         upperDetails.showMonthOfYear = true;
       }
-      if ((!isSameYear(lower, upper)) ||
-          (!isSameYear(upper, curDateTime)))
+      if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
       {
         upperDetails.showYear = true;
       }
@@ -101,6 +100,7 @@ public class RangeFormatter
 
   /**
    * Format the dates of a date/time range.
+   *
    * @param range the range to format
    * @return the formatted range
    */
@@ -118,18 +118,19 @@ public class RangeFormatter
       throw new DataError.Bad("Upper part of range must be after lower part of range");
     }
 
+    final boolean singleDay = isSameDay(lower, upper);
+
     // Lower date
     final Details lowerDetails = new Details();
     lowerDetails.showTime = false;
     lowerDetails.showDayOfWeek = true;
     lowerDetails.showDayOfMonth = true;
 
-    if (!isSameMonth(lower, upper))
+    if (!isSameMonth(lower, upper) || singleDay)
     {
       lowerDetails.showMonthOfYear = true;
     }
-    if ((!isSameYear(lower, upper)) &&
-        (!isSameYear(lower, curDateTime)))
+    if ((!isSameYear(lower, curDateTime)) && (singleDay || !isSameYear(lower, upper)))
     {
       lowerDetails.showYear = true;
     }
@@ -144,13 +145,24 @@ public class RangeFormatter
       upperDetails.showDayOfWeek = true;
       upperDetails.showDayOfMonth = true;
       upperDetails.showMonthOfYear = true;
-      if ((!isSameYear(lower, upper)) ||
-          (!isSameYear(upper, curDateTime)))
+      if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
       {
         upperDetails.showYear = true;
       }
 
       sb.append(doFormat(upper, upperDetails));
+    }
+    else
+    {
+      // Need to append month and year if applicable
+      if (!isSameMonth(lower, curDateTime))
+      {
+        lowerDetails.showMonthOfYear = true;
+      }
+      if (!isSameYear(lower, curDateTime))
+      {
+        lowerDetails.showYear = true;
+      }
     }
 
     return sb.toString();
@@ -165,8 +177,9 @@ public class RangeFormatter
 
   /**
    * Format the date of a single date/time
+   *
    * @param dateTime the date/time to format
-   * @return  a formatted date
+   * @return a formatted date
    */
   public String formatDate(final DateTime dateTime)
   {
@@ -175,8 +188,9 @@ public class RangeFormatter
 
   /**
    * Format the date and time of a single date/time
+   *
    * @param dateTime the date/time to format
-   * @return  a formatted date
+   * @return a formatted date
    */
   public String formatDateTime(final DateTime dateTime)
   {
@@ -185,9 +199,10 @@ public class RangeFormatter
 
   /**
    * Format the date and time of a single date/time
+   *
    * @param dateTime the date/time to format
    * @param showTime show the time as well as the date
-   * @return  a formatted date
+   * @return a formatted date
    */
   private String formatDateAndTime(final DateTime dateTime, final boolean showTime)
   {
@@ -277,6 +292,7 @@ public class RangeFormatter
            (lower.getHourOfDay() == upper.getHourOfDay()) &&
            (lower.getMinuteOfHour() == upper.getMinuteOfHour());
   }
+
   private boolean isSameHour(final DateTime lower, final DateTime upper)
   {
     return (lower.getYear() == upper.getYear()) &&
@@ -284,17 +300,19 @@ public class RangeFormatter
            (lower.getDayOfYear() == upper.getDayOfYear()) &&
            (lower.getHourOfDay() == upper.getHourOfDay());
   }
+
   private boolean isSameDay(final DateTime lower, final DateTime upper)
   {
     return (lower.getYear() == upper.getYear()) &&
            (lower.getMonthOfYear() == upper.getMonthOfYear()) &&
            (lower.getDayOfYear() == upper.getDayOfYear());
   }
+
   private boolean isSameMonth(final DateTime lower, final DateTime upper)
   {
-    return (lower.getYear() == upper.getYear()) &&
-           (lower.getMonthOfYear() == upper.getMonthOfYear());
+    return (lower.getYear() == upper.getYear()) && (lower.getMonthOfYear() == upper.getMonthOfYear());
   }
+
   private boolean isSameYear(final DateTime lower, final DateTime upper)
   {
     return (lower.getYear() == upper.getYear());

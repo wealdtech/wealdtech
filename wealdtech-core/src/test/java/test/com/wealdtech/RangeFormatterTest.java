@@ -131,6 +131,15 @@ public class RangeFormatterTest
   }
 
   @Test
+  public void testRangeDateSameDay()
+  {
+    final RangeFormatter formatter = new RangeFormatter();
+    final Range<DateTime> testRange = Range.closedOpen(new DateTime(2014, 7, 3, 0, 0), new DateTime(2014, 7, 4, 0, 0));
+    assertEquals(formatter.formatDate(testRange), "Thu 3 Jul");
+  }
+
+
+  @Test
   public void testRangeDateSpanningDays()
   {
     final RangeFormatter formatter = new RangeFormatter();
