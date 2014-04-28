@@ -22,6 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.primitives.Longs;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Random;
@@ -272,6 +273,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * @param <T> the type to cast it to
    * @return a new WID of the correct type
    */
+  @SuppressWarnings("unchecked")
   public static<T> WID<T> recast(WID<?> wid)
   {
     return (WID<T>)wid;
@@ -326,7 +328,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   }
 
   @Override
-  public int compareTo(final WID<T> that)
+  public int compareTo(@Nonnull final WID<T> that)
   {
     if (this.id > that.id)
     {

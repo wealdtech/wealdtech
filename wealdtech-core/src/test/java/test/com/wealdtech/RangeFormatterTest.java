@@ -14,6 +14,8 @@ import com.google.common.collect.Range;
 import com.wealdtech.utils.RangeFormatter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.testng.annotations.Test;
 
 import java.util.Locale;
@@ -43,6 +45,8 @@ public class RangeFormatterTest
   private static DateTime testDateTime10 = new DateTime(2013, 6, 1, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
   private static Range<DateTime> testDateTimeRange5 = Range.closedOpen(testDateTime9, testDateTime10);
 
+  private static final DateTimeFormatter shortDayFmt = new DateTimeFormatterBuilder().appendDayOfWeekShortText().toFormatter();
+  private static final DateTimeFormatter shortMonthFmt = new DateTimeFormatterBuilder().appendMonthOfYearShortText().toFormatter();
   @Test
   public void testSingleDate()
   {
@@ -126,8 +130,13 @@ public class RangeFormatterTest
     final DateTime lower = DateTime.now().withDayOfMonth(5).withHourOfDay(9).withMinuteOfHour(0);
     final DateTime upper = lower.plusDays(3);
     final Range<DateTime> currentYearRange = Range.closedOpen(lower, upper);
+    // Need short version of day and month
+    final String startDay = lower.toString(shortDayFmt);
+    final String endDay = upper.minusDays(1).toString(shortDayFmt);
+    final String month = lower.toString(shortMonthFmt);
+    final String expected = startDay + " 5 - " + endDay + " 7 " + month;
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDate(currentYearRange), "Wed 5 - Fri 7 Mar");
+    assertEquals(formatter.formatDate(currentYearRange), expected);
   }
 
   @Test

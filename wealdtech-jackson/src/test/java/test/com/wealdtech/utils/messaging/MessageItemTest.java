@@ -14,22 +14,23 @@
  *   limitations under the License.
  */
 
-package com.wealdtech.utils.messaging;
-
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+package test.com.wealdtech.utils.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wealdtech.DataError;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.utils.messaging.MessageItem;
 import com.wealdtech.utils.messaging.MessageItem.Type;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 public class MessageItemTest
 {
-  private final transient ObjectMapper mapper = WealdMapper.getMapper();
+  private final ObjectMapper mapper = WealdMapper.getMapper();
 
   @BeforeClass
   public void setUp()

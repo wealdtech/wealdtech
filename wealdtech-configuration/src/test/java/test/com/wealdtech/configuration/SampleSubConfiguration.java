@@ -5,17 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SampleSubConfiguration
 {
-  String teststring;
+  String testString;
 
   @JsonCreator
-  public SampleSubConfiguration(@JsonProperty("test string") final String teststring)
+  public SampleSubConfiguration(@JsonProperty("test string") final String testString)
   {
-    this.teststring = teststring;
+    this.testString = testString;
   }
 
   public String getString()
   {
-    return this.teststring;
+    return this.testString;
   }
 
 }

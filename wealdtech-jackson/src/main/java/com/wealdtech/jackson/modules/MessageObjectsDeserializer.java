@@ -16,17 +16,16 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.wealdtech.DataError;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.utils.messaging.MessageObjects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?>>
 {
@@ -43,50 +42,50 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
   {
     // This assumes a strict JSON format of userId followed by _type followed by prior and current (if they exist)
     jp.nextToken();
-    String fieldname = jp.getCurrentName();
-    if (!"userid".equals(fieldname))
+    String fieldName = jp.getCurrentName();
+    if (!"userid".equals(fieldName))
     {
-      throw new IOException("Unexpected key \"" + fieldname + "\"; expected userid");
+      throw new IOException("Unexpected key \"" + fieldName + "\"; expected userid");
     }
     jp.nextToken();
     final Long userId = Long.parseLong(jp.getText());
     jp.nextToken();
-    fieldname = jp.getCurrentName();
-    if (!"_type".equals(fieldname))
+    fieldName = jp.getCurrentName();
+    if (!"_type".equals(fieldName))
     {
-      throw new IOException("Unexpected key \"" + fieldname + "\"; expected _type");
+      throw new IOException("Unexpected key \"" + fieldName + "\"; expected _type");
     }
     jp.nextToken();
-    final String typestr = jp.getText();
-    Class<? extends Object> objclass;
+    final String typeStr = jp.getText();
+    Class<? extends Object> objClass;
     try
     {
-      objclass = Class.forName(typestr);
+      objClass = Class.forName(typeStr);
     }
     catch (ClassNotFoundException cnfe)
     {
-      LOGGER.error("MessageObjects has unknown class: \"" + typestr + "\"");
-      throw new IOException("MessageObjects has unknown class", cnfe);
+      LOGGER.error("MessageObjects has unknown class: \"{}\"", typeStr);
+      throw new IOException("MessageObjects has unknown class: \"" + typeStr + "\"", cnfe);
     }
 
     // Now that we have the type we can deserialize the objects
     jp.nextToken();
-    fieldname = jp.getCurrentName();
+    fieldName = jp.getCurrentName();
 
     Object prior = null;
-    if ("prior".equals(fieldname))
+    if ("prior".equals(fieldName))
     {
       jp.nextToken();
-      prior = WealdMapper.getMapper().readValue(jp, objclass);
+      prior = WealdMapper.getMapper().readValue(jp, objClass);
       jp.nextToken();
-      fieldname = jp.getCurrentName();
+      fieldName = jp.getCurrentName();
     }
 
     Object current = null;
-    if ("current".equals(fieldname))
+    if ("current".equals(fieldName))
     {
       jp.nextToken();
-      current = WealdMapper.getMapper().readValue(jp, objclass);
+      current = WealdMapper.getMapper().readValue(jp, objClass);
     }
 
     // And build our return object
