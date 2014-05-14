@@ -50,9 +50,5 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(formatter.print(value));
-//    gen.writeStartObject();
-//    gen.writeStringField("datetime", formatter.print(value));
-//    gen.writeStringField("timezone", value.getZone().toString());
-//    gen.writeEndObject();
   }
 }

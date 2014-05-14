@@ -15,9 +15,14 @@
  */
 package test.com.wealdtech.jersey.resources;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 /**
  * (Very) simple resource for testing
@@ -25,10 +30,20 @@ import javax.ws.rs.Produces;
 @Path("helloworld")
 public class HelloWorldResource
 {
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
+
   @GET
   @Produces("text/plain")
   public String getHelloWorld()
   {
     return "Hello world";
+  }
+
+  @GET
+  @Path("date")
+  @Produces("text/plain")
+  public String getHelloWorldDate(@QueryParam("date") final DateTime date)
+  {
+    return "Hello world, " + formatter.print(date);
   }
 }

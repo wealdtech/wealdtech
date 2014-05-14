@@ -1,6 +1,12 @@
 package test.com.wealdtech.jersey;
 
-import static org.testng.Assert.assertEquals;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.wealdtech.jersey.guice.JerseyServletModule;
+import com.wealdtech.jetty.JettyServer;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -8,14 +14,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.wealdtech.jersey.guice.JerseyServletModule;
-import com.wealdtech.jetty.JettyServer;
+import static org.testng.Assert.assertEquals;
 
 public class JerseyTest
 {
@@ -84,6 +83,17 @@ public class JerseyTest
     assertEquals(connection.getResponseCode(), 200);
     final String response = getStringResponse(connection);
     assertEquals(response, "Hello world");
+  }
+
+  @Test
+  public void testHelloWorldDate() throws Exception
+  {
+    // Test using a DateTime query parameter
+    final URI dateTimeUri = new URI("http://localhost:8080/helloworld/date?date=2015-05-14T09:00:00%2B0200+Europe%2FParis");
+    final HttpURLConnection connection = connect(dateTimeUri, "GET", null, null);
+    assertEquals(connection.getResponseCode(), 200);
+    final String response = getStringResponse(connection);
+    assertEquals(response, "Hello world, 2015-05-14T09:00:00+02:00");
   }
 }
 
