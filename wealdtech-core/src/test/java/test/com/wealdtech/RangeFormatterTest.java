@@ -213,5 +213,12 @@ public class RangeFormatterTest
     final RangeFormatter formatter = new RangeFormatter();
     assertEquals(formatter.formatDateTime(testDateTimeRange5), "Sat 30 Apr 2011 12:00 - Sat 1 Jun 2013 09:00");
   }
+
+  @Test
+  public void testDateWithTimeOnlyStyle()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_ONLY);
+    assertEquals(formatter.formatDate(testDateTimeRange2), null);
+  }
 }
 

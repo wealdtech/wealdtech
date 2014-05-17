@@ -113,6 +113,11 @@ public class RangeFormatter
    */
   public String formatDate(final Range<DateTime> range)
   {
+    if (style == Style.TIME_ONLY)
+    {
+      return null;
+    }
+
     final DateTime curDateTime = DateTime.now();
     final StringBuilder sb = new StringBuilder(64);
 
@@ -183,7 +188,7 @@ public class RangeFormatter
    */
   public String formatDate(final DateTime dateTime)
   {
-    return formatDateAndTime(dateTime, true, false);
+    return style == Style.TIME_ONLY ? null : formatDateAndTime(dateTime, true, false);
   }
 
   /**
@@ -294,9 +299,17 @@ public class RangeFormatter
       builder.appendHourOfDay(2);
       builder.appendLiteral(':');
       builder.appendMinuteOfHour(2);
+      started = true;
     }
 
-    return datetime.toString(builder.toFormatter().withLocale(locale));
+    if (started)
+    {
+      return datetime.toString(builder.toFormatter().withLocale(locale));
+    }
+    else
+    {
+      return null;
+    }
   }
 
   private boolean isSameMinute(final DateTime lower, final DateTime upper)
