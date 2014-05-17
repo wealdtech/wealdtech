@@ -57,7 +57,7 @@ public class RangeFormatterTest
   @Test
   public void testSingleDateLongForm()
   {
-    final RangeFormatter formatter = new RangeFormatter(false);
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
     assertEquals(formatter.formatDate(testDateTime1), "Saturday 1 March");
   }
 
@@ -71,7 +71,7 @@ public class RangeFormatterTest
   @Test
   public void testSingleDateDifferentYearLongForm()
   {
-    final RangeFormatter formatter = new RangeFormatter(false);
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
     assertEquals(formatter.formatDate(testDateTime5), "Saturday 2 March 2013");
   }
 
@@ -85,14 +85,14 @@ public class RangeFormatterTest
   @Test
   public void testSingleDateNonDefaultLocale()
   {
-    final RangeFormatter formatter = new RangeFormatter(Locale.FRANCE, true);
+    final RangeFormatter formatter = new RangeFormatter(Locale.FRANCE, RangeFormatter.Style.NORMAL);
     assertEquals(formatter.formatDateTime(testDateTime1), "sam. 1 mars 00:00");
   }
 
   @Test
   public void testSingleDateTimeLongForm()
   {
-    final RangeFormatter formatter = new RangeFormatter(false);
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
     assertEquals(formatter.formatDateTime(testDateTime1), "Saturday 1 March 00:00");
   }
 
@@ -106,7 +106,7 @@ public class RangeFormatterTest
   @Test
   public void testSingleDateTimeDifferentYearLongForm()
   {
-    final RangeFormatter formatter = new RangeFormatter(false);
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
     assertEquals(formatter.formatDateTime(testDateTime5), "Saturday 2 March 2013 08:00");
   }
 
@@ -120,7 +120,7 @@ public class RangeFormatterTest
   @Test
   public void testSingleTimeNonDefaultLocale()
   {
-    final RangeFormatter formatter = new RangeFormatter(Locale.CANADA, true);
+    final RangeFormatter formatter = new RangeFormatter(Locale.CANADA, RangeFormatter.Style.NORMAL);
     assertEquals(formatter.formatTime(testDateTime3), "06:00");
   }
 
@@ -174,6 +174,13 @@ public class RangeFormatterTest
   {
     final RangeFormatter formatter = new RangeFormatter();
     assertEquals(formatter.formatDateTime(testDateTimeRange1), "Sat 1 Mar 00:00 - 01:00");
+  }
+
+  @Test
+  public void testRangeTime()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_ONLY);
+    assertEquals(formatter.formatDateTime(testDateTimeRange1), "00:00 - 01:00");
   }
 
   @Test

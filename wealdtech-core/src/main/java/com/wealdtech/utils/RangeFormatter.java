@@ -23,25 +23,32 @@ import java.util.Locale;
  */
 public class RangeFormatter
 {
+  public enum Style
+  {
+    FULL,
+    NORMAL,
+    TIME_ONLY
+  }
+
   private final Locale locale;
-  private final boolean shortForm;
+  private Style style;
 
   public RangeFormatter()
   {
     this.locale = Locale.getDefault();
-    this.shortForm = true;
+    this.style = Style.NORMAL;
   }
 
-  public RangeFormatter(final boolean shortForm)
+  public RangeFormatter(final Style style)
   {
     this.locale = Locale.getDefault();
-    this.shortForm = shortForm;
+    this.style = style;
   }
 
-  public RangeFormatter(final Locale locale, final boolean shortForm)
+  public RangeFormatter(final Locale locale, final Style style)
   {
     this.locale = locale;
-    this.shortForm = shortForm;
+    this.style = style;
   }
 
   /**
@@ -168,13 +175,6 @@ public class RangeFormatter
     return sb.toString();
   }
 
-  public String formatTime(final DateTime dateTime)
-  {
-    final Details timeDetails = new Details();
-    timeDetails.showTime = true;
-    return doFormat(dateTime, timeDetails);
-  }
-
   /**
    * Format the date of a single date/time
    *
@@ -183,8 +183,20 @@ public class RangeFormatter
    */
   public String formatDate(final DateTime dateTime)
   {
-    return formatDateAndTime(dateTime, false);
+    return formatDateAndTime(dateTime, true, false);
   }
+
+  /**
+   * Format the time of a single date/time
+   *
+   * @param dateTime the date/time to format
+   * @return a formatted time
+   */
+  public String formatTime(final DateTime dateTime)
+  {
+    return formatDateAndTime(dateTime, false, true);
+  }
+
 
   /**
    * Format the date and time of a single date/time
@@ -194,7 +206,7 @@ public class RangeFormatter
    */
   public String formatDateTime(final DateTime dateTime)
   {
-    return formatDateAndTime(dateTime, true);
+    return formatDateAndTime(dateTime, true, true);
   }
 
   /**
@@ -204,17 +216,17 @@ public class RangeFormatter
    * @param showTime show the time as well as the date
    * @return a formatted date
    */
-  private String formatDateAndTime(final DateTime dateTime, final boolean showTime)
+  private String formatDateAndTime(final DateTime dateTime, final boolean showDate, final boolean showTime)
   {
     final DateTime curDateTime = DateTime.now();
     final Details dateDetails = new Details();
     dateDetails.showTime = showTime;
-    dateDetails.showDayOfWeek = true;
-    dateDetails.showDayOfMonth = true;
-    dateDetails.showMonthOfYear = true;
+    dateDetails.showDayOfWeek = showDate;
+    dateDetails.showDayOfMonth = showDate;
+    dateDetails.showMonthOfYear = showDate;
     if (!isSameYear(dateTime, curDateTime))
     {
-      dateDetails.showYear = true;
+      dateDetails.showYear = showDate;
     }
     return doFormat(dateTime, dateDetails);
   }
@@ -224,51 +236,54 @@ public class RangeFormatter
   {
     final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
     boolean started = false;
-    if (formatDetails.showDayOfWeek)
+    if (style != Style.TIME_ONLY)
     {
-      if (shortForm)
+      if (formatDetails.showDayOfWeek)
       {
-        builder.appendDayOfWeekShortText();
+        if (style == Style.NORMAL)
+        {
+          builder.appendDayOfWeekShortText();
+        }
+        else
+        {
+          builder.appendDayOfWeekText();
+        }
+        started = true;
       }
-      else
+      if (formatDetails.showDayOfMonth)
       {
-        builder.appendDayOfWeekText();
+        if (started)
+        {
+          builder.appendLiteral(' ');
+        }
+        builder.appendDayOfMonth(1);
+        started = true;
       }
-      started = true;
-    }
-    if (formatDetails.showDayOfMonth)
-    {
-      if (started)
+      if (formatDetails.showMonthOfYear)
       {
-        builder.appendLiteral(' ');
+        if (started)
+        {
+          builder.appendLiteral(' ');
+        }
+        if (style == Style.NORMAL)
+        {
+          builder.appendMonthOfYearShortText();
+        }
+        else
+        {
+          builder.appendMonthOfYearText();
+        }
+        started = true;
       }
-      builder.appendDayOfMonth(1);
-      started = true;
-    }
-    if (formatDetails.showMonthOfYear)
-    {
-      if (started)
+      if (formatDetails.showYear)
       {
-        builder.appendLiteral(' ');
+        if (started)
+        {
+          builder.appendLiteral(' ');
+        }
+        builder.appendYear(4, 4);
+        started = true;
       }
-      if (shortForm)
-      {
-        builder.appendMonthOfYearShortText();
-      }
-      else
-      {
-        builder.appendMonthOfYearText();
-      }
-      started = true;
-    }
-    if (formatDetails.showYear)
-    {
-      if (started)
-      {
-        builder.appendLiteral(' ');
-      }
-      builder.appendYear(4, 4);
-      started = true;
     }
     if (formatDetails.showTime)
     {
