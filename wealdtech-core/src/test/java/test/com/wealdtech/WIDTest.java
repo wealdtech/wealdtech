@@ -173,23 +173,22 @@ public class WIDTest
   }
 
   @Test
-  public void testRandomWID()
+  public void testGenerate()
   {
     for (int i = 0; i < 1000000; i++)
     {
-      WID.<Date>randomWID();
-      WID.<Date>randomWIDWithSubId();
+      WID.<Date>generate();
     }
   }
 
   @Test
   public void testFromLong()
   {
-    WID<String> testWid1 = WID.fromLong(12345678901234L);
+    WID.fromLong(12345678901234L);
 
-    WID<String> testWid2 = WID.fromLongs(12345678901234L, 1L);
+    WID.fromLongs(12345678901234L, 1L);
 
-    WID<String> testWid3 = WID.fromLongs(12345678901234L, null);
+    WID.fromLongs(12345678901234L, null);
   }
 
   @Test(expectedExceptions = {DataError.Missing.class})

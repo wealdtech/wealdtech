@@ -49,6 +49,8 @@ import static com.wealdtech.Preconditions.checkNotNull;
  */
 public class WID<T> implements Comparable<WID<T>>, Serializable
 {
+  private static final Random RANDOM = new Random();
+
   private static final long serialVersionUID = 6897379549693105270L;
 
   private static final String WID_SEPARATOR = ".";
@@ -183,7 +185,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * Create an ID given the component parts
    * @param shardId a shard ID, in the range 0 to 8191
    * @param timestamp the timestamp, in milliseconds from the epoch
-   * @param id an ID, the range 0 to 1023
+   * @param id an ID, in the range 0 to 1023
    * @return A new ID made out of the components
    */
   public static <T> WID<T> fromComponents(final long shardId, final long timestamp, final long id)
@@ -195,7 +197,8 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * Create an ID given the component parts
    * @param shardId a shard ID, in the range 0 to 8191
    * @param timestamp the timestamp, in milliseconds from the epoch
-   * @param id an ID, the range 0 to 1023
+   * @param id an ID, in the range 0 to 1023
+   * @param subId a sub-ID; any valid long
    * @return A new ID made out of the components
    */
   public static <T> WID<T> fromComponents(final long shardId, final long timestamp, final long id, final Long subId)
@@ -233,28 +236,22 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
 
   /**
    * Generate a WID with random shard ID and ID.
-   * @return a random WID
+   * @return a new WID
    */
-  public static <T> WID<T> randomWID()
+  public static <T> WID<T> generate()
   {
-    final Random random = new Random();
-    final long shardId = random.nextInt((int)MAX_SHARD);
-    final long timestamp = System.currentTimeMillis();
-    final long id = random.nextInt((int)MAX_IID);
-    return fromComponents(shardId, timestamp, id);
+    return generate(RANDOM.nextInt((int)MAX_SHARD));
   }
 
   /**
-   * Generate a WID with random shard ID, ID and subID
-   * @return a random WID
+   * Generate a WID with random shard ID and ID.
+   * @return a new WID
    */
-  public static <T> WID<T> randomWIDWithSubId()
+  public static <T> WID<T> generate(final int shardId)
   {
-    final Random random = new Random();
-    final long shardId = random.nextInt((int)MAX_SHARD);
     final long timestamp = System.currentTimeMillis();
-    final long id = random.nextInt((int)MAX_IID);
-    return fromComponents(shardId, timestamp, id, random.nextLong());
+    final long id = RANDOM.nextInt((int)MAX_IID);
+    return fromComponents(shardId, timestamp, id);
   }
 
   /**
