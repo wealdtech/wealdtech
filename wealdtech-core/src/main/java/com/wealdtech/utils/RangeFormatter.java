@@ -94,10 +94,10 @@ public class RangeFormatter
         upperDetails.showDayOfWeek = true;
         upperDetails.showDayOfMonth = true;
         upperDetails.showMonthOfYear = true;
-      }
-      if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
-      {
-        upperDetails.showYear = true;
+        if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
+        {
+          upperDetails.showYear = true;
+        }
       }
 
       sb.append(doFormat(upper, upperDetails));

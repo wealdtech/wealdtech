@@ -47,6 +47,9 @@ public class RangeFormatterTest
 
   private static final DateTimeFormatter shortDayFmt = new DateTimeFormatterBuilder().appendDayOfWeekShortText().toFormatter();
   private static final DateTimeFormatter shortMonthFmt = new DateTimeFormatterBuilder().appendMonthOfYearShortText().toFormatter();
+  private static final DateTimeFormatter timeFmt = new DateTimeFormatterBuilder().appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).toFormatter();
+  private static final DateTimeFormatter yearFmt = new DateTimeFormatterBuilder().appendYear(4, 4).toFormatter();
+
   @Test
   public void testSingleDate()
   {
@@ -219,6 +222,23 @@ public class RangeFormatterTest
   {
     final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_ONLY);
     assertEquals(formatter.formatDate(testDateTimeRange2), null);
+  }
+
+  // Ensure that a range in next year but on the same day shows correctly
+  @Test
+  public void testRangeDateTimeNextYearSameDay()
+  {
+    final RangeFormatter formatter = new RangeFormatter();
+    final DateTime lower = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(2).withMonthOfYear(6).plusYears(1);
+    final DateTime upper = lower.plusHours(1);
+    final Range<DateTime> nextYearRange = Range.closedOpen(lower, upper);
+
+    // Need short version of day and month
+    final String day = lower.toString(shortDayFmt);
+    final String month = lower.toString(shortMonthFmt);
+    final String year = lower.toString(yearFmt);
+    final String expected = day + " 2 " + month + " " + year + " " + lower.toString(timeFmt) + " - " + upper.toString(timeFmt);
+    assertEquals(formatter.formatDateTime(nextYearRange), expected);
   }
 }
 
