@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
+            <option value="$PROJECT_DIR$/wealdtech-gcm" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
             <option value="$PROJECT_DIR$/wealdtech-jersey-server" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />

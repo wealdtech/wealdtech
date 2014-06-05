@@ -16,20 +16,20 @@
 
 package test.com.wealdtech.jackson.modules;
 
-import java.util.Date;
-import java.util.Map;
-
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Maps;
 import com.wealdtech.WID;
 import com.wealdtech.jackson.ObjectMapperFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import java.util.Date;
+import java.util.Map;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class WIDModuleTest
 {
@@ -44,7 +44,7 @@ public class WIDModuleTest
   @Test
   public void testDeserWID() throws Exception
   {
-    final String ser = "\"20a2a19b20000a\"";
+    final String ser = "\"a2a19b20000000a\"";
     final WID<Date> deser = this.mapper.readValue(ser, new TypeReference<WID<Date>>(){});
     assertEquals(deser, WID.<Date>fromComponents(5, 1500000000000L, 10));
   }
@@ -52,7 +52,7 @@ public class WIDModuleTest
   @Test
   public void testDeserWIDMap() throws Exception
   {
-    final String ser = "{\"20a2a19b20000a\":\"Test\"}";
+    final String ser = "{\"a2a19b20000000a\":\"Test\"}";
     final Map<WID<Date>, String> deser = this.mapper.readValue(ser, new TypeReference<Map<WID<Date>, String>>(){});
     assertNotNull(deser);
     assertEquals(deser.size(), 1);
@@ -64,7 +64,7 @@ public class WIDModuleTest
   {
     final WID<Date> wid = WID.fromComponents(5, 1500000000000L, 10);
     final String ser = this.mapper.writeValueAsString(wid);
-    assertEquals(ser, "\"20a2a19b20000a\"");
+    assertEquals(ser, "\"a2a19b20000000a\"");
   }
 
   @Test
@@ -73,6 +73,6 @@ public class WIDModuleTest
     final Map<WID<Date>, String> widMap = Maps.newHashMap();
     widMap.put(WID.<Date>fromComponents(5, 1500000000000L, 10), "Test");
     final String ser = this.mapper.writeValueAsString(widMap);
-    assertEquals(ser, "{\"20a2a19b20000a\":\"Test\"}");
+    assertEquals(ser, "{\"a2a19b20000000a\":\"Test\"}");
   }
 }
