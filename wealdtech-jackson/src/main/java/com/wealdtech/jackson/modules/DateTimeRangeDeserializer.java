@@ -35,11 +35,12 @@ import java.util.Iterator;
 class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
+
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
   private static final Splitter SPLITTER = Splitter.on(',');
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZ");
-  private static DateTimeZone utczone = DateTimeZone.forID("UTC");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZZ");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER_NO_TZ = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 
   private Class<?> targetClass;
 
@@ -53,14 +54,23 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     }
     final int txtLen = txt.length();
 
+    final int firstDateChar;
     boolean lowerClosed;
     if (txt.charAt(0) == '[')
     {
+      firstDateChar = 1;
       lowerClosed = true;
     }
     else if (txt.charAt(0) == '(')
     {
+      firstDateChar = 1;
       lowerClosed = false;
+    }
+    else if (txt.charAt(0) >= '0' && txt.charAt(0) <= '9')
+    {
+      // Lazy version
+      firstDateChar = 0;
+      lowerClosed = true;
     }
     else
     {
@@ -76,18 +86,21 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     {
       upperClosed = false;
     }
+    else if (firstDateChar == 0)
+    {
+      upperClosed = false;
+    }
     else
     {
       throw new DataError.Bad("Unexpected last character in range \"" + txt + "\"");
     }
 
-
-    final Iterator<String> dateTimes = SPLITTER.split(txt.substring(1, txtLen - 1)).iterator();
+    final Iterator<String> dateTimes = SPLITTER.split(txt.substring(firstDateChar, txtLen - firstDateChar)).iterator();
     String start = dateTimes.next();
     String end = dateTimes.next();
 
     boolean lowerBound;
-    DateTime lowerPoint;
+    final DateTime lowerPoint;
     if (start.equals(NEGATIVE_INFINITY))
     {
       lowerBound = false;
@@ -96,11 +109,20 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     else
     {
       lowerBound = true;
-      lowerPoint = formatter.parseDateTime(start);
+      if (start.indexOf(' ') == -1)
+      {
+        // No timezone, use the no-tz formatter and UTC timezone
+        lowerPoint = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(start).withZone(DateTimeZone.UTC);
+      }
+      else
+      {
+        // Timezone supplied
+        lowerPoint = DATE_TIME_FORMATTER.parseDateTime(start);
+      }
     }
 
     boolean upperBound;
-    DateTime upperPoint;
+    final DateTime upperPoint;
     if (end.equals(POSITIVE_INFINITY))
     {
       upperBound = false;
@@ -109,7 +131,16 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     else
     {
       upperBound = true;
-      upperPoint = formatter.parseDateTime(end);
+      if (end.indexOf(' ') == -1)
+      {
+        // No timezone, use the no-tz formatter and UTC timezone
+        upperPoint = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(end).withZone(DateTimeZone.UTC);
+      }
+      else
+      {
+        // Timezone supplied
+        upperPoint = DATE_TIME_FORMATTER.parseDateTime(end);
+      }
     }
 
     if (lowerBound == false && upperBound == false)

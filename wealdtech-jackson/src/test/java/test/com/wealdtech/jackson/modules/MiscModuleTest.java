@@ -75,6 +75,25 @@ public class MiscModuleTest
   }
 
   @Test
+  public void testDeserLazyRange() throws Exception
+  {
+    final String ser = "\"2014-05-03T03:00:00Z Europe/London,2014-05-04T04:00:00Z Europe/London\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser,  Range.closedOpen(new DateTime(2014, 5, 3, 3, 0, 0, 0, DateTimeZone.UTC),
+                                          new DateTime(2014, 5, 4, 4, 0, 0, 0, DateTimeZone.UTC)));
+  }
+
+  @Test
+  public void testDeserLazyRangeNoTz() throws Exception
+  {
+    final String ser = "\"2014-05-03T04:00:00+01:00,2014-05-03T06:00:00+01:00\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser,  Range.closedOpen(new DateTime(2014, 5, 3, 3, 0, 0, 0, DateTimeZone.UTC),
+                                          new DateTime(2014, 5, 3, 5, 0, 0, 0, DateTimeZone.UTC)));
+  }
+
+
+  @Test
   public void testSerInetSocketAddress() throws Exception
   {
     final InetSocketAddress addr = new InetSocketAddress("www.wealdtech.com", 23456);
