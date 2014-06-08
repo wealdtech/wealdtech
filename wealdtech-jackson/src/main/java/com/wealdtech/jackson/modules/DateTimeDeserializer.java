@@ -43,6 +43,11 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
       return null;
     }
 
+    return deserialize(txt);
+  }
+
+  public static DateTime deserialize(final String txt) throws IOException
+  {
     DateTime result;
     if (txt.indexOf(' ') == -1)
     {
@@ -54,7 +59,6 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
       // Timezone supplied
       result = DATE_TIME_FORMATTER.parseDateTime(txt);
     }
-
     return result;
   }
 }

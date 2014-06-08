@@ -23,24 +23,19 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 import com.wealdtech.DataError;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
+public class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
 
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
   private static final Splitter SPLITTER = Splitter.on(',');
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZZ");
-  private static final DateTimeFormatter DATE_TIME_FORMATTER_NO_TZ = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 
   private Class<?> targetClass;
 
@@ -52,6 +47,11 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     {
       return null;
     }
+    return deserialize(txt);
+  }
+
+  public static Range<DateTime> deserialize(final String txt) throws IOException
+  {
     final int txtLen = txt.length();
 
     final int firstDateChar;
@@ -109,16 +109,7 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     else
     {
       lowerBound = true;
-      if (start.indexOf(' ') == -1)
-      {
-        // No timezone, use the no-tz formatter and UTC timezone
-        lowerPoint = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(start).withZone(DateTimeZone.UTC);
-      }
-      else
-      {
-        // Timezone supplied
-        lowerPoint = DATE_TIME_FORMATTER.parseDateTime(start);
-      }
+      lowerPoint = DateTimeDeserializer.deserialize(start);
     }
 
     boolean upperBound;
@@ -131,16 +122,7 @@ class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
     else
     {
       upperBound = true;
-      if (end.indexOf(' ') == -1)
-      {
-        // No timezone, use the no-tz formatter and UTC timezone
-        upperPoint = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(end).withZone(DateTimeZone.UTC);
-      }
-      else
-      {
-        // Timezone supplied
-        upperPoint = DATE_TIME_FORMATTER.parseDateTime(end);
-      }
+      upperPoint = DateTimeDeserializer.deserialize(end);
     }
 
     if (lowerBound == false && upperBound == false)
