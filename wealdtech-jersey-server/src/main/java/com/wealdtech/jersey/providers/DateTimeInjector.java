@@ -13,10 +13,8 @@ package com.wealdtech.jersey.providers;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
+import com.wealdtech.jackson.modules.DateTimeDeserializer;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -24,16 +22,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
 import java.util.List;
 
 /**
+ * Allow injection of {@code DateTime} directly as query parameters
  */
 @Provider
 public class DateTimeInjector extends PerRequestTypeInjectableProvider<QueryParam, DateTime>
 {
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZZ");
-  private static final DateTimeFormatter DATE_TIME_FORMATTER_NO_TZ = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-
   private final UriInfo uriInfo;
 
   /**
@@ -68,19 +65,16 @@ public class DateTimeInjector extends PerRequestTypeInjectableProvider<QueryPara
                                                     .build());
         }
         final String txt = values.get(0);
-        DateTime result;
-        if (txt.indexOf(' ') == -1)
+        try
         {
-          // No timezone, use the no-tz formatter and UTC timezone
-          result = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(txt).withZone(DateTimeZone.UTC);
+          return DateTimeDeserializer.deserialize(txt);
         }
-        else
+        catch (IOException e)
         {
-          // Timezone supplied
-          result = DATE_TIME_FORMATTER.parseDateTime(txt);
+          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                                                    .entity(a.value() + " contains invalid value")
+                                                    .build());
         }
-
-        return result;
       }
     };
   }
