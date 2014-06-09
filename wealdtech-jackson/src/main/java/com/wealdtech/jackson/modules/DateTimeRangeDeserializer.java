@@ -35,7 +35,12 @@ public class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
 
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
-  private static final Splitter SPLITTER = Splitter.on(',');
+
+  private static final char WEALD_SPLITTER_CHAR = ',';
+  private static final Splitter WEALD_SPLITTER = Splitter.on(WEALD_SPLITTER_CHAR);
+
+  private static final char GUAVA_SPLITTER_CHAR = '‥';
+  private static final Splitter GUAVA_SPLITTER = Splitter.on(GUAVA_SPLITTER_CHAR);
 
   private Class<?> targetClass;
 
@@ -95,7 +100,19 @@ public class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
       throw new DataError.Bad("Unexpected last character in range \"" + txt + "\"");
     }
 
-    final Iterator<String> dateTimes = SPLITTER.split(txt.substring(firstDateChar, txtLen - firstDateChar)).iterator();
+    final Iterator<String> dateTimes;
+    if (txt.indexOf(WEALD_SPLITTER_CHAR) != -1)
+    {
+      dateTimes = WEALD_SPLITTER.split(txt.substring(firstDateChar, txtLen - firstDateChar)).iterator();
+    }
+    else if (txt.indexOf(GUAVA_SPLITTER_CHAR) != -1)
+    {
+      dateTimes = GUAVA_SPLITTER.split(txt.substring(firstDateChar, txtLen - firstDateChar)).iterator();
+    }
+    else
+    {
+      throw new DataError.Bad("Cannot find a range separator in range \"" + txt + "\"");
+    }
     String start = dateTimes.next();
     String end = dateTimes.next();
 

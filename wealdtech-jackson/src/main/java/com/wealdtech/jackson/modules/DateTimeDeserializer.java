@@ -31,6 +31,7 @@ import java.io.IOException;
 public class DateTimeDeserializer extends JsonDeserializer<DateTime>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
+  private static final DateTimeFormatter DATE_TIME_FORMATTER_ISO = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.sssZ");
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ ZZZZ");
   private static final DateTimeFormatter DATE_TIME_FORMATTER_NO_TZ = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 
@@ -51,8 +52,17 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
     DateTime result;
     if (txt.indexOf(' ') == -1)
     {
-      // No timezone, use the no-tz formatter and UTC timezone
-      result = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(txt).withZone(DateTimeZone.UTC);
+      // No timezone
+      if (txt.indexOf('.') == -1)
+      {
+        // Use the Wealdtech format and set timezone to UTC
+        result = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(txt).withZone(DateTimeZone.UTC);
+      }
+      else
+      {
+        // ISO8601 format and set timezone to UTC
+        result = DATE_TIME_FORMATTER_ISO.parseDateTime(txt).withZone(DateTimeZone.UTC);
+      }
     }
     else
     {

@@ -92,6 +92,14 @@ public class MiscModuleTest
                                           new DateTime(2014, 5, 3, 5, 0, 0, 0, DateTimeZone.UTC)));
   }
 
+  @Test
+  public void testDeserGuavaRange() throws Exception
+  {
+    final String ser = "\"[2014-05-05T03:00:00.000Z‥2014-05-05T04:00:00.000Z)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser,  Range.closedOpen(new DateTime(2014, 5, 5, 3, 0, 0, 0, DateTimeZone.UTC),
+                                          new DateTime(2014, 5, 5, 4, 0, 0, 0, DateTimeZone.UTC)));
+  }
 
   @Test
   public void testSerInetSocketAddress() throws Exception
