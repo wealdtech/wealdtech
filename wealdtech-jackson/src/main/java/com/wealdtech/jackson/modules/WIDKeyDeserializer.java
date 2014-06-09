@@ -26,7 +26,7 @@ public class WIDKeyDeserializer extends StdKeyDeserializer
 
   public WIDKeyDeserializer()
   {
-    super(WID.class);
+    super(StdKeyDeserializer.TYPE_CHAR, WID.class);
   }
 
   @Override
