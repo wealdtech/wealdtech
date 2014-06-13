@@ -48,7 +48,7 @@ public interface RangedMap<K extends Comparable, V>
    * @return
    */
   @Nullable
-  Map.Entry<Range<K>, V> getEntry(K key);
+  Map.Entry<K, TwoTuple<Range<K>, V>> getEntry(K key);
 
   void put(Range<K> key, V value);
 
