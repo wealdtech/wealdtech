@@ -85,7 +85,7 @@ public class TreeRangedMap<K extends Comparable<K>, V> implements RangedMap<K, V
   {
     if (!range.hasLowerBound())
     {
-      throw new IllegalArgumentException("RangedMap must use ranges with defined lower bound");
+      throw new IllegalArgumentException("RangedMap only supports ranges with defined lower bound");
     }
     if (!range.lowerBoundType().equals(BoundType.CLOSED))
     {
@@ -98,6 +98,10 @@ public class TreeRangedMap<K extends Comparable<K>, V> implements RangedMap<K, V
     if (!range.upperBoundType().equals(BoundType.OPEN))
     {
       throw new IllegalArgumentException("RangedMap must use ranges with open upper bound");
+    }
+    if (range.isEmpty())
+    {
+      throw new IllegalArgumentException("RangedMap must use ranges with non-zero size");
     }
   }
 
