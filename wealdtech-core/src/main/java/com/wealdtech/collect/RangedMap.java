@@ -59,4 +59,6 @@ public interface RangedMap<K extends Comparable, V>
   void remove(K key);
 
   void remove(Range<K> range);
+
+  int size();
 }

@@ -11,6 +11,7 @@
 package com.wealdtech.collect;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.wealdtech.ServerError;
 import com.wealdtech.TwoTuple;
@@ -59,138 +60,107 @@ public class TreeRangedMap<K extends Comparable<K>, V> implements RangedMap<K, V
   @Override
   public Map.Entry<K, TwoTuple<Range<K>, V>> getEntry(final K key)
   {
-    return underlying.floorEntry(key);
+    final Map.Entry<K, TwoTuple<Range<K>, V>> entry = underlying.floorEntry(key);
+    if (entry != null && entry.getValue().getS().contains(key))
+    {
+      return entry;
+    }
+    else
+    {
+      return null;
+    }
   }
 
-  private K findFirstOverlappingKey(final K key)
+  @Override
+  public int size()
   {
-    return null;
+    return underlying.size();
+  }
+
+  /**
+   * Validate a range prior to insertion
+   * @param range the range to validate
+   */
+  private void validateRange(final Range<K> range)
+  {
+    if (!range.hasLowerBound())
+    {
+      throw new IllegalArgumentException("RangedMap must use ranges with defined lower bound");
+    }
+    if (!range.lowerBoundType().equals(BoundType.CLOSED))
+    {
+      throw new IllegalArgumentException("RangedMap must use ranges with closed lower bound");
+    }
+    if (!range.hasUpperBound())
+    {
+      throw new IllegalArgumentException("RangedMap must use ranges with defined upper bound");
+    }
+    if (!range.upperBoundType().equals(BoundType.OPEN))
+    {
+      throw new IllegalArgumentException("RangedMap must use ranges with open upper bound");
+    }
   }
 
   @Override
   public void put(final Range<K> key, final V value)
   {
-    TwoTuple<Range<K>, V> currentTuple = new TwoTuple<>(key, value);
-    K overlapKey = findFirstOverlappingKey(key.lowerEndpoint());
-    while (currentTuple != null)
-    {
-      final TwoTuple<?, ?> result = overlay(getEntry(currentTuple.getS().lowerEndpoint()).getValue(), new TwoTuple(currentTuple.getS(), value));
+    validateRange(key);
+    K resultantStart = key.lowerEndpoint();
+    K resultantEnd = key.upperEndpoint();
 
-    }
-    if (currentTuple != null)
+    // Truncate or coalesce anything which overlaps the start of our new entry
+    final Map.Entry<K, TwoTuple<Range<K>, V>> prior = getEntry(key.lowerEndpoint());
+    if (prior != null)
     {
-      overlapKey = findFirstOverlappingKey(currentTuple.getS().lowerEndpoint());
-      underlying.put(currentTuple.getS().lowerEndpoint(), currentTuple);
-    }
-  }
-//    // Find any overlapping ranges.  Because we base our key on the start of the range we might need to see if our start is in the
-//    // middle of an existing range
-//    System.err.println("findFloor() returns " + findFloor(key));
-//    final NavigableMap<K, TwoTuple<Range<K>, V>> overlapMap = underlying.subMap(findFloor(key), true, key.upperEndpoint(), true);
-//
-//    if (overlapMap.isEmpty())
-//    {
-//      // Simple case; just insert it
-//      System.err.println("No overlap");
-//      underlying.put(key.lowerEndpoint(), new TwoTuple<>(key, value));
-//    }
-//    else
-//    {
-//
-//      System.err.println("Overlap is " + overlapMap);
-//      // There is some overlap; we might need to splice the entries.
-//      final Collection<K> toRemove = Sets.newHashSet();
-//      final Map<K, TwoTuple<Range<K>, V>> toAdd = Maps.newHashMap();
-//
-//      K lower = key.lowerEndpoint();
-//      K upper = key.upperEndpoint();
-//      // Work through the overlap, altering it as required so that the new entry overrides it
-//      for (final K overlapKey : overlapMap.navigableKeySet())
-//      {
-//        final TwoTuple<Range<K>, V> overlapValue = underlying.get(overlapKey);
-//        final Range<K> overlapRange = overlapValue.getS();
-//
-//        if (overlapRange.lowerEndpoint().compareTo(lower) < 0)
-//        {
-//          // The current overlap range starts before the range we're putting.
-//          if (value.equals(overlapValue.getT()))
-//          {
-//            // Values are the same; just push our boundary up
-//            lower = overlapRange.upperEndpoint();
-//          }
-//          else
-//          {
-//            // Values are different; splice the item
-//            toRemove.add(overlapRange.lowerEndpoint());
-//            toAdd.put(lower, new TwoTuple<>(Range.closedOpen(overlapRange.lowerEndpoint(), lower), overlapValue.getT()));
-//          }
-//        }
-//        else if (overlapRange.lowerEndpoint().equals(lower))
-//        {
-//          // The current overlap range starts at the same time as the range we're putting
-//          if (value.equals(overlapValue.getT()))
-//          {
-//            // Values are the same; just push our boundary up
-//            lower = overlapRange.upperEndpoint();
-//          }
-//          else
-//          {
-//            // Values are different; splice the item
-//            toRemove.add(overlapRange.lowerEndpoint());
-//            toAdd.put(lower, new TwoTuple<>(Range.closedOpen(overlapRange.lowerEndpoint(), lower), overlapValue.getT()));
-//          }
-//        }
-//        // Carry out our replacements
-//        for (final K toRemoveKey : toRemove)
-//        {
-//          underlying.remove(toRemoveKey);
-//        }
-//        underlying.putAll(toAdd);
-//      }
-//    }
-//  }
-
-  /**
-   * Overlay one entry on top of another.  This results in somewhere between 1 and 3 entries
-   * @param current the current entry
-   * @param overlay the entry to overlay
-   * @return the remaining overlay (the rightmost piece of the overlay beyond the current range)
-   */
-  private TwoTuple<Range<K>, V> overlay(final TwoTuple<Range<K>, V> current, final TwoTuple<Range<K>, V> overlay)
-  {
-    remove(current.getS().lowerEndpoint());
-//    final Map<K, TwoTuple<Range<K>, V>> results = Maps.newHashMap();
-
-    // Temp. variables for simplification of ensuing code
-    final K currentStart = current.getS().lowerEndpoint();
-    final K currentEnd = current.getS().upperEndpoint();
-    final K overlayStart = overlay.getS().lowerEndpoint();
-    final K overlayEnd = overlay.getS().upperEndpoint();
-
-    if (currentStart.compareTo(overlayStart) > 0 && currentEnd.compareTo(overlayEnd) < 0)
-    {
-      // The overlay covers the entire current; simple replace
-      return overlay;
-//      results.put(overlayStart, overlay);
-    }
-    else
-    {
-      if (currentStart.compareTo(overlayStart) > 0)
+      if (prior.getValue().getT().equals(value))
       {
-        // The current entry starts before the overlay; add partial current
-        put(Range.closedOpen(currentStart, overlayStart), current.getT());
-//        results.put(currentStart, new TwoTuple<>(Range.closedOpen(currentStart, overlayStart), current.getT()));
+        // Values are the same so we can coalesce.  Remove the prior entry and update our bounds accordingly
+        resultantStart = prior.getKey();
+        underlying.remove(prior.getKey());
       }
-      if (currentEnd.compareTo(overlayEnd) < 0)
+      else
       {
-        // The current entry ends after the overlay; add partial current
-        put(Range.closedOpen(overlayEnd, currentEnd), current.getT());
-//        results.put(currentStart, new TwoTuple<>(Range.closedOpen(overlayEnd, currentEnd), current.getT()));
+        // Values are different; truncate prior item
+        underlying.put(prior.getKey(), new TwoTuple<>(Range.closedOpen(prior.getKey(), resultantStart), prior.getValue().getT()));
       }
-      // The remainder is the overlay
-//      results.put(currentStart, new TwoTuple<>(Range.closedOpen(overlayStart, overlayEnd), overlay.getT()));
     }
-    return new TwoTuple<>(Range.closedOpen(overlayStart, overlayEnd), overlay.getT());
+
+    // Remove any items which are covered by our new entry, and truncate or coalesce anything which overlaps the end of it
+    Map.Entry<K, TwoTuple<Range<K>, V>> potentialVictim = underlying.ceilingEntry(resultantStart);
+    while (potentialVictim != null)
+    {
+      if (key.encloses(potentialVictim.getValue().getS()))
+      {
+        // Totally enclosed; remove it
+        underlying.remove(potentialVictim.getKey());
+        potentialVictim = underlying.ceilingEntry(resultantStart);
+      }
+      else if (key.contains(potentialVictim.getKey()))
+      {
+        // Partial overlap
+        if (potentialVictim.getValue().getT().equals(value))
+        {
+          // Values are the same so we can coalesce.  Remove the entry and update our bounds accordingly
+          resultantEnd = potentialVictim.getValue().getS().upperEndpoint();
+          underlying.remove(potentialVictim.getKey());
+        }
+        else
+        {
+          // Values are different; truncate victim item
+          underlying.remove(potentialVictim.getKey());
+          underlying.put(resultantEnd, new TwoTuple<>(Range.closedOpen(resultantEnd, potentialVictim.getValue().getS().upperEndpoint()), potentialVictim.getValue().getT()));
+        }
+        potentialVictim = null;
+      }
+      else
+      {
+        // No relationship
+        potentialVictim = null;
+      }
+    }
+
+    // Write out our final result
+    underlying.put(resultantStart, new TwoTuple<>(Range.closedOpen(resultantStart, resultantEnd), value));
   }
 
   @Nullable
