@@ -114,14 +114,26 @@ public class TreeRangedMap<K extends Comparable<K>, V> implements RangedMap<K, V
     {
       if (prior.getValue().getT().equals(value))
       {
-        // Values are the same so we can coalesce.  Remove the prior entry and update our bounds accordingly
-        resultantStart = prior.getKey();
+        // Values are the same so we can coalesce.
+        if (resultantEnd.compareTo(prior.getValue().getS().upperEndpoint()) < 0)
+        {
+          // Existing entry already covers this; we don't have to do anything more
+          return;
+        }
         underlying.remove(prior.getKey());
+        // Set our start to the start of the prior entry
+        resultantStart = prior.getKey();
       }
       else
       {
         // Values are different; truncate prior item
         underlying.put(prior.getKey(), new TwoTuple<>(Range.closedOpen(prior.getKey(), resultantStart), prior.getValue().getT()));
+        // If the prior entry stretches beyond the new entry we also need to put in our remaining item
+        if (resultantEnd.compareTo(prior.getValue().getS().upperEndpoint()) < 0)
+        {
+          underlying.put(resultantEnd, new TwoTuple<>(Range.closedOpen(resultantEnd, prior.getValue().getS().upperEndpoint()), prior.getValue().getT()));
+        }
+
       }
     }
 
