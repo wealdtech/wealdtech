@@ -58,7 +58,7 @@ public class TreeRangedMultimap<K extends Comparable<K>, V> implements RangedMul
   @Override
   public Collection<V> get(final K key)
   {
-    Map.Entry<K, List<V>> curEntry = underlying.floorEntry(range.lowerEndpoint());
+    Map.Entry<K, List<V>> curEntry = underlying.floorEntry(key);
     return underlying.get(key);
   }
 

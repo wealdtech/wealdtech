@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A mapping from disjoint nonempty ranges to non-null values.  Queries
+ * A mapping from disjoint nonempty ranges to non-null values.  A single point will only ever have a maximum of one value, with
+ * later values taking precedence over earlier values.
+ * <p/>
+ * Values can be obtained for a single point or for a range of points.
  */
 public interface RangedMap<K extends Comparable, V>
 {
@@ -26,8 +29,8 @@ public interface RangedMap<K extends Comparable, V>
   /**
    * Returns the value associated with the specified key, or {@code null} if there is no such value.
    *
-   * @param key
-   * @return
+   * @param key the key
+   * @return the value; can be {@code null}
    */
   @Nullable
   V get(K key);
@@ -44,16 +47,28 @@ public interface RangedMap<K extends Comparable, V>
 
   /**
    * returns the entry for the given key
-   * @param key
-   * @return
+   * @param key the key
+   * @return the entry; can be {@code null}
    */
   @Nullable
   Map.Entry<K, TwoTuple<Range<K>, V>> getEntry(K key);
 
+  /**
+   * Add a value to the map.  Any existing values in the given range will be overwritten
+   * @param key the range over which the value applies
+   * @param value the value
+   */
   void put(Range<K> key, V value);
 
+  /**
+   * Add multiple values to the map.  Any existing values in the given range will be overwritten
+   * @param rangedMap an existing ranged map
+   */
   void putAll(RangedMap<K, V> rangedMap);
 
+  /**
+   * Remove all entries from this map
+   */
   void clear();
 
   void remove(K key);
