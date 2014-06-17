@@ -40,102 +40,20 @@ public class TreeRangedMultimapTest
     assertContains(map.get(3), "Test");
   }
 
-//  // Test that overlapping puts work
-//  @Test
-//  public void testOverlappingPuts()
-//  {
-//    final RangedMap<Integer, String> map = new TreeRangedMap<>();
-//
-//    final Range<Integer> testRange1 = Range.closedOpen(2, 5);
-//    map.put(testRange1, "Test1");
-//    assertNull(map.get(1));
-//    assertEquals(map.get(2), "Test1");
-//    assertEquals(map.get(3), "Test1");
-//    assertEquals(map.get(4), "Test1");
-//    assertNull(map.get(5));
-//
-//    final Range<Integer> testRange2 = Range.closedOpen(3, 6);
-//    map.put(testRange2, "Test2");
-//    assertNull(map.get(1));
-//    assertEquals(map.get(2), "Test1");
-//    assertEquals(map.get(3), "Test2");
-//    assertEquals(map.get(4), "Test2");
-//    assertEquals(map.get(5), "Test2");
-//    assertNull(map.get(6));
-//
-//    final Range<Integer> testRange3 = Range.closedOpen(1, 2);
-//    map.put(testRange3, "Test3");
-//    assertEquals(map.get(1), "Test3");
-//    assertEquals(map.get(2), "Test1");
-//    assertEquals(map.get(3), "Test2");
-//    assertEquals(map.get(4), "Test2");
-//    assertEquals(map.get(5), "Test2");
-//    assertNull(map.get(6));
-//  }
-//
-//  // Test coalescing ranges
-//  @Test
-//  public void testCoalescingPuts1()
-//  {
-//    final RangedMap<Integer, String> map = new TreeRangedMap<>();
-//
-//    final Range<Integer> testRange1 = Range.closedOpen(2, 5);
-//    map.put(testRange1, "Test");
-//    assertEquals(map.size(), 1);
-//
-//    final Range<Integer> testRange2 = Range.closedOpen(6, 8);
-//    map.put(testRange2, "Test");
-//    assertEquals(map.size(), 2);
-//
-//    final Range<Integer> testRange3 = Range.closedOpen(4, 7);
-//    map.put(testRange3, "Test");
-//    assertEquals(map.size(), 1);
-//  }
-//
-//  // Test coalescing ranges when new entry is already catered for in old entry
-//  @Test
-//  public void testCoalescingPuts2()
-//  {
-//    final RangedMap<Integer, String> map = new TreeRangedMap<>();
-//
-//    final Range<Integer> testRange1 = Range.closedOpen(1, 8);
-//    map.put(testRange1, "Test");
-//    System.err.println(map);
-//    assertEquals(map.size(), 1);
-//
-//    final Range<Integer> testRange2 = Range.closedOpen(2, 5);
-//    map.put(testRange2, "Test");
-//    System.err.println(map);
-//    assertEquals(map.size(), 1);
-//  }
-//
-//  // Ensure that putting a new value in the middle of an existing value breaks it appropriately
-//  @Test
-//  public void testSplitEntry()
-//  {
-//    final RangedMap<Integer, String> map = new TreeRangedMap<>();
-//
-//    final Range<Integer> testRange1 = Range.closedOpen(1, 5);
-//    map.put(testRange1, "Test1");
-//    assertEquals(map.size(), 1);
-//
-//    final Range<Integer> testRange2 = Range.closedOpen(3, 4);
-//    map.put(testRange2, "Test2");
-//    assertEquals(map.size(), 3);
-//    assertEquals(map.get(1), "Test1");
-//    assertEquals(map.get(2), "Test1");
-//    assertEquals(map.get(3), "Test2");
-//    assertEquals(map.get(4), "Test1");
-//  }
-//
-//
-//  // Ensure that zero-length ranges are not allowed
-//  @Test(expectedExceptions = {IllegalArgumentException.class})
-//  public void testZeroLengthRanges()
-//  {
-//    final RangedMap<Integer, String> map = new TreeRangedMap<>();
-//
-//    final Range<Integer> testRange1 = Range.closedOpen(2, 2);
-//    map.put(testRange1, "Test1");
-//  }
+  // Ensure that a ranged get works
+  @Test
+  public void testRangedGet()
+  {
+    final RangedMultimap<Integer, String> map = new TreeRangedMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(1, 5);
+    map.put(testRange1, "Test1");
+    final Range<Integer> testRange2 = Range.closedOpen(7, 10);
+    map.put(testRange2, "Test2");
+
+    final Collection<String> items = map.get(Range.closedOpen(4, 8));
+    assertEquals(items.size(), 2);
+    assertContains(items, "Test1");
+    assertContains(items, "Test2");
+  }
 }

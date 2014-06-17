@@ -10,21 +10,25 @@
 
 package com.wealdtech.collect;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 
 import java.util.*;
 
 /**
+ * A ranged multimap using {@link TreeMap} as the underlying storage mechanism
  */
 public class TreeRangedMultimap<K extends Comparable<K>, V> implements RangedMultimap<K, V>
 {
-  private TreeMap<K, List<V>> underlying;
+  private TreeMap<K, List<V>> startMap;
+  private TreeMap<K, List<V>> endMap;
+
   private int size;
 
   public TreeRangedMultimap()
   {
-    underlying = new TreeMap<>();
+    startMap = new TreeMap<>();
+    endMap = new TreeMap<>();
     size = 0;
   }
 
@@ -37,20 +41,28 @@ public class TreeRangedMultimap<K extends Comparable<K>, V> implements RangedMul
   @Override
   public boolean isEmpty()
   {
-    return underlying.isEmpty();
+    return startMap.isEmpty();
   }
 
   @Override
   public boolean put(final Range<K> key, final V value)
   {
-    List<V> valArray = underlying.get(key.lowerEndpoint());
-    if (valArray == null)
+    List<V> startArray = startMap.get(key.lowerEndpoint());
+    if (startArray == null)
     {
-      valArray = new ArrayList<>();
-      underlying.put(key.lowerEndpoint(), valArray);
+      startArray = new ArrayList<>();
+      startMap.put(key.lowerEndpoint(), startArray);
     }
+    startArray.add(value);
 
-    valArray.add(value);
+    List<V> endArray = startMap.get(key.upperEndpoint());
+    if (endArray == null)
+    {
+      endArray = new ArrayList<>();
+      startMap.put(key.upperEndpoint(), endArray);
+    }
+    endArray.add(value);
+
     size++;
     return true;
   }
@@ -58,24 +70,31 @@ public class TreeRangedMultimap<K extends Comparable<K>, V> implements RangedMul
   @Override
   public Collection<V> get(final K key)
   {
-    Map.Entry<K, List<V>> curEntry = underlying.floorEntry(key);
-    return underlying.get(key);
+    Map.Entry<K, List<V>> curEntry = startMap.floorEntry(key);
+    return curEntry == null ? null : curEntry.getValue();
   }
 
   @Override
   public Collection<V> get(final Range<K> range)
   {
-    List<V> allResults = Lists.newArrayList();
-    Map.Entry<K, List<V>> curEntry = underlying.floorEntry(range.lowerEndpoint());
-    if (curEntry == null)
+    Set<V> allResults = Sets.newHashSet();
+
+    // Add all items which start in this range...
+    Map.Entry<K, List<V>> startEntry = startMap.ceilingEntry(range.lowerEndpoint());
+    while (startEntry != null && startEntry.getKey().compareTo(range.upperEndpoint()) < 0)
     {
-      curEntry = underlying.ceilingEntry(range.lowerEndpoint());
+      allResults.addAll(startEntry.getValue());
+      startEntry =  startMap.higherEntry(startEntry.getKey());
     }
-    while (curEntry != null && curEntry.getKey().compareTo(range.upperEndpoint()) < 0)
+
+    // ...and which and in this range
+    Map.Entry<K, List<V>> endEntry = startMap.floorEntry(range.upperEndpoint());
+    while (endEntry != null && endEntry.getKey().compareTo(range.lowerEndpoint()) > 0)
     {
-      allResults.addAll(curEntry.getValue());
-      curEntry = underlying.higherEntry(curEntry.getKey());
+      allResults.addAll(endEntry.getValue());
+      endEntry =  startMap.lowerEntry(endEntry.getKey());
     }
+
     return allResults;
   }
 }
