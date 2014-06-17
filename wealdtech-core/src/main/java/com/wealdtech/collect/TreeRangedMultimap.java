@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * A ranged multimap using {@link TreeMap} as the underlying storage mechanism
  */
-public class TreeRangedMultimap<K extends Comparable<K>, V> implements RangedMultimap<K, V>
+public class TreeRangedMultimap<K extends Comparable<? super K>, V> implements RangedMultimap<K, V>
 {
   private TreeMap<K, List<V>> startMap;
   private TreeMap<K, List<V>> endMap;
