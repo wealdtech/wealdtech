@@ -10,6 +10,7 @@
 
 package com.wealdtech.collect;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
@@ -55,11 +56,11 @@ public class TreeRangedMultimap<K extends Comparable<? super K>, V> implements R
     }
     startArray.add(value);
 
-    List<V> endArray = startMap.get(key.upperEndpoint());
+    List<V> endArray = endMap.get(key.upperEndpoint());
     if (endArray == null)
     {
       endArray = new ArrayList<>();
-      startMap.put(key.upperEndpoint(), endArray);
+      endMap.put(key.upperEndpoint(), endArray);
     }
     endArray.add(value);
 
@@ -77,24 +78,31 @@ public class TreeRangedMultimap<K extends Comparable<? super K>, V> implements R
   @Override
   public Collection<V> get(final Range<K> range)
   {
-    Set<V> allResults = Sets.newHashSet();
-
-    // Add all items which start in this range...
-    Map.Entry<K, List<V>> startEntry = startMap.ceilingEntry(range.lowerEndpoint());
-    while (startEntry != null && startEntry.getKey().compareTo(range.upperEndpoint()) < 0)
+    // Find all items which start before this range ends
+    ImmutableSet.Builder<V> startersB = ImmutableSet.builder();
+    Map.Entry<K, List<V>> startEntry = startMap.floorEntry(range.upperEndpoint());
+    while (startEntry != null)
     {
-      allResults.addAll(startEntry.getValue());
-      startEntry =  startMap.higherEntry(startEntry.getKey());
+      // Because our range is [) we don't include anything on the upper endpoint itself
+      if (!startEntry.getKey().equals(range.upperEndpoint()))
+      {
+        startersB.addAll(startEntry.getValue());
+      }
+      startEntry = startMap.lowerEntry(startEntry.getKey());
     }
-
-    // ...and which and in this range
-    Map.Entry<K, List<V>> endEntry = startMap.floorEntry(range.upperEndpoint());
-    while (endEntry != null && endEntry.getKey().compareTo(range.lowerEndpoint()) > 0)
+    final ImmutableSet<V> starters = startersB.build();
+    
+    // Final all items which end after this range starts
+    ImmutableSet.Builder<V> finishersB = ImmutableSet.builder();
+    Map.Entry<K, List<V>> finishEntry = endMap.ceilingEntry(range.lowerEndpoint());
+    while (finishEntry != null)
     {
-      allResults.addAll(endEntry.getValue());
-      endEntry =  startMap.lowerEntry(endEntry.getKey());
+      finishersB.addAll(finishEntry.getValue());
+      finishEntry = endMap.higherEntry(finishEntry.getKey());
     }
+    final ImmutableSet<V> finishers = finishersB.build();
 
-    return allResults;
+    // Our result is everything which is in both sets
+    return Sets.intersection(starters, finishers);
   }
 }

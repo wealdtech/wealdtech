@@ -56,4 +56,24 @@ public class TreeRangedMultimapTest
     assertContains(items, "Test1");
     assertContains(items, "Test2");
   }
+
+  // Ensure that touching but not overlapping items are obtained correctly
+  @Test
+  public void testTouching()
+  {
+    final RangedMultimap<Integer, String> map = new TreeRangedMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(0, 10);
+    map.put(testRange1, "Test1");
+    final Range<Integer> testRange2 = Range.closedOpen(10, 20);
+    map.put(testRange2, "Test2");
+
+    final Collection<String> items1 = map.get(Range.closedOpen(0, 10));
+    assertEquals(items1.size(), 1);
+    assertContains(items1, "Test1");
+
+    final Collection<String> items2 = map.get(Range.closedOpen(10, 20));
+    assertEquals(items2.size(), 2);
+    assertContains(items2, "Test2");
+  }
 }
