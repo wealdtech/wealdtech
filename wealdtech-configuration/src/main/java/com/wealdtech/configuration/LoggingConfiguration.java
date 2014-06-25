@@ -17,10 +17,10 @@
 package com.wealdtech.configuration;
 
 import ch.qos.logback.classic.Level;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 /**
@@ -29,6 +29,7 @@ import com.google.inject.Inject;
 public class LoggingConfiguration implements Configuration
 {
   private Level level = Level.INFO;
+  private ImmutableMap<String, Level> overrides = ImmutableMap.of();
 
   @Inject
   public LoggingConfiguration()
@@ -37,9 +38,11 @@ public class LoggingConfiguration implements Configuration
   }
 
   @JsonCreator
-  private LoggingConfiguration(@JsonProperty("level") final Level level)
+  private LoggingConfiguration(@JsonProperty("level") final Level level,
+                               @JsonProperty("overrides") final ImmutableMap<String, Level> overrides)
   {
     this.level = Objects.firstNonNull(level, this.level);
+    this.overrides = Objects.firstNonNull(overrides, this.overrides);
   }
 
   public Level getLevel()
@@ -47,9 +50,15 @@ public class LoggingConfiguration implements Configuration
     return this.level;
   }
 
+  public ImmutableMap<String, Level> getOverrides()
+  {
+    return this.overrides;
+  }
+
   public static class Builder
   {
     private Level level;
+    private ImmutableMap<String, Level> overrides;
 
     /**
      * Start to build a logging configuration.
@@ -66,6 +75,7 @@ public class LoggingConfiguration implements Configuration
     public Builder(final LoggingConfiguration prior)
     {
       this.level = prior.level;
+      this.overrides = prior.overrides;
     }
 
     public Builder level(final Level level)
@@ -74,9 +84,15 @@ public class LoggingConfiguration implements Configuration
       return this;
     }
 
+    public Builder overrides(final ImmutableMap<String, Level> overrides)
+    {
+      this.overrides = overrides;
+      return this;
+    }
+
     public LoggingConfiguration build()
     {
-      return new LoggingConfiguration(this.level);
+      return new LoggingConfiguration(this.level, this.overrides);
     }
   }
 }
