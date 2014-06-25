@@ -15,6 +15,7 @@ import com.wealdtech.DataError;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
@@ -55,10 +56,15 @@ public class RangeFormatter
    * Format the date and time of a date/time range.
    *
    * @param range the range to format
-   * @return a formatted range
+   * @return a formatted range, or {@code null} if the input is {@code null}
    */
-  public String formatDateTime(final Range<DateTime> range)
+  @Nullable
+  public String formatDateTime(@Nullable final Range<DateTime> range)
   {
+    if (range == null)
+    {
+      return null;
+    }
     final DateTime curDateTime = DateTime.now();
     final StringBuilder sb = new StringBuilder(96);
 
@@ -109,11 +115,12 @@ public class RangeFormatter
    * Format the dates of a date/time range.
    *
    * @param range the range to format
-   * @return the formatted range
+   * @return the formatted range, or {@code null} if the input is {@code null}
    */
-  public String formatDate(final Range<DateTime> range)
+  @Nullable
+  public String formatDate(@Nullable final Range<DateTime> range)
   {
-    if (style == Style.TIME_ONLY)
+    if (range == null || style == Style.TIME_ONLY)
     {
       return null;
     }
@@ -184,22 +191,24 @@ public class RangeFormatter
    * Format the date of a single date/time
    *
    * @param dateTime the date/time to format
-   * @return a formatted date
+   * @return a formatted date, or {@code null} if the input is {@code null}
    */
-  public String formatDate(final DateTime dateTime)
+  @Nullable
+  public String formatDate(@Nullable final DateTime dateTime)
   {
-    return style == Style.TIME_ONLY ? null : formatDateAndTime(dateTime, true, false);
+    return dateTime == null || style == Style.TIME_ONLY ? null : formatDateAndTime(dateTime, true, false);
   }
 
   /**
    * Format the time of a single date/time
    *
    * @param dateTime the date/time to format
-   * @return a formatted time
+   * @return a formatted time, or {@code null} if the input is {@code null}
    */
-  public String formatTime(final DateTime dateTime)
+  @Nullable
+  public String formatTime(@Nullable final DateTime dateTime)
   {
-    return formatDateAndTime(dateTime, false, true);
+    return dateTime == null ? null : formatDateAndTime(dateTime, false, true);
   }
 
 
@@ -207,11 +216,12 @@ public class RangeFormatter
    * Format the date and time of a single date/time
    *
    * @param dateTime the date/time to format
-   * @return a formatted date
+   * @return a formatted date, or {@code null} if the input is {@code null}
    */
-  public String formatDateTime(final DateTime dateTime)
+  @Nullable
+  public String formatDateTime(@Nullable final DateTime dateTime)
   {
-    return formatDateAndTime(dateTime, true, true);
+    return dateTime == null ? null : formatDateAndTime(dateTime, true, true);
   }
 
   /**
