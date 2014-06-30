@@ -16,23 +16,23 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import java.io.IOException;
 
 /**
  * Custom serializer for Joda LocalDateTime objects.
- * This serializer presents Joda LocalDateTime objects in ISO 8601 format.
+ * This serializer presents Joda LocalDateTime objects in ISO 8601 format with an implicit time zone of UTC.
  */
 public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime>
 {
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(DateTimeZone.UTC);
 
   public LocalDateTimeSerializer()
   {
@@ -42,6 +42,6 @@ public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime>
   @Override
   public void serialize(final LocalDateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeString(formatter.print(value));
+    gen.writeString(formatter.print(value.toDateTime().withZone(DateTimeZone.UTC)));
   }
 }

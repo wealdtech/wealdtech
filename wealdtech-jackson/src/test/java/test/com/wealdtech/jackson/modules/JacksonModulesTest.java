@@ -388,6 +388,15 @@ public class JacksonModulesTest
   }
 
   @Test
+  public void testSerLocalDateTime2() throws Exception
+  {
+    final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.forID("Europe/London"));
+    final LocalDateTime ldt1 = dt1.toLocalDateTime();
+    final String value = this.mapper.writeValueAsString(ldt1);
+    assertEquals(value, "\"2012-05-06T09:02:03\"");
+  }
+
+  @Test
   public void testSerLocalDate() throws Exception
   {
     final LocalDate lt1 = LocalDate.parse("2012-02-03");

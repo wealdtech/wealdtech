@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,7 +33,7 @@ import java.io.IOException;
 public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalDateTimeDeserializer.class);
-  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+  private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(DateTimeZone.UTC);
 
   @Override
   public LocalDateTime deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException
@@ -40,16 +41,14 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime>
     final ObjectCodec oc = jsonParser.getCodec();
     final JsonNode node = oc.readTree(jsonParser);
 
-    LocalDateTime result = null;
     try
     {
-      result = formatter.parseLocalDateTime(node.textValue());
+      return formatter.parseDateTime(node.textValue()).withZone(DateTimeZone.UTC).toLocalDateTime();
     }
     catch (IllegalArgumentException iae)
     {
       LOGGER.warn("Attempt to deserialize invalid localdatetime {}", node.textValue());
       throw new IOException("Invalid localdatetime value \"" + node.textValue() + "\"", iae);
     }
-    return result;
   }
 }
