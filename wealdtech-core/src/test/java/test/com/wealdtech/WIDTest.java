@@ -1,26 +1,22 @@
 package test.com.wealdtech;
 
-import static org.testng.Assert.*;
+import com.wealdtech.DataError;
+import com.wealdtech.WID;
+import org.testng.annotations.Test;
 
 import java.util.Date;
 
-import org.testng.annotations.Test;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wealdtech.DataError;
-import com.wealdtech.WID;
-import com.wealdtech.jackson.ObjectMapperFactory;
+import static org.testng.Assert.*;
 
 public class WIDTest
 {
   @Test
-  public void testClass() throws Exception
+  public void testClass()
   {
     final WID<Date> testWid1 = new WID<>(1);
     testWid1.toString();
     testWid1.hashCode();
-    testWid1.toLong();
+    testWid1.getId();
     assertEquals(testWid1, testWid1);
     assertNotEquals(testWid1, null);
     assertNotEquals(null, testWid1);
@@ -30,10 +26,28 @@ public class WIDTest
     assertTrue(testWid2.compareTo(testWid1) != 0);
     assertTrue(testWid1.compareTo(testWid2) != 0);
     assertNotEquals(testWid1, testWid2);
+
+    final WID<Date> testWid3 = new WID<>(2, 1L);
+    testWid3.toString();
+    testWid3.hashCode();
+    testWid3.getId();
+    assertEquals(testWid3, testWid3);
+    assertNotEquals(testWid3, null);
+    assertNotEquals(null, testWid3);
+    assertEquals(testWid2.getId(), testWid3.getId());
+    assertNotEquals(testWid2, testWid3);
+    assertTrue(testWid1.compareTo(testWid3) < 0);
+    assertTrue(testWid3.compareTo(testWid1) > 0);
+    assertTrue(testWid2.compareTo(testWid3) < 0);
+    assertTrue(testWid3.compareTo(testWid2) > 0);
+
+    final WID<Date> testWid4 = new WID<>(2, 2L);
+    assertTrue(testWid3.compareTo(testWid4) < 0);
+    assertTrue(testWid4.compareTo(testWid3) > 0);
   }
 
   @Test
-  public void testValidation() throws Exception
+  public void testValidation()
   {
     // Test min and max shard ID
     WID.<Date>fromComponents(0, System.currentTimeMillis(), 0);
@@ -96,99 +110,111 @@ public class WIDTest
   }
 
   @Test
-  public void testFromString() throws Exception
+  public void testFromString()
   {
-    final WID<Date> testWid = WID.<Date>fromString("7edcba09f7654321");
+    final WID<Date> testWid = WID.fromString("7edcba09f7654321");
     testWid.toString();
     testWid.hashCode();
     assertEquals(testWid, testWid);
     assertNotEquals(testWid, null);
     assertNotEquals(null, testWid);
-    assertEquals(testWid.getShardId(), 4058);
-    assertEquals(testWid.getTimestamp(), 1525133781328L);
+    assertEquals(testWid.getShardId(), 6480);
+    assertEquals(testWid.getTimestamp(), 3504852236252L);
     assertEquals(testWid.getIid(), 801);
 
-    // Ensure that NULL IDs don't work
-    try
-    {
-      WID.<Date>fromString(null);
-    }
-    catch (DataError.Missing de)
-    {
-      // Good
-    }
-
-    // Ensure that invalid IDs don't work
-    try
-    {
-      WID.<Date>fromString("invalid");
-    }
-    catch (DataError.Bad de)
-    {
-      // Good
-    }
+    final WID<Date> testWid2 = WID.fromString("7edcba09f7654321.1");
+    assertNotEquals(testWid, testWid2);
+    assertTrue(testWid2.hasSubId());
+    assertEquals(testWid2.getSubId().get(), (Long)1L);
+    assertEquals(testWid.getId(), testWid2.getId());
   }
 
-  @Test
-  public void testTimestamp() throws Exception
+  @Test(expectedExceptions = {DataError.Missing.class})
+  public void testInvalidFromString1()
   {
-    final WID<Date> testWid = WID.<Date>fromString("0123456789abcdef");
-    final long timestamp = testWid.getTimestamp();
-    assertEquals(timestamp, 2224532175603L);
+    WID.<Date>fromString(null);
+  }
+
+  @Test(expectedExceptions = {DataError.Bad.class})
+  public void testInvalidFromString2()
+  {
+    WID.<Date>fromString("invalid");
+  }
+
+  @Test(expectedExceptions = {DataError.Bad.class})
+  public void testInvalidFromString3()
+  {
+    WID.<Date>fromString("7edcba09f7654321.");
+  }
+
+  @Test(expectedExceptions = {DataError.Bad.class})
+  public void testInvalidFromString4()
+  {
+    WID.<Date>fromString(".1");
   }
 
   @Test
-  public void testFromComponents() throws Exception
+  public void testTimestamp()
+  {
+    final WID<Date> testWid = WID.fromString("0123456789abcdef");
+    final long timestamp = testWid.getTimestamp();
+    assertEquals(timestamp, 1344922873382L);
+  }
+
+  @Test
+  public void testFromComponents()
   {
     final long timestamp = 1358784686000L;
     final long shardId = 3824L;
     final long id = 952L;
-    final WID<Date> testWid = WID.<Date>fromComponents(shardId, timestamp, id);
+    final WID<Date> testWid = WID.fromComponents(shardId, timestamp, id);
     assertEquals(testWid.getTimestamp(), timestamp);
     assertEquals(testWid.getShardId(), shardId);
   }
 
   @Test
-  public void testSerialization() throws Exception
-  {
-    final String input = "123456789abcdef";
-    final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final WID<Date> testWid = WID.<Date>fromString(input);
-    final String output = mapper.writeValueAsString(testWid);
-    assertEquals(output, "\"" + input + "\"");
-  }
-
-  @Test
-  public void testDeserialization() throws Exception
-  {
-    final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
-    final String input = "\"123456789abcdef\"";
-    final WID<Date> testWid = mapper.readValue(input, new TypeReference<WID<Date>>(){});
-    assertEquals("\"" + testWid.toString() + "\"", input);
-  }
-
-  @Test
-  public void testRandomWID() throws Exception
+  public void testGenerate()
   {
     for (int i = 0; i < 1000000; i++)
     {
-      WID.<Date>randomWID();
+      WID.<Date>generate();
     }
   }
 
   @Test
-  public void testFromLong() throws Exception
+  public void testFromLong()
   {
-    WID.<String>fromLong(12345678901234L);
-    try
-    {
-      WID.<String>fromLong(null);
-      fail("Created WID from NULL long");
-    }
-    catch (DataError.Missing de)
-    {
-      // Good
-    }
+    WID.fromLong(12345678901234L);
+
+    WID.fromLongs(12345678901234L, 1L);
+
+    WID.fromLongs(12345678901234L, null);
+  }
+
+  @Test(expectedExceptions = {DataError.Missing.class})
+  public void testInvalidFromLong1()
+  {
+    WID.<String>fromLong(null);
+  }
+
+  @Test
+  public void testRecast()
+  {
+    final WID<Date> testWid1 = WID.fromLongs(12345678901234L, 1L);
+    final WID<String> testWid2 = WID.recast(testWid1);
+    // Note that this succeeds, as we do not retain the type of the WID
+    assertEquals(testWid1, testWid2);
+  }
+
+  @Test
+  public void testWithSubId1()
+  {
+    final WID<Date> testWid1 = WID.fromLongs(12345678901234L, 1L);
+    final WID<Date> testWid2 = testWid1.withSubId(2L);
+    assertTrue(testWid2.hasSubId());
+    assertEquals(testWid2.getSubId().get(), (Long)2L);
+    final WID<Date> testWid3 = testWid1.withSubId(null);
+    assertFalse(testWid3.hasSubId());
   }
 }
 

@@ -1,0 +1,18 @@
+dependencies
+{
+    compile project(':wealdtech-jackson')
+    compile 'ch.qos.logback:logback-classic:1.1.1'
+    compile 'com.google.inject:guice:3.0'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-configuration'
+            pom.project {
+                name 'Wealdtech Configuration'
+                description 'Weald Technology configuration files'
+            }
+        }
+    }
+}

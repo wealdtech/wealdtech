@@ -16,14 +16,14 @@
 
 package test.com.wealdtech.jersey.guice;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A Guice module to configure a Jetty server with servlets
@@ -49,12 +49,6 @@ public class TestServletModule extends ServletModule
     final Map<String, String> params = new HashMap<String, String>();
     params.put(PackagesResourceConfig.PROPERTY_PACKAGES, this.packages);
 
-    // Add the authentication filter to requests and the unauthorized filter to responses
-//    final String requestFilters = joinClassNames(BodyPrefetchFilter.class, HawkExampleUserAuthenticationFilter.class);
-//    final String responseFilters = joinClassNames(HawkUnauthorizedFilter.class, ServerHeaderFilter.class);
-//    params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, requestFilters);
-//    params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, responseFilters);
-
     serve("/*").with(GuiceContainer.class, params);
   }
 
@@ -68,22 +62,4 @@ public class TestServletModule extends ServletModule
     packagesList = ObjectArrays.concat("com.yammer.metrics", packagesList);
     this.packages = Joiner.on(',').skipNulls().join(packagesList);
   }
-
-  /**
-   * Convert a varargs of clases in to a comma-separated string of class names
-   */
-//  private String joinClassNames(final Class<?>... clazz)
-//  {
-//    Function<Class<?>, String> classToName = new Function<Class<?>, String>()
-//    {
-//      @Override
-//      public String apply(Class<?> klazz)
-//      {
-//        return klazz.getName();
-//      }
-//    };
-//    List<String> names = Lists.transform(Lists.newArrayList(clazz), classToName);
-//
-//    return Joiner.on(',').skipNulls().join(names);
-//  }
 }

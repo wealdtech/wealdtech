@@ -33,8 +33,8 @@ public class TestJettyServer
     // Create an injector with our basic configuration
     final Injector injector = Guice.createInjector(new ApplicationModule("config-multi.json"),
                                                    new JerseyServletModule("test.com.wealdtech.jersey.resources"));
-    final JettyServer webserver = injector.getInstance(JettyServer.class);
-    webserver.start();
-    webserver.join();
+    final JettyServer server = injector.getInstance(JettyServer.class);
+    server.start();
+    server.join();
   }
 }

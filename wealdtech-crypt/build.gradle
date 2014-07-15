@@ -1,0 +1,19 @@
+dependencies
+{
+    compile project(':wealdtech-configuration')
+    compile project(':wealdtech-metrics')
+    // bcrypt functions
+    compile 'org.mindrot:jbcrypt:0.3m'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-crypt'
+            pom.project {
+                name 'Wealdtech Crypt'
+                description 'Weald Technology cryptography utilities'
+            }
+        }
+    }
+}
