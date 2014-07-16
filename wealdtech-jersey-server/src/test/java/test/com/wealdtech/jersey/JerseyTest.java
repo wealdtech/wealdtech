@@ -1,5 +1,6 @@
 package test.com.wealdtech.jersey;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.wealdtech.jersey.guice.JerseyServletModule;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 
@@ -22,13 +24,16 @@ public class JerseyTest
   private JettyServer webserver;
 
   // Helper
-  private HttpURLConnection connect(final URI uri, final String method, final String authorizationHeader, String body) throws Exception
+  private HttpURLConnection connect(final URI uri, final String method, final ImmutableMap<String, String> headers, String body) throws Exception
   {
     final HttpURLConnection connection = (HttpURLConnection)uri.toURL().openConnection();
     connection.setRequestMethod(method);
-    if (authorizationHeader != null)
+    if (headers != null)
     {
-      connection.setRequestProperty("Authorization", authorizationHeader);
+      for (final Map.Entry<String, String> entry : headers.entrySet())
+      {
+        connection.setRequestProperty(entry.getKey(), entry.getValue());
+      }
     }
     if (body != null)
     {
@@ -83,6 +88,14 @@ public class JerseyTest
     assertEquals(connection.getResponseCode(), 200);
     final String response = getStringResponse(connection);
     assertEquals(response, "Hello world");
+  }
+
+  @Test
+  public void testGeoLocation() throws Exception
+  {
+    final ImmutableMap<String, String> headers = ImmutableMap.of("Geo-Position", "12.123456;6.32524;55 hdg=45");
+    final HttpURLConnection connection = connect(this.validuri1, "GET", headers, null);
+    assertEquals(connection.getResponseCode(), 200);
   }
 
   @Test

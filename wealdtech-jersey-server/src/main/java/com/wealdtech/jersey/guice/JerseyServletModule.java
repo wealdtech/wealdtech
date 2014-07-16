@@ -16,15 +16,6 @@
 
 package com.wealdtech.jersey.guice;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
-import org.slf4j.bridge.SLF4JBridgeHandler;
-
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -35,8 +26,17 @@ import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.wealdtech.jersey.filters.CORSFilter;
+import com.wealdtech.jersey.filters.RequestHintFilter;
 import com.wealdtech.jersey.filters.RequestLoggingFilter;
 import com.wealdtech.jersey.filters.ServerHeaderFilter;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class JerseyServletModule extends ServletModule
 {
@@ -68,7 +68,7 @@ public class JerseyServletModule extends ServletModule
     params.put(PackagesResourceConfig.PROPERTY_PACKAGES, this.packages);
     params.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE.toString());
 
-    final String requestFilters = joinClassNames(RequestLoggingFilter.class, GZIPContentEncodingFilter.class);
+    final String requestFilters = joinClassNames(RequestLoggingFilter.class, RequestHintFilter.class, GZIPContentEncodingFilter.class);
     final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeaderFilter.class, CORSFilter.class, GZIPContentEncodingFilter.class);
 
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, requestFilters);
