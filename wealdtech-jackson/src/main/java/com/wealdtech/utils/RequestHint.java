@@ -8,8 +8,10 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.jersey;
+package com.wealdtech.utils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
@@ -19,7 +21,7 @@ import javax.annotation.Nonnull;
 import java.net.InetAddress;
 
 /**
- * Additional information about requests that can be accessed by Jersey requests
+ * Information about a request which provides additional context
  */
 public class RequestHint implements Comparable<RequestHint>
 {
@@ -29,11 +31,12 @@ public class RequestHint implements Comparable<RequestHint>
   private final Optional<InetAddress> address;
   private final Optional<String> userAgent;
 
-  public RequestHint(final Integer latitude,
-                     final Integer longitude,
-                     final Float altitude,
-                     final InetAddress address,
-                     final String userAgent)
+  @JsonCreator
+  public RequestHint(@JsonProperty("latitude") final Integer latitude,
+                     @JsonProperty("longitude") final Integer longitude,
+                     @JsonProperty("altitude") final Float altitude,
+                     @JsonProperty("address") final InetAddress address,
+                     @JsonProperty("useragent") final String userAgent)
 
   {
     this.latitude = Optional.fromNullable(latitude);

@@ -14,7 +14,7 @@ import com.google.common.base.Splitter;
 import com.google.common.net.InetAddresses;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.wealdtech.jersey.RequestHint;
+import com.wealdtech.utils.RequestHint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

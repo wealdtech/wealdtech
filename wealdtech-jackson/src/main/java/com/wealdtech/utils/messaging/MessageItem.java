@@ -16,14 +16,14 @@
 
 package com.wealdtech.utils.messaging;
 
-import java.util.Locale;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.StringUtils;
 
-import static com.wealdtech.Preconditions.*;
+import java.util.Locale;
+
+import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * A message item contains a {@link MessageObjects} along with details of
@@ -31,9 +31,9 @@ import static com.wealdtech.Preconditions.*;
  */
 public class MessageItem
 {
-  private final transient Type msgType;
-  private final transient String destination;
-  private final transient MessageObjects<?> objects;
+  private final Type msgType;
+  private final String destination;
+  private final MessageObjects<?> objects;
 
   public enum Type
   {

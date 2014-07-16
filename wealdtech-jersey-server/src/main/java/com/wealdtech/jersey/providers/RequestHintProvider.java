@@ -11,7 +11,7 @@
 package com.wealdtech.jersey.providers;
 
 import com.sun.jersey.api.core.HttpContext;
-import com.wealdtech.jersey.RequestHint;
+import com.wealdtech.utils.RequestHint;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;

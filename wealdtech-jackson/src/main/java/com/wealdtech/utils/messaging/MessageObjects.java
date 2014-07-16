@@ -16,13 +16,14 @@
 
 package com.wealdtech.utils.messaging;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wealdtech.DataError;
+import com.wealdtech.utils.RequestHint;
 
-import static com.wealdtech.Preconditions.*;
+import java.io.Serializable;
+
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * MessageObjects contain prior and current state of an object, along with an identifier related to the user who initiated the
@@ -34,6 +35,7 @@ public class MessageObjects<T extends Object> implements Serializable
   private static final long serialVersionUID = 6306799063373268531L;
 
   private final transient Long userId;
+  private final transient RequestHint hint;
   private final transient T prior;
   private final transient T current;
 
@@ -45,12 +47,14 @@ public class MessageObjects<T extends Object> implements Serializable
    */
   @JsonCreator
   public MessageObjects(@JsonProperty("userid") final Long userId,
+                        @JsonProperty("hint") final RequestHint hint,
                         @JsonProperty("prior") final T prior,
                         @JsonProperty("current") final T current)
   {
     checkState(prior != null || current != null, "At least one object must be present");
 
     this.userId = userId;
+    this.hint = hint;
     this.prior = prior;
     this.current = current;
   }
@@ -62,6 +66,12 @@ public class MessageObjects<T extends Object> implements Serializable
   {
     return this.userId;
   }
+
+  /**
+   * Obtain hints supplied as part of the request which generated this message
+   * @return the hint
+   */
+  public RequestHint getHint() { return this.hint; }
 
   /**
    * Obtain the prior state of the object.

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.wealdtech.DataError;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.utils.RequestHint;
 import com.wealdtech.utils.messaging.MessageObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
   @Override
   public MessageObjects<? extends Object> deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException
   {
-    // This assumes a strict JSON format of userId followed by _type followed by prior and current (if they exist)
+    // This assumes a strict JSON format of userId and hint followed by _type followed by prior and current (if they exist)
     jp.nextToken();
     String fieldName = jp.getCurrentName();
     if (!"userid".equals(fieldName))
@@ -49,12 +50,29 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
     }
     jp.nextToken();
     final Long userId = Long.parseLong(jp.getText());
+
+    final RequestHint hint;
     jp.nextToken();
+    fieldName = jp.getCurrentName();
+    if ("hint".equals(fieldName))
+    {
+      // Hint is optional
+      jp.nextToken();
+      hint = WealdMapper.getMapper().readValue(jp, RequestHint.class);
+      jp.nextToken();
+    }
+    else
+    {
+      hint = null;
+    }
+
+
     fieldName = jp.getCurrentName();
     if (!"_type".equals(fieldName))
     {
       throw new IOException("Unexpected key \"" + fieldName + "\"; expected _type");
     }
+
     jp.nextToken();
     final String typeStr = jp.getText();
     Class<? extends Object> objClass;
@@ -91,7 +109,7 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
     // And build our return object
     try
     {
-      return new MessageObjects<>(userId, prior, current);
+      return new MessageObjects<>(userId, hint, prior, current);
     }
     catch (DataError de)
     {

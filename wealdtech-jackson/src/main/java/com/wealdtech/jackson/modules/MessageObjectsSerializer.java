@@ -16,12 +16,12 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wealdtech.utils.messaging.MessageObjects;
+
+import java.io.IOException;
 
 /**
  * Custom serializer for message objects.
@@ -41,6 +41,10 @@ public class MessageObjectsSerializer extends StdSerializer<MessageObjects<? ext
   {
     jgen.writeStartObject();
     provider.defaultSerializeField("userid", mo.getUserId(), jgen);
+    if (mo.getHint() != null)
+    {
+      provider.defaultSerializeField("hint", mo.getHint(), jgen);
+    }
     provider.defaultSerializeField("_type", mo.getType().getName(), jgen);
     if (mo.getPrior() != null)
     {
