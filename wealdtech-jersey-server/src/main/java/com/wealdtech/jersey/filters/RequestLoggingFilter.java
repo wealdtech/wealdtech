@@ -46,7 +46,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     MDC.put(REQUEST_START_TIME, String.valueOf(System.currentTimeMillis()));
     if (LOG.isInfoEnabled())
     {
-      LOG.info("Started: {} {} ({})", request.getMethod(), request.getPath(), requestId);
+      LOG.info("Started: {} {} ({})", request.getMethod(), request.getRequestUri(), requestId);
     }
 
     return request;

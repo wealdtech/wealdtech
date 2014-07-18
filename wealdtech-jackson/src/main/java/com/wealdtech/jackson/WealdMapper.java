@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Provide Jackson object mappers with Weald settings. This provides two object mappers, one for clients (which will be sending REST
@@ -21,16 +22,16 @@ public enum WealdMapper
   static
   {
     ObjectMapperConfiguration clientConfiguration = new ObjectMapperConfiguration();
-    clientConfiguration.addInjectableValue("AllowPartials", Boolean.FALSE);
     clientConfiguration.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     CLIENT_MAPPER = new ObjectMapperFactory().build(clientConfiguration)
-                                             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                                             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                                             .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
 
     ObjectMapperConfiguration serverConfiguration = new ObjectMapperConfiguration();
-    serverConfiguration.addInjectableValue("AllowPartials", Boolean.TRUE);
     serverConfiguration.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     SERVER_MAPPER = new ObjectMapperFactory().build(serverConfiguration)
-                                             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                                             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                                             .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
   }
 
   /**
