@@ -59,27 +59,15 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   public static final long EPOCH = 1325376000000L;
 
   // Masks for the pieces of the ID
-//  private static final long TIMESTAMPMASK = 0x0003fffffffffc00L;
   private static final long TIMESTAMPMASK = 0xffffffffff800000L;
   private static final int TIMESTAMPOFFSET = 22;
   private static final int TIMESTAMPSIZE = 41;
   public static final long MAX_TIMESTAMP = (1L << TIMESTAMPSIZE) - 1;
 
-//  private static final long SHARDMASK = 0xfff7000000000000L;
   private static final long SHARDMASK = 0x00000000007fe000L;
   private static final int SHARDOFFSET = 10;
   private static final int SHARDSIZE = 12;
   public static final long MAX_SHARD = (1L << SHARDSIZE) - 1;
-
-//  private static final long SHARDMASK = 0xfff7000000000000L;
-//  private static final int SHARDOFFSET = 51;
-//  private static final int SHARDSIZE = 12;
-//  public static final long MAX_SHARD = (1L << SHARDSIZE) - 1;
-
-//  private static final long TIMESTAMPMASK = 0x0003fffffffffc00L;
-//  private static final int TIMESTAMPOFFSET = 10;
-//  private static final int TIMESTAMPSIZE = 41;
-//  public static final long MAX_TIMESTAMP = (1L << TIMESTAMPSIZE) - 1;
 
   private static final long IIDMASK = 0x00000000000003ffL;
   private static final int IIDSIZE = 10;
