@@ -61,11 +61,11 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
       final String rid = MDC.get(REQUEST_ID);
       final long duration = System.currentTimeMillis() - startTime;
       response.getHttpHeaders().add(REQUEST_ID_HEADER, rid);
-      LOG.info("Finished: {} {} ({} ms)", request.getMethod(), request.getPath(), String.valueOf(duration));
+      LOG.info("Finished: {} {} [{}] ({} ms)", request.getMethod(), request.getPath(), response.getStatus(), String.valueOf(duration));
     }
     catch (Exception e)
     {
-      LOG.warn("Finished {} {}", request.getMethod(), request.getPath());
+      LOG.warn("Finished {} {} [{}]", request.getMethod(), request.getPath(), response.getStatus());
     }
     return response;
   }
