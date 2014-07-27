@@ -30,6 +30,7 @@ public class LoggingConfiguration implements Configuration
 {
   private Level level = Level.INFO;
   private ImmutableMap<String, Level> overrides = ImmutableMap.of();
+  private String pattern = "%d{yyyyMMdd'T'HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n";
 
   @Inject
   public LoggingConfiguration()
@@ -39,10 +40,12 @@ public class LoggingConfiguration implements Configuration
 
   @JsonCreator
   private LoggingConfiguration(@JsonProperty("level") final Level level,
-                               @JsonProperty("overrides") final ImmutableMap<String, Level> overrides)
+                               @JsonProperty("overrides") final ImmutableMap<String, Level> overrides,
+                               @JsonProperty("pattern") final String pattern)
   {
     this.level = Objects.firstNonNull(level, this.level);
     this.overrides = Objects.firstNonNull(overrides, this.overrides);
+    this.pattern = Objects.firstNonNull(pattern, this.pattern);
   }
 
   public Level getLevel()
@@ -55,10 +58,16 @@ public class LoggingConfiguration implements Configuration
     return this.overrides;
   }
 
+  public String getPattern()
+  {
+    return this.pattern;
+  }
+
   public static class Builder
   {
     private Level level;
     private ImmutableMap<String, Level> overrides;
+    private String pattern;
 
     /**
      * Start to build a logging configuration.
@@ -76,6 +85,7 @@ public class LoggingConfiguration implements Configuration
     {
       this.level = prior.level;
       this.overrides = prior.overrides;
+      this.pattern = prior.pattern;
     }
 
     public Builder level(final Level level)
@@ -90,9 +100,15 @@ public class LoggingConfiguration implements Configuration
       return this;
     }
 
+    public Builder pattern(final String pattern)
+    {
+      this.pattern = pattern;
+      return this;
+    }
+
     public LoggingConfiguration build()
     {
-      return new LoggingConfiguration(this.level, this.overrides);
+      return new LoggingConfiguration(this.level, this.overrides, this.pattern);
     }
   }
 }
