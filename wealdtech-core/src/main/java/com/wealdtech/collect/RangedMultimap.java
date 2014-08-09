@@ -25,7 +25,5 @@ public interface RangedMultimap<K extends Comparable, V>
 
   boolean put(Range<K> key, V value);
 
-  Collection<V> get(K key);
-
   Collection<V> get(Range<K> range);
 }

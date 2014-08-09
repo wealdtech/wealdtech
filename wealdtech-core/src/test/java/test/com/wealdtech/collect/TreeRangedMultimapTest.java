@@ -29,17 +29,6 @@ public class TreeRangedMultimapTest
     assertTrue(collection.contains(val), "Collection missing expected value \"" + val + "\"");
   }
 
-  // Ensure that a simple get works
-  @Test
-  public void testSimpleGet()
-  {
-    final RangedMultimap<Integer, String> map = new TreeRangedMultimap<>();
-
-    final Range<Integer> testRange = Range.closedOpen(1, 5);
-    map.put(testRange, "Test");
-    assertContains(map.get(3), "Test");
-  }
-
   // Ensure that a ranged get works
   @Test
   public void testRangedGet()
@@ -73,7 +62,7 @@ public class TreeRangedMultimapTest
     assertContains(items1, "Test1");
 
     final Collection<String> items2 = map.get(Range.closedOpen(10, 20));
-    assertEquals(items2.size(), 2);
+    assertEquals(items2.size(), 1);
     assertContains(items2, "Test2");
   }
 }
