@@ -16,7 +16,7 @@
 
 package com.wealdtech.jetty;
 
-import com.codahale.metrics.servlets.MetricsServlet;
+import com.codahale.metrics.servlets.AdminServlet;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -153,8 +153,8 @@ public class JettyServer
 
     final ServletContextHandler admin = new ServletContextHandler();
     admin.addEventListener(new MetricsServletContextListener());
-    admin.setContextPath("/admin");
-    admin.addServlet(MetricsServlet.class, "/*");
+    admin.setContextPath(configuration.getMetricsEndpoint());
+    admin.addServlet(AdminServlet.class, "/*");
     handlers.addHandler(admin);
 
     final ServletContextHandler root = new ServletContextHandler();
