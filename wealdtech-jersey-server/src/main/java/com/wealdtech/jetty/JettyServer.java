@@ -16,23 +16,7 @@
 
 package com.wealdtech.jetty;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
-import javax.servlet.Servlet;
-
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.ThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.servlets.AdminServlet;
+import com.codahale.metrics.servlets.MetricsServlet;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -44,6 +28,21 @@ import com.wealdtech.jersey.filters.ThreadNameFilter;
 import com.wealdtech.jetty.config.JettyConnectorConfiguration;
 import com.wealdtech.jetty.config.JettyInstanceConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
+import com.wealdtech.jetty.config.MetricsServletContextListener;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.ThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.Servlet;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * JettyServer sets up a Jetty server.
@@ -153,8 +152,9 @@ public class JettyServer
     final HandlerCollection handlers = new HandlerCollection();
 
     final ServletContextHandler admin = new ServletContextHandler();
+    admin.addEventListener(new MetricsServletContextListener());
     admin.setContextPath("/admin");
-    admin.addServlet(AdminServlet.class, "/*");
+    admin.addServlet(MetricsServlet.class, "/*");
     handlers.addHandler(admin);
 
     final ServletContextHandler root = new ServletContextHandler();

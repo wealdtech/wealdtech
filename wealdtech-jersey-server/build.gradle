@@ -23,9 +23,9 @@ dependencies
     compile 'org.eclipse.jetty.websocket:websocket-servlet:9.1.2.v20140210'
 
     // Instrumentation
-    compile 'com.codahale.metrics:metrics-servlets:3.0.1'
-    compile 'com.codahale.metrics:metrics-jersey:3.0.1'
-    compile 'com.codahale.metrics:metrics-jetty9:3.0.1'
+    compile 'com.codahale.metrics:metrics-servlets:3.0.2'
+    compile 'com.codahale.metrics:metrics-jersey:3.0.2'
+    compile 'com.codahale.metrics:metrics-jetty9:3.0.2'
 
     // Testing
     testCompile 'com.sun.jersey:jersey-grizzly2:1.18'
