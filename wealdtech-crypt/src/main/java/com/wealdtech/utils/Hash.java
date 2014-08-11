@@ -15,13 +15,6 @@
  */
 package com.wealdtech.utils;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import org.mindrot.jbcrypt.BCrypt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
@@ -29,8 +22,14 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.wealdtech.TwoTuple;
+import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.wealdtech.Preconditions.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * Utilities for hashing data using the Bcrypt algorithm.
@@ -58,9 +57,9 @@ public enum Hash
     // TODO where to obtain this from?
     CONFIGURATION = new HashConfiguration();
 
-    LOOKUPS = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
-    MISSES = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
-    GETS = WealdMetrics.defaultRegistry().timer(com.codahale.metrics.MetricRegistry.name(Hash.class, "gets"));
+    LOOKUPS = WealdMetrics.getMetricRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
+    MISSES = WealdMetrics.getMetricRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
+    GETS = WealdMetrics.getMetricRegistry().timer(com.codahale.metrics.MetricRegistry.name(Hash.class, "gets"));
     final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder()
                                                         .maximumSize(CONFIGURATION.getCacheConfiguration().getMaxEntries())
                                                         .expireAfterWrite(CONFIGURATION.getCacheConfiguration().getMaxDuration(),  TimeUnit.SECONDS);
@@ -102,7 +101,7 @@ public enum Hash
       boolean result = false;
       try
       {
-        result = CACHE.get(new TwoTuple<String, String>(input, hashed));
+        result = CACHE.get(new TwoTuple<>(input, hashed));
       }
       catch (ExecutionException e)
       {
@@ -135,15 +134,6 @@ public enum Hash
   {
     checkNotNull(input, "Cannot consider NULL");
 
-    boolean hashed;
-    if (input.startsWith("$2a$") || input.startsWith("$2$"))
-    {
-      hashed = true;
-    }
-    else
-    {
-      hashed = false;
-    }
-    return hashed;
+    return input.startsWith("$2a$") || input.startsWith("$2$");
   }
 }

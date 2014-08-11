@@ -58,7 +58,7 @@ public class JettyHttpsConnectorFactory extends JettyHttpConnectorFactory
 
     // Instrument the connections
     final String timerName = MetricRegistry.name(HttpConnectionFactory.class, configuration.getBindHost(), Integer.toString(configuration.getPort()), "connections");
-    final ConnectionFactory instrumentedConnectionFactory = new InstrumentedConnectionFactory(httpConnectionFactory, WealdMetrics.defaultRegistry().timer(timerName));
+    final ConnectionFactory instrumentedConnectionFactory = new InstrumentedConnectionFactory(httpConnectionFactory, WealdMetrics.getMetricRegistry().timer(timerName));
     // And create the connection itself
     return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, sslConnectionFactory, instrumentedConnectionFactory);
   }

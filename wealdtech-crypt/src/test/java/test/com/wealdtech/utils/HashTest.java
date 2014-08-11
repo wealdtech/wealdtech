@@ -78,7 +78,7 @@ public class HashTest
   {
     // Ensure that the cache is operational
     final String fredHash = Hash.hash("Fred");
-    final MetricRegistry registry = WealdMetrics.defaultRegistry();
+    final MetricRegistry registry = WealdMetrics.getMetricRegistry();
     final Meter lookups = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
     long initialLookupCount = lookups.getCount();
     final Meter misses = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));

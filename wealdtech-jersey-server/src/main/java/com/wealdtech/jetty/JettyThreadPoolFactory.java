@@ -32,7 +32,7 @@ public class JettyThreadPoolFactory
 {
   public static ThreadPool build(final String name, final JettyThreadPoolConfiguration configuration)
   {
-    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool(WealdMetrics.defaultRegistry());
+    final InstrumentedQueuedThreadPool pool = new InstrumentedQueuedThreadPool(WealdMetrics.getMetricRegistry());
 
     pool.setName(name);
     pool.setMinThreads(configuration.getMinThreads());

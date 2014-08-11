@@ -2,6 +2,7 @@ package com.wealdtech.utils;
 
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
 /**
  * Setup for gathering and reporting metrics for Weald Technology
@@ -11,17 +12,24 @@ public enum WealdMetrics
 {
   INSTANCE;
 
-  private static final MetricRegistry registry;
+  private static final MetricRegistry metricRegistry;
+  private static final HealthCheckRegistry healthCheckRegistry;
 
   static
   {
-    registry = new MetricRegistry();
-    final JmxReporter reporter = JmxReporter.forRegistry(registry).build();
+    metricRegistry = new MetricRegistry();
+    healthCheckRegistry = new HealthCheckRegistry();
+    final JmxReporter reporter = JmxReporter.forRegistry(metricRegistry).build();
     reporter.start();
   }
 
-  public static MetricRegistry defaultRegistry()
+  public static MetricRegistry getMetricRegistry()
   {
-    return registry;
+    return metricRegistry;
+  }
+
+  public static HealthCheckRegistry getHealthCheckRegistry()
+  {
+    return healthCheckRegistry;
   }
 }

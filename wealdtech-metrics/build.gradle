@@ -1,7 +1,9 @@
 dependencies
 {
     compile project(':wealdtech-core')
-    compile 'com.codahale.metrics:metrics-core:3.0.1'
+    compile 'com.codahale.metrics:metrics-core:3.0.2'
+    compile 'com.codahale.metrics:metrics-healthchecks:3.0.2'
+    compile 'com.codahale.metrics:metrics-graphite:3.0.2'
 }
 
 uploadArchives {
