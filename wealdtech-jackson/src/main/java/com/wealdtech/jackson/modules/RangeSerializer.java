@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.collect.Range;
 
@@ -34,5 +36,15 @@ public class RangeSerializer extends StdSerializer<Range<?>>
   public void serialize(final Range<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(value.toString());
+  }
+
+  @Override
+  public void serializeWithType(final Range<?> value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, Range.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

@@ -16,7 +16,9 @@
 
 package com.wealdtech;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
@@ -128,6 +130,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * Get the ID value as a long
    * @return a simple long value for the ID
    */
+  @JsonIgnore
   public long getId()
   {
     return this.id;
@@ -137,11 +140,13 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * Get the subID value as an optional long
    * @return an optional long value for the subID
    */
+  @JsonIgnore
   public Optional<Long> getSubId()
   {
     return this.subId;
   }
 
+  @JsonIgnore
   public boolean hasSubId()
   {
     return this.subId.isPresent();
@@ -153,6 +158,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * @param input a string representing the WID
    * @return The WID.
    */
+  @JsonCreator
   public static <T> WID<T> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
@@ -278,6 +284,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
 
   // Standard object methods
 
+  @JsonValue
   @Override
   public String toString()
   {

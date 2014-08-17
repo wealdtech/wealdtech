@@ -16,15 +16,16 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import java.io.IOException;
 
 /**
  * Custom serializer for Joda LocalDate objects.
@@ -43,5 +44,15 @@ public class LocalDateSerializer extends StdSerializer<LocalDate>
   public void serialize(final LocalDate value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(formatter.print(value));
+  }
+
+  @Override
+  public void serializeWithType(final LocalDate value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, LocalDate.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

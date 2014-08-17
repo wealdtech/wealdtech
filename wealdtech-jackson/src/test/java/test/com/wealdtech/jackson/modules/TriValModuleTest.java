@@ -33,7 +33,7 @@ import static org.testng.Assert.*;
 
 public class TriValModuleTest
 {
-  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
+  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper().copy();
 
   @BeforeClass
   public void setUp()

@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
@@ -52,5 +54,15 @@ public class IntervalSerializer extends StdSerializer<Interval>
     gen.writeStringField("enddatetime", formatter.print(value.getEnd()));
     gen.writeStringField("endtimezone", value.getEnd().getZone().toString());
     gen.writeEndObject();
+  }
+
+  @Override
+  public void serializeWithType(final Interval value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, Interval.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

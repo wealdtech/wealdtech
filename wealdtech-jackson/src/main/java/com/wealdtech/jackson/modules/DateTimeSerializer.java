@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -50,5 +52,15 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(formatter.print(value));
+  }
+
+  @Override
+  public void serializeWithType(final DateTime value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

@@ -16,12 +16,14 @@
 
 package com.wealdtech.jackson.modules;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class InetSocketAddressSerializer extends StdSerializer<InetSocketAddress>
 {
@@ -31,12 +33,18 @@ public class InetSocketAddressSerializer extends StdSerializer<InetSocketAddress
   }
 
   @Override
-  public void serialize(final InetSocketAddress value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
+  public void serialize(final InetSocketAddress value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException
   {
-    StringBuffer sb = new StringBuffer();
-    sb.append(value.getHostName());
-    sb.append(":");
-    sb.append(value.getPort());
-    gen.writeString(sb.toString());
+    jgen.writeString(value.getHostName() + ":" + value.getPort());
+  }
+
+  @Override
+  public void serializeWithType(final InetSocketAddress value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, InetSocketAddress.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

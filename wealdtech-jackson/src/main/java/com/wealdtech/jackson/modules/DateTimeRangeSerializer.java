@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
@@ -83,5 +85,15 @@ public class DateTimeRangeSerializer extends StdSerializer<Range<DateTime>>
 
       gen.writeString(sb.toString());
     }
+  }
+
+  @Override
+  public void serializeWithType(final Range<DateTime> value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, Range.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

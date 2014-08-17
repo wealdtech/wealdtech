@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.joda.time.DateTimeZone;
 
@@ -37,8 +39,18 @@ public class DateTimeZoneSerializer extends StdSerializer<DateTimeZone>
   }
 
   @Override
-  public void serialize(final DateTimeZone value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
+  public void serialize(final DateTimeZone value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException
   {
-    gen.writeString(value.getID());
+    jgen.writeString(value.getID());
+  }
+
+  @Override
+  public void serializeWithType(final DateTimeZone value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, DateTimeZone.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

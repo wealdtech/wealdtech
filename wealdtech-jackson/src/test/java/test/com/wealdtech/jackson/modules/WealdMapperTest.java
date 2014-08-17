@@ -29,13 +29,13 @@ public class WealdMapperTest
   {
     final TestLongClass testClass = new TestLongClass(1000000000000L);
 
-    final ObjectMapper mapper = WealdMapper.getMapper();
+    final ObjectMapper mapper = WealdMapper.getMapper().copy();
     assertEquals(mapper.writeValueAsString(testClass), "{\"val\":1000000000000}");
 
-    final ObjectMapper serverMapper = WealdMapper.getServerMapper();
+    final ObjectMapper serverMapper = WealdMapper.getServerMapper().copy();
     assertEquals(serverMapper.writeValueAsString(testClass), "{\"val\":1000000000000}");
 
-    final ObjectMapper simpleMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+    final ObjectMapper simpleMapper = new ObjectMapper().copy().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     assertEquals(simpleMapper.writeValueAsString(testClass), "{\"val\":1000000000000}");
   }
 

@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -43,5 +45,15 @@ public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime>
   public void serialize(final LocalDateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
     gen.writeString(formatter.print(value.toDateTime().withZone(DateTimeZone.UTC)));
+  }
+
+  @Override
+  public void serializeWithType(final LocalDateTime value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, LocalDateTime.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

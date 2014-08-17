@@ -15,8 +15,6 @@
  */
 package com.wealdtech.jackson;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
@@ -25,9 +23,10 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.wealdtech.jackson.modules.TriValModule;
-import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
 import com.wealdtech.jackson.modules.WealdMiscModule;
+
+import java.util.Map;
 
 /**
  * Create object mappers, with an option to create non-standard mappers if
@@ -56,8 +55,6 @@ public class ObjectMapperFactory
     DEFAULTMAPPER.registerModule(new GuavaModule());
     // Handle the Weald TriVal
     DEFAULTMAPPER.registerModule(new TriValModule());
-    // Handle the Weald ID
-    DEFAULTMAPPER.registerModule(new WealdIDModule());
     // Handle various other types
     DEFAULTMAPPER.registerModule(new WealdMiscModule());
     // Add flag stating that this is a client mapper

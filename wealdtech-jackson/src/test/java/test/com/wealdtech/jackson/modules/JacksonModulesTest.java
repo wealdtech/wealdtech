@@ -37,7 +37,7 @@ import static org.testng.Assert.assertEquals;
 
 public class JacksonModulesTest
 {
-  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper();
+  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper().copy();
 
   @BeforeClass
   public void setUp()

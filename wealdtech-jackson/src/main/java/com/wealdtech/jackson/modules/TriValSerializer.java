@@ -1,13 +1,15 @@
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wealdtech.TriVal;
+
+import java.io.IOException;
 
 
 public class TriValSerializer extends StdSerializer<TriVal<?>>
@@ -32,5 +34,15 @@ public class TriValSerializer extends StdSerializer<TriVal<?>>
     {
       provider.defaultSerializeValue(value.get(), jgen);
     }
+  }
+
+  @Override
+  public void serializeWithType(final TriVal<?> value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, TriVal.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

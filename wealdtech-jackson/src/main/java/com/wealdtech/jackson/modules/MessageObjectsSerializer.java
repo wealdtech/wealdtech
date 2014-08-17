@@ -17,7 +17,9 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wealdtech.utils.messaging.MessageObjects;
 
@@ -56,5 +58,15 @@ public class MessageObjectsSerializer extends StdSerializer<MessageObjects<? ext
       jgen.writeObjectField("current", mo.getCurrent());
     }
     jgen.writeEndObject();
+  }
+
+  @Override
+  public void serializeWithType(final MessageObjects<? extends Object> value, JsonGenerator jgen, SerializerProvider provider,
+                                TypeSerializer typeSer)
+      throws IOException, JsonProcessingException
+  {
+    typeSer.writeTypePrefixForScalar(value, jgen, MessageObjects.class);
+    serialize(value, jgen, provider);
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

@@ -15,9 +15,6 @@
  */
 package com.wealdtech.jackson;
 
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -29,9 +26,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.wealdtech.jackson.modules.TriValModule;
-import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
 import com.wealdtech.jackson.modules.WealdMiscModule;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * The configuration for an object mapper. This contains various settings that
@@ -58,7 +57,6 @@ public class ObjectMapperConfiguration
     this.modules.add(new GuavaModule());
     this.modules.add(new TriValModule());
     this.modules.add(new WealdJodaModule());
-    this.modules.add(new WealdIDModule());
     this.modules.add(new WealdMiscModule());
     this.parserFeatures = Maps.newHashMap();
     this.parserFeatures.put(JsonParser.Feature.ALLOW_COMMENTS, true);
