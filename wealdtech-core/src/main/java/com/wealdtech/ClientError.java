@@ -56,4 +56,50 @@ public class ClientError extends WealdError
   {
     super(message, USERMESSAGE, URL, t);
   }
+
+  /**
+   * Generic client error.
+   * <p>This should only be used where there no alternative available from a subclass of ClientError.
+   * @param message a message suitable to be displayed back to the developer
+   * @param userMessage a message suitable to be displayed back to the end user
+   * @param url a URL for more information about the problem
+   * @param t the cause of the error, if any
+   */
+  public ClientError(final String message, final String userMessage, final String url, final Throwable t)
+  {
+    super(message, userMessage, url, t);
+  }
+
+  /**
+   * A non-fatal error
+   */
+  public static class NonFatal extends ClientError
+  {
+    public NonFatal(final String message) { super(message, message, null, null); }
+    public NonFatal(final String message, final String logMessage) { super(logMessage, message, null, null); }
+    public NonFatal(final String message, final Throwable t) { super(message, message, null, t); }
+    public NonFatal(final String message, final String logMessage, final Throwable t) { super(logMessage, message, null, t); }
+  }
+
+  /**
+   * A fatal error
+   */
+  public static class Fatal extends ClientError
+  {
+    public Fatal(final String message) { super(message, message, null, null); }
+    public Fatal(final String message, final String logMessage) { super(logMessage, message, null, null); }
+    public Fatal(final String message, final Throwable t) { super(message, message, null, t); }
+    public Fatal(final String message, final String logMessage, final Throwable t) { super(logMessage, message, null, t); }
+  }
+
+  /**
+   * A transient error; can be retried
+   */
+  public static class Transient extends ClientError
+  {
+    public Transient(final String message) { super(message, message, null, null); }
+    public Transient(final String message, final String logMessage) { super(logMessage, message, null, null); }
+    public Transient(final String message, final Throwable t) { super(message, message, null, t); }
+    public Transient(final String message, final String logMessage, final Throwable t) { super(logMessage, message, null, t); }
+  }
 }
