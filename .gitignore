@@ -17,6 +17,7 @@ out
 # Gradle
 #
 build
+.gradle
 
 #
 # IntelliJ
