@@ -1,36 +1,14 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.wealdtech.jetty;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
-import javax.servlet.Servlet;
-
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.ThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.servlets.AdminServlet;
 import com.google.common.collect.Lists;
@@ -44,6 +22,21 @@ import com.wealdtech.jersey.filters.ThreadNameFilter;
 import com.wealdtech.jetty.config.JettyConnectorConfiguration;
 import com.wealdtech.jetty.config.JettyInstanceConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
+import com.wealdtech.jetty.config.MetricsServletContextListener;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.ThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.Servlet;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * JettyServer sets up a Jetty server.
@@ -153,7 +146,8 @@ public class JettyServer
     final HandlerCollection handlers = new HandlerCollection();
 
     final ServletContextHandler admin = new ServletContextHandler();
-    admin.setContextPath("/admin");
+    admin.addEventListener(new MetricsServletContextListener());
+    admin.setContextPath(configuration.getMetricsEndpoint());
     admin.addServlet(AdminServlet.class, "/*");
     handlers.addHandler(admin);
 

@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="GradleSettings">
-    <option name="gradleHome" value="$USER_HOME$/tools/gradle" />
-    <option name="linkedProjectPath" value="$PROJECT_DIR$/build.gradle" />
-    <option name="preferLocalInstallationToWrapper" value="true" />
-    <option name="useAutoImport" value="false" />
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="LOCAL" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$USER_HOME$/tools/gradle" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/wealdtech-configuration" />
+            <option value="$PROJECT_DIR$/wealdtech-core" />
+            <option value="$PROJECT_DIR$/wealdtech-crypt" />
+            <option value="$PROJECT_DIR$/wealdtech-gcm" />
+            <option value="$PROJECT_DIR$/wealdtech-jackson" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey-server" />
+            <option value="$PROJECT_DIR$/wealdtech-metrics" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
   </component>
 </project>
 

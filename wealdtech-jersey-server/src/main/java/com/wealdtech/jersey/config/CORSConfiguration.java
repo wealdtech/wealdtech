@@ -1,17 +1,11 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.wealdtech.jersey.config;
@@ -34,6 +28,8 @@ public class CORSConfiguration implements Configuration
 
   private String allowedMethods = "GET, POST, PUT, DELETE, OPTIONS";
 
+  private Boolean reflectRequest = false;
+
   @Inject
   public CORSConfiguration()
   {
@@ -42,11 +38,13 @@ public class CORSConfiguration implements Configuration
   @JsonCreator
   private CORSConfiguration(@JsonProperty("origin") final String origin,
                             @JsonProperty("allowcredentials") final Boolean allowCredentials,
-                            @JsonProperty("allowedmethods") final String allowedMethods)
+                            @JsonProperty("allowedmethods") final String allowedMethods,
+                            @JsonProperty("reflectrequest") final Boolean reflectRequest)
   {
     this.origin = Objects.firstNonNull(origin, this.origin);
     this.allowCredentials = Objects.firstNonNull(allowCredentials, this.allowCredentials);
     this.allowedMethods = Objects.firstNonNull(allowedMethods, this.allowedMethods);
+    this.reflectRequest = Objects.firstNonNull(reflectRequest, this.reflectRequest);
   }
 
   public String getOrigin()
@@ -62,5 +60,10 @@ public class CORSConfiguration implements Configuration
   public String getAllowedMethods()
   {
     return this.allowedMethods;
+  }
+
+  public boolean reflectRequest()
+  {
+    return this.reflectRequest;
   }
 }
