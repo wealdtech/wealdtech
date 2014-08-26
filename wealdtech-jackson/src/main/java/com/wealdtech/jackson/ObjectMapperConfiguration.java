@@ -1,22 +1,13 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 package com.wealdtech.jackson;
-
-import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -29,9 +20,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.wealdtech.jackson.modules.TriValModule;
-import com.wealdtech.jackson.modules.WealdIDModule;
 import com.wealdtech.jackson.modules.WealdJodaModule;
 import com.wealdtech.jackson.modules.WealdMiscModule;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * The configuration for an object mapper. This contains various settings that
@@ -58,7 +51,6 @@ public class ObjectMapperConfiguration
     this.modules.add(new GuavaModule());
     this.modules.add(new TriValModule());
     this.modules.add(new WealdJodaModule());
-    this.modules.add(new WealdIDModule());
     this.modules.add(new WealdMiscModule());
     this.parserFeatures = Maps.newHashMap();
     this.parserFeatures.put(JsonParser.Feature.ALLOW_COMMENTS, true);

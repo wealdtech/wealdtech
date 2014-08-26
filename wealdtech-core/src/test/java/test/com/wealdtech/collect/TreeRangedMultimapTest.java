@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -27,17 +27,6 @@ public class TreeRangedMultimapTest
   {
     assertNotNull(collection, "Collection expected to be present");
     assertTrue(collection.contains(val), "Collection missing expected value \"" + val + "\"");
-  }
-
-  // Ensure that a simple get works
-  @Test
-  public void testSimpleGet()
-  {
-    final RangedMultimap<Integer, String> map = new TreeRangedMultimap<>();
-
-    final Range<Integer> testRange = Range.closedOpen(1, 5);
-    map.put(testRange, "Test");
-    assertContains(map.get(3), "Test");
   }
 
   // Ensure that a ranged get works
@@ -73,7 +62,7 @@ public class TreeRangedMultimapTest
     assertContains(items1, "Test1");
 
     final Collection<String> items2 = map.get(Range.closedOpen(10, 20));
-    assertEquals(items2.size(), 2);
+    assertEquals(items2.size(), 1);
     assertContains(items2, "Test2");
   }
 }

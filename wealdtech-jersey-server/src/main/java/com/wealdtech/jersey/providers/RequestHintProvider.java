@@ -10,33 +10,29 @@
 
 package com.wealdtech.jersey.providers;
 
+import com.sun.jersey.api.core.HttpContext;
+import com.wealdtech.utils.RequestHint;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.api.core.HttpContext;
-import com.wealdtech.jackson.WealdMapper;
-
 /**
- * Provide an objectmapper.
- * <p/>
- * The default objectmapper will be provided, unless an object mapper
- * configuration is passed in to the constructor for this provider in which case
- * those configuration options will override the default.
  */
 @Provider
-public class ObjectMapperProvider extends AbstractInjectableProvider<ObjectMapper>
+public class RequestHintProvider extends AbstractInjectableProvider<RequestHint>
 {
-  public ObjectMapperProvider()
+  @Context
+  private HttpServletRequest servletRequest;
+
+  public RequestHintProvider()
   {
-    super(ObjectMapper.class);
+    super(RequestHint.class);
   }
 
-  /**
-   * Provide object mapper.
-   */
   @Override
-  public ObjectMapper getValue(final HttpContext c)
+  public RequestHint getValue(final HttpContext c)
   {
-    return WealdMapper.getServerMapper();
+    return (RequestHint)this.servletRequest.getAttribute("com.wealdtech.requesthint");
   }
 }

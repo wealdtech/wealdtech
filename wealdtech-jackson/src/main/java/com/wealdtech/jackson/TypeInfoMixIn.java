@@ -8,23 +8,10 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-dependencies
-{
-    compile project(':wealdtech-core')
-    compile project(':wealdtech-jackson')
-    compile 'org.igniterealtime.smack:smack-tcp:4.0.+'
-    compile 'org.igniterealtime.smack:smack-resolver-javax:4.0.+'
-    compile 'org.igniterealtime.smack:smack-extensions:4.0.+'
-}
+package com.wealdtech.jackson;
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.artifactId = 'wealdtech-gcm'
-            pom.project {
-                name 'Wealdtech Google Cloud Messaging'
-                description 'Weald Technology GCM server files'
-            }
-        }
-    }
-}
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public abstract class TypeInfoMixIn
+{}

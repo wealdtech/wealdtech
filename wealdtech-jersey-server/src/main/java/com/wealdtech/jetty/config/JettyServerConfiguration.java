@@ -1,22 +1,14 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.wealdtech.jetty.config;
-
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +16,8 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
+
+import java.util.List;
 
 /**
  * Configuration for a Jetty server.
@@ -38,6 +32,7 @@ public final class JettyServerConfiguration implements Configuration
   private boolean detailedThreadName = true;
   private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private ImmutableList<JettyInstanceConfiguration> instanceConfigurations = ImmutableList.of(new JettyInstanceConfiguration());
+  private String metricsEndpoint = "/admin";
 
   @Inject
   public JettyServerConfiguration()
@@ -49,12 +44,14 @@ public final class JettyServerConfiguration implements Configuration
   private JettyServerConfiguration(@JsonProperty("bodyprefetchenabled") final Boolean bodyPrefetch,
                                    @JsonProperty("detailedthreadnameenabled") final Boolean detailedThreadName,
                                    @JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
-                                   @JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations)
+                                   @JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations,
+                                   @JsonProperty("metricsendpoint") final String metricsEndpoint)
   {
     this.bodyPrefetch = Objects.firstNonNull(bodyPrefetch, this.bodyPrefetch);
     this.detailedThreadName = Objects.firstNonNull(detailedThreadName, this.detailedThreadName);
     this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.instanceConfigurations = ImmutableList.copyOf(Objects.firstNonNull(instanceConfigurations, this.instanceConfigurations));
+    this.metricsEndpoint = Objects.firstNonNull(metricsEndpoint, this.metricsEndpoint);
   }
 
   public boolean getBodyPrefetch()
@@ -77,5 +74,5 @@ public final class JettyServerConfiguration implements Configuration
     return this.instanceConfigurations;
   }
 
-
+  public String getMetricsEndpoint() { return this.metricsEndpoint; }
 }

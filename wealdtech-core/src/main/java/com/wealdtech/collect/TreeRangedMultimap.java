@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -69,13 +69,6 @@ public class TreeRangedMultimap<K extends Comparable<? super K>, V> implements R
   }
 
   @Override
-  public Collection<V> get(final K key)
-  {
-    Map.Entry<K, List<V>> curEntry = startMap.floorEntry(key);
-    return curEntry == null ? null : curEntry.getValue();
-  }
-
-  @Override
   public Collection<V> get(final Range<K> range)
   {
     // Find all items which start before this range ends
@@ -91,13 +84,17 @@ public class TreeRangedMultimap<K extends Comparable<? super K>, V> implements R
       startEntry = startMap.lowerEntry(startEntry.getKey());
     }
     final ImmutableSet<V> starters = startersB.build();
-    
+
     // Final all items which end after this range starts
     ImmutableSet.Builder<V> finishersB = ImmutableSet.builder();
     Map.Entry<K, List<V>> finishEntry = endMap.ceilingEntry(range.lowerEndpoint());
     while (finishEntry != null)
     {
-      finishersB.addAll(finishEntry.getValue());
+      // Because our range is [) we don't include anything on the lower endpoint itself
+      if (!finishEntry.getKey().equals(range.lowerEndpoint()))
+      {
+        finishersB.addAll(finishEntry.getValue());
+      }
       finishEntry = endMap.higherEntry(finishEntry.getKey());
     }
     final ImmutableSet<V> finishers = finishersB.build();

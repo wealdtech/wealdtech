@@ -1,22 +1,18 @@
 /*
- *    Copyright 2013, 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.wealdtech;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
@@ -59,27 +55,15 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   public static final long EPOCH = 1325376000000L;
 
   // Masks for the pieces of the ID
-//  private static final long TIMESTAMPMASK = 0x0003fffffffffc00L;
   private static final long TIMESTAMPMASK = 0xffffffffff800000L;
   private static final int TIMESTAMPOFFSET = 22;
   private static final int TIMESTAMPSIZE = 41;
   public static final long MAX_TIMESTAMP = (1L << TIMESTAMPSIZE) - 1;
 
-//  private static final long SHARDMASK = 0xfff7000000000000L;
   private static final long SHARDMASK = 0x00000000007fe000L;
   private static final int SHARDOFFSET = 10;
   private static final int SHARDSIZE = 12;
   public static final long MAX_SHARD = (1L << SHARDSIZE) - 1;
-
-//  private static final long SHARDMASK = 0xfff7000000000000L;
-//  private static final int SHARDOFFSET = 51;
-//  private static final int SHARDSIZE = 12;
-//  public static final long MAX_SHARD = (1L << SHARDSIZE) - 1;
-
-//  private static final long TIMESTAMPMASK = 0x0003fffffffffc00L;
-//  private static final int TIMESTAMPOFFSET = 10;
-//  private static final int TIMESTAMPSIZE = 41;
-//  public static final long MAX_TIMESTAMP = (1L << TIMESTAMPSIZE) - 1;
 
   private static final long IIDMASK = 0x00000000000003ffL;
   private static final int IIDSIZE = 10;
@@ -140,6 +124,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * Get the ID value as a long
    * @return a simple long value for the ID
    */
+  @JsonIgnore
   public long getId()
   {
     return this.id;
@@ -149,11 +134,13 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * Get the subID value as an optional long
    * @return an optional long value for the subID
    */
+  @JsonIgnore
   public Optional<Long> getSubId()
   {
     return this.subId;
   }
 
+  @JsonIgnore
   public boolean hasSubId()
   {
     return this.subId.isPresent();
@@ -165,6 +152,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    * @param input a string representing the WID
    * @return The WID.
    */
+  @JsonCreator
   public static <T> WID<T> fromString(final String input)
   {
     checkNotNull(input, "Passed NULL WID");
@@ -290,6 +278,7 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
 
   // Standard object methods
 
+  @JsonValue
   @Override
   public String toString()
   {

@@ -1,26 +1,13 @@
 /*
- *    Copyright 2013 Weald Technology Trading Limited
+ * Copyright 2012 - 2014 Weald Technology Trading Limited
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 package com.wealdtech.utils;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import org.mindrot.jbcrypt.BCrypt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
@@ -29,8 +16,14 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.wealdtech.TwoTuple;
+import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.wealdtech.Preconditions.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * Utilities for hashing data using the Bcrypt algorithm.
@@ -58,9 +51,9 @@ public enum Hash
     // TODO where to obtain this from?
     CONFIGURATION = new HashConfiguration();
 
-    LOOKUPS = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
-    MISSES = WealdMetrics.defaultRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
-    GETS = WealdMetrics.defaultRegistry().timer(com.codahale.metrics.MetricRegistry.name(Hash.class, "gets"));
+    LOOKUPS = WealdMetrics.getMetricRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
+    MISSES = WealdMetrics.getMetricRegistry().meter(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
+    GETS = WealdMetrics.getMetricRegistry().timer(com.codahale.metrics.MetricRegistry.name(Hash.class, "gets"));
     final CacheBuilder<Object, Object> cb = CacheBuilder.newBuilder()
                                                         .maximumSize(CONFIGURATION.getCacheConfiguration().getMaxEntries())
                                                         .expireAfterWrite(CONFIGURATION.getCacheConfiguration().getMaxDuration(),  TimeUnit.SECONDS);
@@ -102,7 +95,7 @@ public enum Hash
       boolean result = false;
       try
       {
-        result = CACHE.get(new TwoTuple<String, String>(input, hashed));
+        result = CACHE.get(new TwoTuple<>(input, hashed));
       }
       catch (ExecutionException e)
       {
@@ -135,15 +128,6 @@ public enum Hash
   {
     checkNotNull(input, "Cannot consider NULL");
 
-    boolean hashed;
-    if (input.startsWith("$2a$") || input.startsWith("$2$"))
-    {
-      hashed = true;
-    }
-    else
-    {
-      hashed = false;
-    }
-    return hashed;
+    return input.startsWith("$2a$") || input.startsWith("$2$");
   }
 }
