@@ -37,7 +37,7 @@ public class CacheConfiguration implements Configuration
   /**
    * The maximum number of seconds an entry will remain in the cache
    */
-  private int maxDuration = 120;
+  private int maxDuration = 86400;
 
   @Inject
   public CacheConfiguration()
