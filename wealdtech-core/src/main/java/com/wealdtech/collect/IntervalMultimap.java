@@ -19,7 +19,7 @@ import java.util.*;
 
 import static com.wealdtech.Preconditions.checkNotNull;
 
-public class IntervalMultimap<T extends Comparable<T>, U> implements Multimap<Range<T>, U>
+public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range<T>, U>
 {
   private TreeMap<T, IntervalMapEvents<U>> entries;
   private int size;

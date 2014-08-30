@@ -15,6 +15,8 @@ import com.google.common.collect.Range;
 import com.wealdtech.collect.IntervalMultimap;
 import com.wealdtech.collect.RangedMultimap;
 import com.wealdtech.collect.TreeRangedMultimap;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
 import java.util.Collection;
@@ -108,5 +110,42 @@ public class IntervalMultimapTest
     final Collection<String> result2 = map.get(Range.closedOpen(10, 20));
     assertEquals(result2.size(), 1);
     assertTrue(result2.contains("Test 2"));
+  }
+
+  // Ensure that obtaining an empty collection works
+  @Test
+  public void testEmpty()
+  {
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(0, 10);
+    map.put(testRange1, "Test 1");
+    final Range<Integer> testRange2 = Range.closedOpen(10, 20);
+    map.put(testRange2, "Test 2");
+
+    assertTrue(map.get(Range.closedOpen(-5, 0)).isEmpty());
+    assertTrue(map.get(Range.closedOpen(20, 25)).isEmpty());
+  }
+
+  @Test
+  public void testDateTime()
+  {
+    final IntervalMultimap<DateTime, String> map = new IntervalMultimap<>();
+    Range<DateTime> testRange1 = Range.closedOpen(new DateTime(2014, 1, 1, 1, 0, 0, DateTimeZone.UTC),
+                                                  new DateTime(2014, 1, 1, 1, 2, 0, DateTimeZone.UTC));
+    map.put(testRange1, "Test 1");
+    Range<DateTime> testRange2 = Range.closedOpen(new DateTime(2014, 1, 1, 1, 1, 0, DateTimeZone.UTC),
+                                                  new DateTime(2014, 1, 1, 1, 3, 0, DateTimeZone.UTC));
+    map.put(testRange2, "Test 2");
+    Range<DateTime> testRange3 = Range.closedOpen(new DateTime(2014, 1, 1, 1, 2, 0, DateTimeZone.UTC),
+                                                  new DateTime(2014, 1, 1, 1, 3, 0, DateTimeZone.UTC));
+    map.put(testRange3, "Test 3");
+
+    final Collection<String> result1 = map.get(Range.closedOpen(new DateTime(2013, 1, 1, 1, 0, 0, DateTimeZone.UTC),
+                                                                new DateTime(2015, 1, 1, 1, 0, 0, DateTimeZone.UTC)));
+    assertEquals(result1.size(), 3);
+    assertTrue(result1.contains("Test 1"));
+    assertTrue(result1.contains("Test 2"));
+    assertTrue(result1.contains("Test 3"));
   }
 }
