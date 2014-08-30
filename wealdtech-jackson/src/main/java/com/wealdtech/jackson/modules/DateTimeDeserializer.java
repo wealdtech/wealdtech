@@ -41,6 +41,7 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
     return deserialize(txt);
   }
 
+  // PERF write our own parser given that we have hard-coded formats
   public static DateTime deserialize(final String txt) throws IOException
   {
     DateTime result;
