@@ -10,11 +10,8 @@
 
 package test.com.wealdtech.collect;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.wealdtech.collect.IntervalMultimap;
-import com.wealdtech.collect.RangedMultimap;
-import com.wealdtech.collect.TreeRangedMultimap;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
@@ -125,6 +122,20 @@ public class IntervalMultimapTest
 
     assertTrue(map.get(Range.closedOpen(-5, 0)).isEmpty());
     assertTrue(map.get(Range.closedOpen(20, 25)).isEmpty());
+  }
+
+  // Ensure that 0-duration ranges are handled correctly
+  @Test
+  public void testZeroDuration()
+  {
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(5, 5);
+    map.put(testRange1, "Test 1");
+
+    assertTrue(map.get(Range.closedOpen(4, 5)).isEmpty());
+    assertEquals(map.get(Range.closedOpen(5, 6)).size(), 1);
+    assertEquals(map.get(Range.closedOpen(5, 5)).size(), 0);
   }
 
   @Test
