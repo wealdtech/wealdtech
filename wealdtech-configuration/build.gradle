@@ -11,7 +11,7 @@
 dependencies
 {
     compile project(':wealdtech-jackson')
-    compile 'ch.qos.logback:logback-classic:1.1.1'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
     compile 'com.google.inject:guice:3.0'
 }
 
