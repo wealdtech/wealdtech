@@ -26,11 +26,11 @@ dependencies
     compile 'javax.ws.rs:jsr311-api:1.1.1'
 
     // Jetty
-    compile 'org.eclipse.jetty:jetty-server:9.1.2.v20140210'
-    compile 'org.eclipse.jetty:jetty-servlet:9.1.2.v20140210'
-    compile 'org.eclipse.jetty.websocket:websocket-common:9.1.2.v20140210'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.1.2.v20140210'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.1.2.v20140210'
+    compile 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'
+    compile 'org.eclipse.jetty:jetty-servlet:9.2.2.v20140723'
+    compile 'org.eclipse.jetty.websocket:websocket-common:9.2.2.v20140723'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.2.2.v20140723'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.2.2.v20140723'
 
     // Instrumentation
     compile 'com.codahale.metrics:metrics-servlets:3.0.2'
@@ -39,7 +39,7 @@ dependencies
 
     // Testing
     testCompile 'com.sun.jersey:jersey-grizzly2:1.18'
-    // testCompile 'org.eclipse.jetty.websocket:websocket-client:9.1.2.v20430410'
+    // testCompile 'org.eclipse.jetty.websocket:websocket-client:9.2.2.v20140723'
 }
 
 uploadArchives {
