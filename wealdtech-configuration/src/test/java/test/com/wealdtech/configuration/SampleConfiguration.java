@@ -12,15 +12,15 @@ package test.com.wealdtech.configuration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 
 public class SampleConfiguration
 {
-  private transient String testString = "default";
-  private transient int testInt = -1;
-  private transient Optional<String> testOptional = Optional.absent();
-  private transient test.com.wealdtech.configuration.SampleSubConfiguration subconfig;
+  private String testString = "default";
+  private int testInt = -1;
+  private Optional<String> testOptional = Optional.absent();
+  private test.com.wealdtech.configuration.SampleSubConfiguration subconfig;
 
   @JsonCreator
   public SampleConfiguration(@JsonProperty("test string") final String testString,
@@ -28,8 +28,8 @@ public class SampleConfiguration
                              @JsonProperty("test optional") final String testOptional,
                              @JsonProperty("sub configuration") final test.com.wealdtech.configuration.SampleSubConfiguration sampleSubConfiguration)
   {
-    this.testString = Objects.firstNonNull(testString, this.testString);
-    this.testInt = Objects.firstNonNull(testInt, this.testInt);
+    this.testString = MoreObjects.firstNonNull(testString, this.testString);
+    this.testInt = MoreObjects.firstNonNull(testInt, this.testInt);
     this.testOptional = Optional.fromNullable(testOptional);
     this.subconfig = sampleSubConfiguration;
   }

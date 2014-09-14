@@ -12,6 +12,7 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -25,6 +26,7 @@ public class ThreeTuple<S, T, U>
 
   /**
    * Obtain the first value in a three-tuple.
+   *
    * @return The first value in the three-tuple.
    */
   public S getS()
@@ -34,6 +36,7 @@ public class ThreeTuple<S, T, U>
 
   /**
    * Obtain the second value in a three-tuple.
+   *
    * @return The second value in the three-tuple.
    */
   public T getT()
@@ -43,6 +46,7 @@ public class ThreeTuple<S, T, U>
 
   /**
    * Obtain the third value in a three-tuple.
+   *
    * @return The third value in the three-tuple.
    */
   public U getU()
@@ -52,6 +56,7 @@ public class ThreeTuple<S, T, U>
 
   /**
    * Create a three-tuple.
+   *
    * @param s the first item in the tuple
    * @param t the second item in the tuple
    * @param u the third item in the tuple
@@ -68,12 +73,7 @@ public class ThreeTuple<S, T, U>
   @Override
   public String toString()
   {
-    return Objects.toStringHelper(this)
-                  .add("s", this.s)
-                  .add("t", this.t)
-                  .add("u", this.u)
-                  .omitNullValues()
-                  .toString();
+    return MoreObjects.toStringHelper(this).add("s", this.s).add("t", this.t).add("u", this.u).omitNullValues().toString();
   }
 
   @Override
@@ -95,8 +95,6 @@ public class ThreeTuple<S, T, U>
   @Override
   public int hashCode()
   {
-    return Objects.hashCode(this.s,
-                            this.t,
-                            this.u);
+    return Objects.hashCode(this.s, this.t, this.u);
   }
 }

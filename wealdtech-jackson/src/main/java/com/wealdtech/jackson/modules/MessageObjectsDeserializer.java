@@ -33,7 +33,7 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
   }
 
   @Override
-  public MessageObjects<? extends Object> deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException
+  public MessageObjects<?> deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException
   {
     // This assumes a strict JSON format of userId and hint followed by _type followed by prior and current (if they exist)
     jp.nextToken();
@@ -69,7 +69,7 @@ public class MessageObjectsDeserializer extends StdDeserializer<MessageObjects<?
 
     jp.nextToken();
     final String typeStr = jp.getText();
-    Class<? extends Object> objClass;
+    Class<?> objClass;
     try
     {
       objClass = Class.forName(typeStr);

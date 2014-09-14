@@ -13,6 +13,7 @@ package com.wealdtech.utils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
@@ -102,7 +103,7 @@ public class WealdInterval implements Comparable<WealdInterval>
   @Override
   public String toString()
   {
-    return Objects.toStringHelper(this).add("start", this.start).add("end", this.end).toString();
+    return MoreObjects.toStringHelper(this).add("start", this.start).add("end", this.end).toString();
   }
 
   @Override

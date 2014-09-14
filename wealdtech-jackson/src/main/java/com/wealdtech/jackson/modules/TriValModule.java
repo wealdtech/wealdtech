@@ -17,7 +17,7 @@ import com.fasterxml.jackson.datatype.guava.PackageVersion;
 
 public class TriValModule extends Module
 {
-  private final String NAME = "TriValModule";
+  private static final String NAME = "TriValModule";
 
   public TriValModule()
   {

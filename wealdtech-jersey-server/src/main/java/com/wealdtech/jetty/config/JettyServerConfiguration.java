@@ -12,7 +12,7 @@ package com.wealdtech.jetty.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
@@ -47,11 +47,11 @@ public final class JettyServerConfiguration implements Configuration
                                    @JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations,
                                    @JsonProperty("metricsendpoint") final String metricsEndpoint)
   {
-    this.bodyPrefetch = Objects.firstNonNull(bodyPrefetch, this.bodyPrefetch);
-    this.detailedThreadName = Objects.firstNonNull(detailedThreadName, this.detailedThreadName);
-    this.responseConfiguration = Objects.firstNonNull(responseConfiguration, this.responseConfiguration);
-    this.instanceConfigurations = ImmutableList.copyOf(Objects.firstNonNull(instanceConfigurations, this.instanceConfigurations));
-    this.metricsEndpoint = Objects.firstNonNull(metricsEndpoint, this.metricsEndpoint);
+    this.bodyPrefetch = MoreObjects.firstNonNull(bodyPrefetch, this.bodyPrefetch);
+    this.detailedThreadName = MoreObjects.firstNonNull(detailedThreadName, this.detailedThreadName);
+    this.responseConfiguration = MoreObjects.firstNonNull(responseConfiguration, this.responseConfiguration);
+    this.instanceConfigurations = ImmutableList.copyOf(MoreObjects.firstNonNull(instanceConfigurations, this.instanceConfigurations));
+    this.metricsEndpoint = MoreObjects.firstNonNull(metricsEndpoint, this.metricsEndpoint);
   }
 
   public boolean getBodyPrefetch()

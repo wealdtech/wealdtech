@@ -10,7 +10,7 @@
 
 package com.wealdtech.collect;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.*;
 
 import javax.annotation.Nullable;
@@ -183,8 +183,8 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
     // Find our lower and upper ranges
     final T lower = key.lowerEndpoint();
     final T upper = key.upperEndpoint();
-    final T lowerRange = Objects.firstNonNull(entries.floorKey(lower), key.lowerEndpoint());
-    final T upperRange = Objects.firstNonNull(entries.floorKey(upper), key.upperEndpoint());
+    final T lowerRange = MoreObjects.firstNonNull(entries.floorKey(lower), key.lowerEndpoint());
+    final T upperRange = MoreObjects.firstNonNull(entries.floorKey(upper), key.upperEndpoint());
 
     // Get a sub-map of all existing entries in our range
     final NavigableMap<T, IntervalMapEvents<U>> subEntries;

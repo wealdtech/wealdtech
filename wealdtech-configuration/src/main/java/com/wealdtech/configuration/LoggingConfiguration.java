@@ -13,7 +13,7 @@ package com.wealdtech.configuration;
 import ch.qos.logback.classic.Level;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
@@ -37,9 +37,9 @@ public class LoggingConfiguration implements Configuration
                                @JsonProperty("overrides") final ImmutableMap<String, Level> overrides,
                                @JsonProperty("pattern") final String pattern)
   {
-    this.level = Objects.firstNonNull(level, this.level);
-    this.overrides = Objects.firstNonNull(overrides, this.overrides);
-    this.pattern = Objects.firstNonNull(pattern, this.pattern);
+    this.level = MoreObjects.firstNonNull(level, this.level);
+    this.overrides = MoreObjects.firstNonNull(overrides, this.overrides);
+    this.pattern = MoreObjects.firstNonNull(pattern, this.pattern);
   }
 
   public Level getLevel()
