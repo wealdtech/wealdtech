@@ -27,7 +27,6 @@ import java.util.Iterator;
  */
 public class RequestHintFilter implements ContainerRequestFilter
 {
-
   private static final Logger LOG = LoggerFactory.getLogger(RequestHintFilter.class);
 
   @Context

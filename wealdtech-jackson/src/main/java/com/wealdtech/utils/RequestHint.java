@@ -17,9 +17,11 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
+import org.joda.time.DateTimeZone;
 
 import javax.annotation.Nonnull;
 import java.net.InetAddress;
+import java.util.Locale;
 
 /**
  * Information about a request which provides additional context
@@ -31,13 +33,17 @@ public class RequestHint implements Comparable<RequestHint>
   private final Optional<Float> altitude;
   private final Optional<InetAddress> address;
   private final Optional<String> userAgent;
+  private final Optional<Locale> locale;
+  private final Optional<DateTimeZone> timezone;
 
   @JsonCreator
   public RequestHint(@JsonProperty("latitude") final Integer latitude,
                      @JsonProperty("longitude") final Integer longitude,
                      @JsonProperty("altitude") final Float altitude,
                      @JsonProperty("address") final InetAddress address,
-                     @JsonProperty("useragent") final String userAgent)
+                     @JsonProperty("useragent") final String userAgent,
+                     @JsonProperty("locale") final Locale locale,
+                     @JsonProperty("timezone") final DateTimeZone timezone)
 
   {
     this.latitude = Optional.fromNullable(latitude);
@@ -45,6 +51,8 @@ public class RequestHint implements Comparable<RequestHint>
     this.altitude = Optional.fromNullable(altitude);
     this.address = Optional.fromNullable(address);
     this.userAgent = Optional.fromNullable(userAgent);
+    this.locale = Optional.fromNullable(locale);
+    this.timezone = Optional.fromNullable(timezone);
   }
 
   public Optional<Integer> getLatitude()
@@ -72,6 +80,16 @@ public class RequestHint implements Comparable<RequestHint>
     return this.userAgent;
   }
 
+  public Optional<Locale> getLocale()
+  {
+    return locale;
+  }
+
+  public Optional<DateTimeZone> getTimezone()
+  {
+    return timezone;
+  }
+
   // Standard object methods
   @Override
   public String toString()
@@ -82,6 +100,8 @@ public class RequestHint implements Comparable<RequestHint>
                   .add("altitude", this.altitude.orNull())
                   .add("address", this.address.orNull())
                   .add("userAgent", this.userAgent.orNull())
+                  .add("locale", this.locale.orNull())
+                  .add("timezone", this.timezone.orNull())
                   .omitNullValues()
                   .toString();
   }
@@ -100,15 +120,16 @@ public class RequestHint implements Comparable<RequestHint>
                           .compare(this.altitude.orNull(), that.altitude.orNull(), Ordering.natural().nullsFirst())
                           .compare(this.address.toString(), that.address.toString(), Ordering.natural().nullsFirst())
                           .compare(this.userAgent.orNull(), that.userAgent.orNull(), Ordering.natural().nullsFirst())
+                          .compare(this.locale.isPresent() ? this.locale.get().toString() : null, that.locale.isPresent() ? that.locale.get().toString() : null, Ordering.natural().nullsFirst())
+                          .compare(this.timezone.isPresent() ? this.timezone.get().toString() : null, that.timezone.isPresent() ? that.timezone.get().toString() : null, Ordering.natural().nullsFirst())
                           .result();
   }
 
   @Override
   public int hashCode()
   {
-    return Objects.hashCode(this.latitude, this.longitude, this.altitude, this.address, this.userAgent);
+    return Objects.hashCode(this.latitude, this.longitude, this.altitude, this.address, this.userAgent, this.locale, this.timezone);
   }
-
 
   // Builder boilerplate
   public static class Builder
@@ -118,6 +139,8 @@ public class RequestHint implements Comparable<RequestHint>
     private Float altitude;
     private InetAddress address;
     private String userAgent;
+    private Locale locale;
+    private DateTimeZone timezone;
 
     public Builder()
     {
@@ -131,6 +154,8 @@ public class RequestHint implements Comparable<RequestHint>
       this.altitude = prior.altitude.orNull();
       this.address = prior.address.orNull();
       this.userAgent = prior.userAgent.orNull();
+      this.locale = prior.locale.orNull();
+      this.timezone = prior.timezone.orNull();
     }
 
     public Builder latitude(final Integer latitude)
@@ -187,9 +212,21 @@ public class RequestHint implements Comparable<RequestHint>
       return this;
     }
 
+    public Builder locale(final Locale locale)
+    {
+      this.locale = locale;
+      return this;
+    }
+
+    public Builder timezone(final DateTimeZone timezone)
+    {
+      this.timezone = timezone;
+      return this;
+    }
+
     public RequestHint build()
     {
-      return new RequestHint(this.latitude, this.longitude, this.altitude, this.address, this.userAgent);
+      return new RequestHint(this.latitude, this.longitude, this.altitude, this.address, this.userAgent, this.locale, this.timezone);
     }
   }
 
