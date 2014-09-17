@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This computer code is copyright 2012 - 2014 Cognis Software Limited.
+  ~
+  ~ All rights reserved.
+  -->
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Jackson tests" parallel="classes" thread-count="8">
+  <test verbose="1" name="java" annotations="JDK">
+    <classes>
+        <class name="test.com.wealdtech.jackson.JDocTest"/>
+        <class name="test.com.wealdtech.jackson.ObjectMapperFactoryTest"/>
+        <class name="test.com.wealdtech.jackson.modules.JacksonModulesTest"/>
+        <class name="test.com.wealdtech.jackson.modules.MiscModuleTest"/>
+        <class name="test.com.wealdtech.jackson.modules.TriValModuleTest"/>
+        <class name="test.com.wealdtech.jackson.modules.WealdMapperTest"/>
+        <class name="test.com.wealdtech.jackson.modules.WIDModuleTest"/>
+        <class name="test.com.wealdtech.utils.messaging.MessageItemTest"/>
+        <class name="test.com.wealdtech.utils.messaging.MessageObjectsTest"/>
+    </classes>
+  </test>
+</suite>
