@@ -13,16 +13,7 @@ package com.wealdtech.jackson;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -44,10 +35,9 @@ import java.util.Set;
 
 /**
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
- * this needs to be contained externally
+ * this needs to be contained externally.
+ * This relies on JDocSerializer and JDocDeserializer to work correctly; it won't serialize/deserialize properly without them.
  */
-@JsonSerialize(using = JDoc.JDocSerializer.class)
-@JsonDeserialize(using = JDoc.JDocDeserializer.class)
 public class JDoc implements Comparable<JDoc>, Map<String, Object>
 {
   private static final Logger LOG = LoggerFactory.getLogger(JDoc.class);
@@ -295,77 +285,5 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   Set<Entry<String, Object>> entrySet()
   {
     return data.entrySet();
-  }
-
-  public static class JDocSerializer extends StdSerializer<JDoc>
-  {
-    protected JDocSerializer()
-    {
-      super(JDoc.class);
-    }
-
-    @Override
-    public void serialize(final JDoc value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException
-    {
-      jgen.writeStartObject();
-      for (final Map.Entry<String, Object> entry : value.data.entrySet())
-      {
-        jgen.writeFieldName(entry.getKey());
-        final Object val = entry.getValue();
-        if (val instanceof JDoc)
-        {
-          serialize((JDoc)val, jgen, provider);
-        }
-        else
-        {
-          // Wrap it in quotes
-          jgen.writeRawValue("\"" + entry.getValue() + "\"");
-        }
-      }
-      jgen.writeEndObject();
-    }
-  }
-
-  public static class JDocDeserializer extends StdDeserializer<JDoc>
-  {
-    private static final long serialVersionUID = 6030347476748849469L;
-
-    protected JDocDeserializer()
-    {
-      super(JDoc.class);
-    }
-
-    @Override
-    public JDoc deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException
-    {
-
-      if (jp.getCurrentToken() != JsonToken.START_OBJECT)
-      {
-        throw new IOException("invalid start marker " + jp.getText() + " " + jp.getValueAsString());
-      }
-
-      final ImmutableMap.Builder<String, Object> dataB = ImmutableMap.builder();
-
-      // Everything is a string, unless it's an object in which case it's another jdoc
-      while (jp.nextToken() != JsonToken.END_OBJECT)
-      {
-        final String key = jp.getCurrentName();
-        jp.nextToken();
-
-        final Object value;
-        if (jp.getCurrentToken() == JsonToken.START_OBJECT)
-        {
-          // Child jdoc; store it as a raw string
-          value = deserialize(jp, ctxt);
-        }
-        else
-        {
-          // Straight value
-          value = jp.getText();
-        }
-        dataB.put(key, value);
-      }
-      return new JDoc(dataB.build());
-    }
   }
 }

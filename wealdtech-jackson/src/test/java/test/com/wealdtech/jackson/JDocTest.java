@@ -10,11 +10,13 @@
 
 package test.com.wealdtech.jackson;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
-import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jackson.JDoc;
+import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
@@ -70,6 +72,45 @@ public class JDocTest
     }
   }
 
+  @Test
+  public void testDeserEmpty()
+  {
+    try
+    {
+      final String deser = "{}";
+      final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
+    }
+    catch (final IOException e)
+    {
+      fail("Failed JSON processing: ", e);
+    }
+  }
+
+  public static class JDocHolder
+  {
+    public JDoc doc;
+
+    @JsonCreator
+    public JDocHolder(@JsonProperty("doc") final JDoc doc)
+    {
+      this.doc = doc;
+    }
+  }
+
+  @Test
+  public void testDeserEmptySub()
+  {
+    try
+    {
+      final String deser = "{\"doc\":{}}";
+      final JDocHolder holder = WealdMapper.getServerMapper().readValue(deser, JDocHolder.class);
+    }
+    catch (final IOException e)
+    {
+      fail("Failed JSON processing: ", e);
+    }
+  }
+
   public static class JDoc2 extends JDoc
   {
     public JDoc2(final ImmutableMap<String, Object> data)
@@ -89,5 +130,4 @@ public class JDocTest
     final JDoc2 doc2 = doc.get("val2", JDoc2.class).orNull();
     assertNotNull(doc2);
   }
-
 }
