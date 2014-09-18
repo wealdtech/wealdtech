@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -135,6 +136,10 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
             LOG.error("Failed to upcast jdoc: ", e);
             return Optional.absent();
           }
+        }
+        else if (val instanceof List)
+        {
+          return Optional.of((T)val);
         }
         else
         {

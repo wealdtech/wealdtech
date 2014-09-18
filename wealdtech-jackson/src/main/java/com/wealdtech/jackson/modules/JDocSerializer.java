@@ -42,8 +42,7 @@ public class JDocSerializer extends StdSerializer<JDoc>
       }
       else
       {
-        // Wrap it in quotes
-        jgen.writeRawValue("\"" + entry.getValue() + "\"");
+        provider.defaultSerializeValue(entry.getValue(), jgen);
       }
     }
     jgen.writeEndObject();

@@ -14,15 +14,21 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.wealdtech.jackson.JDoc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
+ * TODO Does not handle arrays of anything other than values or jdocs; need to restructure to recurse properly
  */
 public class JDocDeserializer extends StdDeserializer<JDoc>
 {
+  private static final Logger LOG = LoggerFactory.getLogger(JDoc.class);
+
   private static final long serialVersionUID = 6030347476748849469L;
 
   protected JDocDeserializer()
@@ -40,22 +46,48 @@ public class JDocDeserializer extends StdDeserializer<JDoc>
 
     final ImmutableMap.Builder<String, Object> dataB = ImmutableMap.builder();
 
-    // Everything is a string, unless it's an object in which case it's another jdoc
+    // Objects are always treated as JDocs
     while (jp.nextToken() != JsonToken.END_OBJECT)
     {
       final String key = jp.getCurrentName();
+      LOG.trace("Key is {}", key);
       jp.nextToken();
 
       final Object value;
       if (jp.getCurrentToken() == JsonToken.START_OBJECT)
       {
-        // Child jdoc; store it as a raw string
+        // Child jdoc
         value = deserialize(jp, ctxt);
+        LOG.trace("Value is object {}", value);
+      }
+      else if (jp.getCurrentToken() == JsonToken.START_ARRAY)
+      {
+        final ImmutableList.Builder<Object> array = ImmutableList.builder();
+        LOG.trace("Value is array");
+        while (jp.nextToken() != JsonToken.END_ARRAY)
+        {
+          final Object arrayValue;
+          if (jp.getCurrentToken() == JsonToken.START_OBJECT)
+          {
+            // Child jdoc; store it as a raw string
+            arrayValue = deserialize(jp, ctxt);
+            LOG.trace("Value is object: {}", arrayValue);
+            array.add(arrayValue);
+          }
+          else
+          {
+            arrayValue = jp.getText();
+            LOG.trace("Value is simple {}", arrayValue);
+            array.add(arrayValue);
+          }
+        }
+        value = array.build();
       }
       else
       {
         // Straight value
         value = jp.getText();
+        LOG.trace("Value is simple {}", value);
       }
       dataB.put(key, value);
     }
