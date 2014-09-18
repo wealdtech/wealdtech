@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -85,7 +86,24 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
         LOG.trace("Attempting to parse {} as {}", val, typeRef.getType());
         if (val instanceof JDoc)
         {
-          return Optional.of((T)val);
+          if (val.getClass().equals(JDoc.class))
+          {
+            return Optional.of((T)val);
+          }
+          else
+          {
+            // Need to upcast
+            try
+            {
+              return Optional.of((T)((Class)typeRef.getType()).getConstructor(ImmutableMap.class)
+                                                              .newInstance(((JDoc)val).getData()));
+            }
+            catch (final InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e)
+            {
+              LOG.error("Failed to upcast jdoc: ", e);
+              return Optional.absent();
+            }
+          }
         }
         else
         {
@@ -117,7 +135,16 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
         LOG.trace("Attempting to parse {} as {}", val, klazz.toString());
         if (val instanceof JDoc)
         {
-          return Optional.of((T)val);
+          // Need to upcast
+          try
+          {
+            return Optional.of(klazz.getConstructor(ImmutableMap.class).newInstance(((JDoc)val).getData()));
+          }
+          catch (final InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e)
+          {
+            LOG.error("Failed to upcast jdoc: ", e);
+            return Optional.absent();
+          }
         }
         else
         {
@@ -142,7 +169,9 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
 
   /**
    * Overlay another JDoc on top of this one, updating where required
+   *
    * @param overlay another JDoc
+   *
    * @return the combined JDoc
    */
   public JDoc overlay(final Optional<JDoc> overlay)
@@ -245,19 +274,25 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   }
 
   @Override
-  public @Nonnull Set<String> keySet()
+  public
+  @Nonnull
+  Set<String> keySet()
   {
     return data.keySet();
   }
 
   @Override
-  public @Nonnull Collection<Object> values()
+  public
+  @Nonnull
+  Collection<Object> values()
   {
     return data.values();
   }
 
   @Override
-  public @Nonnull Set<Entry<String, Object>> entrySet()
+  public
+  @Nonnull
+  Set<Entry<String, Object>> entrySet()
   {
     return data.entrySet();
   }

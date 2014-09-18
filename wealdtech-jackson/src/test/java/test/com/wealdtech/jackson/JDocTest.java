@@ -22,9 +22,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
 
 /**
  * Tests for JDoc
@@ -39,7 +37,7 @@ public class JDocTest
       final ImmutableMap<String, Object> subMap = ImmutableMap.<String, Object>of("sub1", Boolean.TRUE, "sub2", 5, "sub3", new InetSocketAddress("1.2.3.4", 80));
       final JDoc subDoc = new JDoc(subMap);
 
-      final ImmutableMap<String, Object> map = ImmutableMap.of("val1", new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC), "val2", subDoc);
+      final ImmutableMap<String, Object> map = ImmutableMap.<String, Object>of("val1", new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC), "val2", subDoc);
       final JDoc doc = new JDoc(map);
       final String docStr = WealdMapper.getServerMapper().writeValueAsString(doc);
 
@@ -71,4 +69,25 @@ public class JDocTest
       fail("Failed JSON processing: ", e);
     }
   }
+
+  public static class JDoc2 extends JDoc
+  {
+    public JDoc2(final ImmutableMap<String, Object> data)
+    {
+      super(data);
+    }
+  }
+
+  @Test
+  public void testUpcast()
+  {
+    final ImmutableMap<String, Object> subMap = ImmutableMap.<String, Object>of("sub1", Boolean.TRUE, "sub2", 5, "sub3", new InetSocketAddress("1.2.3.4", 80));
+    final JDoc subDoc = new JDoc(subMap);
+    final ImmutableMap<String, Object> map = ImmutableMap.<String, Object>of("val1", new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC), "val2", subDoc);
+    final JDoc doc = new JDoc(map);
+
+    final JDoc2 doc2 = doc.get("val2", JDoc2.class).orNull();
+    assertNotNull(doc2);
+  }
+
 }
