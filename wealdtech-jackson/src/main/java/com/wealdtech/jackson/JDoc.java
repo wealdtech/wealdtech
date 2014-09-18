@@ -13,17 +13,22 @@ package com.wealdtech.jackson;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.GuavaUtils;
 import com.wealdtech.utils.MapComparator;
@@ -37,8 +42,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * JDoc is a JSON document which serializes without altering its structure.
- * At current JDoc does not store any type information so this needs to be contained externally
+ * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
+ * this needs to be contained externally
  */
 @JsonSerialize(using = JDoc.JDocSerializer.class)
 @JsonDeserialize(using = JDoc.JDocDeserializer.class)
@@ -66,7 +71,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   @JsonIgnore
   public <T> Optional<T> get(final String key, final TypeReference<T> typeRef)
   {
-    LOG.trace("Attempting to fetch {} as {}",  key, typeRef.getType());
+    LOG.trace("Attempting to fetch {} as {}", key, typeRef.getType());
     final Object val = data.get(key);
     if (val == null)
     {
@@ -77,7 +82,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     {
       try
       {
-        LOG.trace("Attempting to parse {} as {}",  val, typeRef.getType());
+        LOG.trace("Attempting to parse {} as {}", val, typeRef.getType());
         if (val instanceof JDoc)
         {
           return Optional.of((T)val);
@@ -98,7 +103,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   @JsonIgnore
   public <T> Optional<T> get(final String key, final Class<T> klazz)
   {
-    LOG.trace("Attempting to fetch {} as {}",  key, klazz.toString());
+    LOG.trace("Attempting to fetch {} as {}", key, klazz.toString());
     final Object val = data.get(key);
     if (val == null)
     {
@@ -109,14 +114,14 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     {
       try
       {
-        LOG.trace("Attempting to parse {} as {}",  val, klazz.toString());
+        LOG.trace("Attempting to parse {} as {}", val, klazz.toString());
         if (val instanceof JDoc)
         {
           return Optional.of((T)val);
         }
         else
         {
-          return Optional.fromNullable((T)WealdMapper.getServerMapper().readValue("\"" + val + "\"", klazz));
+          return Optional.fromNullable(WealdMapper.getServerMapper().readValue("\"" + val + "\"", klazz));
         }
       }
       catch (final IOException ioe)
@@ -126,20 +131,56 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     }
   }
 
+  /**
+   * @return the data in this JDoc
+   */
+  @JsonIgnore
+  public ImmutableMap<String, Object> getData()
+  {
+    return this.data;
+  }
+
+  /**
+   * Overlay another JDoc on top of this one, updating where required
+   * @param overlay another JDoc
+   * @return the combined JDoc
+   */
+  public JDoc overlay(final Optional<JDoc> overlay)
+  {
+    if (!overlay.isPresent())
+    {
+      return this;
+    }
+    final Map<String, Object> data = Maps.newHashMap();
+    data.putAll(data);
+    data.putAll(overlay.get().data);
+
+    return new JDoc(ImmutableMap.copyOf(data));
+  }
+
   @Override
   public String toString()
   {
     return MoreObjects.toStringHelper(this).add("data", GuavaUtils.emptyToNull(data)).omitNullValues().toString();
   }
 
-  // TODO hashCode, equals
+  @Override
+  public boolean equals(final Object that)
+  {
+    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((JDoc)that) == 0;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hashCode(this.data);
+  }
 
   private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
+
   public int compareTo(@Nonnull JDoc that)
   {
-    return ComparisonChain.start()
-        .compare(this.data, that.data, MAP_COMPARATOR)
-        .result();
+    return ComparisonChain.start().compare(this.data, that.data, MAP_COMPARATOR).result();
   }
 
   @JsonIgnore
@@ -174,7 +215,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   @Override
   public Object get(final Object key)
   {
-    throw new UnsupportedOperationException("Untyped get not allowed");
+    return get(key.toString(), Object.class);
   }
 
   @Override
@@ -191,7 +232,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   }
 
   @Override
-  public void putAll(final Map<? extends String, ?> m)
+  public void putAll(@Nonnull final Map<? extends String, ?> m)
   {
     throw new UnsupportedOperationException("Not allowed");
   }
@@ -204,19 +245,19 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   }
 
   @Override
-  public Set<String> keySet()
+  public @Nonnull Set<String> keySet()
   {
     return data.keySet();
   }
 
   @Override
-  public Collection<Object> values()
+  public @Nonnull Collection<Object> values()
   {
     return data.values();
   }
 
   @Override
-  public Set<Entry<String, Object>> entrySet()
+  public @Nonnull Set<Entry<String, Object>> entrySet()
   {
     return data.entrySet();
   }
@@ -229,9 +270,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     }
 
     @Override
-    public void serialize(final JDoc value,
-                          final JsonGenerator jgen,
-                          final SerializerProvider provider) throws IOException
+    public void serialize(final JDoc value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException
     {
       jgen.writeStartObject();
       for (final Map.Entry<String, Object> entry : value.data.entrySet())

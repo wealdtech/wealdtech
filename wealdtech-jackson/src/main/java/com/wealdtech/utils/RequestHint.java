@@ -28,6 +28,8 @@ import java.util.Locale;
  */
 public class RequestHint implements Comparable<RequestHint>
 {
+  private static final RequestHint EMPTY = new RequestHint(null, null, null, null, null, null, null);
+
   private final Optional<Integer> latitude;
   private final Optional<Integer> longitude;
   private final Optional<Float> altitude;
@@ -89,6 +91,8 @@ public class RequestHint implements Comparable<RequestHint>
   {
     return timezone;
   }
+
+  public static RequestHint empty() { return EMPTY; }
 
   // Standard object methods
   @Override
