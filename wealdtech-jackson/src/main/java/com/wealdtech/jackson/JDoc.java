@@ -215,7 +215,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   @Override
   public Object get(final Object key)
   {
-    return get(key.toString(), Object.class);
+    return get(key.toString(), Object.class).orNull();
   }
 
   @Override
