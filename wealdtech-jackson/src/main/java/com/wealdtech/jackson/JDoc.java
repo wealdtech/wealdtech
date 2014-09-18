@@ -22,14 +22,19 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableMap;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.GuavaUtils;
+import com.wealdtech.utils.MapComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JDoc is a JSON document which serializes without altering its structure.
@@ -37,9 +42,11 @@ import java.util.Map;
  */
 @JsonSerialize(using = JDoc.JDocSerializer.class)
 @JsonDeserialize(using = JDoc.JDocDeserializer.class)
-public class JDoc
+public class JDoc implements Comparable<JDoc>, Map<String, Object>
 {
   private static final Logger LOG = LoggerFactory.getLogger(JDoc.class);
+
+  private static final JDoc EMPTY = new JDoc(ImmutableMap.<String, Object>of());
 
   @JsonProperty
   private final ImmutableMap<String, Object> data;
@@ -48,6 +55,11 @@ public class JDoc
   public JDoc(final ImmutableMap<String, Object> data)
   {
     this.data = data;
+  }
+
+  public static JDoc cleanJDoc()
+  {
+    return EMPTY;
   }
 
   @SuppressWarnings("unchecked")
@@ -118,6 +130,95 @@ public class JDoc
   public String toString()
   {
     return MoreObjects.toStringHelper(this).add("data", GuavaUtils.emptyToNull(data)).omitNullValues().toString();
+  }
+
+  // TODO hashCode, equals
+
+  private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
+  public int compareTo(@Nonnull JDoc that)
+  {
+    return ComparisonChain.start()
+        .compare(this.data, that.data, MAP_COMPARATOR)
+        .result();
+  }
+
+  @JsonIgnore
+  @Override
+  public int size()
+  {
+    return data.size();
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isEmpty()
+  {
+    return data.isEmpty();
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean containsKey(final Object key)
+  {
+    return data.containsKey(key);
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean containsValue(final Object value)
+  {
+    return data.containsValue(value);
+  }
+
+  @JsonIgnore
+  @Override
+  public Object get(final Object key)
+  {
+    throw new UnsupportedOperationException("Untyped get not allowed");
+  }
+
+  @Override
+  public Object put(final String key, final Object value)
+  {
+    throw new UnsupportedOperationException("Not allowed");
+  }
+
+  @JsonIgnore
+  @Override
+  public Object remove(final Object key)
+  {
+    throw new UnsupportedOperationException("Not allowed");
+  }
+
+  @Override
+  public void putAll(final Map<? extends String, ?> m)
+  {
+    throw new UnsupportedOperationException("Not allowed");
+  }
+
+  @JsonIgnore
+  @Override
+  public void clear()
+  {
+    throw new UnsupportedOperationException("Not allowed");
+  }
+
+  @Override
+  public Set<String> keySet()
+  {
+    return data.keySet();
+  }
+
+  @Override
+  public Collection<Object> values()
+  {
+    return data.values();
+  }
+
+  @Override
+  public Set<Entry<String, Object>> entrySet()
+  {
+    return data.entrySet();
   }
 
   public static class JDocSerializer extends StdSerializer<JDoc>
