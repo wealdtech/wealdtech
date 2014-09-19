@@ -210,7 +210,18 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
   @Override
   public Set<Range<T>> keySet()
   {
-    throw new UnsupportedOperationException("Cannot obtain keyset");
+    Set<Range<T>> keys = Sets.newHashSet();
+    // Have to create a set of ranges from the keys in the treemap
+    T lastKey = null;
+    for (final T key : entries.keySet())
+    {
+      if (lastKey != null)
+      {
+        keys.add(Range.closedOpen(lastKey, key));
+      }
+      lastKey = key;
+    }
+    return keys;
   }
 
   @Override
