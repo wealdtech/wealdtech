@@ -96,6 +96,10 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
             }
           }
         }
+        else if (val instanceof Collection)
+        {
+          return Optional.of((T)val);
+        }
         else
         {
           return Optional.fromNullable((T)WealdMapper.getServerMapper().readValue("\"" + val + "\"", typeRef));
