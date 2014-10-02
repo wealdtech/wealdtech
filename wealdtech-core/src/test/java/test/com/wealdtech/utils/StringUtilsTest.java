@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 import com.wealdtech.utils.StringUtils;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class StringUtilsTest
 {
@@ -43,5 +44,50 @@ public class StringUtilsTest
 
     assertEquals("getTest", StringUtils.nameToGetter(testvar));
     assertEquals("getCapital", StringUtils.nameToGetter(testvar2));
+  }
+
+  @Test
+  public void testSubstringNullStr()
+  {
+    assertNull(StringUtils.substringBefore(null, null));
+  }
+
+  @Test
+  public void testSubstringNullSep()
+  {
+    final String str = "asdfhw";
+    assertEquals(StringUtils.substringBefore(str, null), str);
+  }
+
+  @Test
+  public void testSubstringFirstCharSep()
+  {
+    final String str = "asdfhw";
+    final String sep = "a";
+    assertEquals(StringUtils.substringBefore(str, sep), "");
+  }
+
+  @Test
+  public void testSubstringMultiCharSep()
+  {
+    final String str = "asdfhw";
+    final String sep = "dfh";
+    assertEquals(StringUtils.substringBefore(str, sep), "as");
+  }
+
+  @Test
+  public void testSubstringLastCharSep()
+  {
+    final String str = "asdfhw";
+    final String sep = "w";
+    assertEquals(StringUtils.substringBefore(str, sep), "asdfh");
+  }
+
+  @Test
+  public void testSubstringNotPresentCharSep()
+  {
+    final String str = "asdfhw";
+    final String sep = "x";
+    assertEquals(StringUtils.substringBefore(str, sep), str);
   }
 }
