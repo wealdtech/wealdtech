@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
- * Formatter for closedOPen {@link org.joda.time.DateTime} {@link com.google.common.collect.Range} objects, taking in to account
- * sane defaults and localisation
+ * Formatter for closedOpen {@link org.joda.time.DateTime} {@link com.google.common.collect.Range} objects, taking in to account
+ * sane defaults and localisation. Also handles open-ended ranges
  */
 public class RangeFormatter
 {
@@ -56,6 +56,7 @@ public class RangeFormatter
    * Format the date and time of a date/time range.
    *
    * @param range the range to format
+   *
    * @return a formatted range, or {@code null} if the input is {@code null}
    */
   @Nullable
@@ -68,14 +69,47 @@ public class RangeFormatter
     final DateTime curDateTime = DateTime.now();
     final StringBuilder sb = new StringBuilder(96);
 
-    final DateTime lower = range.lowerEndpoint();
-    final DateTime upper = range.upperEndpoint();
-    if (upper.isBefore(lower))
+    // Lower date
+    final Details lowerDetails = new Details();
+
+    // Upper date
+    final Details upperDetails = new Details();
+
+    final DateTime lower;
+    if (!range.hasLowerBound())
+    {
+      lowerDetails.unbound = true;
+      lower = null;
+    }
+    else
+    {
+      lowerDetails.unbound = false;
+      lower = range.lowerEndpoint();
+    }
+
+    final DateTime upper;
+    if (!range.hasUpperBound())
+    {
+      upperDetails.unbound = true;
+      upper = null;
+    }
+    else
+    {
+      upperDetails.unbound = false;
+      upper = range.upperEndpoint();
+    }
+
+    // Special case for both unbound
+    if (lowerDetails.unbound && upperDetails.unbound)
+    {
+      return "...";
+    }
+
+    if (upper != null && lower != null && upper.isBefore(lower))
     {
       throw new DataError.Bad("Upper part of range must be after lower part of range");
     }
-    // Lower date
-    final Details lowerDetails = new Details();
+
     lowerDetails.showTime = true;
     if (!isSameDay(lower, curDateTime))
     {
@@ -88,12 +122,9 @@ public class RangeFormatter
       lowerDetails.showYear = true;
     }
     sb.append(doFormat(lower, lowerDetails));
-
     if (!isSameMinute(lower, upper))
     {
       sb.append(" - ");
-
-      final Details upperDetails = new Details();
       upperDetails.showTime = true;
       if (!isSameDay(lower, upper))
       {
@@ -115,6 +146,7 @@ public class RangeFormatter
    * Format the dates of a date/time range.
    *
    * @param range the range to format
+   *
    * @return the formatted range, or {@code null} if the input is {@code null}
    */
   @Nullable
@@ -128,19 +160,49 @@ public class RangeFormatter
     final DateTime curDateTime = DateTime.now();
     final StringBuilder sb = new StringBuilder(64);
 
-    // Dates.  Note that because we are working with dates and dates are closed/open we need to take a day away from the upper
-    // date to make the format look right
-    final DateTime lower = range.lowerEndpoint();
-    final DateTime upper = range.upperEndpoint().minusDays(1);
-    if (upper.isBefore(lower))
+
+    // Lower date
+    final Details lowerDetails = new Details();
+    final DateTime lower;
+    if (!range.hasLowerBound())
+    {
+      lowerDetails.unbound = true;
+      lower = null;
+    }
+    else
+    {
+      lowerDetails.unbound = false;
+      lower = range.lowerEndpoint();
+    }
+
+    final Details upperDetails = new Details();
+    final DateTime upper;
+    if (!range.hasUpperBound())
+    {
+      upperDetails.unbound = true;
+      upper = null;
+    }
+    else
+    {
+      upperDetails.unbound = false;
+      // Note that because we are working with dates and dates are closed/open we need to take a day away from the upper
+      // date to make the format look right
+      upper = range.upperEndpoint().minusDays(1);
+    }
+
+    // Special case for both unbound
+    if (lowerDetails.unbound && upperDetails.unbound)
+    {
+      return "...";
+    }
+
+    if (upper != null && lower != null && upper.isBefore(lower))
     {
       throw new DataError.Bad("Upper part of range must be after lower part of range");
     }
 
     final boolean singleDay = isSameDay(lower, upper);
 
-    // Lower date
-    final Details lowerDetails = new Details();
     lowerDetails.showTime = false;
     lowerDetails.showDayOfWeek = true;
     lowerDetails.showDayOfMonth = true;
@@ -159,7 +221,6 @@ public class RangeFormatter
     {
       sb.append(" - ");
 
-      final Details upperDetails = new Details();
       upperDetails.showTime = false;
       upperDetails.showDayOfWeek = true;
       upperDetails.showDayOfMonth = true;
@@ -191,6 +252,7 @@ public class RangeFormatter
    * Format the date of a single date/time
    *
    * @param dateTime the date/time to format
+   *
    * @return a formatted date, or {@code null} if the input is {@code null}
    */
   @Nullable
@@ -203,6 +265,7 @@ public class RangeFormatter
    * Format the time of a single date/time
    *
    * @param dateTime the date/time to format
+   *
    * @return a formatted time, or {@code null} if the input is {@code null}
    */
   @Nullable
@@ -216,6 +279,7 @@ public class RangeFormatter
    * Format the date and time of a single date/time
    *
    * @param dateTime the date/time to format
+   *
    * @return a formatted date, or {@code null} if the input is {@code null}
    */
   @Nullable
@@ -229,6 +293,7 @@ public class RangeFormatter
    *
    * @param dateTime the date/time to format
    * @param showTime show the time as well as the date
+   *
    * @return a formatted date
    */
   private String formatDateAndTime(final DateTime dateTime, final boolean showDate, final boolean showTime)
@@ -249,6 +314,11 @@ public class RangeFormatter
   // Carry out the format
   private String doFormat(final DateTime datetime, final Details formatDetails)
   {
+    if (formatDetails.unbound)
+    {
+      return "...";
+    }
+
     final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
     boolean started = false;
     if (style != Style.TIME_ONLY)
@@ -322,42 +392,43 @@ public class RangeFormatter
     }
   }
 
-  private boolean isSameMinute(final DateTime lower, final DateTime upper)
+  private boolean isSameMinute(@Nullable final DateTime lower, @Nullable final DateTime upper)
   {
-    return (lower.getYear() == upper.getYear()) &&
-           (lower.getMonthOfYear() == upper.getMonthOfYear()) &&
-           (lower.getDayOfYear() == upper.getDayOfYear()) &&
-           (lower.getHourOfDay() == upper.getHourOfDay()) &&
+    return !(lower == null || upper == null) &&
+           isSameHour(lower, upper) &&
            (lower.getMinuteOfHour() == upper.getMinuteOfHour());
   }
 
-  private boolean isSameHour(final DateTime lower, final DateTime upper)
+  private boolean isSameHour(@Nullable final DateTime lower, @Nullable final DateTime upper)
   {
-    return (lower.getYear() == upper.getYear()) &&
-           (lower.getMonthOfYear() == upper.getMonthOfYear()) &&
-           (lower.getDayOfYear() == upper.getDayOfYear()) &&
+    return !(lower == null || upper == null) &&
+           isSameDay(lower, upper) &&
            (lower.getHourOfDay() == upper.getHourOfDay());
   }
 
-  private boolean isSameDay(final DateTime lower, final DateTime upper)
+  private boolean isSameDay(@Nullable final DateTime lower, @Nullable final DateTime upper)
   {
-    return (lower.getYear() == upper.getYear()) &&
-           (lower.getMonthOfYear() == upper.getMonthOfYear()) &&
+    return !(lower == null || upper == null) &&
+           isSameMonth(lower, upper) &&
            (lower.getDayOfYear() == upper.getDayOfYear());
   }
 
-  private boolean isSameMonth(final DateTime lower, final DateTime upper)
+  private boolean isSameMonth(@Nullable final DateTime lower, @Nullable final DateTime upper)
   {
-    return (lower.getYear() == upper.getYear()) && (lower.getMonthOfYear() == upper.getMonthOfYear());
+    return !(lower == null || upper == null) &&
+           isSameYear(lower, upper) &&
+           (lower.getMonthOfYear() == upper.getMonthOfYear());
   }
 
-  private boolean isSameYear(final DateTime lower, final DateTime upper)
+  private boolean isSameYear(@Nullable final DateTime lower, @Nullable final DateTime upper)
   {
-    return (lower.getYear() == upper.getYear());
+    return !(lower == null || upper == null) &&
+           (lower.getYear() == upper.getYear());
   }
 
   private static class Details
   {
+    public boolean unbound = false;
     public boolean showTime = false;
     public boolean showDayOfWeek = false;
     public boolean showDayOfMonth = false;

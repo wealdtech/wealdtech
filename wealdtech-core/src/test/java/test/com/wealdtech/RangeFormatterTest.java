@@ -10,6 +10,7 @@
 
 package test.com.wealdtech;
 
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.wealdtech.utils.RangeFormatter;
 import org.joda.time.DateTime;
@@ -240,5 +241,72 @@ public class RangeFormatterTest
     final String expected = day + " 2 " + month + " " + year + " " + lower.toString(timeFmt) + " - " + upper.toString(timeFmt);
     assertEquals(formatter.formatDateTime(nextYearRange), expected);
   }
-}
+
+  @Test
+  public void testRangeDateTimeNoLowerBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_ONLY);
+    final DateTime upper = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(14).withMonthOfYear(10).plusYears(1);
+    final Range<DateTime> range = Range.upTo(upper, BoundType.OPEN);
+
+    assertEquals(formatter.formatDateTime(range), "... - 09:00");
+  }
+
+  @Test
+  public void testRangeDateTimeNoUpperBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_ONLY);
+    final DateTime lower = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(14).withMonthOfYear(10).plusYears(1);
+    final Range<DateTime> range = Range.downTo(lower, BoundType.CLOSED);
+
+    assertEquals(formatter.formatDateTime(range), "09:00 - ...");
+  }
+
+  @Test
+  public void testRangeDateTimeNoBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter();
+    final Range<DateTime> range = Range.all();
+
+    assertEquals(formatter.formatDateTime(range), "...");
+  }
+
+  @Test
+  public void testRangeDateNoLowerBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.NORMAL);
+    final DateTime upper = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(14).withMonthOfYear(10).plusYears(1);
+    final Range<DateTime> range = Range.upTo(upper, BoundType.OPEN);
+
+    final String day = upper.minusDays(1).toString(shortDayFmt);
+    final String month = upper.minusDays(1).toString(shortMonthFmt);
+    final String year = upper.minusDays(1).toString(yearFmt);
+    final String expected = "... - " + day + " 13 " + month + " " + year;
+
+    assertEquals(formatter.formatDate(range), expected);
+  }
+
+  @Test
+  public void testRangeDateNoUpperBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.NORMAL);
+    final DateTime lower = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(14).withMonthOfYear(10).plusYears(1);
+    final Range<DateTime> range = Range.downTo(lower, BoundType.CLOSED);
+
+    final String day = lower.toString(shortDayFmt);
+    final String month = lower.toString(shortMonthFmt);
+    final String year = lower.toString(yearFmt);
+    final String expected = day + " 14 " + month + " " + year + " - ...";
+    assertEquals(formatter.formatDate(range), expected);
+  }
+
+  @Test
+  public void testRangeDateNoBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter();
+    final Range<DateTime> range = Range.all();
+
+    assertEquals(formatter.formatDate(range), "...");
+  }
+ }
 
