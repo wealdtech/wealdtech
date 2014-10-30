@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.wealdtech.jackson.JDoc;
@@ -217,5 +218,17 @@ public class JDocTest
 
     final JDoc2 doc2 = doc.get("val2", JDoc2.class).orNull();
     assertNotNull(doc2);
+  }
+
+  @Test
+  public void testDeserMap()
+  {
+    final ImmutableMap<String, InetSocketAddress> addrs = ImmutableMap.of("one", new InetSocketAddress("1.1.1.1", 80),
+                                                                          "two", new InetSocketAddress("2.2.2.2", 80));
+    final JDoc doc = new JDoc(ImmutableMap.<String, Object>of("addrs", addrs));
+
+    final Optional<ImmutableMap<String, InetSocketAddress>> obtainAddrs = doc.get("addrs", new TypeReference<ImmutableMap<String, InetSocketAddress>>(){});
+    assert(obtainAddrs.isPresent());
+    assert(obtainAddrs.get().equals(addrs));
   }
 }

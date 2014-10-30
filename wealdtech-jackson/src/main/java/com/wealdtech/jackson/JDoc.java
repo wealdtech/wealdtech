@@ -96,7 +96,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
             }
           }
         }
-        else if (val instanceof Collection)
+        else if (val instanceof Collection || val instanceof Map)
         {
           return Optional.of((T)val);
         }
@@ -141,7 +141,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
             return Optional.absent();
           }
         }
-        else if (val instanceof List)
+        else if (val instanceof Collection || val instanceof Map)
         {
           return Optional.of((T)val);
         }
