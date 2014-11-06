@@ -109,4 +109,10 @@ public enum StringUtils
     }
     return str.substring(0, index);
   }
+
+  @Nullable
+  public static String emptyToNull(@Nullable final String input)
+  {
+    return (input == null || input.trim().length() == 0 ? null : input.trim());
+  }
 }
