@@ -18,6 +18,7 @@ import com.google.common.net.InetAddresses;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.wealdtech.utils.RequestHint;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +92,19 @@ public class RequestHintFilter implements ContainerRequestFilter
     final RequestHint.Builder builder = RequestHint.builder();
 
     builder.userAgent(request.getHeaderValue("User-Agent"));
+
+    final String timezone = request.getHeaderValue("Timezone");
+    if (timezone != null)
+    {
+      try
+      {
+        builder.timezone(DateTimeZone.forID(timezone));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        LOG.warn("Unrecognised timezone {}", timezone);
+      }
+    }
 
     final String geoPosition = request.getHeaderValue("Geo-Position");
     if (geoPosition != null)
