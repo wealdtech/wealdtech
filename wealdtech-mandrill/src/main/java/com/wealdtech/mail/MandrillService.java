@@ -10,6 +10,8 @@
 
 package com.wealdtech.mail;
 
+import com.google.common.collect.ImmutableMap;
+import retrofit.http.Body;
 import retrofit.http.POST;
 
 import java.util.List;
@@ -19,6 +21,9 @@ import java.util.List;
  */
 public interface MandrillService
 {
-  @POST("  /messages/send-template.json")
-  List<MandrillSendResponse> sendTemplate();
+  @POST("/messages/send-template.json")
+  List<MandrillSendResponse> sendTemplate(@Body final MandrillSendRequest request);
+
+  @POST("/users/ping.json")
+  String ping(@Body final ImmutableMap<String, String> key);
 }

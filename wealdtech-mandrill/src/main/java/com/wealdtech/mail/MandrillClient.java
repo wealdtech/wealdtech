@@ -10,11 +10,20 @@
 
 package com.wealdtech.mail;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.wealdtech.configuration.ConfigurationSource;
+import com.wealdtech.mail.config.MandrillConfiguration;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit.RestAdapter;
 import retrofit.converter.Converter;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Retrofit client for accessing the Mandrill API
@@ -25,33 +34,32 @@ public class MandrillClient
 
   private static final String ENDPOINT = "https://mandrillapp.com/api/1.0";
 
-  private static volatile MandrillClient instance = null;
+  private final MandrillConfiguration configuration;
 
   public final MandrillService service;
 
-  public static MandrillClient getInstance()
+  @Inject
+  private MandrillClient(final MandrillConfiguration configuration)
   {
-    if (instance == null)
-    {
-      synchronized (MandrillClient.class)
-      {
-        if (instance == null)
-        {
-          instance = new MandrillClient();
-        }
-      }
-    }
-    return instance;
-  }
+    this.configuration = configuration;
 
-  private MandrillClient()
-  {
     final Converter converter = new JacksonRetrofitConverter();
     final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
                                                          .setConverter(converter)
                                                          .setLogLevel(RestAdapter.LogLevel.FULL)
                                                          .build();
     this.service = adapter.create(MandrillService.class);
+  }
+
+  public List<MandrillSendResponse> sendTemplate(final String template, final String subject, final Map<String, String> data, final ImmutableList<MailActor> recipients)
+  {
+    final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template, data, new MandrillMessage.Builder().recipients(recipients).sender(configuration.getSender()).subject(subject).build());
+    return service.sendTemplate(request);
+  }
+
+  public boolean ping()
+  {
+    return "PONG!".equals(service.ping(ImmutableMap.<String, String>of("key", configuration.getKey())));
   }
 }
 

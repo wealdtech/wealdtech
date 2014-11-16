@@ -12,6 +12,7 @@ dependencies
 {
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
+    compile project(':wealdtech-configuration')
     compile project(':wealdtech-retrofit')
 }
 

@@ -31,10 +31,10 @@ public class MandrillSendRequest
   private final boolean async = false;
 
   @JsonCreator
-  private MandrillSendRequest(@JsonProperty("key") final String key,
-                              @JsonProperty("templatename") final String templateName,
-                              @JsonProperty("templatecontent") final Map<String, String> templateContent,
-                              @JsonProperty("message") final MandrillMessage message)
+  public MandrillSendRequest(@JsonProperty("key") final String key,
+                             @JsonProperty("templatename") final String templateName,
+                             @JsonProperty("templatecontent") final Map<String, String> templateContent,
+                             @JsonProperty("message") final MandrillMessage message)
   {
     this.key = key;
     this.templateName = templateName;
