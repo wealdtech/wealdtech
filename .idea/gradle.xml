@@ -15,11 +15,12 @@
             <option value="$PROJECT_DIR$/wealdtech-gcm" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
             <option value="$PROJECT_DIR$/wealdtech-jersey-server" />
+            <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
+            <option value="$PROJECT_DIR$/wealdtech-retrofit" />
           </set>
         </option>
       </GradleProjectSettings>
     </option>
   </component>
 </project>
-
