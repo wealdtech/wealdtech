@@ -17,22 +17,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.GuavaUtils;
 import com.wealdtech.utils.MapComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
@@ -65,12 +61,12 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   {
     LOG.trace("Attempting to fetch {} as {}", key, typeRef.getType());
     final Object val = data.get(key);
-    if (val == null)
-    {
-      LOG.trace("No such key");
-      return Optional.absent();
-    }
-    else
+    return resolve(val, typeRef);
+  }
+
+  private <T> Optional<T> resolve(final Object val, final TypeReference<T> typeRef)
+  {
+    if (val != null)
     {
       try
       {
@@ -96,7 +92,31 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
             }
           }
         }
-        else if (val instanceof Collection || val instanceof Map)
+        else if (val instanceof Collection)
+        {
+          // Need to create collection
+          Collection collection;
+          if (val instanceof List)
+          {
+            collection = Lists.newArrayList();
+          }
+          else
+          {
+            collection = Sets.newHashSet();
+          }
+          for (final Object collectionVal : (Collection)val)
+          {
+            // Need to find out the class of whatever it is we're resolving to
+            final Class<?> klazz = Class.forName(((ParameterizedTypeImpl)typeRef.getType()).getActualTypeArguments()[0].toString().substring(6));
+            final Optional<?> resolved = resolve(collectionVal, klazz);
+            if (resolved.isPresent())
+            {
+              collection.add(resolved.get());
+            }
+          }
+          return Optional.of((T)collection);
+        }
+        else if (val instanceof Map)
         {
           return Optional.of((T)val);
         }
@@ -109,7 +129,12 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
       {
         throw new DataError.Bad("Failed to parse data: ", ioe);
       }
+      catch (ClassNotFoundException e)
+      {
+        throw new DataError.Bad("Failed to find class: ", e);
+      }
     }
+    return Optional.absent();
   }
 
   @SuppressWarnings("unchecked")
@@ -118,6 +143,12 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   {
     LOG.trace("Attempting to fetch {} as {}", key, klazz.toString());
     final Object val = data.get(key);
+    return resolve(val, klazz);
+  }
+
+  @JsonIgnore
+  private <T> Optional<T> resolve(final Object val, final Class<T> klazz)
+  {
     if (val == null)
     {
       LOG.trace("No such key");
@@ -133,9 +164,10 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
           // Need to upcast
           try
           {
-            return Optional.of(klazz.getConstructor(ImmutableMap.class).newInstance(((JDoc)val).getData()));
+            final String dataStr = WealdMapper.getServerMapper().writeValueAsString(((JDoc)val).getData());
+            return Optional.of(WealdMapper.getServerMapper().readValue(dataStr, klazz));
           }
-          catch (final InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e)
+          catch (final Exception e)
           {
             LOG.error("Failed to upcast jdoc: ", e);
             return Optional.absent();
@@ -143,6 +175,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
         }
         else if (val instanceof Collection || val instanceof Map)
         {
+
           return Optional.of((T)val);
         }
         else
