@@ -158,14 +158,24 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     {
       try
       {
-        LOG.trace("Attempting to parse {} as {}", val, klazz.toString());
+        LOG.trace("Attempting to parse {} ({}) as {}", val, val.getClass().getSimpleName(), klazz.toString());
         if (val instanceof JDoc)
         {
           // Need to upcast
           try
           {
             final String dataStr = WealdMapper.getServerMapper().writeValueAsString(((JDoc)val).getData());
-            return Optional.of(WealdMapper.getServerMapper().readValue(dataStr, klazz));
+            LOG.trace("data string is {}", dataStr);
+            final T upcast = WealdMapper.getServerMapper().readValue(dataStr, klazz);
+            if (upcast != null)
+            {
+              LOG.trace("Upcasted value is {} ({})", upcast, upcast.getClass().getSimpleName());
+              return Optional.of(upcast);
+            }
+            else
+            {
+              return Optional.absent();
+            }
           }
           catch (final Exception e)
           {
@@ -173,9 +183,32 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
             return Optional.absent();
           }
         }
-        else if (val instanceof Collection || val instanceof Map)
+        if (val instanceof Map)
         {
-
+          // Need to upcast
+          try
+          {
+            final String dataStr = WealdMapper.getServerMapper().writeValueAsString((Map)val);
+            LOG.trace("data string is {}", dataStr);
+            final T upcast = WealdMapper.getServerMapper().readValue(dataStr, klazz);
+            if (upcast != null)
+            {
+              LOG.trace("Upcasted value is {} ({})", upcast, upcast.getClass().getSimpleName());
+              return Optional.of(upcast);
+            }
+            else
+            {
+              return Optional.absent();
+            }
+          }
+          catch (final Exception e)
+          {
+            LOG.error("Failed to upcast jdoc: ", e);
+            return Optional.absent();
+          }
+        }
+        else if (val instanceof Collection)
+        {
           return Optional.of((T)val);
         }
         else

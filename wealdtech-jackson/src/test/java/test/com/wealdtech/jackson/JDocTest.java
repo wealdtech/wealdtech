@@ -284,8 +284,6 @@ public class JDocTest
 
       final JDoc reDoc = WealdMapper.getServerMapper().readValue(docStr, JDoc.class);
 
-      System.err.println("docstr is " + docStr);
-
       final Collection<DeserObjectCollectionClass> deserObjects =
         reDoc.get("objs", new TypeReference<ImmutableList<DeserObjectCollectionClass>>() {}).orNull();
       assertNotNull(deserObjects);
