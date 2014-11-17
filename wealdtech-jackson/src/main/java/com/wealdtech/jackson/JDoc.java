@@ -126,7 +126,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
         }
         else
         {
-          return Optional.fromNullable((T)WealdMapper.getServerMapper().readValue("\"" + val + "\"", typeRef));
+          return Optional.fromNullable((T)WealdMapper.getMapper().readValue("\"" + val + "\"", typeRef));
         }
       }
       catch (final IOException ioe)
@@ -168,9 +168,9 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
           // Need to upcast
           try
           {
-            final String dataStr = WealdMapper.getServerMapper().writeValueAsString(((JDoc)val).getData());
+            final String dataStr = WealdMapper.getMapper().writeValueAsString(((JDoc)val).getData());
             LOG.trace("data string is {}", dataStr);
-            final T upcast = WealdMapper.getServerMapper().readValue(dataStr, klazz);
+            final T upcast = WealdMapper.getMapper().readValue(dataStr, klazz);
             if (upcast != null)
             {
               LOG.trace("Upcasted value is {} ({})", upcast, upcast.getClass().getSimpleName());
@@ -192,9 +192,9 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
           // Need to upcast
           try
           {
-            final String dataStr = WealdMapper.getServerMapper().writeValueAsString((Map)val);
+            final String dataStr = WealdMapper.getMapper().writeValueAsString((Map)val);
             LOG.trace("data string is {}", dataStr);
-            final T upcast = WealdMapper.getServerMapper().readValue(dataStr, klazz);
+            final T upcast = WealdMapper.getMapper().readValue(dataStr, klazz);
             if (upcast != null)
             {
               LOG.trace("Upcasted value is {} ({})", upcast, upcast.getClass().getSimpleName());
@@ -217,7 +217,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
         }
         else
         {
-          return Optional.fromNullable(WealdMapper.getServerMapper().readValue("\"" + val + "\"", klazz));
+          return Optional.fromNullable(WealdMapper.getMapper().readValue("\"" + val + "\"", klazz));
         }
       }
       catch (final IOException ioe)
