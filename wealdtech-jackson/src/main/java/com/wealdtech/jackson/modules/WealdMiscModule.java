@@ -52,13 +52,11 @@ public class WealdMiscModule extends Module
     serializers.addSerializer(new InetSocketAddressSerializer());
     serializers.addSerializer(new MessageObjectsSerializer());
     serializers.addSerializer(new DateTimeRangeSerializer());
-    serializers.addSerializer(new JDocSerializer());
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
     deserializers.addDeserializer(MessageObjects.class, new MessageObjectsDeserializer());
     deserializers.addDeserializer(Range.class, new DateTimeRangeDeserializer());
-    deserializers.addDeserializer(JDoc.class, new JDocDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

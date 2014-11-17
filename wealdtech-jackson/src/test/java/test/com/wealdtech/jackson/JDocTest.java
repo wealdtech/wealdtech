@@ -24,12 +24,14 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+import org.testng.collections.Maps;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.testng.Assert.*;
 
@@ -69,6 +71,68 @@ public class JDocTest
 
   @Test
   public void testDeser1()
+  {
+    try
+    {
+      final String deser = "{\"val1\":true}";
+      final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
+      assertNotNull(doc);
+      assertEquals(doc.get("val1", Boolean.class).or(false), (Boolean)true);
+    }
+    catch (final IOException e)
+    {
+      fail("Failed JSON processing: ", e);
+    }
+  }
+
+  @Test
+  public void testDeser2()
+  {
+    try
+    {
+      final String deser = "{\"val2\":\"2014-09-16T23:00:00Z\"}";
+      final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
+      assertNotNull(doc);
+      assertEquals(doc.get("val2", DateTime.class).orNull(), new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC));
+    }
+    catch (final IOException e)
+    {
+      fail("Failed JSON processing: ", e);
+    }
+  }
+
+  public static class Deser3Test
+  {
+    public DateTime dt;
+    public String str;
+  }
+
+  @Test
+  public void testDeser3()
+  {
+    try
+    {
+      final String deser = "{\"val2\":\"2014-09-16T23:00:00Z\",\"val3\":{\"dt\":\"2014-09-16T23:00:00Z\",\"str\":\"objstr\"}}";
+      final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
+      assertNotNull(doc);
+
+      final Optional<DateTime> val2 = doc.get("val2", DateTime.class);
+      assertTrue(val2.isPresent());
+      assertEquals(val2.get(), new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC));
+
+      final Optional<Deser3Test> sub = doc.get("val3", Deser3Test.class);
+      assertTrue(sub.isPresent());
+      assertEquals(sub.get().dt, new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC));
+      assertEquals(sub.get().str, "objstr");
+    }
+    catch (final IOException e)
+    {
+      fail("Failed JSON processing: ", e);
+    }
+  }
+
+  @Test
+  public void testDeserx()
   {
     try
     {
@@ -295,5 +359,20 @@ public class JDocTest
     {
       fail("Failed JSON processing: ", e);
     }
+  }
+
+  @Test
+  public void testHashMap() throws JsonProcessingException
+  {
+    final Map<String, Object> map = Maps.newHashMap();
+
+    final Map<String, Object> subMap1 = Maps.newHashMap();
+    subMap1.put("submap 1 key 1", new DateTime());
+
+    final Map<String, Object> subMap2 = Maps.newHashMap();
+    subMap2.put("submap 2 key 1", new DateTime());
+
+    subMap1.put("submap 1 key 2", subMap2);
+    map.put("map key 1", subMap1);
   }
 }

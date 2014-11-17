@@ -13,12 +13,12 @@ package com.wealdtech.jackson;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import com.wealdtech.DataError;
 import com.wealdtech.utils.GuavaUtils;
 import com.wealdtech.utils.MapComparator;
 import org.slf4j.Logger;
@@ -26,17 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
  * this needs to be contained externally.
- * This relies on JDocSerializer and JDocDeserializer to work correctly; it won't serialize/deserialize properly without them.
  */
 public class JDoc implements Comparable<JDoc>, Map<String, Object>
 {
@@ -44,6 +40,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
 
   private static final JDoc EMPTY = new JDoc(ImmutableMap.<String, Object>of());
 
+  @JsonUnwrapped
   @JsonProperty
   private final ImmutableMap<String, Object> data;
 
@@ -64,167 +61,59 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   {
     LOG.trace("Attempting to fetch {} as {}", key, typeRef.getType());
     final Object val = data.get(key);
-    return resolve(val, typeRef);
-  }
-
-  private <T> Optional<T> resolve(final Object val, final TypeReference<T> typeRef)
-  {
-    if (val != null)
+    final String valStr = stringify(val);
+    try
     {
-      try
-      {
-        LOG.trace("Attempting to parse {} as {}", val, typeRef.getType());
-        if (val instanceof JDoc)
-        {
-          if (val.getClass().equals(JDoc.class))
-          {
-            return Optional.of((T)val);
-          }
-          else
-          {
-            // Need to upcast
-            try
-            {
-              return Optional.of((T)((Class)typeRef.getType()).getConstructor(ImmutableMap.class)
-                                                              .newInstance(((JDoc)val).getData()));
-            }
-            catch (final InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e)
-            {
-              LOG.error("Failed to upcast jdoc: ", e);
-              return Optional.absent();
-            }
-          }
-        }
-        else if (val instanceof Collection)
-        {
-          // Need to create collection
-          Collection collection;
-          if (val instanceof List)
-          {
-            collection = Lists.newArrayList();
-          }
-          else
-          {
-            collection = Sets.newHashSet();
-          }
-          for (final Object collectionVal : (Collection)val)
-          {
-            // Need to find out the class of whatever it is we're resolving to
-            final Class<?> klazz = Class.forName(((ParameterizedType)typeRef.getType()).getActualTypeArguments()[0].toString()
-                                                                                                                   .substring(6));
-            final Optional<?> resolved = resolve(collectionVal, klazz);
-            if (resolved.isPresent())
-            {
-              collection.add(resolved.get());
-            }
-          }
-          return Optional.of((T)collection);
-        }
-        else if (val instanceof Map)
-        {
-          return Optional.of((T)val);
-        }
-        else
-        {
-          return Optional.fromNullable((T)WealdMapper.getMapper().readValue("\"" + val + "\"", typeRef));
-        }
-      }
-      catch (final IOException ioe)
-      {
-        throw new DataError.Bad("Failed to parse data: ", ioe);
-      }
-      catch (ClassNotFoundException e)
-      {
-        throw new DataError.Bad("Failed to find class: ", e);
-      }
+    return Optional.fromNullable((T)WealdMapper.getMapper().readValue(valStr, typeRef));
     }
-    return Optional.absent();
+    catch (final IOException ioe)
+    {
+      LOG.error("Failed to parse value: ", ioe);
+      return Optional.absent();
+    }
   }
 
-  @SuppressWarnings("unchecked")
-  @JsonIgnore
   public <T> Optional<T> get(final String key, final Class<T> klazz)
   {
-    LOG.trace("Attempting to fetch {} as {}", key, klazz.toString());
+    LOG.trace("Attempting to fetch {} as {}", key, klazz.getSimpleName());
     final Object val = data.get(key);
-    return resolve(val, klazz);
+    final String valStr = stringify(val);
+    try
+    {
+      return Optional.fromNullable(WealdMapper.getMapper().readValue(valStr, klazz));
+    }
+    catch (final IOException ioe)
+    {
+      LOG.error("Failed to parse value: ", ioe);
+      return Optional.absent();
+    }
   }
 
-  @JsonIgnore
-  private <T> Optional<T> resolve(final Object val, final Class<T> klazz)
+  private String stringify(final Object val)
   {
-    if (val == null)
+    String valStr;
+    if (val instanceof String)
     {
-      LOG.trace("No such key");
-      return Optional.absent();
+      valStr = (String)val;
     }
     else
     {
       try
       {
-        LOG.trace("Attempting to parse {} ({}) as {}", val, val.getClass().getSimpleName(), klazz.toString());
-        if (val instanceof JDoc)
-        {
-          // Need to upcast
-          try
-          {
-            final String dataStr = WealdMapper.getMapper().writeValueAsString(((JDoc)val).getData());
-            LOG.trace("data string is {}", dataStr);
-            final T upcast = WealdMapper.getMapper().readValue(dataStr, klazz);
-            if (upcast != null)
-            {
-              LOG.trace("Upcasted value is {} ({})", upcast, upcast.getClass().getSimpleName());
-              return Optional.of(upcast);
-            }
-            else
-            {
-              return Optional.absent();
-            }
-          }
-          catch (final Exception e)
-          {
-            LOG.error("Failed to upcast jdoc: ", e);
-            return Optional.absent();
-          }
-        }
-        if (val instanceof Map)
-        {
-          // Need to upcast
-          try
-          {
-            final String dataStr = WealdMapper.getMapper().writeValueAsString((Map)val);
-            LOG.trace("data string is {}", dataStr);
-            final T upcast = WealdMapper.getMapper().readValue(dataStr, klazz);
-            if (upcast != null)
-            {
-              LOG.trace("Upcasted value is {} ({})", upcast, upcast.getClass().getSimpleName());
-              return Optional.of(upcast);
-            }
-            else
-            {
-              return Optional.absent();
-            }
-          }
-          catch (final Exception e)
-          {
-            LOG.error("Failed to upcast jdoc: ", e);
-            return Optional.absent();
-          }
-        }
-        else if (val instanceof Collection)
-        {
-          return Optional.of((T)val);
-        }
-        else
-        {
-          return Optional.fromNullable(WealdMapper.getMapper().readValue("\"" + val + "\"", klazz));
-        }
+        valStr = WealdMapper.getMapper().writeValueAsString(val);
       }
       catch (final IOException ioe)
       {
-        throw new DataError.Bad("Failed to parse data: ", ioe);
+        LOG.error("Failed to encode value: ", ioe);
+        return null;
       }
     }
+
+    if (!valStr.startsWith("{") && !valStr.startsWith("["))
+    {
+      valStr = "\"" + valStr + "\"";
+    }
+    return valStr;
   }
 
   /**
