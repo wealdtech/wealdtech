@@ -23,12 +23,15 @@ import com.wealdtech.utils.GuavaUtils;
 import com.wealdtech.utils.MapComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
@@ -107,7 +110,8 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
           for (final Object collectionVal : (Collection)val)
           {
             // Need to find out the class of whatever it is we're resolving to
-            final Class<?> klazz = Class.forName(((ParameterizedTypeImpl)typeRef.getType()).getActualTypeArguments()[0].toString().substring(6));
+            final Class<?> klazz = Class.forName(((ParameterizedType)typeRef.getType()).getActualTypeArguments()[0].toString()
+                                                                                                                   .substring(6));
             final Optional<?> resolved = resolve(collectionVal, klazz);
             if (resolved.isPresent())
             {
