@@ -61,6 +61,10 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   {
     LOG.trace("Attempting to fetch {} as {}", key, typeRef.getType());
     final Object val = data.get(key);
+    if (val == null)
+    {
+      return Optional.absent();
+    }
     final String valStr = stringify(val);
     try
     {
@@ -77,6 +81,10 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   {
     LOG.trace("Attempting to fetch {} as {}", key, klazz.getSimpleName());
     final Object val = data.get(key);
+    if (val == null)
+    {
+      return Optional.absent();
+    }
     final String valStr = stringify(val);
     try
     {

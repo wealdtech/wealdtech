@@ -24,14 +24,13 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 
 import static org.testng.Assert.*;
 
@@ -362,17 +361,12 @@ public class JDocTest
   }
 
   @Test
-  public void testHashMap() throws JsonProcessingException
+  public void testNull()
   {
-    final Map<String, Object> map = Maps.newHashMap();
-
-    final Map<String, Object> subMap1 = Maps.newHashMap();
-    subMap1.put("submap 1 key 1", new DateTime());
-
-    final Map<String, Object> subMap2 = Maps.newHashMap();
-    subMap2.put("submap 2 key 1", new DateTime());
-
-    subMap1.put("submap 1 key 2", subMap2);
-    map.put("map key 1", subMap1);
+    final JDoc doc = new JDoc(ImmutableMap.<String, Object>of("testkey", "testval"));
+    final String keyStr = doc.get("badkey", String.class).orNull();
+    assertNull(keyStr);
+    final Set<String> keyStrSet = doc.get("badkey", new TypeReference<Set<String>>(){}).orNull();
+    assertNull(keyStrSet);
   }
 }

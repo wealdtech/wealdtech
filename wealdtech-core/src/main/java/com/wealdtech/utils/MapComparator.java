@@ -49,7 +49,9 @@ public class MapComparator<S extends Comparable<S>, T> implements Comparator<Map
         }
         else
         {
-          if (firstEntry.getValue() instanceof Comparable)
+          if (firstEntry.getValue() instanceof Comparable &&
+              secondValue instanceof Comparable &&
+              firstEntry.getValue().getClass().equals(secondValue.getClass()))
           {
             result = ((Comparable)firstEntry.getValue()).compareTo(secondValue);
           }
