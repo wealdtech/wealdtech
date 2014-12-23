@@ -11,12 +11,9 @@
 package com.wealdtech.mail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.mail.jackson.MandrillRecipientsSerializer;
-import com.wealdtech.mail.jackson.MandrillSenderSerializer;
+import com.wealdtech.mail.jackson.MandrillRecipientSerializer;
 
 /**
  * Details of a message to be sent
@@ -25,10 +22,14 @@ public class MandrillMessage
 {
   @JsonProperty("subject")
   private final String subject;
-  @JsonUnwrapped
-  @JsonSerialize(using=MandrillSenderSerializer.class)
-  private final MailActor sender;
-  @JsonSerialize(contentUsing=MandrillRecipientsSerializer.class)
+
+  @JsonProperty("from_name")
+  private final String senderName;
+  @JsonProperty("from_email")
+  private final String senderAddress;
+
+  @JsonProperty("recipients")
+  @JsonSerialize(contentUsing=MandrillRecipientSerializer.class)
   private final ImmutableList<MailActor> recipients;
 
   @JsonProperty("important")
@@ -62,7 +63,8 @@ public class MandrillMessage
                          )
   {
     this.subject = subject;
-    this.sender = sender;
+    this.senderName = sender.getName();
+    this.senderAddress = sender.getEmail();
     this.recipients = recipients;
   }
 

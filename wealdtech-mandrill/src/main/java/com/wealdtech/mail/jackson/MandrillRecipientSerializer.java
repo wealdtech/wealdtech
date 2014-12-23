@@ -11,20 +11,18 @@
 package com.wealdtech.mail.jackson;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.wealdtech.mail.MailActor;
 
 import java.io.IOException;
 
 /**
- * A serializer for mail actors to fit Mandrill's sender format
+ * A serializer for mail actors to fit Mandrill's recipient format
  */
-public class MandrillSenderSerializer extends StdSerializer<MailActor>
+public class MandrillRecipientSerializer extends StdSerializer<MailActor>
 {
-  public MandrillSenderSerializer()
+  public MandrillRecipientSerializer()
   {
     super(MailActor.class, true);
   }
@@ -32,7 +30,10 @@ public class MandrillSenderSerializer extends StdSerializer<MailActor>
   @Override
   public void serialize(final MailActor value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeStringField("from_name", value.getName());
-    gen.writeStringField("from_email", value.getAddress());
+    gen.writeStartObject();
+    gen.writeStringField("name", value.getName());
+    gen.writeStringField("email", value.getEmail());
+    gen.writeStringField("type", "to");
+    gen.writeEndObject();
   }
 }

@@ -16,12 +16,12 @@ package com.wealdtech.mail;
 public class MailActor
 {
   private String name;
-  private String address;
+  private String email;
 
-  public MailActor(final String name, final String address)
+  public MailActor(final String name, final String email)
   {
     this.name = name;
-    this.address = address;
+    this.email = email;
   }
 
   public String getName()
@@ -29,15 +29,15 @@ public class MailActor
     return name;
   }
 
-  public String getAddress()
+  public String getEmail()
   {
-    return address;
+    return email;
   }
 
   public static class Builder
   {
     private String name;
-    private String address;
+    private String email;
 
     public Builder(){}
 
@@ -47,15 +47,15 @@ public class MailActor
       return this;
     }
 
-    public Builder address(final String address)
+    public Builder email(final String email)
     {
-      this.address = address;
+      this.email = email;
       return this;
     }
 
     public MailActor build()
     {
-      return new MailActor(name, address);
+      return new MailActor(name, email);
     }
   }
 }
