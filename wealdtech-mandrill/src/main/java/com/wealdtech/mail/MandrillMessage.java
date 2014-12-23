@@ -13,6 +13,7 @@ package com.wealdtech.mail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.wealdtech.mail.jackson.MandrillRecipientSerializer;
 
 /**
@@ -25,9 +26,12 @@ public class MandrillMessage
   @JsonProperty("from_email")
   private final String senderAddress;
 
-  @JsonProperty("recipients")
+  @JsonProperty("to")
   @JsonSerialize(contentUsing=MandrillRecipientSerializer.class)
   private final ImmutableList<MailActor> recipients;
+
+  @JsonProperty("global_merge_vars")
+  private final ImmutableList<ImmutableMap<String, String>> globalMergeVars;
 
   @JsonProperty("important")
   private final boolean important = false;
@@ -55,18 +59,20 @@ public class MandrillMessage
   private final String mergeLanguage = "mailchimp";
 
   public MandrillMessage(final MailActor sender,
-                         final ImmutableList<MailActor> recipients
-                         )
+                         final ImmutableList<MailActor> recipients,
+                         ImmutableList<ImmutableMap<String, String>> globalMergeVars)
   {
     this.senderName = sender.getName();
     this.senderAddress = sender.getEmail();
     this.recipients = recipients;
+    this.globalMergeVars = globalMergeVars;
   }
 
   public static class Builder
   {
     private MailActor sender;
     private ImmutableList<MailActor> recipients;
+    private ImmutableList<ImmutableMap<String, String>> globalMergeVars;
 
     public Builder()
     {
@@ -84,9 +90,15 @@ public class MandrillMessage
       return this;
     }
 
+    public Builder globalMergeVars(final ImmutableList<ImmutableMap<String, String>> globalMergeVars)
+    {
+      this.globalMergeVars = globalMergeVars;
+      return this;
+    }
+
     public MandrillMessage build()
     {
-      return new MandrillMessage(sender, recipients);
+      return new MandrillMessage(sender, recipients, globalMergeVars);
     }
   }
 }

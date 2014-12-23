@@ -13,9 +13,7 @@ package com.wealdtech.mail;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
-
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Request to Mandrill server for sending an email
@@ -26,7 +24,7 @@ public class MandrillSendRequest
   @JsonProperty("template_name")
   private final String templateName;
   @JsonProperty("template_content")
-  private final List<Map<String, String>> templateContent;
+  private final ImmutableList<ImmutableMap<String, String>> templateContent = ImmutableList.of();
   @JsonProperty("message")
   private final MandrillMessage message;
   private final boolean async = false;
@@ -34,12 +32,10 @@ public class MandrillSendRequest
   @JsonCreator
   public MandrillSendRequest(@JsonProperty("key") final String key,
                              @JsonProperty("templatename") final String templateName,
-                             @JsonProperty("templatecontent") final Map<String, String> templateContent,
                              @JsonProperty("message") final MandrillMessage message)
   {
     this.key = key;
     this.templateName = templateName;
-    this.templateContent = ImmutableList.of(templateContent);
     this.message = message;
   }
 }

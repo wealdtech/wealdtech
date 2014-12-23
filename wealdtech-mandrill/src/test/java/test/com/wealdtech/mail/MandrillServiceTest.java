@@ -42,6 +42,8 @@ public class MandrillServiceTest
   @Test(groups = {"base"})
   public void testSendTemplate()
   {
-    client.sendTemplate("dev-welcome", ImmutableMap.of("userid", "testuserid", "token", "testtoken"), ImmutableList.of(new MailActor("Jim McDonald", "Jim@mcdee.net")));
+    client.sendTemplate("dev-welcome", ImmutableList.of(ImmutableMap.of("name", "userid", "content", "testuserid"),
+                                                        ImmutableMap.of("name", "token", "content", "testtoken")),
+                        ImmutableList.of(new MailActor("Jim McDonald", "Jim@mcdee.net")));
   }
 }

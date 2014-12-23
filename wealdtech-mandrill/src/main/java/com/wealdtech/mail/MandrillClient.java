@@ -49,9 +49,9 @@ public class MandrillClient
     this.service = adapter.create(MandrillService.class);
   }
 
-  public List<MandrillSendResponse> sendTemplate(final String template, final Map<String, String> data, final ImmutableList<MailActor> recipients)
+  public List<MandrillSendResponse> sendTemplate(final String template, final ImmutableList<ImmutableMap<String, String>> globalMergeVars, final ImmutableList<MailActor> recipients)
   {
-    final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template, data, new MandrillMessage.Builder().recipients(recipients).sender(configuration.getSender()).build());
+    final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template, new MandrillMessage.Builder().recipients(recipients).sender(configuration.getSender()).globalMergeVars(globalMergeVars).build());
     return service.sendTemplate(request);
   }
 
