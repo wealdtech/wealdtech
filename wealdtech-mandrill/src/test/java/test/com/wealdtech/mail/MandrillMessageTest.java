@@ -25,8 +25,7 @@ public class MandrillMessageTest
   public void testSimpleMessage() throws JsonProcessingException
 
   {
-    final MandrillMessage message = new MandrillMessage.Builder().subject("Test subject")
-                                                                 .sender(new MailActor("Test user", "test@test.com"))
+    final MandrillMessage message = new MandrillMessage.Builder().sender(new MailActor("Test user", "test@test.com"))
                                                                  .recipients(ImmutableList.of(new MailActor("Test recipient 1",
                                                                                                             "recipient1@test.com"),
                                                                                               new MailActor("Test recipient 2",

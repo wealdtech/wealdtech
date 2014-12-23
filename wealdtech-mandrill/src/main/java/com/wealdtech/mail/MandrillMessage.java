@@ -20,9 +20,6 @@ import com.wealdtech.mail.jackson.MandrillRecipientSerializer;
  */
 public class MandrillMessage
 {
-  @JsonProperty("subject")
-  private final String subject;
-
   @JsonProperty("from_name")
   private final String senderName;
   @JsonProperty("from_email")
@@ -57,12 +54,10 @@ public class MandrillMessage
   @JsonProperty("merge_language")
   private final String mergeLanguage = "mailchimp";
 
-  public MandrillMessage(final String subject,
-                         final MailActor sender,
+  public MandrillMessage(final MailActor sender,
                          final ImmutableList<MailActor> recipients
                          )
   {
-    this.subject = subject;
     this.senderName = sender.getName();
     this.senderAddress = sender.getEmail();
     this.recipients = recipients;
@@ -70,18 +65,11 @@ public class MandrillMessage
 
   public static class Builder
   {
-    private String subject;
     private MailActor sender;
     private ImmutableList<MailActor> recipients;
 
     public Builder()
     {
-    }
-
-    public Builder subject(final String subject)
-    {
-      this.subject = subject;
-      return this;
     }
 
     public Builder sender(final MailActor sender)
@@ -98,7 +86,7 @@ public class MandrillMessage
 
     public MandrillMessage build()
     {
-      return new MandrillMessage(subject, sender, recipients);
+      return new MandrillMessage(sender, recipients);
     }
   }
 }

@@ -12,9 +12,7 @@ package com.wealdtech.mail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.mail.config.MandrillConfiguration;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;
 import org.slf4j.Logger;
@@ -51,9 +49,9 @@ public class MandrillClient
     this.service = adapter.create(MandrillService.class);
   }
 
-  public List<MandrillSendResponse> sendTemplate(final String template, final String subject, final Map<String, String> data, final ImmutableList<MailActor> recipients)
+  public List<MandrillSendResponse> sendTemplate(final String template, final Map<String, String> data, final ImmutableList<MailActor> recipients)
   {
-    final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template, data, new MandrillMessage.Builder().recipients(recipients).sender(configuration.getSender()).subject(subject).build());
+    final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template, data, new MandrillMessage.Builder().recipients(recipients).sender(configuration.getSender()).build());
     return service.sendTemplate(request);
   }
 

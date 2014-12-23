@@ -10,20 +10,17 @@
 
 package test.com.wealdtech.mail;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.mail.MailActor;
 import com.wealdtech.mail.MandrillClient;
-import com.wealdtech.mail.MandrillMessage;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import test.com.wealdtech.mail.config.ApplicationModule;
 
 import static org.testng.Assert.assertTrue;
-import static org.testng.AssertJUnit.assertEquals;
 
 public class MandrillServiceTest
 {
@@ -40,5 +37,11 @@ public class MandrillServiceTest
   public void testPing()
   {
     assertTrue(client.ping());
+  }
+
+  @Test(groups = {"base"})
+  public void testSendTemplate()
+  {
+    client.sendTemplate("dev-welcome", ImmutableMap.of("userid", "testuserid", "token", "testtoken"), ImmutableList.of(new MailActor("Jim McDonald", "Jim@mcdee.net")));
   }
 }
