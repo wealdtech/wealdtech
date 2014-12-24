@@ -27,7 +27,7 @@ public class MandrillSendRequest
   private final ImmutableList<ImmutableMap<String, String>> templateContent = ImmutableList.of();
   @JsonProperty("message")
   private final MandrillMessage message;
-  private final boolean async = false;
+  private final boolean async = true;
 
   @JsonCreator
   public MandrillSendRequest(@JsonProperty("key") final String key,
