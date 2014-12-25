@@ -37,7 +37,7 @@ public class MandrillClient
   public final MandrillService service;
 
   @Inject
-  private MandrillClient(final MandrillConfiguration configuration)
+  public MandrillClient(final MandrillConfiguration configuration)
   {
     this.configuration = configuration;
 
