@@ -8,4 +8,13 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-include 'wealdtech-core', 'wealdtech-metrics', 'wealdtech-configuration', 'wealdtech-crypt', 'wealdtech-jackson', 'wealdtech-jersey-server', 'wealdtech-gcm', 'wealdtech-retrofit', 'wealdtech-mandrill', 'wealdtech-chat'
+package com.wealdtech.chat;
+
+/**
+ */
+public enum ChatScope
+{
+  INDIVIDUAL,
+  GROUP,
+  EVERYONE;
+}

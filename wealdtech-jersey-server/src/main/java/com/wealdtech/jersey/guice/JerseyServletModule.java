@@ -77,8 +77,8 @@ public class JerseyServletModule extends ServletModule
    */
   private void setPackages(final String... additionalPackages)
   {
-    String[] packagesList = ObjectArrays.concat("com.wealdtech.jersey", additionalPackages);
-    packagesList = ObjectArrays.concat("com.codahale.metrics", packagesList);
+    final String[] packagesList = ObjectArrays.concat("com.wealdtech.jersey", additionalPackages);
+//    packagesList = ObjectArrays.concat("com.codahale.metrics", packagesList);
     this.packages = Joiner.on(',').skipNulls().join(packagesList);
   }
 
