@@ -12,33 +12,15 @@ package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.chat.Chat;
+import com.wealdtech.services.WObjectService;
 
 import javax.annotation.Nullable;
 
 /**
  * Interface defining chat service methods
  */
-public interface ChatService
+public interface ChatService extends WObjectService<Chat>
 {
-  /**
-   * Create the chat service's datastore.
-   * If the datastore already exists then this does nothing; any data which was previously in the datastore will still be there
-   * after this call completes.
-   */
-  public void createDatastore();
-
-  /**
-   * Destroy the chat service's datastore.
-   * This is a destructive operation; when this is called it is expected that any existing data for the chat service will be
-   * removed
-   */
-  public void destroyDatastore();
-
-  /**
-   * Add a chat to a topic
-   */
-  public void addChat(Chat chat);
-
   /**
    * Get chats
    */

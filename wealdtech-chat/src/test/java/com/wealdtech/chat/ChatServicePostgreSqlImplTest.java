@@ -59,7 +59,7 @@ public class ChatServicePostgreSqlImplTest
                               .topic("test topic")
                               .message("Test message")
                               .build();
-    service.addChat(testChat);
+    service.add(testChat);
 
     final ImmutableList<Chat> chats = service.getChats(methodName, "test topic");
     assertChatsContain(chats, testChat);
