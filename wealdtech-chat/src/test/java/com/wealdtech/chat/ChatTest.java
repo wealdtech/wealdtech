@@ -11,12 +11,11 @@
 package com.wealdtech.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Maps;
 import com.wealdtech.jackson.WealdMapper;
+import org.joda.time.DateTime;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 
@@ -28,40 +27,35 @@ public class ChatTest
   @Test
   public void testSer() throws JsonProcessingException
   {
-    final Map<String, Object> extensions = Maps.newHashMap();
-    extensions.put("extkey1", "extval1");
-    extensions.put("extkey2", "extval2");
     final Chat chat = Chat.builder()
                           .from("test from")
                           .scope(ChatScope.EVERYONE)
-                          .extensions(extensions)
-                          .timestamp(1234567890L)
-                          .topic("test topic")
-                          .message("foo")
-                          .build();
+                          .data("extkey1", "extval1")
+                          .data("extkey2", "extval2")
+                          .timestamp(new DateTime(1234567890L))
+                          .topic("test topic").message("foo").build();
     final String ser = WealdMapper.getServerMapper().writeValueAsString(chat);
-    assertEquals(ser, "{\"from\":\"test from\",\"scope\":\"EVERYONE\",\"timestamp\":1234567890,\"topic\":\"test topic\",\"message\":\"foo\",\"extkey2\":\"extval2\",\"extkey1\":\"extval1\"}");
+    assertEquals(ser, "{\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":\"1970-01-15T01:56:07-05:00 America/New_York\",\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}");
   }
 
   @Test
   public void testDeser() throws IOException
   {
-    final Map<String, Object> extensions = Maps.newHashMap();
-    extensions.put("extkey1", "extval1");
-    extensions.put("extkey2", "extval2");
     final Chat chat = Chat.builder()
                           .from("test from")
                           .scope(ChatScope.EVERYONE)
-                          .extensions(extensions)
-                          .timestamp(1234567890L)
+                          .data("extkey1", "extval1")
+                          .data("extkey2", "extval2")
+                          .timestamp(new DateTime(1234567890L))
                           .topic("test topic")
                           .message("foo")
                           .build();
 
-    final String ser = "{\"from\":\"test from\",\"scope\":\"EVERYONE\",\"timestamp\":1234567890,\"topic\":\"test topic\",\"message\":\"foo\",\"extkey2\":\"extval2\",\"extkey1\":\"extval1\"}";
+    final String ser = "{\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":\"1970-01-15T01:56:07-05:00 America/New_York\",\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}";
 
     final Chat testChat = WealdMapper.getServerMapper().readValue(ser, Chat.class);
 
-    assertEquals(chat, testChat);
+    // We cannot compare directly because  the deserialized version will contain Strings rather than complex objects
+    assertEquals(chat.toString(), testChat.toString());
   }
 }

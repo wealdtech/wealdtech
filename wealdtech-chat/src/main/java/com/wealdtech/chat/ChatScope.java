@@ -10,6 +10,13 @@
 
 package com.wealdtech.chat;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.wealdtech.DataError;
+import com.wealdtech.utils.StringUtils;
+
+import java.util.Locale;
+
 /**
  */
 public enum ChatScope
@@ -17,4 +24,26 @@ public enum ChatScope
   INDIVIDUAL,
   GROUP,
   EVERYONE;
+
+  @Override
+  @JsonValue
+  public String toString()
+  {
+    return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH).replaceAll("_", " "));
+  }
+
+  @JsonCreator
+  public static ChatScope fromString(final String val)
+  {
+    try
+    {
+      return valueOf(val.trim().toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+    }
+    catch (final IllegalArgumentException iae)
+    {
+      // N.B. we don't pass the iae as the cause of this exception because this happens during invocation, and in that case the
+      // enum handler will report the root cause exception rather than the one we throw.
+      throw new DataError.Bad("A chat scope supplied is invalid");
+    }
+  }
 }

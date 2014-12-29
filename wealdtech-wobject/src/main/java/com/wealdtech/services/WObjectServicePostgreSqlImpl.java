@@ -8,22 +8,22 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.chat.services;
+package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
+import com.wealdtech.WObject;
 import com.wealdtech.WealdError;
-import com.wealdtech.chat.Chat;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
 import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,28 +31,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Chat service using PostgreSQL as a backend
+ * WObject service using PostgreSQL as a backend
  */
-public class ChatServicePostgreSqlImpl implements ChatService
+public abstract class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectService<T>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(ChatServicePostgreSqlImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(WObjectServicePostgreSqlImpl.class);
 
   private final PostgreSqlRepository repository;
 
+  private static final String CREATE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(f_data JSON NOT NULL)";
 
-  private static final String CREATE_SQL = "CREATE TABLE IF NOT EXISTS t_chat(f_data JSON NOT NULL)";
+  private static final String DESTROY_SQL = "DROP TABLE t_TABLENAME";
 
-  private static final String DESTROY_SQL = "DROP TABLE t_chat";
+  private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
 
-  private static final String ADD_SQL = "INSERT INTO t_chat VALUES(?)";
+  private static final String OBTAIN_SQL = "SELECT f_data\n" +
+                                           "FROM t_TABLENAME";
+//                                           "WHERE f_data->>'from' = ?";
 
-  private static final String GET_CHATS_SQL = "SELECT f_data\n" +
-                                              "FROM t_chat\n" +
-                                              "WHERE f_data->>'from' = ?";
+  private final String createSql;
+  private final String destroySql;
+  private final String addSql;
+  private final String obtainSql;
+
   @Inject
-  public ChatServicePostgreSqlImpl(final PostgreSqlRepository repository)
+  public WObjectServicePostgreSqlImpl(final PostgreSqlRepository repository,
+                                      final String tableName)
   {
     this.repository = repository;
+    createSql = CREATE_SQL.replaceAll("TABLENAME", tableName);
+    destroySql = DESTROY_SQL.replaceAll("TABLENAME", tableName);
+    addSql = ADD_SQL.replaceAll("TABLENAME", tableName);
+    obtainSql = OBTAIN_SQL.replaceAll("TABLENAME", tableName);
   }
 
   @Override
@@ -63,12 +73,12 @@ public class ChatServicePostgreSqlImpl implements ChatService
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(CREATE_SQL);
+      final PreparedStatement stmt = conn.prepareStatement(createSql);
       stmt.execute();
     }
     catch (final SQLException se)
     {
-      handleSqlFailure(conn, se, "Failed to create chat service datastore");
+      handleSqlFailure(conn, se, "Failed to create datastore");
     }
   }
 
@@ -80,29 +90,29 @@ public class ChatServicePostgreSqlImpl implements ChatService
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(DESTROY_SQL);
+      final PreparedStatement stmt = conn.prepareStatement(destroySql);
       stmt.execute();
     }
     catch (final SQLException se)
     {
-      handleSqlFailure(conn, se, "Failed to destroy chat service datastore");
+      handleSqlFailure(conn, se, "Failed to destroy datastore");
     }
   }
 
   @Override
-  public void addChat(final Chat chat)
+  public void add(final T wObject)
   {
     Connection conn = null;
     try
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(ADD_SQL);
+      final PreparedStatement stmt = conn.prepareStatement(addSql);
       final PGobject obj = new PGobject();
       obj.setType("json");
       try
       {
-        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(chat));
+        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(wObject));
       }
       catch (final JsonProcessingException jpe)
       {
@@ -123,37 +133,37 @@ public class ChatServicePostgreSqlImpl implements ChatService
   }
 
   @Override
-  public ImmutableList<Chat> getChats(final String from, @Nullable final String topic)
+  public ImmutableList<T> obtain(final TypeReference<T>typeRef, final String conditions)
   {
     Connection conn = null;
     try
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(GET_CHATS_SQL);
-      stmt.setString(1, from);
+      final PreparedStatement stmt = conn.prepareStatement(obtainSql);
+//      stmt.setString(1, conditions);
 
       try (ResultSet rs = stmt.executeQuery())
       {
-        final ImmutableList.Builder<Chat> chatsB = ImmutableList.builder();
+        final ImmutableList.Builder<T> objsB = ImmutableList.builder();
         while (rs.next())
         {
           try
           {
-            chatsB.add(WealdMapper.getServerMapper().readValue(rs.getString(1), Chat.class));
+            objsB.add((T)WealdMapper.getServerMapper().readValue(rs.getString(1), typeRef));
           }
           catch (final IOException ioe)
           {
-            LOG.error("Failed to parse chat: ", ioe);
+            LOG.error("Failed to parse object: ", ioe);
             throw new ServerError("Failed to obtain information");
           }
         }
-        return chatsB.build();
+        return objsB.build();
       }
     }
     catch (final SQLException se)
     {
-     throw handleSqlFailure(conn, se, "Failed to add chat to chat service datastore");
+     throw handleSqlFailure(conn, se, "Failed to obtain object from datastore");
     }
     finally
     {
@@ -167,7 +177,7 @@ public class ChatServicePostgreSqlImpl implements ChatService
    * @param se The SQL exception.
    * @param throwMessage The message to pass back when throwing an exception.
    * @throws com.wealdtech.DataError Thrown when the error is due to bad data.
-   * @throws com.wealdtech.ServerError Thrown when the error is due to a server issue.
+   * @throws ServerError Thrown when the error is due to a server issue.
    */
   public static WealdError handleSqlFailure(final Connection conn, final SQLException se, final String throwMessage)
   {
@@ -181,7 +191,7 @@ public class ChatServicePostgreSqlImpl implements ChatService
    * @param throwMessage The message to pass back when throwing an exception.
    * @param obj the object which caused the problem
    * @throws com.wealdtech.DataError Thrown when the error is due to bad data.
-   * @throws com.wealdtech.ServerError Thrown when the error is due to a server issue.
+   * @throws ServerError Thrown when the error is due to a server issue.
    */
   public static WealdError handleSqlFailure(final Connection conn, final SQLException se, final String throwMessage, final Object obj)
   {

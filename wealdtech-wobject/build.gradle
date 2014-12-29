@@ -13,17 +13,19 @@ dependencies
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
-    compile project(':wealdtech-wobject')
-    compile project(':wealdtech-jersey-server')
+
+    // Database connection and pooling
+    compile 'org.postgresql:postgresql:9.3-1100-jdbc41'
+    compile 'org.apache.tomcat:tomcat-jdbc:7.0.55'
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-chat'
+            pom.artifactId = 'wealdtech-wobject'
             pom.project {
-                name 'Wealdtech Chat'
-                description 'Weald Technology Chat server'
+                name 'Wealdtech Object'
+                description 'Weald Technology Object API'
             }
         }
     }

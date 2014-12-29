@@ -10,233 +10,158 @@
 
 package com.wealdtech.chat;
 
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
-import com.google.common.collect.ComparisonChain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
-import com.wealdtech.DataError;
-import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.utils.MapComparator;
+import com.wealdtech.WObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 /**
  * A chat element
  */
-public class Chat implements Comparable<Chat>
+public class Chat extends WObject<Chat> implements Comparable<Chat>
 {
   private static final Logger LOG = LoggerFactory.getLogger(Chat.class);
 
-  private final String from;
-  private final ChatScope scope;
-  private final Long timestamp;
-  private final ImmutableSet<String> to;
-  private final String topic;
-  private final String message;
-  @JsonIgnore
-  private final Map<String, Object> extensions;
+  private static final String FROM = "from";
+  private static final String SCOPE = "scope";
+  private static final String TIMESTAMP = "timestamp";
+  private static final String TO = "to";
+  private static final String TOPIC = "topic";
+  private static final String MESSAGE = "message";
 
-  @JsonCreator
-  public Chat(@JsonProperty("from") final String from,
-              @JsonProperty("scope") final ChatScope scope,
-              @JsonProperty("timestamp") final Long timestamp,
-              @JsonProperty("to") final ImmutableSet<String> to,
-              @JsonProperty("topic") final String topic,
-              @JsonProperty("message") final String message,
-              @JsonProperty("extensions") final Map<String, Object> extensions)
+  public Chat(@JsonProperty("data") final Map<String, Object> data)
   {
-    this.from = from;
-    if (this.from == null)
-    {
-      throw new DataError.Missing("Chat needs 'from' information");
-    }
-
-    this.scope = scope;
-    if (this.scope == null)
-    {
-      throw new DataError.Missing("Chat needs 'scope' information");
-    }
-    this.timestamp = MoreObjects.firstNonNull(timestamp, new DateTime().getMillis());
-
-    this.to = MoreObjects.firstNonNull(to, ImmutableSet.<String>of());
-    if ((this.scope == ChatScope.GROUP || this.scope == ChatScope.INDIVIDUAL) && this.to.isEmpty())
-    {
-      throw new DataError.Missing("Directed chat needs 'to' information");
-    }
-
-    this.topic = topic;
-    if (topic == null)
-    {
-      throw new DataError.Missing("Chat needs 'topic' information");
-    }
-
-    this.message = message;
-    if (this.message == null)
-    {
-      throw new DataError.Missing("Chat needs 'message' information");
-    }
-
-    this.extensions = MoreObjects.firstNonNull(extensions, Maps.<String, Object>newHashMap());
-
+    super(data);
   }
 
+  protected void validate()
+  {
+//    if (!exists(FROM))
+//    {
+//      throw new DataError.Missing("Chat needs 'from' information");
+//    }
+//
+//    if (!exists(SCOPE))
+//    {
+//      throw new DataError.Missing("Chat needs 'scope' information");
+//    }
+//
+//    if (!exists(TIMESTAMP))
+//    {
+//      set(TIMESTAMP, new DateTime().getMillis());
+//    }
+//
+//    final ChatScope scope = getScope();
+//    if (scope == ChatScope.GROUP || scope == ChatScope.INDIVIDUAL)
+//    {
+//      if (!exists(TO))
+//      {
+//        throw new DataError.Missing("Directed chat needs 'to' information");
+//      }
+//      final ImmutableSet<String> to = getTo();
+//      if (to.isEmpty())
+//      {
+//        throw new DataError.Missing("Directed chat needs 'to' information");
+//      }
+//    }
+//
+//    if (!exists(TOPIC))
+//    {
+//      throw new DataError.Missing("Chat needs 'topic' information");
+//    }
+//
+//    if (!exists(MESSAGE))
+//    {
+//      throw new DataError.Missing("Chat needs 'message' information");
+//    }
+  }
+
+  @JsonIgnore
   public String getFrom()
   {
-    return from;
-  }
-
-  public ChatScope getScope()
-  {
-    return scope;
-  }
-
-  public Long getTimestamp()
-  {
-    return timestamp;
-  }
-
-  public ImmutableSet<String> getTo()
-  {
-    return to;
-  }
-
-  public String getTopic() { return this.topic; }
-
-  public String getMessage()
-  {
-    return message;
+    return get(FROM, String.class);
   }
 
   @JsonIgnore
-  public <T> T getExtension(final String name)
+  public ChatScope getScope()
   {
-    return (T)extensions.get(name);
+    return get(SCOPE, ChatScope.class);
   }
 
-  @JsonAnyGetter
-  private Map<String, Object> any()
+  @JsonIgnore
+  public DateTime getTimestamp()
   {
-    return extensions;
+    return new DateTime(get(TIMESTAMP, Long.class));
   }
 
-  @JsonAnySetter
-  private void set(final String name, final Object value)
+  private static final TypeReference<ImmutableSet<String>> TO_TYPE_REF = new TypeReference<ImmutableSet<String>>(){};
+  @JsonIgnore
+  public ImmutableSet<String> getTo()
   {
-    extensions.put(name, value);
+    return get(TO, TO_TYPE_REF);
   }
 
-  public static class Builder
+  @JsonIgnore
+  public String getTopic() { return get(TOPIC, String.class); }
+
+  @JsonIgnore
+  public String getMessage()
   {
-    private String from;
-    private ChatScope scope;
-    private Long timestamp;
-    private ImmutableSet<String> to;
-    private String topic;
-    private String message;
-    private Map<String, Object> extensions;
+    return get(MESSAGE, String.class);
+  }
 
-    public Builder from(final String from)
+  public static class Builder<T extends Builder<T>> extends WObject.Builder<T>
+  {
+    public T from(final String from)
     {
-      this.from = from;
-      return this;
+      data(FROM, from);
+      return self();
     }
 
-    public Builder scope(final ChatScope scope)
+    public T scope(final ChatScope scope)
     {
-      this.scope = scope;
-      return this;
+      data(SCOPE, scope);
+      return self();
     }
 
-    public Builder timestamp(final Long timestamp)
+    public T timestamp(final DateTime timestamp)
     {
-      this.timestamp = timestamp;
-      return this;
+      data(TIMESTAMP, timestamp);
+      return self();
     }
 
-    public Builder to(final ImmutableSet<String> to)
+    public T to(final ImmutableSet<String> to)
     {
-      this.to = to;
-      return this;
+      data(TO, to);
+      return self();
     }
 
-    public Builder topic(final String topic)
+    public T topic(final String topic)
     {
-      this.topic = topic;
-      return this;
+      data(TOPIC, topic);
+      return self();
     }
 
-    public Builder message(final String message)
+    public T message(final String message)
     {
-      this.message = message;
-      return this;
-    }
-
-    public Builder extensions(final Map<String, Object> extensions)
-    {
-      this.extensions = extensions;
-      return this;
+      data(MESSAGE, message);
+      return self();
     }
 
     public Chat build()
     {
-      return new Chat(from, scope, timestamp, to, topic, message, extensions);
+      return new Chat(data);
     }
   }
 
-  public static Builder builder()
+  public static Builder<?> builder()
   {
     return new Builder();
   }
-
-  // Standard object methods follow
-  @Override
-  public String toString()
-  {
-    try
-    {
-      return WealdMapper.getMapper().writeValueAsString(this);
-    }
-    catch (final JsonProcessingException e)
-    {
-      LOG.error("Failed to create JSON for object: ", e);
-      return "Bad";
-    }
-  }
-
-  @Override
-  public int hashCode()
-  {
-    return Objects.hashCode(this.from, this.scope, this.timestamp, this.to, this.topic, this.message, this.extensions);
-  }
-
-  @Override
-  public boolean equals(final Object that)
-  {
-    return that instanceof Chat && this.compareTo((Chat)that) == 0;
-  }
-
-  private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
-
-  @Override
-  public int compareTo(@Nonnull final Chat that)
-  {
-    return ComparisonChain.start()
-               .compare(this.from, that.from)
-               .compare(this.scope, that.scope)
-               .compare(this.timestamp, that.timestamp)
-               .compare(this.to, that.to, Ordering.<String>natural().lexicographical())
-               .compare(this.topic, that.topic)
-               .compare(this.message, that.message)
-        .compare(this.extensions, that.extensions, MAP_COMPARATOR)
-        .result();
-  }
-
 }
