@@ -13,6 +13,7 @@ package com.wealdtech.chat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class ChatTest
                           .scope(ChatScope.EVERYONE)
                           .data("extkey1", "extval1")
                           .data("extkey2", "extval2")
-                          .timestamp(new DateTime(1234567890L))
+                          .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
                           .topic("test topic").message("foo").build();
     final String ser = WealdMapper.getServerMapper().writeValueAsString(chat);
     assertEquals(ser, "{\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":\"1970-01-15T01:56:07-05:00 America/New_York\",\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}");
@@ -46,7 +47,7 @@ public class ChatTest
                           .scope(ChatScope.EVERYONE)
                           .data("extkey1", "extval1")
                           .data("extkey2", "extval2")
-                          .timestamp(new DateTime(1234567890L))
+                          .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
                           .topic("test topic")
                           .message("foo")
                           .build();

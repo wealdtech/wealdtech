@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * The Weald Technology object. A generic object which allows for arbitrary storage of data
  */
-public abstract class WObject<T extends WObject> implements Comparable<T>
+public abstract class WObject<T extends WObject<?>> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
 
@@ -41,10 +41,7 @@ public abstract class WObject<T extends WObject> implements Comparable<T>
   public WObject(@JsonProperty("data") final Map<String, Object> data)
   {
     this.data = MoreObjects.firstNonNull(data, Maps.<String, Object>newHashMap());
-    validate();
   }
-
-  protected void validate(){}
 
   public boolean exists(final String name)
   {
@@ -53,7 +50,7 @@ public abstract class WObject<T extends WObject> implements Comparable<T>
 
   @JsonIgnore
   @Nullable
-  public <T> T get(final String name, final Class<T> klazz)
+  public <U> U get(final String name, final Class<U> klazz)
   {
     if (!data.containsKey(name))
     {
@@ -71,9 +68,10 @@ public abstract class WObject<T extends WObject> implements Comparable<T>
       return null;
     }
   }
+
   @JsonIgnore
   @Nullable
-  public <T> T get(final String name, final TypeReference<T> typeRef)
+  public <U> U get(final String name, final TypeReference<U> typeRef)
   {
     if (!data.containsKey(name))
     {
@@ -94,7 +92,7 @@ public abstract class WObject<T extends WObject> implements Comparable<T>
 
   private String stringify(final Object obj)
   {
-    String valStr = null;
+    String valStr;
     if (obj instanceof String)
     {
       valStr = (String)obj;
@@ -188,6 +186,6 @@ public abstract class WObject<T extends WObject> implements Comparable<T>
   @Override
   public int compareTo(@Nonnull final T that)
   {
-    return ComparisonChain.start().compare(this.any(), (Map<String, Object>)that.any(), MAP_COMPARATOR).result();
+    return ComparisonChain.start().compare(this.any(), that.any(), MAP_COMPARATOR).result();
   }
 }

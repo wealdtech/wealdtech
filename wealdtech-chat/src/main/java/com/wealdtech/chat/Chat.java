@@ -40,8 +40,8 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
     super(data);
   }
 
-  protected void validate()
-  {
+//  protected void validate()
+//  {
 //    if (!exists(FROM))
 //    {
 //      throw new DataError.Missing("Chat needs 'from' information");
@@ -80,7 +80,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
 //    {
 //      throw new DataError.Missing("Chat needs 'message' information");
 //    }
-  }
+//  }
 
   @JsonIgnore
   public String getFrom()
