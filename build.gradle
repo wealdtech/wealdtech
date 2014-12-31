@@ -43,6 +43,13 @@ subprojects {
         from sourceSets.main.allSource
     }
 
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+    javadoc {  
+        failOnError = false  
+    }
+
     artifacts {
         archives jar
         archives javadocJar

@@ -15,8 +15,8 @@ dependencies
     compile project(':wealdtech-configuration')
 
     // Database connection and pooling
-    compile 'org.postgresql:postgresql:9.3-1100-jdbc41'
-    compile 'org.apache.tomcat:tomcat-jdbc:7.0.55'
+    compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
+    compile 'org.apache.tomcat:tomcat-jdbc:7.0.57'
 }
 
 uploadArchives {
