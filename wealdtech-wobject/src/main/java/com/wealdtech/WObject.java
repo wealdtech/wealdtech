@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * The Weald Technology object. A generic object which allows for arbitrary storage of data
  */
-public abstract class WObject<T extends WObject<?>> implements Comparable<T>
+public class WObject<T extends WObject<?>> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
 
