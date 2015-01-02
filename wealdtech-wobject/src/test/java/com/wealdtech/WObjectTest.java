@@ -33,7 +33,7 @@ public class WObjectTest
   public static class TestWObject extends WObject<TestWObject>
   {
     @JsonCreator
-    public TestWObject(@JsonProperty("data") final Map<String, Object> data)
+    public TestWObject(final Map<String, Object> data)
     {
       super(data);
     }
@@ -94,7 +94,8 @@ public class WObjectTest
                                                                                         new DateTime(234567890000L, DateTimeZone.UTC),
                                                                                         new DateTime(345678900000L, DateTimeZone.UTC))).build();
     final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
-    final TestWObject testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
+    System.err.println(testObj1Ser);
+    final WObject<?> testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
 
     final ImmutableList<DateTime> dateTimes = testObj1Deser.get("test date array", new TypeReference<ImmutableList<DateTime>>() {});
     assertEquals(dateTimes.get(0), new DateTime(123456789000L, DateTimeZone.UTC));
@@ -102,5 +103,11 @@ public class WObjectTest
     assertEquals(dateTimes.get(2), new DateTime(345678900000L, DateTimeZone.UTC));
   }
 
+  @Test
+  public void testComplex() throws JsonProcessingException, IOException
+  {
+    final String testObj1Ser = "{\"code\":0,\"message\":\"ok\",\"data\":[{\"TimeZone\":{\"IsInside\":\"false\",\"AskGeoId\":20451,\"MinDistanceKm\":0.44946358,\"TimeZoneId\":\"Europe/London\",\"ShortName\":\"GMT\",\"CurrentOffsetMs\":0,\"WindowsStandardName\":\"GMT Standard Time\",\"InDstNow\":\"false\"}}]}";
+    final WObject<?> testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
+  }
 
 }

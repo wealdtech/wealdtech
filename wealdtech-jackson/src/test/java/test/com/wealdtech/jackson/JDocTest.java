@@ -246,6 +246,16 @@ public class JDocTest
     }
   }
 
+  @Test
+  public void testDeserAskGeo() {
+    try {
+      final String deser = "{\"code\":0,\"message\":\"ok\",\"data\":[{\"TimeZone\":{\"IsInside\":\"false\",\"AskGeoId\":20451,\"MinDistanceKm\":0.44946358,\"TimeZoneId\":\"Europe/London\",\"ShortName\":\"GMT\",\"CurrentOffsetMs\":0,\"WindowsStandardName\":\"GMT Standard Time\",\"InDstNow\":\"false\"}}]}";
+      final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
+    } catch (final IOException e) {
+      fail("Failed JSON processing: ", e);
+    }
+  }
+
   public static class JDocHolder
   {
     public JDoc doc;

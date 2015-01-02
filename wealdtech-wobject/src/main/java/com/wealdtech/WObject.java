@@ -38,7 +38,7 @@ public class WObject<T extends WObject<?>> implements Comparable<T>
   private final Map<String, Object> data;
 
   @JsonCreator
-  public WObject(@JsonProperty("data") final Map<String, Object> data)
+  public WObject(final Map<String, Object> data)
   {
     this.data = MoreObjects.firstNonNull(data, Maps.<String, Object>newHashMap());
   }
@@ -101,7 +101,7 @@ public class WObject<T extends WObject<?>> implements Comparable<T>
     {
       try
       {
-        valStr = WealdMapper.getServerMapper().writeValueAsString(obj);
+        valStr = WealdMapper.getMapper().writeValueAsString(obj);
       }
       catch (final IOException ioe)
       {
