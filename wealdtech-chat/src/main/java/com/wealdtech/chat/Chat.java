@@ -21,6 +21,8 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * A chat element
  */
@@ -36,9 +38,18 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
   private static final String MESSAGE = "message";
 
   @JsonCreator
-  public Chat(final ImmutableMap<String, Object> data)
+  public Chat(final Map<String, Object> data)
   {
     super(data);
+  }
+
+  protected Map<String, Object> preCreate(final Map<String, Object> data)
+  {
+    if (!data.containsKey(TIMESTAMP))
+    {
+      data.put(TIMESTAMP, new DateTime());
+    }
+    return data;
   }
 
   protected void validate()
@@ -157,7 +168,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
 
     public Chat build()
     {
-      return new Chat(ImmutableMap.copyOf(data));
+      return new Chat(data);
     }
   }
 

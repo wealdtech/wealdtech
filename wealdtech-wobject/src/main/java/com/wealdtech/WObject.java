@@ -13,7 +13,6 @@ package com.wealdtech;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
@@ -21,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.utils.GuavaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +37,13 @@ public class WObject<T> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
 
-  public static final WObject<?> EMPTY = new WObject(Maps.newHashMap());
+  public static final WObject<?> EMPTY = new WObject(ImmutableMap.<String, Object>of());
 
   @JsonIgnore
-  protected final Map<String, Object> data;
+  protected final ImmutableMap<String, Object> data;
 
   @JsonAnyGetter
-  private Map<String, Object> any() {
+  private ImmutableMap<String, Object> any() {
     return data;
   }
 
