@@ -228,5 +228,10 @@ public class WObject<T> implements Comparable<T>
     {
       return (P)this;
     }
+
+    public WObject<T> build()
+    {
+      return new WObject<T>(data);
+    }
   }
 }
