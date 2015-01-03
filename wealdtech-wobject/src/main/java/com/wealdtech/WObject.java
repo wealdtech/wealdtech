@@ -186,7 +186,7 @@ public class WObject<T> implements Comparable<T>
   @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof WObject && this.hashCode() == that.hashCode() && this.compareTo((T) that) == 0;
+    return that instanceof WObject && this.compareTo((T) that) == 0;
   }
 
   @Override
