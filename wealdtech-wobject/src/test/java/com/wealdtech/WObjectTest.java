@@ -11,6 +11,7 @@
 package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,20 +34,21 @@ public class WObjectTest
 {
   public static class TestWObject extends WObject<TestWObject>
   {
-    @JsonCreator
     public TestWObject(final ImmutableMap<String, Object> data)
     {
       super(data);
     }
 
-    public static class Builder extends WObject.Builder<TestWObject.Builder>
+    public static class Builder<P extends Builder<P>> extends WObject.Builder<TestWObject, P>
     {
       public TestWObject build()
       {
-        return new TestWObject(data.build());
+        return new TestWObject(ImmutableMap.copyOf(data));
       }
     }
-    public static Builder builder() { return new Builder(); }
+
+    @JsonIgnore
+    public static Builder<?> builder() { return new Builder(); }
   };
 
   @Test

@@ -44,14 +44,14 @@ public class WObjectPostgreSqlTest
       super(data);
     }
 
-    public static class Builder extends WObject.Builder<TestWObject.Builder>
+    public static class Builder<P extends Builder<P>> extends WObject.Builder<TestWObject, P>
     {
       public TestWObject build()
       {
-        return new TestWObject(data.build());
+        return new TestWObject(ImmutableMap.copyOf(data));
       }
     }
-    public static Builder builder() { return new Builder(); }
+    public static Builder<?> builder() { return new Builder(); }
   };
 
   public class TestObjectServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<TestWObject>

@@ -34,15 +34,14 @@ import java.util.Set;
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
  * this needs to be contained externally.
  */
-public class JDoc<T extends JDoc<?>> implements Comparable<JDoc<T>>, Map<String, Object>
+public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Object>
 {
   private static final Logger LOG = LoggerFactory.getLogger(JDoc.class);
 
   public static final JDoc EMPTY = new JDoc(ImmutableMap.<String, Object>of());
 
-  @JsonUnwrapped
   @JsonProperty
-  private final ImmutableMap<String, Object> data;
+  protected final ImmutableMap<String, Object> data;
 
   @JsonCreator
   public JDoc(final ImmutableMap<String, Object> data)
@@ -112,6 +111,11 @@ public class JDoc<T extends JDoc<?>> implements Comparable<JDoc<T>>, Map<String,
       }
     }
 
+    if (val instanceof Enum<?>)
+    {
+      return valStr;
+    }
+
     if (!valStr.startsWith("{") && !valStr.startsWith("["))
     {
       valStr = "\"" + valStr + "\"";
@@ -142,14 +146,14 @@ public class JDoc<T extends JDoc<?>> implements Comparable<JDoc<T>>, Map<String,
   @Override
   public String toString()
   {
-    return MoreObjects.toStringHelper(this).add("data", GuavaUtils.emptyToNull(data)).omitNullValues().toString();
+    return MoreObjects.toStringHelper(this).addValue(GuavaUtils.emptyToNull(data)).omitNullValues().toString();
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((JDoc<T>)that) == 0;
+    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((T)that) == 0;
   }
 
   @Override
@@ -160,7 +164,7 @@ public class JDoc<T extends JDoc<?>> implements Comparable<JDoc<T>>, Map<String,
 
   private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
 
-  public int compareTo(@Nonnull JDoc<T> that)
+  public int compareTo(@Nonnull T that)
   {
     return ComparisonChain.start().compare(this.data, that.data, MAP_COMPARATOR).result();
   }

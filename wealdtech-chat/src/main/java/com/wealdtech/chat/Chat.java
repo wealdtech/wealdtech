@@ -47,17 +47,17 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
 
   protected void validate()
   {
-    if (!exists(FROM))
+    if (!containsKey(FROM))
     {
       throw new DataError.Missing("Chat needs 'from' information");
     }
 
-    if (!exists(SCOPE))
+    if (!containsKey(SCOPE))
     {
       throw new DataError.Missing("Chat needs 'scope' information");
     }
 
-    if (!exists(TIMESTAMP))
+    if (!containsKey(TIMESTAMP))
     {
       throw new DataError.Missing("Chat needs 'timestamp' information");
     }
@@ -65,7 +65,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
     final ChatScope scope = getScope();
     if (scope == ChatScope.GROUP || scope == ChatScope.INDIVIDUAL)
     {
-      if (!exists(TO))
+      if (!containsKey(TO))
       {
         throw new DataError.Missing("Directed chat needs 'to' information");
       }
@@ -76,12 +76,12 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
       }
     }
 
-    if (!exists(TOPIC))
+    if (!containsKey(TOPIC))
     {
       throw new DataError.Missing("Chat needs 'topic' information");
     }
 
-    if (!exists(MESSAGE))
+    if (!containsKey(MESSAGE))
     {
       throw new DataError.Missing("Chat needs 'message' information");
     }
@@ -121,39 +121,39 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
     return get(MESSAGE, String.class).get();
   }
 
-  public static class Builder<T extends Builder<T>> extends WObject.Builder<T>
+  public static class Builder<P extends Builder<P>> extends WObject.Builder<Chat, P>
   {
-    public T from(final String from)
+    public P from(final String from)
     {
       data(FROM, from);
       return self();
     }
 
-    public T scope(final ChatScope scope)
+    public P scope(final ChatScope scope)
     {
       data(SCOPE, scope);
       return self();
     }
 
-    public T timestamp(final DateTime timestamp)
+    public P timestamp(final DateTime timestamp)
     {
       data(TIMESTAMP, timestamp);
       return self();
     }
 
-    public T to(final ImmutableSet<String> to)
+    public P to(final ImmutableSet<String> to)
     {
       data(TO, to);
       return self();
     }
 
-    public T topic(final String topic)
+    public P topic(final String topic)
     {
       data(TOPIC, topic);
       return self();
     }
 
-    public T message(final String message)
+    public P message(final String message)
     {
       data(MESSAGE, message);
       return self();
@@ -161,7 +161,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
 
     public Chat build()
     {
-      return new Chat(data.build());
+      return new Chat(ImmutableMap.copyOf(data));
     }
   }
 

@@ -379,4 +379,19 @@ public class JDocTest
     final Set<String> keyStrSet = doc.get("badkey", new TypeReference<Set<String>>(){}).orNull();
     assertNull(keyStrSet);
   }
+
+  public class JDocExtClass extends JDoc<JDocExtClass>
+  {
+    public JDocExtClass(final ImmutableMap<String, Object> data)
+    {
+      super(data);
+    }
+  }
+
+  @Test
+  public void testExtClass() throws IOException
+  {
+      final JDocExtClass doc = new JDocExtClass(ImmutableMap.<String, Object>of("testkey", "testval"));
+      final String docSer = WealdMapper.getServerMapper().writeValueAsString(doc);
+  }
 }
