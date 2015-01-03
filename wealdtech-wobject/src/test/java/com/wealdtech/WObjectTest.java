@@ -12,7 +12,6 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
@@ -23,7 +22,6 @@ import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 
@@ -34,6 +32,7 @@ public class WObjectTest
 {
   public static class TestWObject extends WObject<TestWObject>
   {
+    @JsonCreator
     public TestWObject(final ImmutableMap<String, Object> data)
     {
       super(data);
@@ -49,7 +48,7 @@ public class WObjectTest
 
     @JsonIgnore
     public static Builder<?> builder() { return new Builder(); }
-  };
+  }
 
   @Test
   public void testSer() throws JsonProcessingException
@@ -64,8 +63,8 @@ public class WObjectTest
   {
     final String testObj1Ser = "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}";
     final TestWObject testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
-    assertEquals(testObj1.get("test string", String.class), "test value");
-    assertEquals(testObj1.get("test date", DateTime.class), new DateTime(123456789000L, DateTimeZone.UTC));
+    assertEquals(testObj1.get("test string", String.class).orNull(), "test value");
+    assertEquals(testObj1.get("test date", DateTime.class).orNull(), new DateTime(123456789000L, DateTimeZone.UTC));
   }
 
   @Test
@@ -74,7 +73,7 @@ public class WObjectTest
     final TestWObject testObj1 = TestWObject.builder().data("test string", "test value").data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
     final TestWObject testObj2 = TestWObject.builder().data("test obj", testObj1).data("test date", new DateTime(234567890000L, DateTimeZone.UTC)).build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
-    assertEquals(testObj2Ser, "{\"test obj\":{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"},\"test date\":\"1977-06-07T21:44:50+00:00 UTC\"}");
+    assertEquals(testObj2Ser, "{\"test date\":\"1977-06-07T21:44:50+00:00 UTC\",\"test obj\":{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}}");
   }
 
   @Test
@@ -85,13 +84,13 @@ public class WObjectTest
     final String testObj1Ser =  "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}";
     final TestWObject testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
 
-    assertEquals(testObj2.get("test date", DateTime.class), new DateTime(234567890000L, DateTimeZone.UTC));
-    assertEquals(testObj2.get("test obj", TestWObject.class), testObj1);
-    assertEquals(testObj1.get("test date", DateTime.class), new DateTime(123456789000L, DateTimeZone.UTC));
+    assertEquals(testObj2.get("test date", DateTime.class).orNull(), new DateTime(234567890000L, DateTimeZone.UTC));
+    assertEquals(testObj2.get("test obj", TestWObject.class).orNull(), testObj1);
+    assertEquals(testObj1.get("test date", DateTime.class).orNull(), new DateTime(123456789000L, DateTimeZone.UTC));
   }
 
   @Test
-  public void testArrays() throws JsonProcessingException, IOException
+  public void testArrays() throws IOException
   {
     final TestWObject testObj1 = TestWObject.builder().data("test date array", ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC),
                                                                                         new DateTime(234567890000L, DateTimeZone.UTC),
@@ -107,10 +106,11 @@ public class WObjectTest
   }
 
   @Test
-  public void testComplex() throws JsonProcessingException, IOException
+  public void testComplex() throws IOException
   {
     final String testObj1Ser = "{\"code\":0,\"message\":\"ok\",\"data\":[{\"TimeZone\":{\"IsInside\":\"false\",\"AskGeoId\":20451,\"MinDistanceKm\":0.44946358,\"TimeZoneId\":\"Europe/London\",\"ShortName\":\"GMT\",\"CurrentOffsetMs\":0,\"WindowsStandardName\":\"GMT Standard Time\",\"InDstNow\":\"false\"}}]}";
-    final WObject<?> testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
+//    final WObject<?> testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
+    WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
   }
 
 }

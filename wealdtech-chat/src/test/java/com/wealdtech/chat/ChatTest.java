@@ -36,7 +36,7 @@ public class ChatTest
                           .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
                           .topic("test topic").message("foo").build();
     final String ser = WealdMapper.getServerMapper().writeValueAsString(chat);
-    assertEquals(ser, "{\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":\"1970-01-15T01:56:07-05:00 America/New_York\",\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}");
+    assertEquals(ser, "{\"extkey1\":\"extval1\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"message\":\"foo\",\"scope\":\"Everyone\",\"timestamp\":\"1970-01-15T01:56:07-05:00 America/New_York\",\"topic\":\"test topic\"}");
   }
 
   @Test
@@ -56,7 +56,6 @@ public class ChatTest
 
     final Chat testChat = WealdMapper.getServerMapper().readValue(ser, Chat.class);
 
-    // We cannot compare directly because  the deserialized version will contain Strings rather than complex objects
-    assertEquals(chat.toString(), testChat.toString());
+    assertEquals(chat, testChat);
   }
 }

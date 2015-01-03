@@ -12,7 +12,6 @@ package com.wealdtech.chat;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -21,8 +20,6 @@ import com.wealdtech.WObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * A chat element
@@ -42,22 +39,21 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
   public Chat(final ImmutableMap<String, Object> data)
   {
     super(data);
-    validate();
   }
 
   protected void validate()
   {
-    if (!containsKey(FROM))
+    if (!exists(FROM))
     {
       throw new DataError.Missing("Chat needs 'from' information");
     }
 
-    if (!containsKey(SCOPE))
+    if (!exists(SCOPE))
     {
       throw new DataError.Missing("Chat needs 'scope' information");
     }
 
-    if (!containsKey(TIMESTAMP))
+    if (!exists(TIMESTAMP))
     {
       throw new DataError.Missing("Chat needs 'timestamp' information");
     }
@@ -65,7 +61,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
     final ChatScope scope = getScope();
     if (scope == ChatScope.GROUP || scope == ChatScope.INDIVIDUAL)
     {
-      if (!containsKey(TO))
+      if (!exists(TO))
       {
         throw new DataError.Missing("Directed chat needs 'to' information");
       }
@@ -76,12 +72,12 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
       }
     }
 
-    if (!containsKey(TOPIC))
+    if (!exists(TOPIC))
     {
       throw new DataError.Missing("Chat needs 'topic' information");
     }
 
-    if (!containsKey(MESSAGE))
+    if (!exists(MESSAGE))
     {
       throw new DataError.Missing("Chat needs 'message' information");
     }
