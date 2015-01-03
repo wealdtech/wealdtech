@@ -34,11 +34,11 @@ import java.util.Set;
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
  * this needs to be contained externally.
  */
-public class JDoc implements Comparable<JDoc>, Map<String, Object>
+public class JDoc<T extends JDoc<?>> implements Comparable<JDoc<T>>, Map<String, Object>
 {
   private static final Logger LOG = LoggerFactory.getLogger(JDoc.class);
 
-  private static final JDoc EMPTY = new JDoc(ImmutableMap.<String, Object>of());
+  public static final JDoc EMPTY = new JDoc(ImmutableMap.<String, Object>of());
 
   @JsonUnwrapped
   @JsonProperty
@@ -50,14 +50,9 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     this.data = data;
   }
 
-  public static JDoc cleanJDoc()
-  {
-    return EMPTY;
-  }
-
   @SuppressWarnings("unchecked")
   @JsonIgnore
-  public <T> Optional<T> get(final String key, final TypeReference<T> typeRef)
+  public <U> Optional<U> get(final String key, final TypeReference<U> typeRef)
   {
     LOG.trace("Attempting to fetch {} as {}", key, typeRef.getType());
     final Object val = data.get(key);
@@ -68,7 +63,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     final String valStr = stringify(val);
     try
     {
-    return Optional.fromNullable((T)WealdMapper.getMapper().readValue(valStr, typeRef));
+    return Optional.fromNullable((U)WealdMapper.getMapper().readValue(valStr, typeRef));
     }
     catch (final IOException ioe)
     {
@@ -77,7 +72,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     }
   }
 
-  public <T> Optional<T> get(final String key, final Class<T> klazz)
+  public <U> Optional<U> get(final String key, final Class<U> klazz)
   {
     LOG.trace("Attempting to fetch {} as {}", key, klazz.getSimpleName());
     final Object val = data.get(key);
@@ -125,22 +120,13 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   }
 
   /**
-   * @return the data in this JDoc
-   */
-  @JsonIgnore
-  public ImmutableMap<String, Object> getData()
-  {
-    return this.data;
-  }
-
-  /**
    * Overlay another JDoc on top of this one, updating where required
    *
    * @param overlay another JDoc
    *
    * @return the combined JDoc
    */
-  public JDoc overlay(final Optional<JDoc> overlay)
+  public JDoc<T> overlay(final Optional<JDoc<T>> overlay)
   {
     if (!overlay.isPresent())
     {
@@ -150,7 +136,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
     data.putAll(data);
     data.putAll(overlay.get().data);
 
-    return new JDoc(ImmutableMap.copyOf(data));
+    return new JDoc<>(ImmutableMap.copyOf(data));
   }
 
   @Override
@@ -160,9 +146,10 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((JDoc)that) == 0;
+    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((JDoc<T>)that) == 0;
   }
 
   @Override
@@ -173,7 +160,7 @@ public class JDoc implements Comparable<JDoc>, Map<String, Object>
 
   private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
 
-  public int compareTo(@Nonnull JDoc that)
+  public int compareTo(@Nonnull JDoc<T> that)
   {
     return ComparisonChain.start().compare(this.data, that.data, MAP_COMPARATOR).result();
   }

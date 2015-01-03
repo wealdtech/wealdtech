@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -33,7 +34,7 @@ public class WObjectTest
   public static class TestWObject extends WObject<TestWObject>
   {
     @JsonCreator
-    public TestWObject(final Map<String, Object> data)
+    public TestWObject(final ImmutableMap<String, Object> data)
     {
       super(data);
     }
@@ -42,7 +43,7 @@ public class WObjectTest
     {
       public TestWObject build()
       {
-        return new TestWObject(data);
+        return new TestWObject(data.build());
       }
     }
     public static Builder builder() { return new Builder(); }
@@ -97,7 +98,7 @@ public class WObjectTest
     System.err.println(testObj1Ser);
     final WObject<?> testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
 
-    final ImmutableList<DateTime> dateTimes = testObj1Deser.get("test date array", new TypeReference<ImmutableList<DateTime>>() {});
+    final ImmutableList<DateTime> dateTimes = testObj1Deser.get("test date array", new TypeReference<ImmutableList<DateTime>>() {}).get();
     assertEquals(dateTimes.get(0), new DateTime(123456789000L, DateTimeZone.UTC));
     assertEquals(dateTimes.get(1), new DateTime(234567890000L, DateTimeZone.UTC));
     assertEquals(dateTimes.get(2), new DateTime(345678900000L, DateTimeZone.UTC));

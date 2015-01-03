@@ -137,10 +137,10 @@ public class JDocTest
     {
       final String deser =
         "{\"val1\":\"2014-09-16T23:00:00Z\",\"val2\":{\"sub1\":\"true\",\"sub2\":\"5\",\"sub3\":\"/1.2.3.4:80\"}}";
-      final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
+      final JDoc<?> doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
       assertEquals(doc.get("val1", new TypeReference<DateTime>() {}).orNull(),
                    new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC));
-      final JDoc subDoc = doc.get("val2", new TypeReference<JDoc>() {}).orNull();
+      final JDoc<?> subDoc = doc.get("val2", new TypeReference<JDoc<?>>() {}).orNull();
       assertNotNull(subDoc);
       assertEquals(subDoc.get("sub1", Boolean.class).orNull(), (Boolean)true);
       assertEquals(subDoc.get("sub2", new TypeReference<Integer>() {}).orNull(), (Integer)5);
@@ -159,7 +159,7 @@ public class JDocTest
     {
       final String deser = "{}";
       final JDoc doc = WealdMapper.getServerMapper().readValue(deser, JDoc.class);
-      assertTrue(doc.getData().isEmpty(), "JDoc not empty when it should be");
+      assertTrue(doc.isEmpty(), "JDoc not empty when it should be");
     }
     catch (final IOException e)
     {
@@ -275,7 +275,7 @@ public class JDocTest
       final String deser = "{\"doc\":{}}";
       final JDocHolder holder = WealdMapper.getServerMapper().readValue(deser, JDocHolder.class);
       assertNotNull(holder.doc);
-      assertTrue(holder.doc.getData().isEmpty());
+      assertTrue(holder.doc.isEmpty());
     }
     catch (final IOException e)
     {
@@ -308,7 +308,7 @@ public class JDocTest
     final JDoc subDoc = new JDoc(subMap);
     final ImmutableMap<String, Object> map =
       ImmutableMap.<String, Object>of("val1", new DateTime(2014, 9, 16, 23, 0, 0, DateTimeZone.UTC), "val2", subDoc);
-    final JDoc doc = new JDoc(map);
+    final JDoc<?> doc = new JDoc(map);
 
     final UpcastClass upcast = doc.get("val2", UpcastClass.class).orNull();
     assertNotNull(upcast);
@@ -351,11 +351,11 @@ public class JDocTest
         ImmutableList.of(new DeserObjectCollectionClass("one", new InetSocketAddress("1.1.1.1", 80)),
                          new DeserObjectCollectionClass("two", new InetSocketAddress("2.2.2.2", 80)));
 
-      final JDoc doc = new JDoc(ImmutableMap.<String, Object>of("objs", objects));
+      final JDoc<?> doc = new JDoc(ImmutableMap.<String, Object>of("objs", objects));
 
       final String docStr = WealdMapper.getServerMapper().writeValueAsString(doc);
 
-      final JDoc reDoc = WealdMapper.getServerMapper().readValue(docStr, JDoc.class);
+      final JDoc<?> reDoc = WealdMapper.getServerMapper().readValue(docStr, JDoc.class);
 
       final Collection<DeserObjectCollectionClass> deserObjects =
         reDoc.get("objs", new TypeReference<ImmutableList<DeserObjectCollectionClass>>() {}).orNull();
@@ -373,7 +373,7 @@ public class JDocTest
   @Test
   public void testNull()
   {
-    final JDoc doc = new JDoc(ImmutableMap.<String, Object>of("testkey", "testval"));
+    final JDoc<?> doc = new JDoc(ImmutableMap.<String, Object>of("testkey", "testval"));
     final String keyStr = doc.get("badkey", String.class).orNull();
     assertNull(keyStr);
     final Set<String> keyStrSet = doc.get("badkey", new TypeReference<Set<String>>(){}).orNull();

@@ -10,10 +10,13 @@
 
 package com.wealdtech.chat;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.DataError;
 import com.wealdtech.WObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -35,85 +38,87 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
   private static final String TOPIC = "topic";
   private static final String MESSAGE = "message";
 
-  public Chat(@JsonProperty("data") final Map<String, Object> data)
+  @JsonCreator
+  public Chat(final ImmutableMap<String, Object> data)
   {
     super(data);
+    validate();
   }
 
-//  protected void validate()
-//  {
-//    if (!exists(FROM))
-//    {
-//      throw new DataError.Missing("Chat needs 'from' information");
-//    }
-//
-//    if (!exists(SCOPE))
-//    {
-//      throw new DataError.Missing("Chat needs 'scope' information");
-//    }
-//
-//    if (!exists(TIMESTAMP))
-//    {
-//      set(TIMESTAMP, new DateTime().getMillis());
-//    }
-//
-//    final ChatScope scope = getScope();
-//    if (scope == ChatScope.GROUP || scope == ChatScope.INDIVIDUAL)
-//    {
-//      if (!exists(TO))
-//      {
-//        throw new DataError.Missing("Directed chat needs 'to' information");
-//      }
-//      final ImmutableSet<String> to = getTo();
-//      if (to.isEmpty())
-//      {
-//        throw new DataError.Missing("Directed chat needs 'to' information");
-//      }
-//    }
-//
-//    if (!exists(TOPIC))
-//    {
-//      throw new DataError.Missing("Chat needs 'topic' information");
-//    }
-//
-//    if (!exists(MESSAGE))
-//    {
-//      throw new DataError.Missing("Chat needs 'message' information");
-//    }
-//  }
+  protected void validate()
+  {
+    if (!exists(FROM))
+    {
+      throw new DataError.Missing("Chat needs 'from' information");
+    }
+
+    if (!exists(SCOPE))
+    {
+      throw new DataError.Missing("Chat needs 'scope' information");
+    }
+
+    if (!exists(TIMESTAMP))
+    {
+      throw new DataError.Missing("Chat needs 'timestamp' information");
+    }
+
+    final ChatScope scope = getScope();
+    if (scope == ChatScope.GROUP || scope == ChatScope.INDIVIDUAL)
+    {
+      if (!exists(TO))
+      {
+        throw new DataError.Missing("Directed chat needs 'to' information");
+      }
+      final ImmutableSet<String> to = getTo();
+      if (to.isEmpty())
+      {
+        throw new DataError.Missing("Directed chat needs 'to' information");
+      }
+    }
+
+    if (!exists(TOPIC))
+    {
+      throw new DataError.Missing("Chat needs 'topic' information");
+    }
+
+    if (!exists(MESSAGE))
+    {
+      throw new DataError.Missing("Chat needs 'message' information");
+    }
+  }
 
   @JsonIgnore
   public String getFrom()
   {
-    return get(FROM, String.class);
+    return get(FROM, String.class).get();
   }
 
   @JsonIgnore
   public ChatScope getScope()
   {
-    return get(SCOPE, ChatScope.class);
+    return get(SCOPE, ChatScope.class).get();
   }
 
   @JsonIgnore
   public DateTime getTimestamp()
   {
-    return new DateTime(get(TIMESTAMP, Long.class));
+    return new DateTime(get(TIMESTAMP, Long.class).get());
   }
 
   private static final TypeReference<ImmutableSet<String>> TO_TYPE_REF = new TypeReference<ImmutableSet<String>>(){};
   @JsonIgnore
   public ImmutableSet<String> getTo()
   {
-    return get(TO, TO_TYPE_REF);
+    return get(TO, TO_TYPE_REF).or(ImmutableSet.<String>of());
   }
 
   @JsonIgnore
-  public String getTopic() { return get(TOPIC, String.class); }
+  public String getTopic() { return get(TOPIC, String.class).get(); }
 
   @JsonIgnore
   public String getMessage()
   {
-    return get(MESSAGE, String.class);
+    return get(MESSAGE, String.class).get();
   }
 
   public static class Builder<T extends Builder<T>> extends WObject.Builder<T>
@@ -156,7 +161,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
 
     public Chat build()
     {
-      return new Chat(data);
+      return new Chat(data.build());
     }
   }
 

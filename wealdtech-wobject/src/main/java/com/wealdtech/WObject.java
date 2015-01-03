@@ -11,97 +11,123 @@
 package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.utils.GuavaUtils;
 import com.wealdtech.utils.MapComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * The Weald Technology object. A generic object which allows for arbitrary storage of data
+ * The Weald Technology object
+ * A generic immutable object which allows for arbitrary storage of data, serialization and deserialization through
+ * Jackson, and object validation
  */
 public class WObject<T extends WObject<?>> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
 
   @JsonIgnore
-  private final Map<String, Object> data;
+  public static final WObject<?> EMPTY = new WObject(ImmutableMap.<String, Object>of());
+
+  @JsonUnwrapped
+  @JsonProperty
+  protected final ImmutableMap<String, Object> data;
 
   @JsonCreator
-  public WObject(final Map<String, Object> data)
+  public WObject(final ImmutableMap<String, Object> data)
   {
-    this.data = MoreObjects.firstNonNull(data, Maps.<String, Object>newHashMap());
+    this.data = preCreate(data);
+    validate();
   }
 
-  public boolean exists(final String name)
-  {
-    return data.containsKey(name);
-  }
+  /**
+   * Carry out any operations required to manage the object prior to creation.  For example, this could add a
+   * timestamp or a version number.
+   *
+   * @param data the data supplied
+   * @return the data to be used in creation of the object
+   */
+  protected ImmutableMap<String, Object> preCreate(final ImmutableMap<String, Object> data) { return data; }
 
+  /**
+   * Validate the data in the object to ensure that it conforms to whatever requirements it has.
+   * This should throw a DataError if validation is not successful
+   */
+  protected void validate() {}
+
+  @SuppressWarnings("unchecked")
   @JsonIgnore
-  @Nullable
-  public <U> U get(final String name, final Class<U> klazz)
+  public <U> Optional<U> get(final String key, final TypeReference<U> typeRef)
   {
-    if (!data.containsKey(name))
+    LOG.trace("Attempting to fetch {} as {}", key, typeRef.getType());
+    final Object val = data.get(key);
+    if (val == null)
     {
-      return null;
+      return Optional.absent();
     }
-
-    final String obj = stringify(data.get(name));
+    final String valStr = stringify(val);
     try
     {
-      return WealdMapper.getMapper().readValue(obj, klazz);
+      return Optional.fromNullable((U)WealdMapper.getMapper().readValue(valStr, typeRef));
     }
     catch (final IOException ioe)
     {
       LOG.error("Failed to parse value: ", ioe);
-      return null;
+      return Optional.absent();
     }
   }
 
   @JsonIgnore
-  @Nullable
-  public <U> U get(final String name, final TypeReference<U> typeRef)
+  public <U> Optional<U> get(final String key, final Class<U> klazz)
   {
-    if (!data.containsKey(name))
+    LOG.trace("Attempting to fetch {} as {}", key, klazz.getSimpleName());
+    final Object val = data.get(key);
+    if (val == null)
     {
-      return null;
+      return Optional.absent();
     }
-
-    final String obj = stringify(data.get(name));
+    final String valStr = stringify(val);
     try
     {
-      return WealdMapper.getMapper().readValue(obj, typeRef);
+      return Optional.fromNullable(WealdMapper.getMapper().readValue(valStr, klazz));
     }
     catch (final IOException ioe)
     {
       LOG.error("Failed to parse value: ", ioe);
-      return null;
+      return Optional.absent();
     }
   }
 
-  private String stringify(final Object obj)
+  public boolean exists(final String key)
+  {
+    return data.containsKey(key);
+  }
+
+  private String stringify(final Object val)
   {
     String valStr;
-    if (obj instanceof String)
+    if (val instanceof String)
     {
-      valStr = (String)obj;
+      valStr = (String)val;
     }
     else
     {
       try
       {
-        valStr = WealdMapper.getMapper().writeValueAsString(obj);
+        valStr = WealdMapper.getMapper().writeValueAsString(val);
       }
       catch (final IOException ioe)
       {
@@ -109,10 +135,12 @@ public class WObject<T extends WObject<?>> implements Comparable<T>
         return null;
       }
     }
-    if (obj instanceof Enum<?>)
+
+    if (val instanceof Enum<?>)
     {
       return valStr;
     }
+
     if (!valStr.startsWith("{") && !valStr.startsWith("["))
     {
       valStr = "\"" + valStr + "\"";
@@ -120,25 +148,60 @@ public class WObject<T extends WObject<?>> implements Comparable<T>
     return valStr;
   }
 
-  @JsonAnyGetter
-  protected Map<String, Object> any()
+  /**
+   * Overlay another WObject on top of this one, updating where required
+   *
+   * @param overlay another WObject
+   *
+   * @return the combined WObject
+   */
+  public WObject<T> overlay(final Optional<WObject<T>> overlay)
   {
-    return data;
+    if (!overlay.isPresent())
+    {
+      return this;
+    }
+    final Map<String, Object> data = Maps.newHashMap();
+    data.putAll(data);
+    data.putAll(overlay.get().data);
+
+    return new WObject<>(ImmutableMap.copyOf(data));
   }
 
-  @JsonAnySetter
-  protected void set(final String name, final Object value)
+  @Override
+  public String toString()
   {
-    data.put(name, value);
+    return MoreObjects.toStringHelper(this).add("data", GuavaUtils.emptyToNull(data)).omitNullValues().toString();
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public boolean equals(final Object that)
+  {
+    return that instanceof WObject && this.hashCode() == that.hashCode() && this.compareTo((T)that) == 0;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hashCode(this.data);
+  }
+
+  @JsonIgnore
+  private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
+
+  public int compareTo(@Nonnull T that)
+  {
+    return ComparisonChain.start().compare(this.data, that.data, MAP_COMPARATOR).result();
   }
 
   public static class Builder<P extends Builder<P>>
   {
-    protected Map<String, Object> data;
+    protected ImmutableMap.Builder<String, Object> data;
 
     public Builder()
     {
-      data = Maps.newHashMap();
+      data = ImmutableMap.builder();
     }
 
     public P data(final String name, final Object value)
@@ -153,39 +216,159 @@ public class WObject<T extends WObject<?>> implements Comparable<T>
       return (P)this;
     }
   }
-
-  // Standard object methods follow
-  @Override
-  public String toString()
-  {
-    try
-    {
-      return WealdMapper.getMapper().writeValueAsString(this);
-    }
-    catch (final JsonProcessingException e)
-    {
-      LOG.error("Failed to create JSON for object: ", e);
-      return "Bad";
-    }
-  }
-
-  @Override
-  public int hashCode()
-  {
-    return Objects.hashCode(data);
-  }
-
-  @Override
-  public boolean equals(final Object that)
-  {
-    return that instanceof WObject && this.compareTo((T)that) == 0;
-  }
-
-  private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
-
-  @Override
-  public int compareTo(@Nonnull final T that)
-  {
-    return ComparisonChain.start().compare(this.any(), that.any(), MAP_COMPARATOR).result();
-  }
+//
+//  @JsonIgnore
+//  private final Map<String, Object> data;
+//
+//  @JsonCreator
+//  public WObject(final Map<String, Object> data)
+//  {
+//    this.data = MoreObjects.firstNonNull(data, Maps.<String, Object>newHashMap());
+//  }
+//
+//  public boolean exists(final String name)
+//  {
+//    return data.containsKey(name);
+//  }
+//
+//  @JsonIgnore
+//  @Nullable
+//  public <U> U get(final String name, final Class<U> klazz)
+//  {
+//    if (!data.containsKey(name))
+//    {
+//      return null;
+//    }
+//
+//    final String obj = stringify(data.get(name));
+//    try
+//    {
+//      return WealdMapper.getMapper().readValue(obj, klazz);
+//    }
+//    catch (final IOException ioe)
+//    {
+//      LOG.error("Failed to parse value: ", ioe);
+//      return null;
+//    }
+//  }
+//
+//  @JsonIgnore
+//  @Nullable
+//  public <U> U get(final String name, final TypeReference<U> typeRef)
+//  {
+//    if (!data.containsKey(name))
+//    {
+//      return null;
+//    }
+//
+//    final String obj = stringify(data.get(name));
+//    try
+//    {
+//      return WealdMapper.getMapper().readValue(obj, typeRef);
+//    }
+//    catch (final IOException ioe)
+//    {
+//      LOG.error("Failed to parse value: ", ioe);
+//      return null;
+//    }
+//  }
+//
+//  private String stringify(final Object obj)
+//  {
+//    String valStr;
+//    if (obj instanceof String)
+//    {
+//      valStr = (String)obj;
+//    }
+//    else
+//    {
+//      try
+//      {
+//        valStr = WealdMapper.getMapper().writeValueAsString(obj);
+//      }
+//      catch (final IOException ioe)
+//      {
+//        LOG.error("Failed to encode value: ", ioe);
+//        return null;
+//      }
+//    }
+//    if (obj instanceof Enum<?>)
+//    {
+//      return valStr;
+//    }
+//    if (!valStr.startsWith("{") && !valStr.startsWith("["))
+//    {
+//      valStr = "\"" + valStr + "\"";
+//    }
+//    return valStr;
+//  }
+//
+//  @JsonAnyGetter
+//  protected Map<String, Object> any()
+//  {
+//    return data;
+//  }
+//
+//  @JsonAnySetter
+//  protected void set(final String name, final Object value)
+//  {
+//    data.put(name, value);
+//  }
+//
+//  public static class Builder<P extends Builder<P>>
+//  {
+//    protected Map<String, Object> data;
+//
+//    public Builder()
+//    {
+//      data = Maps.newHashMap();
+//    }
+//
+//    public P data(final String name, final Object value)
+//    {
+//      this.data.put(name, value);
+//      return self();
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    protected P self()
+//    {
+//      return (P)this;
+//    }
+//  }
+//
+//  // Standard object methods follow
+//  @Override
+//  public String toString()
+//  {
+//    try
+//    {
+//      return WealdMapper.getMapper().writeValueAsString(this);
+//    }
+//    catch (final JsonProcessingException e)
+//    {
+//      LOG.error("Failed to create JSON for object: ", e);
+//      return "Bad";
+//    }
+//  }
+//
+//  @Override
+//  public int hashCode()
+//  {
+//    return Objects.hashCode(data);
+//  }
+//
+//  @Override
+//  public boolean equals(final Object that)
+//  {
+//    return that instanceof WObject && this.compareTo((T)that) == 0;
+//  }
+//
+//  private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
+//
+//  @Override
+//  public int compareTo(@Nonnull final T that)
+//  {
+//    return ComparisonChain.start().compare(this.any(), that.any(), MAP_COMPARATOR).result();
+//  }
 }

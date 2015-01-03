@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
@@ -38,7 +39,7 @@ public class WObjectPostgreSqlTest
   public static class TestWObject extends WObject<TestWObject>
   {
     @JsonCreator
-    public TestWObject(@JsonProperty("data") final Map<String, Object> data)
+    public TestWObject(final ImmutableMap<String, Object> data)
     {
       super(data);
     }
@@ -47,7 +48,7 @@ public class WObjectPostgreSqlTest
     {
       public TestWObject build()
       {
-        return new TestWObject(data);
+        return new TestWObject(data.build());
       }
     }
     public static Builder builder() { return new Builder(); }
