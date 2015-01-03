@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -10,21 +10,21 @@
 
 dependencies
 {
-    compile project(':wealdtech-core')
-    compile project(':wealdtech-jackson')
-    compile project(':wealdtech-configuration')
     compile project(':wealdtech-wobject')
-    compile project(':wealdtech-wobject-datastore')
-    compile project(':wealdtech-jersey-server')
+    compile project(':wealdtech-configuration')
+
+    // Database connection and pooling
+    compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
+    compile 'org.apache.tomcat:tomcat-jdbc:7.0.57'
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-chat'
+            pom.artifactId = 'wealdtech-wobject-datastore'
             pom.project {
-                name 'Wealdtech Chat'
-                description 'Weald Technology Chat server'
+                name 'Wealdtech Object datastore'
+                description 'Weald Technology Object API'
             }
         }
     }

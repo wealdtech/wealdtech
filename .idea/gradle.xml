@@ -20,6 +20,7 @@
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
             <option value="$PROJECT_DIR$/wealdtech-retrofit" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />
           </set>
         </option>
       </GradleProjectSettings>

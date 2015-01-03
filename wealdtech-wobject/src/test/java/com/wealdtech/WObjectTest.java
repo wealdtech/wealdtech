@@ -22,8 +22,11 @@ import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Tests for the Weald object
@@ -33,7 +36,7 @@ public class WObjectTest
   public static class TestWObject extends WObject<TestWObject>
   {
     @JsonCreator
-    public TestWObject(final ImmutableMap<String, Object> data)
+    public TestWObject(final Map<String, Object> data)
     {
       super(data);
     }
@@ -42,7 +45,7 @@ public class WObjectTest
     {
       public TestWObject build()
       {
-        return new TestWObject(ImmutableMap.copyOf(data));
+        return new TestWObject(data);
       }
     }
 
@@ -96,7 +99,6 @@ public class WObjectTest
                                                                                         new DateTime(234567890000L, DateTimeZone.UTC),
                                                                                         new DateTime(345678900000L, DateTimeZone.UTC))).build();
     final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
-    System.err.println(testObj1Ser);
     final WObject<?> testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
 
     final ImmutableList<DateTime> dateTimes = testObj1Deser.get("test date array", new TypeReference<ImmutableList<DateTime>>() {}).get();
@@ -109,8 +111,21 @@ public class WObjectTest
   public void testComplex() throws IOException
   {
     final String testObj1Ser = "{\"code\":0,\"message\":\"ok\",\"data\":[{\"TimeZone\":{\"IsInside\":\"false\",\"AskGeoId\":20451,\"MinDistanceKm\":0.44946358,\"TimeZoneId\":\"Europe/London\",\"ShortName\":\"GMT\",\"CurrentOffsetMs\":0,\"WindowsStandardName\":\"GMT Standard Time\",\"InDstNow\":\"false\"}}]}";
-//    final WObject<?> testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
     WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
   }
 
+  @Test
+  public void testNullValue()
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("test null", null).build();
+    assertTrue(testObj1.isEmpty());
+  }
+
+  @Test
+  public void testDT()
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("test date", new DateTime().withZone(DateTimeZone.forID("America/New_York")))
+            .data("test string", "test value").build();
+    assertNotNull(testObj1.toString());
+  }
 }

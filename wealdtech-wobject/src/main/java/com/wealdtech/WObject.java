@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +35,14 @@ import java.util.Map;
  * A generic immutable object which allows for arbitrary storage of data, serialization and deserialization through
  * Jackson, and object validation
  */
-public class WObject<T> implements Comparable<T>
+public class WObject<T extends WObject> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
 
-  public static final WObject<?> EMPTY = new WObject(ImmutableMap.<String, Object>of());
+  private static final WObject EMPTY = new WObject(ImmutableMap.<String, Object>of());
+
+  @SuppressWarnings("unchecked")
+  public static <T extends WObject> T empty() { return (T)EMPTY; }
 
   @JsonIgnore
   protected final ImmutableMap<String, Object> data;
@@ -50,7 +55,7 @@ public class WObject<T> implements Comparable<T>
   @JsonCreator
   public WObject(final Map<String, Object> data)
   {
-    this.data = ImmutableSortedMap.copyOf(preCreate(data));
+    this.data = ImmutableSortedMap.copyOf(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
   }
 
@@ -68,6 +73,14 @@ public class WObject<T> implements Comparable<T>
    * This should throw a DataError if validation is not successful
    */
   protected void validate() {}
+
+//  @JsonIgnore
+//  private TypeReference<T> GENERIC_TYPEREF = new TypeReference<T>(){};
+//  @JsonIgnore
+//  public Optional<T> get(final String key)
+//  {
+//    return get(key, GENERIC_TYPEREF);
+//  }
 
   @SuppressWarnings("unchecked")
   @JsonIgnore
@@ -137,7 +150,8 @@ public class WObject<T> implements Comparable<T>
       return valStr;
     }
 
-    if (!valStr.startsWith("{") && !valStr.startsWith("["))
+    // TODO need to escape " in the string (but only if in the string - already done?)
+    if (!valStr.startsWith("{") && !valStr.startsWith("[") && !valStr.startsWith("\""))
     {
       valStr = "\"" + valStr + "\"";
     }
@@ -151,15 +165,15 @@ public class WObject<T> implements Comparable<T>
    *
    * @return the combined WObject
    */
-  public WObject<T> overlay(final Optional<WObject<T>> overlay)
+  public WObject<T> overlay(@Nullable final WObject<T> overlay)
   {
-    if (!overlay.isPresent())
+    if (overlay == null)
     {
       return this;
     }
     final Map<String, Object> data = Maps.newHashMap();
     data.putAll(data);
-    data.putAll(overlay.get().data);
+    data.putAll(overlay.data);
 
     return new WObject<>(data);
   }
@@ -169,14 +183,23 @@ public class WObject<T> implements Comparable<T>
     return data.containsKey(key);
   }
 
+  @JsonIgnore
+  public boolean isEmpty()
+  {
+    return data.isEmpty();
+  }
+
   @Override
   public String toString()
   {
-    try {
+    try
+    {
       return WealdMapper.getServerMapper().writeValueAsString(this);
-    } catch (final JsonProcessingException e) {
+    }
+    catch (final JsonProcessingException e)
+    {
       System.err.println("Failed to generate string");
-      return null;
+      return "{\"error\":\"toString() failed: " + e.getMessage() + "\"}";
     }
   }
 
@@ -231,7 +254,12 @@ public class WObject<T> implements Comparable<T>
 
     public WObject<T> build()
     {
-      return new WObject<T>(data);
+      return new WObject<>(data);
     }
   }
+
+  public static Builder<?, ?> builder() { return new Builder(); }
+
+  @SuppressWarnings("unchecked")
+  public static Builder<?, ?> builder(final WObject<? extends WObject<?>> prior) { return new Builder(prior); }
 }

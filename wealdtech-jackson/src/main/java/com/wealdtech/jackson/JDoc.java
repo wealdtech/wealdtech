@@ -34,7 +34,7 @@ import java.util.Set;
  * JDoc is a JSON document which serializes without altering its structure. At current JDoc does not store any type information so
  * this needs to be contained externally.
  */
-public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Object>
+public class JDoc implements Comparable<JDoc>, Map<String, Object>
 {
   private static final Logger LOG = LoggerFactory.getLogger(JDoc.class);
 
@@ -47,6 +47,12 @@ public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Objec
   public JDoc(final ImmutableMap<String, Object> data)
   {
     this.data = data;
+  }
+
+  @JsonIgnore
+  public ImmutableMap<String, Object> getData()
+  {
+    return this.data;
   }
 
   @SuppressWarnings("unchecked")
@@ -130,7 +136,7 @@ public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Objec
    *
    * @return the combined JDoc
    */
-  public JDoc<T> overlay(final Optional<JDoc<T>> overlay)
+  public JDoc overlay(final Optional<JDoc> overlay)
   {
     if (!overlay.isPresent())
     {
@@ -140,7 +146,7 @@ public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Objec
     data.putAll(data);
     data.putAll(overlay.get().data);
 
-    return new JDoc<>(ImmutableMap.copyOf(data));
+    return new JDoc(ImmutableMap.copyOf(data));
   }
 
   @Override
@@ -153,7 +159,7 @@ public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Objec
   @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((T)that) == 0;
+    return that instanceof JDoc && this.hashCode() == that.hashCode() && this.compareTo((JDoc)that) == 0;
   }
 
   @Override
@@ -164,7 +170,7 @@ public class JDoc<T extends JDoc<?>> implements Comparable<T>, Map<String, Objec
 
   private static final MapComparator<String, Object> MAP_COMPARATOR = new MapComparator<>();
 
-  public int compareTo(@Nonnull T that)
+  public int compareTo(@Nonnull JDoc that)
   {
     return ComparisonChain.start().compare(this.data, that.data, MAP_COMPARATOR).result();
   }
