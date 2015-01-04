@@ -74,13 +74,13 @@ public class WObject<T extends WObject> implements Comparable<T>
    */
   protected void validate() {}
 
-//  @JsonIgnore
-//  private TypeReference<T> GENERIC_TYPEREF = new TypeReference<T>(){};
-//  @JsonIgnore
-//  public Optional<T> get(final String key)
-//  {
-//    return get(key, GENERIC_TYPEREF);
-//  }
+  @JsonIgnore
+  private TypeReference<WObject<T>> GENERIC_TYPEREF = new TypeReference<WObject<T>>(){};
+  @JsonIgnore
+  public Optional<WObject<T>> get(final String key)
+  {
+    return get(key, GENERIC_TYPEREF);
+  }
 
   @SuppressWarnings("unchecked")
   @JsonIgnore
@@ -220,7 +220,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   {
     // We cannot compare the objects directly because a native object might contain, for example,
     // a datetime whereas the deserialized object will contain a serialized String of that datetime.
-    // The safest way to compare is to turn them both in to simple strings and compare them, altough
+    // The safest way to compare is to turn them both in to simple strings and compare them, although
     // this might not be cheap
     return ComparisonChain.start().compare(this.toString(), that.toString()).result();
   }
@@ -259,7 +259,8 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   public static Builder<?, ?> builder() { return new Builder(); }
+//  public static <T extends WObject<T>> Builder<T, ?> builder() { return new Builder(); }
 
   @SuppressWarnings("unchecked")
-  public static Builder<?, ?> builder(final WObject<? extends WObject<?>> prior) { return new Builder(prior); }
+  public static <T extends WObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }
 }

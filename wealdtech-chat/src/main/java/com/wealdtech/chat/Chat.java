@@ -130,6 +130,16 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Chat, P>
   {
+    public Builder()
+    {
+      super();
+    }
+
+    public Builder(final Chat prior)
+    {
+      super(prior);
+    }
+
     public P from(final String from)
     {
       data(FROM, from);
@@ -175,5 +185,10 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
   public static Builder<?> builder()
   {
     return new Builder();
+  }
+
+  public static Builder<?> builder(final Chat prior)
+  {
+    return new Builder(prior);
   }
 }

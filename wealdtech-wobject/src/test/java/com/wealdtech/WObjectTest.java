@@ -43,14 +43,19 @@ public class WObjectTest
 
     public static class Builder<P extends Builder<P>> extends WObject.Builder<TestWObject, P>
     {
+      public Builder() { super(); }
+
+      public Builder(final TestWObject prior) { super(prior); }
+
       public TestWObject build()
       {
         return new TestWObject(data);
       }
     }
 
-    @JsonIgnore
     public static Builder<?> builder() { return new Builder(); }
+
+    public static Builder<?> builder(final TestWObject prior) { return new Builder(prior); }
   }
 
   @Test
@@ -127,5 +132,14 @@ public class WObjectTest
     final TestWObject testObj1 = TestWObject.builder().data("test date", new DateTime().withZone(DateTimeZone.forID("America/New_York")))
             .data("test string", "test value").build();
     assertNotNull(testObj1.toString());
+  }
+
+  @Test
+  public void testBuilder() throws JsonProcessingException
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("test string", "test value").data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
+    final TestWObject testObj2 = TestWObject.builder(testObj1).data("test string 2", "test value 2").build();
+    final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
+    assertEquals(testObj2Ser, "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
   }
 }
