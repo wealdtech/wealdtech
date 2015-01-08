@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -18,7 +18,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
-import com.google.common.collect.*;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.wealdtech.jackson.WealdMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,38 +28,35 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The Weald Technology object
+ * A mutable Weald Technology object
  * A generic immutable object which allows for arbitrary storage of data, serialization and deserialization through
- * Jackson, and object validation
+ * Jackson, and object validation.
  */
-public class WObject<T extends WObject> implements Comparable<T>
+public class MutableWObject<T extends MutableWObject> implements Comparable<T>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MutableWObject.class);
 
-  private static final WObject EMPTY = new WObject(ImmutableMap.<String, Object>of());
+  private static final MutableWObject EMPTY = new MutableWObject(ImmutableMap.<String, Object>of());
 
   @SuppressWarnings("unchecked")
-  public static <T extends WObject> T empty() { return (T)EMPTY; }
+  public static <T extends MutableWObject> T empty() { return (T)EMPTY; }
 
   @JsonIgnore
-  protected final ImmutableMap<String, Object> data;
+  protected final Map<String, Object> data;
 
   @JsonAnyGetter
-  private ImmutableMap<String, Object> any() {
+  private Map<String, Object> any() {
     return data;
   }
 
   @JsonCreator
-  public WObject(final Map<String, Object> data)
+  public MutableWObject(final Map<String, Object> data)
   {
-    this.data = ImmutableSortedMap.copyOf(preCreate(Maps.filterValues(data, Predicates.notNull())));
+    this.data = preCreate(Maps.filterValues(data, Predicates.notNull()));
     validate();
   }
 
@@ -77,9 +76,9 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected void validate() {}
 
   @JsonIgnore
-  private TypeReference<WObject<T>> GENERIC_TYPEREF = new TypeReference<WObject<T>>(){};
+  private TypeReference<MutableWObject<T>> GENERIC_TYPEREF = new TypeReference<MutableWObject<T>>(){};
   @JsonIgnore
-  public Optional<WObject<T>> get(final String key)
+  public Optional<MutableWObject<T>> get(final String key)
   {
     return get(key, GENERIC_TYPEREF);
   }
@@ -94,20 +93,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return Optional.absent();
     }
-
-    // Obtain the type we are after through reflection to find out if it is a collection
-    final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
-    boolean isCollection;
-    try
-    {
-      isCollection = Collection.class.isAssignableFrom(Class.forName(type.toString().replace("class ", "")));
-    }
-    catch (final ClassNotFoundException cnfe)
-    {
-      isCollection = false;
-    }
-
-    final String valStr = stringify(val, isCollection);
+    final String valStr = stringify(val);
     try
     {
       return Optional.fromNullable((U)WealdMapper.getMapper().readValue(valStr, typeRef));
@@ -128,7 +114,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return Optional.absent();
     }
-    final String valStr = stringify(val, false);
+    final String valStr = stringify(val);
     try
     {
       return Optional.fromNullable(WealdMapper.getMapper().readValue(valStr, klazz));
@@ -140,7 +126,19 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
   }
 
-  private String stringify(final Object val, final boolean isCollection)
+  @JsonIgnore
+  public void set(final String key, final Object value)
+  {
+    data.put(key, value);
+  }
+
+  @JsonIgnore
+  public void remove(final String key)
+  {
+    data.remove(key);
+  }
+
+  private String stringify(final Object val)
   {
     String valStr;
     if (val instanceof String)
@@ -166,7 +164,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
 
     // TODO need to escape " in the string (but only if in the string - already done?)
-    if (!isCollection && !valStr.startsWith("{") && !valStr.startsWith("\""))
+    if (!valStr.startsWith("{") && !valStr.startsWith("[") && !valStr.startsWith("\""))
     {
       valStr = "\"" + valStr + "\"";
     }
@@ -180,7 +178,7 @@ public class WObject<T extends WObject> implements Comparable<T>
    *
    * @return the combined WObject
    */
-  public WObject<T> overlay(@Nullable final WObject<T> overlay)
+  public MutableWObject<T> overlay(@Nullable final MutableWObject<T> overlay)
   {
     if (overlay == null)
     {
@@ -190,7 +188,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     data.putAll(data);
     data.putAll(overlay.data);
 
-    return new WObject<>(data);
+    return new MutableWObject<>(data);
   }
 
   public boolean exists(final String key)
@@ -222,7 +220,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof WObject && this.compareTo((T) that) == 0;
+    return that instanceof MutableWObject && this.compareTo((T) that) == 0;
   }
 
   @Override
@@ -240,7 +238,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     return ComparisonChain.start().compare(this.toString(), that.toString()).result();
   }
 
-  public static class Builder<T extends WObject<T>, P extends Builder<T, P>>
+  public static class Builder<T extends MutableWObject<T>, P extends Builder<T, P>>
   {
     protected HashMap<String, Object> data;
 
@@ -267,9 +265,9 @@ public class WObject<T extends WObject> implements Comparable<T>
       return (P)this;
     }
 
-    public WObject<T> build()
+    public MutableWObject<T> build()
     {
-      return new WObject<>(data);
+      return new MutableWObject<>(data);
     }
   }
 
@@ -277,5 +275,5 @@ public class WObject<T extends WObject> implements Comparable<T>
 //  public static <T extends WObject<T>> Builder<T, ?> builder() { return new Builder(); }
 
   @SuppressWarnings("unchecked")
-  public static <T extends WObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }
+  public static <T extends MutableWObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }
 }

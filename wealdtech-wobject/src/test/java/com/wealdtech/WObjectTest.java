@@ -11,11 +11,10 @@
 package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Range;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -24,9 +23,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * Tests for the Weald object
@@ -110,6 +107,17 @@ public class WObjectTest
     assertEquals(dateTimes.get(0), new DateTime(123456789000L, DateTimeZone.UTC));
     assertEquals(dateTimes.get(1), new DateTime(234567890000L, DateTimeZone.UTC));
     assertEquals(dateTimes.get(2), new DateTime(345678900000L, DateTimeZone.UTC));
+  }
+
+  @Test
+  public void testDateTimeRange() throws IOException
+  {
+    final Range<DateTime> testDTRange = Range.closedOpen(new DateTime(1234567890000L), new DateTime(2345678900000L));
+    final TestWObject testObj1 = TestWObject.builder().data("test datetime range", testDTRange).build();
+    final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
+    final WObject<?> testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
+
+    assertEquals(testDTRange, testObj1Deser.get("test datetime range", new TypeReference<Range<DateTime>>(){}).orNull());
   }
 
   @Test
