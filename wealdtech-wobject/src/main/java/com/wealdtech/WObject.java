@@ -128,7 +128,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return Optional.absent();
     }
-    final String valStr = stringify(val, false);
+    final String valStr = stringify(val, Collection.class.isAssignableFrom(klazz));
     try
     {
       return Optional.fromNullable(WealdMapper.getMapper().readValue(valStr, klazz));

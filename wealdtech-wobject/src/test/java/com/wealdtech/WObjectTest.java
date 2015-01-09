@@ -13,7 +13,9 @@ package com.wealdtech;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
@@ -149,5 +151,21 @@ public class WObjectTest
     final TestWObject testObj2 = TestWObject.builder(testObj1).data("test string 2", "test value 2").build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser, "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
+  }
+
+  // Ensure that WObject obeys the type passed in on get
+  @Test
+  public void testClassGeneric() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .data("test array",
+                                                  ImmutableList.<DateTime>of(new DateTime(123456789000L, DateTimeZone.UTC),
+                                                                             new DateTime(234567890000L, DateTimeZone.UTC)))
+                                            .build();
+    final Optional<ImmutableSet> unspecifiedSet = testObj1.get("test array", ImmutableSet.class);
+    assertTrue(unspecifiedSet.isPresent());
+    assertEquals(unspecifiedSet.get().size(), 2);
+    // Because we didn't specify a type the elements should be strings
+    assertEquals(unspecifiedSet.get().iterator().next().getClass(), String.class);
   }
 }

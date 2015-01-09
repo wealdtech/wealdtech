@@ -8,4 +8,22 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-include 'wealdtech-core', 'wealdtech-metrics', 'wealdtech-configuration', 'wealdtech-crypt', 'wealdtech-jackson', 'wealdtech-jersey-server', 'wealdtech-gcm', 'wealdtech-retrofit', 'wealdtech-mandrill', 'wealdtech-chat', 'wealdtech-wobject', 'wealdtech-wobject-datastore', 'wealdtech-roberto'
+dependencies
+{
+    compile project(':wealdtech-core')
+    compile project(':wealdtech-jackson')
+    compile project(':wealdtech-configuration')
+    compile project(':wealdtech-retrofit')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = 'wealdtech-robert'
+            pom.project {
+                name 'Wealdtech Roberto'
+                description 'Weald Technology orchestration for microservices'
+            }
+        }
+    }
+}
