@@ -49,7 +49,6 @@ public class WObject<T extends WObject> implements Comparable<T>
     @Override
     public boolean apply(@Nullable final String input)
     {
-      System.err.println("Input is " + input);
       return input != null && !input.startsWith("_");}
   };
 
