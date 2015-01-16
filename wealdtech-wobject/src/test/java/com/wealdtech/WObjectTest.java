@@ -177,4 +177,15 @@ public class WObjectTest
     final TestWObject testObj2 = TestWObject.builder().data("key", "val").data("_version", 2).build();
     assertEquals(testObj1, testObj2);
   }
+
+  // Ensure that null entries in the builder are handled correctly
+  @Test
+  public void testNullInBuilder() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("key", "val").data("key2", "val2").build();
+    assertTrue(testObj1.exists("key2"));
+    final TestWObject testObj2 = TestWObject.builder(testObj1).data("key2", null).build();
+    System.err.println(testObj2.data);
+    assertFalse(testObj2.exists("key2"));
+  }
 }

@@ -44,6 +44,15 @@ public class WObject<T extends WObject> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
 
+  // Helper predicate to strip out the internal fields (which start with "_")
+  private static final Predicate<String> FILTER_OUT_INTERNAL_PREDICATE = new Predicate<String>(){
+    @Override
+    public boolean apply(@Nullable final String input)
+    {
+      System.err.println("Input is " + input);
+      return input != null && !input.startsWith("_");}
+  };
+
   private static final WObject EMPTY = new WObject(ImmutableMap.<String, Object>of());
 
   @SuppressWarnings("unchecked")
@@ -51,6 +60,10 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   @JsonIgnore
   protected final ImmutableMap<String, Object> data;
+
+  // This is a convenience for us - it is a copy of the above data without any internal values
+  @JsonIgnore
+  protected final ImmutableMap<String, Object> externalData;
 
   @JsonAnyGetter
   private ImmutableMap<String, Object> any() {
@@ -62,6 +75,20 @@ public class WObject<T extends WObject> implements Comparable<T>
   {
     this.data = ImmutableSortedMap.copyOf(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
+
+    // Generate another map of the data which only contains external information
+    this.externalData = ImmutableSortedMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
+
+    // We pre-calculate a hashcode using a serialized version of our external data to avoid issues of equality where one object
+    // contains an object and another a serialized version of the object
+    try
+    {
+      this.hashCode = Objects.hashCode(WealdMapper.getServerMapper().writeValueAsString(this.externalData));
+    } catch (final IOException ioe)
+    {
+      LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
+      throw new ServerError("Failed to generate external representation of object");
+    }
   }
 
   /**
@@ -228,19 +255,14 @@ public class WObject<T extends WObject> implements Comparable<T>
     return that instanceof WObject && this.compareTo((T) that) == 0;
   }
 
+  @JsonIgnore
+  private int hashCode;
+
   @Override
   public int hashCode()
   {
-    return Objects.hashCode(this.data);
+    return hashCode;
   }
-
-  // Helper predicate to strip out the internal fields (which start with "_")
-  private static final Predicate<String> FILTER_OUT_INTERNAL_PREDICATE = new Predicate<String>(){
-    @Override
-    public boolean apply(@Nullable final String input)
-    {
-      return input != null && !input.startsWith("_");}
-  };
 
   public int compareTo(@Nonnull T that)
   {
@@ -250,10 +272,18 @@ public class WObject<T extends WObject> implements Comparable<T>
     // this might not be cheap
 
     // We also want to remove any internal fields, as they don't count when carrying out comparisons
-    final T thisForComparison = (T)WObject.builder().data(Maps.filterKeys(data, FILTER_OUT_INTERNAL_PREDICATE)).build();
-    final T thatForComparison = (T)WObject.builder().data(Maps.filterKeys(that.data, FILTER_OUT_INTERNAL_PREDICATE)).build();
-    return ComparisonChain.start().compare(thisForComparison.toString(), thatForComparison.toString()).result();
-//    return ComparisonChain.start().compare(this.toString(), that.toString()).result();
+    try
+    {
+      return ComparisonChain.start()
+                            .compare(WealdMapper.getServerMapper().writeValueAsString(this.externalData),
+                                     WealdMapper.getServerMapper().writeValueAsString(that.externalData))
+                            .result();
+    }
+    catch (final IOException ioe)
+    {
+      LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
+      throw new ServerError("Failed to generate external representation of object");
+    }
   }
 
   public static class Builder<T extends WObject<T>, P extends Builder<T, P>>
@@ -277,7 +307,7 @@ public class WObject<T extends WObject> implements Comparable<T>
       return self();
     }
 
-    public P data(final String name, final Object value)
+    public P data(final String name, @Nullable final Object value)
     {
       this.data.put(name, value);
       return self();
