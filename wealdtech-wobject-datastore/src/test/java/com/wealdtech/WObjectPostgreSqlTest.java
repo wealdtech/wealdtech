@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  */
@@ -130,5 +131,51 @@ public class WObjectPostgreSqlTest
 
     assertNotNull(testObjs);
     assertEquals(testObjs.size(), 2);
+  }
+
+
+  @Test
+  public void testRemove()
+  {
+    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
+    final TestWObject testObj1 = TestWObject.builder().data("val", methodName).data("id", 1).build();
+    service.add(testObj1);
+    final TestWObject testObj2 = TestWObject.builder().data("val", methodName).data("id", 2).build();
+    service.add(testObj2);
+    final TestWObject testObj3 = TestWObject.builder().data("val", methodName).data("id", 3).build();
+    service.add(testObj3);
+
+    final ImmutableList<TestWObject> testObjs1 = service.obtain(new TypeReference<TestWObject>() {}, new WObjectServiceCallbackPostgreSqlImpl() {
+      @Override
+      public String getConditions()
+      {
+        return "f_data->>'val'=?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        setString(stmt, 1, methodName);
+      }
+    });
+    assertEquals(testObjs1.size(), 3);
+
+    service.remove(testObj2);
+    final ImmutableList<TestWObject> testObjs2 = service.obtain(new TypeReference<TestWObject>() {}, new WObjectServiceCallbackPostgreSqlImpl() {
+      @Override
+      public String getConditions()
+      {
+        return "f_data->>'val'=?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        setString(stmt, 1, methodName);
+      }
+    });
+    assertEquals(testObjs2.size(), 2);
+    assertTrue(testObjs2.contains(testObj1));
+    assertTrue(testObjs2.contains(testObj3));
   }
 }

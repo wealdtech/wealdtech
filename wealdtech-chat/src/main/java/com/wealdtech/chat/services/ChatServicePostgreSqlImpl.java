@@ -41,7 +41,6 @@ public class ChatServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Chat
   @Override
   public ImmutableList<Chat> getChats(final String from, @Nullable final String topic)
   {
-    // TODO implement
     return obtain(CHAT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override

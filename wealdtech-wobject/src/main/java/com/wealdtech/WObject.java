@@ -17,8 +17,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.*;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Maps;
 import com.wealdtech.jackson.WealdMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +33,6 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -231,18 +234,31 @@ public class WObject<T extends WObject> implements Comparable<T>
     return Objects.hashCode(this.data);
   }
 
+  // Helper predicate to strip out the internal fields (which start with "_")
+  private static final Predicate<String> FILTER_OUT_INTERNAL_PREDICATE = new Predicate<String>(){
+    @Override
+    public boolean apply(@Nullable final String input)
+    {
+      return input != null && !input.startsWith("_");}
+  };
+
   public int compareTo(@Nonnull T that)
   {
     // We cannot compare the objects directly because a native object might contain, for example,
     // a datetime whereas the deserialized object will contain a serialized String of that datetime.
     // The safest way to compare is to turn them both in to simple strings and compare them, although
     // this might not be cheap
-    return ComparisonChain.start().compare(this.toString(), that.toString()).result();
+
+    // We also want to remove any internal fields, as they don't count when carrying out comparisons
+    final T thisForComparison = (T)WObject.builder().data(Maps.filterKeys(data, FILTER_OUT_INTERNAL_PREDICATE)).build();
+    final T thatForComparison = (T)WObject.builder().data(Maps.filterKeys(that.data, FILTER_OUT_INTERNAL_PREDICATE)).build();
+    return ComparisonChain.start().compare(thisForComparison.toString(), thatForComparison.toString()).result();
+//    return ComparisonChain.start().compare(this.toString(), that.toString()).result();
   }
 
   public static class Builder<T extends WObject<T>, P extends Builder<T, P>>
   {
-    protected HashMap<String, Object> data;
+    protected Map<String, Object> data;
 
     public Builder(final T prior)
     {
@@ -253,6 +269,12 @@ public class WObject<T extends WObject> implements Comparable<T>
     public Builder()
     {
       data = Maps.newHashMap();
+    }
+
+    public P data(final Map<String, Object> data)
+    {
+      this.data = data;
+      return self();
     }
 
     public P data(final String name, final Object value)
@@ -274,7 +296,6 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   public static Builder<?, ?> builder() { return new Builder(); }
-//  public static <T extends WObject<T>> Builder<T, ?> builder() { return new Builder(); }
 
   @SuppressWarnings("unchecked")
   public static <T extends WObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }

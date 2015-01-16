@@ -74,11 +74,34 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
       return input == null ? null : input.toString();
     }
   };
-  public WObjectServiceCallbackPostgreSqlImpl setWidArray(final PreparedStatement stmt,
+
+  public WObjectServiceCallbackPostgreSqlImpl setWIDArray(final PreparedStatement stmt,
                                                           final int index,
                                                           @Nullable final ImmutableCollection<WID<?>> val)
   {
     return setStringArray(stmt, index,
                           val == null ? null : ImmutableSet.copyOf(Collections2.transform(val, WID_ARRAY_TO_STRING_ARRAY)));
+  }
+
+  public WObjectServiceCallbackPostgreSqlImpl setLong(final PreparedStatement stmt,
+                                                      final int index,
+                                                      @Nullable final Long val)
+  {
+    try
+    {
+      if (val == null)
+      {
+        stmt.setNull(index, Types.BIGINT);
+      }
+      else
+      {
+        stmt.setLong(index, val);
+      }
+    }
+    catch (final SQLException se)
+    {
+      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set long");
+    }
+    return this;
   }
 }

@@ -43,18 +43,23 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
 
   public static transient final char JDBC_VARIABLE = '?';
 
-  private static final String CREATE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(f_data JSON NOT NULL)";
+  private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(f_data JSONB NOT NULL)";
 
-  private static final String DESTROY_SQL = "DROP TABLE t_TABLENAME";
+  private static final String DESTROY_TABLE_SQL = "DROP TABLE t_TABLENAME";
 
   private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
+
+  private static final String REMOVE_SQL = "DELETE FROM t_TABLENAME\n" +
+                                           "WHERE f_data = ?";
 
   private static final String OBTAIN_SQL = "SELECT f_data\n" +
                                            "FROM t_TABLENAME";
 
-  private final String createSql;
-  private final String destroySql;
+
+  private final String createTableSql;
+  private final String destroyTableSql;
   private final String addSql;
+  private final String removeSql;
   private final String obtainSql;
 
   @Inject
@@ -62,9 +67,10 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
                                       final String tableName)
   {
     this.repository = repository;
-    createSql = CREATE_SQL.replaceAll("TABLENAME", tableName);
-    destroySql = DESTROY_SQL.replaceAll("TABLENAME", tableName);
+    createTableSql = CREATE_TABLE_SQL.replaceAll("TABLENAME", tableName);
+    destroyTableSql = DESTROY_TABLE_SQL.replaceAll("TABLENAME", tableName);
     addSql = ADD_SQL.replaceAll("TABLENAME", tableName);
+    removeSql = REMOVE_SQL.replaceAll("TABLENAME", tableName);
     obtainSql = OBTAIN_SQL.replaceAll("TABLENAME", tableName);
   }
 
@@ -76,7 +82,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(createSql);
+      final PreparedStatement stmt = conn.prepareStatement(createTableSql);
       stmt.execute();
     }
     catch (final SQLException se)
@@ -93,7 +99,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(destroySql);
+      final PreparedStatement stmt = conn.prepareStatement(destroyTableSql);
       stmt.execute();
     }
     catch (final SQLException se)
@@ -112,7 +118,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
 
       final PreparedStatement stmt = conn.prepareStatement(addSql);
       final PGobject obj = new PGobject();
-      obj.setType("json");
+      obj.setType("jsonb");
       try
       {
         obj.setValue(WealdMapper.getServerMapper().writeValueAsString(wObject));
@@ -127,7 +133,40 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
     }
     catch (final SQLException se)
     {
-      throw handleSqlFailure(conn, se, "Failed to add chat to chat service datastore");
+      throw handleSqlFailure(conn, se, "Failed to add item to datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+  }
+
+  @Override
+  public void remove(final T wObject)
+  {
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      final PreparedStatement stmt = conn.prepareStatement(removeSql);
+      final PGobject obj = new PGobject();
+      obj.setType("jsonb");
+      try
+      {
+        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(wObject));
+      }
+      catch (final JsonProcessingException jpe)
+      {
+        throw new ServerError("Failed to create json for deletion from database", jpe);
+      }
+      stmt.setObject(1, obj);
+
+      stmt.execute();
+    }
+    catch (final SQLException se)
+    {
+      throw handleSqlFailure(conn, se, "Failed to remove item from datastore");
     }
     finally
     {

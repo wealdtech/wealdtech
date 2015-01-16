@@ -39,6 +39,11 @@ public interface WObjectService<T extends WObject, U>
   public void add(T wObject);
 
   /**
+   * Remove an object
+   */
+  public void remove(T wObject);
+
+  /**
    * Obtain objects
    */
   public ImmutableList<T> obtain(TypeReference<T> typeRef, WObjectServiceCallback<U> cb);

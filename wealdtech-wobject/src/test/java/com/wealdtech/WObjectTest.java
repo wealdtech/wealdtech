@@ -168,4 +168,13 @@ public class WObjectTest
     // Because we didn't specify a type the elements should be strings
     assertEquals(unspecifiedSet.get().iterator().next().getClass(), String.class);
   }
+
+  // Ensure that internal values are not considered when check for equality
+  @Test
+  public void testIgnoreInternals() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("key", "val").data("_version", 1).build();
+    final TestWObject testObj2 = TestWObject.builder().data("key", "val").data("_version", 2).build();
+    assertEquals(testObj1, testObj2);
+  }
 }
