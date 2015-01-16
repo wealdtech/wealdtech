@@ -12,6 +12,7 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.DataError;
@@ -24,6 +25,7 @@ import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,11 +35,13 @@ import java.sql.SQLException;
 /**
  * WObject service using PostgreSQL as a backend
  */
-public abstract class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectService<T>
+public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectService<T, PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObjectServicePostgreSqlImpl.class);
 
   private final PostgreSqlRepository repository;
+
+  public static transient final char JDBC_VARIABLE = '?';
 
   private static final String CREATE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(f_data JSON NOT NULL)";
 
@@ -47,7 +51,6 @@ public abstract class WObjectServicePostgreSqlImpl<T extends WObject> implements
 
   private static final String OBTAIN_SQL = "SELECT f_data\n" +
                                            "FROM t_TABLENAME";
-//                                           "WHERE f_data->>'from' = ?";
 
   private final String createSql;
   private final String destroySql;
@@ -133,15 +136,25 @@ public abstract class WObjectServicePostgreSqlImpl<T extends WObject> implements
   }
 
   @Override
-  public ImmutableList<T> obtain(final TypeReference<T>typeRef, final String conditions)
+  public ImmutableList<T> obtain(final TypeReference<T>typeRef, @Nullable final WObjectServiceCallback<PreparedStatement> cb)
   {
     Connection conn = null;
     try
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(obtainSql);
-//      stmt.setString(1, conditions);
+      final PreparedStatement stmt;
+      if (cb == null)
+      {
+        stmt = conn.prepareStatement(obtainSql);
+      }
+      else
+      {
+        final String statement = obtainSql + "\nWHERE " + cb.getConditions();
+        final int numVariables = CharMatcher.is(JDBC_VARIABLE).countIn(statement);
+        stmt = conn.prepareStatement(statement);
+        cb.setConditionValues(stmt);
+      }
 
       try (ResultSet rs = stmt.executeQuery())
       {
@@ -173,7 +186,29 @@ public abstract class WObjectServicePostgreSqlImpl<T extends WObject> implements
 
   /**
    * Handle a SQL failure, parsing the output and logging relevant information.  Throw an exception when done.
-   * @param se A database connection.
+   * @param stmt A prepared statement.
+   * @param se The SQL exception.
+   * @param throwMessage The message to pass back when throwing an exception.
+   * @throws com.wealdtech.DataError Thrown when the error is due to bad data.
+   * @throws ServerError Thrown when the error is due to a server issue.
+   */
+  public static WealdError handleSqlFailure(final PreparedStatement stmt, final SQLException se, final String throwMessage)
+  {
+    final Connection conn;
+    try
+    {
+      conn = stmt.getConnection();
+      return handleSqlFailure(conn, se, throwMessage, null);
+    }
+    catch (final SQLException ignored)
+    {
+      return new ServerError("Failed to obtain database connection in error!");
+    }
+  }
+
+  /**
+   * Handle a SQL failure, parsing the output and logging relevant information.  Throw an exception when done.
+   * @param conn A database connection.
    * @param se The SQL exception.
    * @param throwMessage The message to pass back when throwing an exception.
    * @throws com.wealdtech.DataError Thrown when the error is due to bad data.

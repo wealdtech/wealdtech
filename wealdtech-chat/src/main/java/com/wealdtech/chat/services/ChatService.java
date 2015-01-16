@@ -12,14 +12,13 @@ package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.chat.Chat;
-import com.wealdtech.services.WObjectService;
 
 import javax.annotation.Nullable;
 
 /**
  * Interface defining chat service methods
  */
-public interface ChatService extends WObjectService<Chat>
+public interface ChatService
 {
   /**
    * Get chats

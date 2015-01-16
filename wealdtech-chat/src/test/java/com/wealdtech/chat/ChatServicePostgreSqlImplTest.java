@@ -74,7 +74,25 @@ public class ChatServicePostgreSqlImplTest
   @Test
   public void testTopicGet()
   {
+    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
+    final Chat testChat1 = Chat.builder()
+                               .from(methodName)
+                               .scope(ChatScope.EVERYONE)
+                               .topic("test topic")
+                               .message("Test message 1")
+                               .build();
+    service.add(testChat1);
+    final Chat testChat2 = Chat.builder()
+                               .from(methodName)
+                               .scope(ChatScope.EVERYONE)
+                               .topic("test topic 2")
+                               .message("Test message 2")
+                               .build();
+    service.add(testChat2);
 
+    final ImmutableList<Chat> chats = service.getChats(methodName, "test topic");
+    assertChatsContain(chats, testChat1);
+    assertChatsDoNotContain(chats, testChat2);
   }
 
   private static void assertChatsContain(@Nullable final ImmutableList<Chat> chats, final Chat expectedChat)
@@ -91,5 +109,20 @@ public class ChatServicePostgreSqlImplTest
     }
     assertNotEquals(numFound, 0, "Failed to find matching chat");
     assertEquals(numFound, 1, "Found incorrect number of matching chats");
+  }
+
+  private static void assertChatsDoNotContain(@Nullable final ImmutableList<Chat> chats, final Chat expectedChat)
+  {
+    assertNotNull(chats, "Chats not supplied");
+    assertFalse(chats.isEmpty(), "Chats are empty");
+    int numFound = 0;
+    for (final Chat chat : chats)
+    {
+      if (chat.equals(expectedChat))
+      {
+        numFound++;
+      }
+    }
+    assertEquals(numFound, 0, "Found incorrect number of matching chats");
   }
 }

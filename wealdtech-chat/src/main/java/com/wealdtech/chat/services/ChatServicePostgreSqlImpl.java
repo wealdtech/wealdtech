@@ -15,11 +15,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.chat.Chat;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
+import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.sql.PreparedStatement;
 
 /**
  * Chat service using PostgreSQL as a backend
@@ -39,6 +41,21 @@ public class ChatServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Chat
   @Override
   public ImmutableList<Chat> getChats(final String from, @Nullable final String topic)
   {
-    return obtain(CHAT_TYPE_REFERENCE, null);
+    // TODO implement
+    return obtain(CHAT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "f_data->>'topic'=?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setString(stmt, index++, topic);
+      }
+    });
   }
 }

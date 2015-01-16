@@ -17,7 +17,7 @@ import com.wealdtech.WObject;
 /**
  * Interface defining WObject service methods
  */
-public interface WObjectService<T extends WObject>
+public interface WObjectService<T extends WObject, U>
 {
   /**
    * Create the service's datastore.
@@ -41,5 +41,5 @@ public interface WObjectService<T extends WObject>
   /**
    * Obtain objects
    */
-  public ImmutableList<T> obtain(TypeReference<T> typeRef, String conditions);
+  public ImmutableList<T> obtain(TypeReference<T> typeRef, WObjectServiceCallback<U> cb);
 }

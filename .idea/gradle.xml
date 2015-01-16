@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/wealdtech-chat" />
+            <option value="$PROJECT_DIR$/wealdtech-conditions" />
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />

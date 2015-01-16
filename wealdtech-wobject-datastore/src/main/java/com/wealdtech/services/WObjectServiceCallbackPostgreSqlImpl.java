@@ -1,0 +1,84 @@
+/*
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
+ */
+
+package com.wealdtech.services;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
+import com.wealdtech.WID;
+
+import javax.annotation.Nullable;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+
+/**
+ * A conditions callback for PostgreSql services
+ */
+public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectServiceCallback<PreparedStatement>
+{
+  public WObjectServiceCallbackPostgreSqlImpl setString(final PreparedStatement stmt, final int index, @Nullable final String val)
+  {
+    try
+    {
+      stmt.setString(index, val);
+    }
+    catch (final SQLException se)
+    {
+      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set string");
+    }
+    return this;
+  }
+
+  public WObjectServiceCallbackPostgreSqlImpl setStringArray(final PreparedStatement stmt,
+                                                             final int index,
+                                                             @Nullable final ImmutableCollection<String> val)
+  {
+    try
+    {
+      if (val == null)
+      {
+        stmt.setNull(index, Types.ARRAY);
+      }
+      else
+      {
+        stmt.setArray(index, stmt.getConnection().createArrayOf("text", val.toArray()));
+      }
+    }
+    catch (final SQLException se)
+    {
+      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set string array");
+    }
+    return this;
+  }
+
+  public WObjectServiceCallbackPostgreSqlImpl setWID(final PreparedStatement stmt, final int index, @Nullable final WID<?> val)
+  {
+    return setString(stmt, index, val == null ? null : val.toString());
+  }
+
+  private static final Function<WID<?>, String> WID_ARRAY_TO_STRING_ARRAY = new Function<WID<?>, String>(){
+    @Nullable
+    @Override
+    public String apply(@Nullable final WID<?> input)
+    {
+      return input == null ? null : input.toString();
+    }
+  };
+  public WObjectServiceCallbackPostgreSqlImpl setWidArray(final PreparedStatement stmt,
+                                                          final int index,
+                                                          @Nullable final ImmutableCollection<WID<?>> val)
+  {
+    return setStringArray(stmt, index,
+                          val == null ? null : ImmutableSet.copyOf(Collections2.transform(val, WID_ARRAY_TO_STRING_ARRAY)));
+  }
+}

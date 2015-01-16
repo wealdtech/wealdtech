@@ -11,7 +11,6 @@
 package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -19,13 +18,14 @@ import com.google.inject.Inject;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectService;
+import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.joda.time.DateTime;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.Map;
+import java.sql.PreparedStatement;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -34,7 +34,7 @@ import static org.testng.Assert.assertNotNull;
  */
 public class WObjectPostgreSqlTest
 {
-  WObjectService<TestWObject> service;
+  WObjectService<TestWObject, PreparedStatement> service;
 
   public static class TestWObject extends WObject<TestWObject>
   {
@@ -94,5 +94,41 @@ public class WObjectPostgreSqlTest
     final ImmutableList<TestWObject> testObjs = service.obtain(new TypeReference<TestWObject>(){}, null);
     assertNotNull(testObjs);
     assertEquals(testObjs.size(), 1);
+  }
+
+  @Test
+  public void testConditionalObtain()
+  {
+    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .data("val", "foo")
+                                            .build();
+    service.add(testObj1);
+    final TestWObject testObj2 = TestWObject.builder()
+                                            .data("val", "bar")
+                                            .build();
+    service.add(testObj2);
+    final TestWObject testObj3 = TestWObject.builder()
+                                            .data("val", "foo")
+                                            .build();
+    service.add(testObj3);
+
+    final ImmutableList<TestWObject> testObjs = service.obtain(new TypeReference<TestWObject>(){}, new WObjectServiceCallbackPostgreSqlImpl(){
+      @Override
+      public String getConditions()
+      {
+        return "f_data->>'val'=?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setString(stmt, index++, "foo");
+      }
+    });
+
+    assertNotNull(testObjs);
+    assertEquals(testObjs.size(), 2);
   }
 }
