@@ -123,7 +123,11 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return Optional.absent();
     }
+    return getValue(val, typeRef);
+  }
 
+  protected <U> Optional<U> getValue(final Object val, final TypeReference<U> typeRef)
+  {
     // Obtain the type we are after through reflection to find out if it is a collection
     final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
     boolean isCollection;
@@ -157,6 +161,12 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return Optional.absent();
     }
+
+    return getValue(val, klazz);
+  }
+
+  protected <U> Optional<U> getValue(final Object val, final Class<U> klazz)
+  {
     final String valStr = stringify(val, Collection.class.isAssignableFrom(klazz));
     try
     {
