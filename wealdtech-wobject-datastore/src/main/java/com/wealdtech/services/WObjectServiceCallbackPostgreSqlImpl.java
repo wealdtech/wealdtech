@@ -77,7 +77,7 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
 
   public WObjectServiceCallbackPostgreSqlImpl setWIDArray(final PreparedStatement stmt,
                                                           final int index,
-                                                          @Nullable final ImmutableCollection<WID<?>> val)
+                                                          @Nullable final ImmutableCollection<? extends WID<?>> val)
   {
     return setStringArray(stmt, index,
                           val == null ? null : ImmutableSet.copyOf(Collections2.transform(val, WID_ARRAY_TO_STRING_ARRAY)));

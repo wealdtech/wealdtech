@@ -29,7 +29,7 @@ public interface WObjectServiceCallback<T>
 
   public WObjectServiceCallback<T> setWID(T stmt, int index, @Nullable WID<?> val);
 
-  public WObjectServiceCallback<T> setWIDArray(T stmt, int index, @Nullable ImmutableCollection<WID<?>> val);
+  public WObjectServiceCallback<T> setWIDArray(T stmt, int index, @Nullable ImmutableCollection<? extends WID<?>> val);
 
   public WObjectServiceCallback<T> setLong(T stmt, int index, @Nullable Long val);
 }
