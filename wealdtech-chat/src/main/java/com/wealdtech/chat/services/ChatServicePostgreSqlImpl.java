@@ -46,14 +46,14 @@ public class ChatServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Chat
       @Override
       public String getConditions()
       {
-        return "f_data->>'topic'=?";
+        return "d @> ?";
       }
 
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setString(stmt, index++, topic);
+        setJson(stmt, index++, "{\"topic\":\"" + topic + "\"}");
       }
     });
   }

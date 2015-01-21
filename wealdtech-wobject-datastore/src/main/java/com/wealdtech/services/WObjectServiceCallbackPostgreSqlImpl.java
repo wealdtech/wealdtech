@@ -15,6 +15,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
+import org.postgresql.util.PGobject;
 
 import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
@@ -101,6 +102,22 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
     catch (final SQLException se)
     {
       throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set long");
+    }
+    return this;
+  }
+
+  public WObjectServiceCallbackPostgreSqlImpl setJson(final PreparedStatement stmt, final int index, @Nullable final String val)
+  {
+    final PGobject obj = new PGobject();
+    obj.setType("jsonb");
+    try
+    {
+      obj.setValue(val);
+      stmt.setObject(index, obj);
+    }
+    catch (final SQLException se)
+    {
+      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set JSON");
     }
     return this;
   }

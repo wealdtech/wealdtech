@@ -43,16 +43,16 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
 
   public static transient final char JDBC_VARIABLE = '?';
 
-  private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(f_data JSONB NOT NULL)";
+  private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(d JSONB NOT NULL)";
 
   private static final String DESTROY_TABLE_SQL = "DROP TABLE t_TABLENAME";
 
   private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
 
   private static final String REMOVE_SQL = "DELETE FROM t_TABLENAME\n" +
-                                           "WHERE f_data = ?";
+                                           "WHERE d = ?";
 
-  private static final String OBTAIN_SQL = "SELECT f_data\n" +
+  private static final String OBTAIN_SQL = "SELECT d\n" +
                                            "FROM t_TABLENAME";
 
 
