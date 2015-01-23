@@ -18,7 +18,7 @@ import com.google.common.collect.Multimaps;
 import com.google.inject.Inject;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.services.MessageService;
-import com.wealdtech.chat.services.NotificationService;
+import com.wealdtech.chat.services.PushNotificationService;
 import com.wordnik.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -38,11 +38,11 @@ public class MessageResource
   private static final Logger LOG = LoggerFactory.getLogger(MessageResource.class);
 
   private final MessageService messageService;
-  private final NotificationService notificationService;
+  private final PushNotificationService notificationService;
 
   @Inject
   public MessageResource(final MessageService messageService,
-                         final NotificationService notificationService)
+                         final PushNotificationService notificationService)
   {
     this.messageService = messageService;
     this.notificationService = notificationService;
@@ -50,7 +50,7 @@ public class MessageResource
 
   @Timed
   @GET
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
   @ApiOperation(value = "Obtain all chats", notes = "Obtain all chats regardless of topic")
   @ApiResponses(value={@ApiResponse(code=404, message="Chat not found")})
   public ImmutableMultimap<String, Message> getChats(@ApiParam(value = "time that last set of chats were obtained", required = false) @QueryParam("since") final DateTime since)

@@ -1,0 +1,29 @@
+/*
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
+ */
+
+package com.wealdtech.notifications;
+
+import com.google.common.collect.ImmutableSet;
+import com.wealdtech.WObject;
+import com.wealdtech.notifications.config.NotificationConfiguration;
+import com.wealdtech.notifications.service.NotificationService;
+import org.testng.annotations.Test;
+
+/**
+ */
+public class NotificationProviderLogImplTest
+{
+  @Test
+  public void testSimple()
+  {
+    final NotificationService service = new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderLogImpl", null, null));
+    service.notify(ImmutableSet.of("test1", "test2"), WObject.builder().data("key1", "val1").data("key2", "val2").build());
+  }
+}

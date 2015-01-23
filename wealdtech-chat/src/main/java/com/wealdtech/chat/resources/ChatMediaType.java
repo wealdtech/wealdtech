@@ -8,17 +8,12 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.chat.services;
-
-import com.wealdtech.chat.Message;
+package com.wealdtech.chat.resources;
 
 /**
- * Interface defining notification service methods
  */
-public interface NotificationService
+public class ChatMediaType
 {
-  /**
-   * Notify based on a message
-   */
-  void notify(Message message);
+  public final static String V1_JSON = "application/vnd.chat.v1+json";
+  public final static String V2_JSON = "application/vnd.chat.v2+json";
 }

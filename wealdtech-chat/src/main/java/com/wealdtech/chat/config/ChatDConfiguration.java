@@ -16,6 +16,7 @@ import com.wealdtech.configuration.LoggingConfiguration;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
+import com.wealdtech.notifications.config.NotificationConfiguration;
 
 /**
  * Configuration for the various aspects of the Chat daemon
@@ -24,20 +25,21 @@ public class ChatDConfiguration implements Configuration
 {
   private final JettyServerConfiguration jettyServerConfiguration;
   private final JerseyServerConfiguration jerseyServerConfiguration;
-
   private final LoggingConfiguration loggingConfiguration;
-
   private final PostgreSqlConfiguration postgreSqlConfiguration;
+  private final NotificationConfiguration notificationsConfiguration;
 
   public ChatDConfiguration(@JsonProperty("jetty") final JettyServerConfiguration jettyServerConfiguration,
                             @JsonProperty("jersey") final JerseyServerConfiguration jerseyServerConfiguration,
                             @JsonProperty("logging") final LoggingConfiguration loggingConfiguration,
-                            @JsonProperty("datastore") final PostgreSqlConfiguration postgreSqlConfiguration)
+                            @JsonProperty("datastore") final PostgreSqlConfiguration postgreSqlConfiguration,
+                            @JsonProperty("notifications") final NotificationConfiguration notificationsConfiguration)
   {
     this.jettyServerConfiguration = jettyServerConfiguration;
     this.jerseyServerConfiguration = jerseyServerConfiguration;
     this.loggingConfiguration = loggingConfiguration;
     this.postgreSqlConfiguration = postgreSqlConfiguration;
+    this.notificationsConfiguration = notificationsConfiguration;
   }
 
   public JettyServerConfiguration getJettyServerConfiguration() { return jettyServerConfiguration; }
@@ -47,4 +49,6 @@ public class ChatDConfiguration implements Configuration
   public LoggingConfiguration getLoggingConfiguration() { return loggingConfiguration; }
 
   public PostgreSqlConfiguration getPostgreSqlConfiguration() { return postgreSqlConfiguration; }
+
+  public NotificationConfiguration getNotificationsConfiguration() { return notificationsConfiguration; }
 }

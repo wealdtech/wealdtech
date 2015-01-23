@@ -39,5 +39,10 @@
     "name": "chat",
     "username": "chat",
     "password": "chat"
+  },
+  "notifications": {
+    "provider": "com.wealdtech.notifications.providers.NotificationProviderLogImpl",
+    "appid": "AB71C-28D8D",
+    "accesskey": "8q8iYJNp9p6ejUCOuLu8S2LXBSQ5JZm2TZlAiyaXPdIjqShZWUFcICOFgoYeqrcKKHlueR7e13RaC9Gv2lWO"
   }
 }

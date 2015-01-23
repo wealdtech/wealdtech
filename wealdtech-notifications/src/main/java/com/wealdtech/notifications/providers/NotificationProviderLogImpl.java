@@ -8,28 +8,22 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.chat.services;
+package com.wealdtech.notifications.providers;
 
-import com.google.inject.Inject;
+import com.google.common.collect.ImmutableSet;
+import com.wealdtech.WObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A dummy notification implementation which outputs notifications using the console
  */
-public class NotificationServiceLogImpl extends NotificationServiceAbstractImpl
+public class NotificationProviderLogImpl implements NotificationProvider<WObject<?>>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(NotificationServiceAbstractImpl.class);
-
-  @Inject
-  public NotificationServiceLogImpl(final SubscriptionService subscriptionService)
-  {
-    super(subscriptionService);
-  }
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationProviderLogImpl.class);
 
   @Override
-  void sendPush(final String user)
+  public void notify(final String appId, final String accessKey, final ImmutableSet<String> recipients, final WObject<?> msg)
   {
-    LOG.error("Pushing to {}", user);
+    LOG.info("Message to {}: {}", recipients, msg);
   }
 }

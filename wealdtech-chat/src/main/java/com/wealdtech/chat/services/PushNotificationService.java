@@ -12,28 +12,33 @@ package com.wealdtech.chat.services;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.wealdtech.WObject;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Subscription;
+import com.wealdtech.notifications.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Basic structure for handling notifications without the notification system itself
+ * Wrapper class for Wealdtech notifications
  */
-public abstract class NotificationServiceAbstractImpl implements NotificationService
+public class PushNotificationService
 {
-  private static final Logger LOG = LoggerFactory.getLogger(NotificationServiceAbstractImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PushNotificationService.class);
 
   private final SubscriptionService subscriptionService;
+  private final NotificationService notificationService;
 
   @Inject
-  public NotificationServiceAbstractImpl(final SubscriptionService subscriptionService)
+  public PushNotificationService(final SubscriptionService subscriptionService,
+                                 final NotificationService notificationService)
   {
     this.subscriptionService = subscriptionService;
+    this.notificationService = notificationService;
   }
 
-  @Override
   public void notify(final Message message)
   {
     final ImmutableList<Subscription> subscriptions;
@@ -55,10 +60,8 @@ public abstract class NotificationServiceAbstractImpl implements NotificationSer
     {
       if (!Objects.equal(subscription.getUser(), message.getFrom()))
       {
-        sendPush(subscription.getUser());
+        notificationService.notify(ImmutableSet.of(subscription.getUser()), WObject.builder().data("msg", "foo").build());
       }
     }
   }
-
-  abstract void sendPush(final String user);
 }

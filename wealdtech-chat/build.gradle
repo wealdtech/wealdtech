@@ -16,6 +16,7 @@ dependencies
     compile project(':wealdtech-wobject')
     compile project(':wealdtech-wobject-datastore')
     compile project(':wealdtech-jersey-server')
+    compile project(':wealdtech-notifications')
     // API documentation
     compile 'com.wordnik:swagger-jersey-jaxrs_2.11:1.3.12'
 }

@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/wealdtech-jersey-server" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
+            <option value="$PROJECT_DIR$/wealdtech-notifications" />
             <option value="$PROJECT_DIR$/wealdtech-retrofit" />
             <option value="$PROJECT_DIR$/wealdtech-roberto" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />

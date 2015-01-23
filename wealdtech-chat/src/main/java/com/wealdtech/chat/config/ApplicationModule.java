@@ -20,12 +20,16 @@ import com.wealdtech.chat.repositories.MessageRepository;
 import com.wealdtech.chat.repositories.MessageRepositoryPostgreSqlImpl;
 import com.wealdtech.chat.repositories.SubscriptionRepository;
 import com.wealdtech.chat.repositories.SubscriptionRepositoryPostgreSqlImpl;
-import com.wealdtech.chat.services.*;
+import com.wealdtech.chat.services.MessageService;
+import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
+import com.wealdtech.chat.services.SubscriptionService;
+import com.wealdtech.chat.services.SubscriptionServicePostgreSqlImpl;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
+import com.wealdtech.notifications.config.NotificationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +61,7 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
+      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
 
       // Bind Chat service to use PostgreSql
       bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("messagerepositoryconfiguration"))
@@ -69,10 +74,6 @@ public class ApplicationModule extends AbstractModule
                                          .toInstance(configuration.getPostgreSqlConfiguration());
       bind(SubscriptionRepository.class).to(SubscriptionRepositoryPostgreSqlImpl.class).in(Singleton.class);
       bind(SubscriptionService.class).to(SubscriptionServicePostgreSqlImpl.class).in(Singleton.class);
-
-      // Bind notification service to use Logger
-      bind(NotificationService.class).to(NotificationServiceLogImpl.class).in(Singleton.class);
-
     }
     catch (final DataError de)
     {
