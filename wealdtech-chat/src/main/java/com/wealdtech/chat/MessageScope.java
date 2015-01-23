@@ -19,7 +19,7 @@ import java.util.Locale;
 
 /**
  */
-public enum ChatScope
+public enum MessageScope
 {
   INDIVIDUAL,
   GROUP,
@@ -33,7 +33,7 @@ public enum ChatScope
   }
 
   @JsonCreator
-  public static ChatScope fromString(final String val)
+  public static MessageScope fromString(final String val)
   {
     try
     {

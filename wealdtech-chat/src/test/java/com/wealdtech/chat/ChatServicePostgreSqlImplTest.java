@@ -11,7 +11,7 @@
 package com.wealdtech.chat;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.chat.services.ChatServicePostgreSqlImpl;
+import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import org.testng.annotations.AfterClass;
@@ -27,7 +27,7 @@ import static org.testng.Assert.*;
  */
 public class ChatServicePostgreSqlImplTest
 {
-  ChatServicePostgreSqlImpl service;
+  MessageServicePostgreSqlImpl service;
   PostgreSqlRepository repo;
 
   @BeforeClass
@@ -35,7 +35,7 @@ public class ChatServicePostgreSqlImplTest
   {
     final PostgreSqlRepository repository =
         new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "chat", "chat", "chat", null, null, null));
-    service = new ChatServicePostgreSqlImpl(repository);
+    service = new MessageServicePostgreSqlImpl(repository);
     service.createDatastore();
   }
 
@@ -53,15 +53,15 @@ public class ChatServicePostgreSqlImplTest
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
 
-    final Chat testChat = Chat.builder()
+    final Message testChat = Message.builder()
                               .from(methodName)
-                              .scope(ChatScope.EVERYONE)
+                              .scope(MessageScope.EVERYONE)
                               .topic("test topic")
                               .message("Test message")
                               .build();
     service.add(testChat);
 
-    final ImmutableList<Chat> chats = service.getChats(methodName, "test topic");
+    final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
     assertChatsContain(chats, testChat);
   }
 
@@ -75,32 +75,32 @@ public class ChatServicePostgreSqlImplTest
   public void testTopicGet()
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
-    final Chat testChat1 = Chat.builder()
+    final Message testChat1 = Message.builder()
                                .from(methodName)
-                               .scope(ChatScope.EVERYONE)
+                               .scope(MessageScope.EVERYONE)
                                .topic("test topic")
                                .message("Test message 1")
                                .build();
     service.add(testChat1);
-    final Chat testChat2 = Chat.builder()
+    final Message testChat2 = Message.builder()
                                .from(methodName)
-                               .scope(ChatScope.EVERYONE)
+                               .scope(MessageScope.EVERYONE)
                                .topic("test topic 2")
                                .message("Test message 2")
                                .build();
     service.add(testChat2);
 
-    final ImmutableList<Chat> chats = service.getChats(methodName, "test topic");
+    final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
     assertChatsContain(chats, testChat1);
     assertChatsDoNotContain(chats, testChat2);
   }
 
-  private static void assertChatsContain(@Nullable final ImmutableList<Chat> chats, final Chat expectedChat)
+  private static void assertChatsContain(@Nullable final ImmutableList<Message> chats, final Message expectedChat)
   {
     assertNotNull(chats, "Chats not supplied");
     assertFalse(chats.isEmpty(), "Chats are empty");
     int numFound = 0;
-    for (final Chat chat : chats)
+    for (final Message chat : chats)
     {
       if (chat.equals(expectedChat))
       {
@@ -111,12 +111,12 @@ public class ChatServicePostgreSqlImplTest
     assertEquals(numFound, 1, "Found incorrect number of matching chats");
   }
 
-  private static void assertChatsDoNotContain(@Nullable final ImmutableList<Chat> chats, final Chat expectedChat)
+  private static void assertChatsDoNotContain(@Nullable final ImmutableList<Message> chats, final Message expectedChat)
   {
     assertNotNull(chats, "Chats not supplied");
     assertFalse(chats.isEmpty(), "Chats are empty");
     int numFound = 0;
-    for (final Chat chat : chats)
+    for (final Message chat : chats)
     {
       if (chat.equals(expectedChat))
       {

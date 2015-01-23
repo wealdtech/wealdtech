@@ -11,22 +11,22 @@
 package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.chat.Chat;
+import com.wealdtech.chat.Message;
 
 import javax.annotation.Nullable;
 
 /**
  * Interface defining chat service methods
  */
-public interface ChatService
+public interface MessageService
 {
   /**
    * Add a chat
    */
-  public void add(Chat chat);
+  public void add(Message chat);
 
   /**
    * Get chats
    */
-  public ImmutableList<Chat> getChats(String from, @Nullable String topic);
+  public ImmutableList<Message> getChats(String from, @Nullable String topic);
 }

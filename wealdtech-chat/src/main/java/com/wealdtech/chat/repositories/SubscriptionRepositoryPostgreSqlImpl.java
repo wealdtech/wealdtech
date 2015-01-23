@@ -10,7 +10,18 @@
 
 package com.wealdtech.chat.repositories;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.datastore.repository.PostgreSqlRepository;
+
 /**
  */
-public interface ChatRepository
-{}
+public class SubscriptionRepositoryPostgreSqlImpl extends PostgreSqlRepository implements SubscriptionRepository
+{
+  @Inject
+  public SubscriptionRepositoryPostgreSqlImpl(@Named("subscriptionrepositoryconfiguration") final PostgreSqlConfiguration configuration)
+  {
+    super(configuration);
+  }
+}

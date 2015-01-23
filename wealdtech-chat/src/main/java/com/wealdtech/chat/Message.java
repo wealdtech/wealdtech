@@ -13,7 +13,6 @@ package com.wealdtech.chat;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.DataError;
 import com.wealdtech.WObject;
@@ -26,9 +25,9 @@ import java.util.Map;
 /**
  * A chat element
  */
-public class Chat extends WObject<Chat> implements Comparable<Chat>
+public class Message extends WObject<Message> implements Comparable<Message>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(Chat.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
   private static final String FROM = "from";
   private static final String SCOPE = "scope";
@@ -38,7 +37,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
   private static final String MESSAGE = "message";
 
   @JsonCreator
-  public Chat(final Map<String, Object> data)
+  public Message(final Map<String, Object> data)
   {
     super(data);
   }
@@ -69,8 +68,8 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
       throw new DataError.Missing("Chat needs 'timestamp' information");
     }
 
-    final ChatScope scope = getScope();
-    if (scope == ChatScope.GROUP || scope == ChatScope.INDIVIDUAL)
+    final MessageScope scope = getScope();
+    if (scope == MessageScope.GROUP || scope == MessageScope.INDIVIDUAL)
     {
       if (!exists(TO))
       {
@@ -101,9 +100,9 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
   }
 
   @JsonIgnore
-  public ChatScope getScope()
+  public MessageScope getScope()
   {
-    return get(SCOPE, ChatScope.class).get();
+    return get(SCOPE, MessageScope.class).get();
   }
 
   @JsonIgnore
@@ -128,14 +127,14 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
     return get(MESSAGE, String.class).get();
   }
 
-  public static class Builder<P extends Builder<P>> extends WObject.Builder<Chat, P>
+  public static class Builder<P extends Builder<P>> extends WObject.Builder<Message, P>
   {
     public Builder()
     {
       super();
     }
 
-    public Builder(final Chat prior)
+    public Builder(final Message prior)
     {
       super(prior);
     }
@@ -146,7 +145,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
       return self();
     }
 
-    public P scope(final ChatScope scope)
+    public P scope(final MessageScope scope)
     {
       data(SCOPE, scope);
       return self();
@@ -176,9 +175,9 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
       return self();
     }
 
-    public Chat build()
+    public Message build()
     {
-      return new Chat(data);
+      return new Message(data);
     }
   }
 
@@ -187,7 +186,7 @@ public class Chat extends WObject<Chat> implements Comparable<Chat>
     return new Builder();
   }
 
-  public static Builder<?> builder(final Chat prior)
+  public static Builder<?> builder(final Message prior)
   {
     return new Builder(prior);
   }

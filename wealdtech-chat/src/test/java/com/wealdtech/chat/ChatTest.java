@@ -28,9 +28,9 @@ public class ChatTest
   @Test
   public void testSer() throws JsonProcessingException
   {
-    final Chat chat = Chat.builder()
+    final Message chat = Message.builder()
                           .from("test from")
-                          .scope(ChatScope.EVERYONE)
+                          .scope(MessageScope.EVERYONE)
                           .data("extkey1", "extval1")
                           .data("extkey2", "extval2")
                           .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
@@ -42,9 +42,9 @@ public class ChatTest
   @Test
   public void testDeser() throws IOException
   {
-    final Chat chat = Chat.builder()
+    final Message chat = Message.builder()
                           .from("test from")
-                          .scope(ChatScope.EVERYONE)
+                          .scope(MessageScope.EVERYONE)
                           .data("extkey1", "extval1")
                           .data("extkey2", "extval2")
                           .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
@@ -54,7 +54,7 @@ public class ChatTest
 
     final String ser = "{\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":\"1970-01-15T01:56:07-05:00 America/New_York\",\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}";
 
-    final Chat testChat = WealdMapper.getServerMapper().readValue(ser, Chat.class);
+    final Message testChat = WealdMapper.getServerMapper().readValue(ser, Message.class);
 
     assertEquals(chat, testChat);
   }

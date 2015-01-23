@@ -16,8 +16,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.inject.Inject;
-import com.wealdtech.chat.Chat;
-import com.wealdtech.chat.services.ChatService;
+import com.wealdtech.chat.Message;
+import com.wealdtech.chat.services.MessageService;
+import com.wealdtech.chat.services.NotificationService;
 import com.wordnik.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -30,18 +31,21 @@ import javax.ws.rs.core.MediaType;
 /**
  * Resource for chat methods
  */
-@Path("/chats")
-@Api(value = "/chats", description = "Obtain and update chats")
-public class ChatResource
+@Path("/messages")
+@Api(value = "/messages", description = "Obtain and update chats")
+public class MessageResource
 {
-  private static final Logger LOG = LoggerFactory.getLogger(ChatResource.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MessageResource.class);
 
-  private final ChatService service;
+  private final MessageService messageService;
+  private final NotificationService notificationService;
 
   @Inject
-  public ChatResource(final ChatService service)
+  public MessageResource(final MessageService messageService,
+                         final NotificationService notificationService)
   {
-    this.service = service;
+    this.messageService = messageService;
+    this.notificationService = notificationService;
   }
 
   @Timed
@@ -49,20 +53,20 @@ public class ChatResource
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Obtain all chats", notes = "Obtain all chats regardless of topic")
   @ApiResponses(value={@ApiResponse(code=404, message="Chat not found")})
-  public ImmutableMultimap<String, Chat> getChats(@ApiParam(value = "time that last set of chats were obtained", required = false) @QueryParam("since") final DateTime since)
+  public ImmutableMultimap<String, Message> getChats(@ApiParam(value = "time that last set of chats were obtained", required = false) @QueryParam("since") final DateTime since)
   {
-    final ImmutableList<Chat> chats = service.getChats(null, null);
+    final ImmutableList<Message> chats = messageService.getChats(null, null);
     if (chats.isEmpty())
     {
       return ImmutableMultimap.of();
     }
     else
     {
-      return Multimaps.index(chats, new Function<Chat, String>()
+      return Multimaps.index(chats, new Function<Message, String>()
       {
         @Nullable
         @Override
-        public String apply(final Chat input)
+        public String apply(final Message input)
         {
           return input.getTopic();
         }
@@ -78,21 +82,22 @@ public class ChatResource
   @GET
   @Path("{topic: .*+}")
   @Produces(MediaType.APPLICATION_JSON)
-  public ImmutableList<Chat> getChats(@PathParam("topic") final String topic,
+  public ImmutableList<Message> getChats(@PathParam("topic") final String topic,
                                       @QueryParam("since") final DateTime since)
   {
-    return service.getChats(null, topic);
+    return messageService.getChats(null, topic);
   }
 
   /**
-   * Add a chat to a topic
-   * @param chat the chat
+   * Add a message to a topic
+   * @param message the message
    */
   @Timed
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public void addChat(final Chat chat)
+  public void addChat(final Message message)
   {
-    service.add(chat);
+    messageService.add(message);
+    notificationService.notify(message);
   }
 }

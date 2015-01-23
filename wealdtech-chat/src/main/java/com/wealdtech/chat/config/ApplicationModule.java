@@ -16,10 +16,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.wealdtech.DataError;
-import com.wealdtech.chat.repositories.ChatRepository;
-import com.wealdtech.chat.repositories.ChatRepositoryPostgreSqlImpl;
-import com.wealdtech.chat.services.ChatService;
-import com.wealdtech.chat.services.ChatServicePostgreSqlImpl;
+import com.wealdtech.chat.repositories.MessageRepository;
+import com.wealdtech.chat.repositories.MessageRepositoryPostgreSqlImpl;
+import com.wealdtech.chat.repositories.SubscriptionRepository;
+import com.wealdtech.chat.repositories.SubscriptionRepositoryPostgreSqlImpl;
+import com.wealdtech.chat.services.*;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
@@ -58,10 +59,20 @@ public class ApplicationModule extends AbstractModule
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
 
       // Bind Chat service to use PostgreSql
-      bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("chatrepositoryconfiguration"))
+      bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("messagerepositoryconfiguration"))
                                          .toInstance(configuration.getPostgreSqlConfiguration());
-      bind(ChatRepository.class).to(ChatRepositoryPostgreSqlImpl.class).in(Singleton.class);
-      bind(ChatService.class).to(ChatServicePostgreSqlImpl.class).in(Singleton.class);
+      bind(MessageRepository.class).to(MessageRepositoryPostgreSqlImpl.class).in(Singleton.class);
+      bind(MessageService.class).to(MessageServicePostgreSqlImpl.class).in(Singleton.class);
+
+      // Bind Subscription service to use PostgreSql
+      bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("subscriptionrepositoryconfiguration"))
+                                         .toInstance(configuration.getPostgreSqlConfiguration());
+      bind(SubscriptionRepository.class).to(SubscriptionRepositoryPostgreSqlImpl.class).in(Singleton.class);
+      bind(SubscriptionService.class).to(SubscriptionServicePostgreSqlImpl.class).in(Singleton.class);
+
+      // Bind notification service to use Logger
+      bind(NotificationService.class).to(NotificationServiceLogImpl.class).in(Singleton.class);
+
     }
     catch (final DataError de)
     {

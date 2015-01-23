@@ -18,7 +18,12 @@ import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
 
 /**
- * Daemon for the chat API
+ * Daemon for the chat API.
+ * The chat daemon has three endpoints: topics, messages and subscriptions.
+ * A user can subscribe to any number of topics.
+ * A user can send a message to any topic to which they are subscribed.
+ * A user can send a message to any set of individuals who are also subscribed to the same topic.
+ * A user can retrieve messages from any topic to which they are subscribed.
  */
 public class ChatD
 {

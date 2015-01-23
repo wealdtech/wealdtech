@@ -13,7 +13,7 @@ package com.wealdtech.chat.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import com.wealdtech.chat.Chat;
+import com.wealdtech.chat.Message;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
@@ -24,22 +24,22 @@ import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
 
 /**
- * Chat service using PostgreSQL as a backend
+ * Message service using PostgreSQL as a backend
  */
-public class ChatServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Chat> implements ChatService
+public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Message> implements MessageService
 {
-  private static final Logger LOG = LoggerFactory.getLogger(ChatServicePostgreSqlImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MessageServicePostgreSqlImpl.class);
 
-  private static final TypeReference<Chat> CHAT_TYPE_REFERENCE = new TypeReference<Chat>(){};
+  private static final TypeReference<Message> CHAT_TYPE_REFERENCE = new TypeReference<Message>(){};
 
   @Inject
-  public ChatServicePostgreSqlImpl(final PostgreSqlRepository repository)
+  public MessageServicePostgreSqlImpl(final PostgreSqlRepository repository)
   {
-    super(repository, "chat");
+    super(repository, "message");
   }
 
   @Override
-  public ImmutableList<Chat> getChats(final String from, @Nullable final String topic)
+  public ImmutableList<Message> getChats(final String from, @Nullable final String topic)
   {
     return obtain(CHAT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
