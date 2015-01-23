@@ -10,11 +10,11 @@
 
 package com.wealdtech.jersey.providers;
 
-import javax.ws.rs.ext.Provider;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.core.HttpContext;
 import com.wealdtech.jackson.WealdMapper;
+
+import javax.ws.rs.ext.Provider;
 
 /**
  * Provide an objectmapper.

@@ -19,17 +19,17 @@ import javax.annotation.Nullable;
  */
 public interface WObjectServiceCallback<T>
 {
-  public String getConditions();
+  @Nullable String getConditions();
 
-  public void setConditionValues(T stmt);
+  void setConditionValues(T stmt);
 
-  public WObjectServiceCallback<T> setString(T stmt, int index, @Nullable String val);
+  WObjectServiceCallback<T> setString(T stmt, int index, @Nullable String val);
 
-  public WObjectServiceCallback<T> setStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);
+  WObjectServiceCallback<T> setStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);
 
-  public WObjectServiceCallback<T> setWID(T stmt, int index, @Nullable WID<?> val);
+  WObjectServiceCallback<T> setWID(T stmt, int index, @Nullable WID<?> val);
 
-  public WObjectServiceCallback<T> setWIDArray(T stmt, int index, @Nullable ImmutableCollection<? extends WID<?>> val);
+  WObjectServiceCallback<T> setWIDArray(T stmt, int index, @Nullable ImmutableCollection<? extends WID<?>> val);
 
-  public WObjectServiceCallback<T> setLong(T stmt, int index, @Nullable Long val);
+  WObjectServiceCallback<T> setLong(T stmt, int index, @Nullable Long val);
 }

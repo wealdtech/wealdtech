@@ -11,34 +11,68 @@
 package com.wealdtech.chat.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimaps;
+import com.google.inject.Inject;
 import com.wealdtech.chat.Chat;
+import com.wealdtech.chat.services.ChatService;
+import com.wordnik.swagger.annotations.*;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for chat methods
  */
-@Path("/")
+@Path("/chats")
+@Api(value = "/chats", description = "Obtain and update chats")
 public class ChatResource
 {
-  /**
-   * Obtain chats for multiple topics
-   */
+  private static final Logger LOG = LoggerFactory.getLogger(ChatResource.class);
+
+  private final ChatService service;
+
+  @Inject
+  public ChatResource(final ChatService service)
+  {
+    this.service = service;
+  }
+
   @Timed
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public ImmutableMultimap<String, Chat> getChats(@QueryParam("since") final DateTime since)
+  @ApiOperation(value = "Obtain all chats", notes = "Obtain all chats regardless of topic")
+  @ApiResponses(value={@ApiResponse(code=404, message="Chat not found")})
+  public ImmutableMultimap<String, Chat> getChats(@ApiParam(value = "time that last set of chats were obtained", required = false) @QueryParam("since") final DateTime since)
   {
-    return ImmutableMultimap.of();
+    final ImmutableList<Chat> chats = service.getChats(null, null);
+    if (chats.isEmpty())
+    {
+      return ImmutableMultimap.of();
+    }
+    else
+    {
+      return Multimaps.index(chats, new Function<Chat, String>()
+      {
+        @Nullable
+        @Override
+        public String apply(final Chat input)
+        {
+          return input.getTopic();
+        }
+      });
+    }
   }
 
   /**
    * Obtain chats for a single topic
-   * @param topic
+   * @param topic the name of the topic for which to fetch chats
    */
   @Timed
   @GET
@@ -47,20 +81,18 @@ public class ChatResource
   public ImmutableList<Chat> getChats(@PathParam("topic") final String topic,
                                       @QueryParam("since") final DateTime since)
   {
-    return ImmutableList.of();
+    return service.getChats(null, topic);
   }
 
   /**
    * Add a chat to a topic
-   * @param topic
-   * @param chat
+   * @param chat the chat
    */
   @Timed
   @POST
-  @Path("{topic: .*+}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public void addChat(@PathParam("topic") final String topic, final Chat chat)
+  public void addChat(final Chat chat)
   {
-
+    service.add(chat);
   }
 }

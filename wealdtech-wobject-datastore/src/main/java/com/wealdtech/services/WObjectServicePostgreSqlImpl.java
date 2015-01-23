@@ -183,7 +183,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
       conn = repository.getConnection();
 
       final PreparedStatement stmt;
-      if (cb == null)
+      if (cb == null || cb.getConditions() == null)
       {
         stmt = conn.prepareStatement(obtainSql);
       }

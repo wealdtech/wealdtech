@@ -46,7 +46,7 @@ public class ChatServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Chat
       @Override
       public String getConditions()
       {
-        return "d @> ?";
+        return topic == null ? null : "d @> ?";
       }
 
       @Override

@@ -28,6 +28,7 @@ public class ChatD
                                                    new WealdInstrumentationModule(),
                                                    new JerseyServletModule("com.wealdtech.chat.resources"));
     final JettyServer server = injector.getInstance(JettyServer.class);
+
     try
     {
       server.start();
