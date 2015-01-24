@@ -128,8 +128,8 @@ public class WIDTest
     assertEquals(testWid, testWid);
     assertNotEquals(testWid, null);
     assertNotEquals(null, testWid);
-    assertEquals(testWid.getShardId(), 6480);
-    assertEquals(testWid.getTimestamp(), 3504852236252L);
+    assertEquals(testWid.getShardId(), 2384);
+    assertEquals(testWid.getTimestamp(), 3504852236253L);
     assertEquals(testWid.getIid(), 801);
 
     final WID<Date> testWid2 = WID.fromString("7edcba09f7654321.1");
@@ -225,6 +225,13 @@ public class WIDTest
     assertEquals(testWid2.getSubId().get(), (Long)2L);
     final WID<Date> testWid3 = testWid1.withSubId(null);
     assertFalse(testWid3.hasSubId());
+  }
+
+  @Test
+  public void testShardId()
+  {
+    final WID<?> testWid = WID.fromComponents(123L, System.currentTimeMillis(), 1);
+    assertEquals(testWid.getShardId(), 123L);
   }
 }
 
