@@ -140,6 +140,15 @@ public class WObject<T extends WObject> implements Comparable<T>
     return getValue(val, typeRef);
   }
 
+  /**
+   * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
+   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
+   * change between invocations (although the values returned from a single invocation will not).
+   * @return a map of keyed data objects
+   */
+  @JsonIgnore
+  public ImmutableMap<String, Object> getData() { return externalData; }
+
   @JsonIgnore
   public WID<T> getId() { return get(ID, ID_TYPE_REF).get();}
 
