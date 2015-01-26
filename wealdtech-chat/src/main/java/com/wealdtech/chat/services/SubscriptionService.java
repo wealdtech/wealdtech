@@ -12,6 +12,7 @@ package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.WID;
 import com.wealdtech.chat.Subscription;
 
 /**
@@ -27,7 +28,7 @@ public interface SubscriptionService
   /**
    * Remove a subscription
    */
-  void remove(Subscription subscription);
+  void remove(WID<Subscription> subscriptionId);
 
   ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<String> users);
 

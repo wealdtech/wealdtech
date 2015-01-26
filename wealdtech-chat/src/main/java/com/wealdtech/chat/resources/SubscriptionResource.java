@@ -11,9 +11,12 @@
 package com.wealdtech.chat.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.services.SubscriptionService;
+import com.wealdtech.services.WIDService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -35,11 +38,13 @@ public class SubscriptionResource
   private static final Logger LOG = LoggerFactory.getLogger(SubscriptionResource.class);
 
   private final SubscriptionService service;
+  private final WIDService widService;
 
   @Inject
-  public SubscriptionResource(final SubscriptionService service)
+  public SubscriptionResource(final SubscriptionService service, final WIDService widService)
   {
     this.service = service;
+    this.widService = widService;
   }
 
   @Timed
@@ -48,7 +53,8 @@ public class SubscriptionResource
   @ApiOperation(value = "Subscribe to a topic")
   public void subscribe(@ApiParam(value = "the ID of the topic to which to subscribe", required = true) @PathParam("topic") final String topic)
   {
-    service.add(Subscription.builder().user("jgm").topic(topic).build());
+    final String user = "jgm";
+    service.add(Subscription.builder().id(widService.<Subscription>obtain()).user(user).topic(topic).build());
   }
 
   @Timed
@@ -57,6 +63,12 @@ public class SubscriptionResource
   @ApiOperation(value = "Unsubscribe from a topic")
   public void unsubscribe(@PathParam("topic") final String topic)
   {
-    service.remove(Subscription.builder().user("jgm").topic(topic).build());
+    final String user = "jgm";
+    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(user));
+    if (subscriptions.isEmpty())
+    {
+      LOG.warn("Attempt to unsubscribe from nonexistent subscription {}/{}", topic, user);
+    }
+    service.remove(subscriptions.iterator().next().getId());
   }
 }

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.wealdtech.ServerError;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;

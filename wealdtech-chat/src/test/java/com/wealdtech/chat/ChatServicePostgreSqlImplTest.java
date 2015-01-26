@@ -11,6 +11,7 @@
 package com.wealdtech.chat;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.WID;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
@@ -54,11 +55,12 @@ public class ChatServicePostgreSqlImplTest
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
 
     final Message testChat = Message.builder()
-                              .from(methodName)
-                              .scope(MessageScope.EVERYONE)
-                              .topic("test topic")
-                              .message("Test message")
-                              .build();
+                                    .id(WID.<Message>generate())
+                                    .from(methodName)
+                                    .scope(MessageScope.EVERYONE)
+                                    .topic("test topic")
+                                    .message("Test message")
+                                    .build();
     service.add(testChat);
 
     final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
@@ -76,18 +78,20 @@ public class ChatServicePostgreSqlImplTest
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
     final Message testChat1 = Message.builder()
-                               .from(methodName)
-                               .scope(MessageScope.EVERYONE)
-                               .topic("test topic")
-                               .message("Test message 1")
-                               .build();
+                                     .id(WID.<Message>generate())
+                                     .from(methodName)
+                                     .scope(MessageScope.EVERYONE)
+                                     .topic("test topic")
+                                     .message("Test message 1")
+                                     .build();
     service.add(testChat1);
     final Message testChat2 = Message.builder()
-                               .from(methodName)
-                               .scope(MessageScope.EVERYONE)
-                               .topic("test topic 2")
-                               .message("Test message 2")
-                               .build();
+                                     .id(WID.<Message>generate())
+                                     .from(methodName)
+                                     .scope(MessageScope.EVERYONE)
+                                     .topic("test topic 2")
+                                     .message("Test message 2")
+                                     .build();
     service.add(testChat2);
 
     final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
