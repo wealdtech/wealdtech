@@ -11,6 +11,7 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import org.joda.time.DateTime;
@@ -32,6 +33,11 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
   @Override
   public DateTime deserialize(final JsonParser jp, final DeserializationContext deserializationContext) throws IOException
   {
+    final JsonToken token = jp.getCurrentToken();
+    if (token == JsonToken.VALUE_NUMBER_INT)
+    {
+      return new DateTime(jp.getLongValue(), DateTimeZone.UTC);
+    }
     final String txt = jp.getText();
     if (txt == null)
     {

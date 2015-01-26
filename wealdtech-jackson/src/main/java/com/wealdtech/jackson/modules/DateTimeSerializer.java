@@ -12,6 +12,7 @@ package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -45,7 +46,14 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   @Override
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeString(formatter.print(value));
+    if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
+    {
+      gen.writeNumber(value.getMillis());
+    }
+    else
+    {
+      gen.writeString(formatter.print(value));
+    }
   }
 
   @Override
@@ -53,8 +61,17 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
                                 TypeSerializer typeSer)
       throws IOException, JsonProcessingException
   {
-    typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
-    serialize(value, jgen, provider);
-    typeSer.writeTypeSuffixForScalar(value, jgen);
+    if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
+    {
+      typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
+      jgen.writeNumber(value.getMillis());
+      typeSer.writeTypeSuffixForScalar(value, jgen);
+    }
+    else
+    {
+      typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
+      serialize(value, jgen, provider);
+      typeSer.writeTypeSuffixForScalar(value, jgen);
+    }
   }
 }
