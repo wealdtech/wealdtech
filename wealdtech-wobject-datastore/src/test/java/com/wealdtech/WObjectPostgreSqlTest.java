@@ -87,9 +87,10 @@ public class WObjectPostgreSqlTest
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
 
     final TestWObject testObj = TestWObject.builder()
-                              .data("test string", "test value")
-                                    .data("test date", new DateTime(1234567890000L))
-                              .build();
+                                           .id(WID.<TestWObject>generate())
+                                           .data("test string", "test value")
+                                           .data("test date", new DateTime(1234567890000L))
+                                           .build();
     service.add(testObj);
 
     final ImmutableList<TestWObject> testObjs = service.obtain(new TypeReference<TestWObject>(){}, null);
@@ -102,14 +103,17 @@ public class WObjectPostgreSqlTest
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
     final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>generate())
                                             .data("val", "foo")
                                             .build();
     service.add(testObj1);
     final TestWObject testObj2 = TestWObject.builder()
+                                            .id(WID.<TestWObject>generate())
                                             .data("val", "bar")
                                             .build();
     service.add(testObj2);
     final TestWObject testObj3 = TestWObject.builder()
+                                            .id(WID.<TestWObject>generate())
                                             .data("val", "foo")
                                             .build();
     service.add(testObj3);
@@ -118,7 +122,7 @@ public class WObjectPostgreSqlTest
       @Override
       public String getConditions()
       {
-        return "f_data->>'val'=?";
+        return "d->>'val'=?";
       }
 
       @Override
@@ -138,18 +142,21 @@ public class WObjectPostgreSqlTest
   public void testRemove()
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
-    final TestWObject testObj1 = TestWObject.builder().data("val", methodName).data("id", 1).build();
+    final TestWObject testObj1 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("val", methodName).data("num", 1).build();
     service.add(testObj1);
-    final TestWObject testObj2 = TestWObject.builder().data("val", methodName).data("id", 2).build();
+    final TestWObject testObj2 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("val", methodName).data("num", 2).build();
     service.add(testObj2);
-    final TestWObject testObj3 = TestWObject.builder().data("val", methodName).data("id", 3).build();
+    final TestWObject testObj3 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("val", methodName).data("num", 3).build();
     service.add(testObj3);
 
     final ImmutableList<TestWObject> testObjs1 = service.obtain(new TypeReference<TestWObject>() {}, new WObjectServiceCallbackPostgreSqlImpl() {
       @Override
       public String getConditions()
       {
-        return "f_data->>'val'=?";
+        return "d->>'val' = ?";
       }
 
       @Override
@@ -160,12 +167,12 @@ public class WObjectPostgreSqlTest
     });
     assertEquals(testObjs1.size(), 3);
 
-    service.remove(testObj2);
+    service.remove(testObj2.getId());
     final ImmutableList<TestWObject> testObjs2 = service.obtain(new TypeReference<TestWObject>() {}, new WObjectServiceCallbackPostgreSqlImpl() {
       @Override
       public String getConditions()
       {
-        return "f_data->>'val'=?";
+        return "d->>'val' = ?";
       }
 
       @Override

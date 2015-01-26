@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -52,10 +54,16 @@ public class WObject<T extends WObject> implements Comparable<T>
       return input != null && !input.startsWith("_");}
   };
 
-  private static final WObject EMPTY = new WObject(ImmutableMap.<String, Object>of());
+  // Mapper used to read and write data
+  private static final ObjectMapper MAPPER = WealdMapper.getServerMapper()
+                                                        .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
+                                                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
 
-  @SuppressWarnings("unchecked")
-  public static <T extends WObject> T empty() { return (T)EMPTY; }
+  // Internal fields
+  @JsonIgnore
+  private static final String ID = "_id";
+  @JsonIgnore
+  private final TypeReference<WID<T>> ID_TYPE_REF = new TypeReference<WID<T>>(){};
 
   @JsonIgnore
   protected final ImmutableMap<String, Object> data;
@@ -75,6 +83,12 @@ public class WObject<T extends WObject> implements Comparable<T>
     this.data = ImmutableSortedMap.copyOf(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
 
+    // Ensure we have an ID
+    if (!this.data.containsKey(ID))
+    {
+      throw new DataError.Missing("Missing required ID");
+    }
+
     // Generate another map of the data which only contains external information
     this.externalData = ImmutableSortedMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
 
@@ -82,7 +96,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     // contains an object and another a serialized version of the object
     try
     {
-      this.hashCode = Objects.hashCode(WealdMapper.getServerMapper().writeValueAsString(this.externalData));
+      this.hashCode = Objects.hashCode(MAPPER.writeValueAsString(this.externalData));
     } catch (final IOException ioe)
     {
       LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
@@ -126,6 +140,9 @@ public class WObject<T extends WObject> implements Comparable<T>
     return getValue(val, typeRef);
   }
 
+  @JsonIgnore
+  public WID<T> getId() { return get(ID, ID_TYPE_REF).get();}
+
   protected <U> Optional<U> getValue(final Object val, final TypeReference<U> typeRef)
   {
     // Obtain the type we are after through reflection to find out if it is a collection
@@ -143,7 +160,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     final String valStr = stringify(val, isCollection);
     try
     {
-      return Optional.fromNullable((U)WealdMapper.getMapper().readValue(valStr, typeRef));
+      return Optional.fromNullable((U)MAPPER.readValue(valStr, typeRef));
     }
     catch (final IOException ioe)
     {
@@ -170,7 +187,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     final String valStr = stringify(val, Collection.class.isAssignableFrom(klazz));
     try
     {
-      return Optional.fromNullable(WealdMapper.getMapper().readValue(valStr, klazz));
+      return Optional.fromNullable(MAPPER.readValue(valStr, klazz));
     }
     catch (final IOException ioe)
     {
@@ -190,7 +207,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       try
       {
-        valStr = WealdMapper.getMapper().writeValueAsString(val);
+        valStr = MAPPER.writeValueAsString(val);
       }
       catch (final IOException ioe)
       {
@@ -237,10 +254,14 @@ public class WObject<T extends WObject> implements Comparable<T>
     return data.containsKey(key);
   }
 
+  /**
+   * State if this object is empty or not.  Internal fields are not taken in to account when deciding this.
+   * @return {@code true} if this object does not contain any useful data; otherwise {@code false}.
+   */
   @JsonIgnore
   public boolean isEmpty()
   {
-    return data.isEmpty();
+    return externalData.isEmpty();
   }
 
   @Override
@@ -248,7 +269,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   {
     try
     {
-      return WealdMapper.getServerMapper().writeValueAsString(this);
+      return MAPPER.writeValueAsString(this);
     }
     catch (final JsonProcessingException e)
     {
@@ -284,8 +305,8 @@ public class WObject<T extends WObject> implements Comparable<T>
     try
     {
       return ComparisonChain.start()
-                            .compare(WealdMapper.getServerMapper().writeValueAsString(this.externalData),
-                                     WealdMapper.getServerMapper().writeValueAsString(that.externalData))
+                            .compare(MAPPER.writeValueAsString(this.externalData),
+                                     MAPPER.writeValueAsString(that.externalData))
                             .result();
     }
     catch (final IOException ioe)
@@ -313,6 +334,12 @@ public class WObject<T extends WObject> implements Comparable<T>
     public P data(final Map<String, Object> data)
     {
       this.data = data;
+      return self();
+    }
+
+    public P id(final WID<T> id)
+    {
+      this.data.put(ID, id);
       return self();
     }
 

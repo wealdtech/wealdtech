@@ -15,10 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import com.wealdtech.DataError;
-import com.wealdtech.ServerError;
-import com.wealdtech.WObject;
-import com.wealdtech.WealdError;
+import com.wealdtech.*;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
 import org.postgresql.util.PGobject;
@@ -32,10 +29,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
  * WObject service using PostgreSQL as a backend
  */
-public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectService<T, PreparedStatement>
+public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObjectService<T, PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObjectServicePostgreSqlImpl.class);
 
@@ -50,7 +49,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
   private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
 
   private static final String REMOVE_SQL = "DELETE FROM t_TABLENAME\n" +
-                                           "WHERE d = ?";
+                                           "WHERE d->>'_id' = ?";
 
   private static final String OBTAIN_SQL = "SELECT d\n" +
                                            "FROM t_TABLENAME";
@@ -109,8 +108,10 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
   }
 
   @Override
-  public void add(final T wObject)
+  public void add(final T item)
   {
+    checkState(item != null, "Passed NULL item");
+
     Connection conn = null;
     try
     {
@@ -121,7 +122,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
       obj.setType("jsonb");
       try
       {
-        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(wObject));
+        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(item));
       }
       catch (final JsonProcessingException jpe)
       {
@@ -142,7 +143,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
   }
 
   @Override
-  public void remove(final T wObject)
+  public void remove(final WID<T> itemId)
   {
     Connection conn = null;
     try
@@ -150,18 +151,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject> implements WObjectS
       conn = repository.getConnection();
 
       final PreparedStatement stmt = conn.prepareStatement(removeSql);
-      final PGobject obj = new PGobject();
-      obj.setType("jsonb");
-      try
-      {
-        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(wObject));
-      }
-      catch (final JsonProcessingException jpe)
-      {
-        throw new ServerError("Failed to create json for deletion from database", jpe);
-      }
-      stmt.setObject(1, obj);
-
+      stmt.setString(1, itemId.toString());
       stmt.execute();
     }
     catch (final SQLException se)

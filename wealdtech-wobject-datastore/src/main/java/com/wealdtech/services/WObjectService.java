@@ -12,6 +12,7 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
 
 /**
@@ -36,12 +37,12 @@ public interface WObjectService<T extends WObject, U>
   /**
    * Add a object
    */
-  public void add(T wObject);
+  public void add(T item);
 
   /**
    * Remove an object
    */
-  public void remove(T wObject);
+  public void remove(WID<T> itemId);
 
   /**
    * Obtain objects

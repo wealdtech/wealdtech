@@ -42,9 +42,9 @@ public class WObjectTest
 
     public static class Builder<P extends Builder<P>> extends WObject.Builder<TestWObject, P>
     {
-      public Builder() { super(); }
+      public Builder(){ super(); }
 
-      public Builder(final TestWObject prior) { super(prior); }
+      public Builder(final TestWObject prior){ super(prior); }
 
       public TestWObject build()
       {
@@ -52,23 +52,28 @@ public class WObjectTest
       }
     }
 
-    public static Builder<?> builder() { return new Builder(); }
+    public static Builder<?> builder(){ return new Builder(); }
 
-    public static Builder<?> builder(final TestWObject prior) { return new Builder(prior); }
+    public static Builder<?> builder(final TestWObject prior){ return new Builder(prior); }
   }
 
   @Test
   public void testSer() throws JsonProcessingException
   {
-    final TestWObject testObj1 = TestWObject.builder().data("test string", "test value").data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>fromLong(17813481239461L))
+                                            .data("test string", "test value")
+                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
+                                            .build();
     final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
-    assertEquals(testObj1Ser, "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}");
+    assertEquals(testObj1Ser, "{\"_id\":\"10338638b3a5\",\"test date\":123456789000,\"test string\":\"test value\"}");
   }
 
   @Test
   public void testDeser() throws IOException
   {
-    final String testObj1Ser = "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}";
+    final String testObj1Ser =
+        "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}";
     final TestWObject testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
     assertEquals(testObj1.get("test string", String.class).orNull(), "test value");
     assertEquals(testObj1.get("test date", DateTime.class).orNull(), new DateTime(123456789000L, DateTimeZone.UTC));
@@ -77,18 +82,29 @@ public class WObjectTest
   @Test
   public void testSerNested() throws JsonProcessingException
   {
-    final TestWObject testObj1 = TestWObject.builder().data("test string", "test value").data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
-    final TestWObject testObj2 = TestWObject.builder().data("test obj", testObj1).data("test date", new DateTime(234567890000L, DateTimeZone.UTC)).build();
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>fromLong(9876543210L))
+                                            .data("test string", "test value")
+                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
+                                            .build();
+    final TestWObject testObj2 = TestWObject.builder()
+                                            .id(WID.<TestWObject>fromLong(9876543211L))
+                                            .data("test obj", testObj1)
+                                            .data("test date", new DateTime(234567890000L, DateTimeZone.UTC))
+                                            .build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
-    assertEquals(testObj2Ser, "{\"test date\":\"1977-06-07T21:44:50+00:00 UTC\",\"test obj\":{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}}");
+    assertEquals(testObj2Ser,
+                 "{\"_id\":\"24cb016eb\",\"test date\":234567890000,\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":123456789000,\"test string\":\"test value\"}}");
   }
 
   @Test
   public void testDeserNested() throws IOException
   {
-    final String testObj2Ser =  "{\"test obj\":{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"},\"test date\":\"1977-06-07T21:44:50+00:00 UTC\"}";
+    final String testObj2Ser =
+        "{\"_id\":\"123456abcdef\",\"test obj\":{\"_id\":\"123456abcdee\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"},\"test date\":\"1977-06-07T21:44:50+00:00 UTC\"}";
     final TestWObject testObj2 = WealdMapper.getServerMapper().readValue(testObj2Ser, TestWObject.class);
-    final String testObj1Ser =  "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}";
+    final String testObj1Ser =
+        "{\"_id\":\"123456abcded\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}";
     final TestWObject testObj1 = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
 
     assertEquals(testObj2.get("test date", DateTime.class).orNull(), new DateTime(234567890000L, DateTimeZone.UTC));
@@ -99,13 +115,18 @@ public class WObjectTest
   @Test
   public void testArrays() throws IOException
   {
-    final TestWObject testObj1 = TestWObject.builder().data("test date array", ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC),
-                                                                                        new DateTime(234567890000L, DateTimeZone.UTC),
-                                                                                        new DateTime(345678900000L, DateTimeZone.UTC))).build();
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>generate())
+                                            .data("test date array", ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC),
+                                                                                      new DateTime(234567890000L, DateTimeZone.UTC),
+                                                                                      new DateTime(345678900000L,
+                                                                                                   DateTimeZone.UTC)))
+                                            .build();
     final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
     final WObject<?> testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
 
-    final ImmutableList<DateTime> dateTimes = testObj1Deser.get("test date array", new TypeReference<ImmutableList<DateTime>>() {}).get();
+    final ImmutableList<DateTime> dateTimes =
+        testObj1Deser.get("test date array", new TypeReference<ImmutableList<DateTime>>() {}).get();
     assertEquals(dateTimes.get(0), new DateTime(123456789000L, DateTimeZone.UTC));
     assertEquals(dateTimes.get(1), new DateTime(234567890000L, DateTimeZone.UTC));
     assertEquals(dateTimes.get(2), new DateTime(345678900000L, DateTimeZone.UTC));
@@ -115,42 +136,53 @@ public class WObjectTest
   public void testDateTimeRange() throws IOException
   {
     final Range<DateTime> testDTRange = Range.closedOpen(new DateTime(1234567890000L), new DateTime(2345678900000L));
-    final TestWObject testObj1 = TestWObject.builder().data("test datetime range", testDTRange).build();
+    final TestWObject testObj1 =
+        TestWObject.builder().id(WID.<TestWObject>fromLong(1234567890L)).data("test datetime range", testDTRange).build();
     final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
     final WObject<?> testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
 
-    assertEquals(testDTRange, testObj1Deser.get("test datetime range", new TypeReference<Range<DateTime>>(){}).orNull());
+    assertEquals(testDTRange, testObj1Deser.get("test datetime range", new TypeReference<Range<DateTime>>() {}).orNull());
   }
 
   @Test
   public void testComplex() throws IOException
   {
-    final String testObj1Ser = "{\"code\":0,\"message\":\"ok\",\"data\":[{\"TimeZone\":{\"IsInside\":\"false\",\"AskGeoId\":20451,\"MinDistanceKm\":0.44946358,\"TimeZoneId\":\"Europe/London\",\"ShortName\":\"GMT\",\"CurrentOffsetMs\":0,\"WindowsStandardName\":\"GMT Standard Time\",\"InDstNow\":\"false\"}}]}";
+    final String testObj1Ser =
+        "{\"_id\":\"1\",\"code\":0,\"message\":\"ok\",\"data\":[{\"TimeZone\":{\"IsInside\":\"false\",\"AskGeoId\":20451,\"MinDistanceKm\":0.44946358,\"TimeZoneId\":\"Europe/London\",\"ShortName\":\"GMT\",\"CurrentOffsetMs\":0,\"WindowsStandardName\":\"GMT Standard Time\",\"InDstNow\":\"false\"}}]}";
     WealdMapper.getServerMapper().readValue(testObj1Ser, WObject.class);
   }
 
   @Test
   public void testNullValue()
   {
-    final TestWObject testObj1 = TestWObject.builder().data("test null", null).build();
+    final TestWObject testObj1 = TestWObject.builder().id(WID.<TestWObject>generate()).data("test null", null).build();
     assertTrue(testObj1.isEmpty());
   }
 
   @Test
   public void testDT()
   {
-    final TestWObject testObj1 = TestWObject.builder().data("test date", new DateTime().withZone(DateTimeZone.forID("America/New_York")))
-            .data("test string", "test value").build();
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>generate())
+                                            .data("test date", new DateTime().withZone(DateTimeZone.forID("America/New_York")))
+                                            .data("test string", "test value")
+                                            .build();
     assertNotNull(testObj1.toString());
   }
 
   @Test
   public void testBuilder() throws JsonProcessingException
   {
-    final TestWObject testObj1 = TestWObject.builder().data("test string", "test value").data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
-    final TestWObject testObj2 = TestWObject.builder(testObj1).data("test string 2", "test value 2").build();
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>fromLong(1234567890L))
+                                            .data("test string", "test value")
+                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
+                                            .build();
+    final TestWObject testObj2 =
+        TestWObject.builder(testObj1).id(WID.<TestWObject>fromLong(1234567890L)).data("test string 2", "test value 2").build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
-    assertEquals(testObj2Ser, "{\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
+    assertEquals(testObj2Ser,
+                 "{\"_id\":\"499602d2\",\"test date\":123456789000,\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
   }
 
   // Ensure that WObject obeys the type passed in on get
@@ -158,6 +190,7 @@ public class WObjectTest
   public void testClassGeneric() throws IOException
   {
     final TestWObject testObj1 = TestWObject.builder()
+                                            .id(WID.<TestWObject>fromLong(1234567890L))
                                             .data("test array",
                                                   ImmutableList.<DateTime>of(new DateTime(123456789000L, DateTimeZone.UTC),
                                                                              new DateTime(234567890000L, DateTimeZone.UTC)))
@@ -165,16 +198,18 @@ public class WObjectTest
     final Optional<ImmutableSet> unspecifiedSet = testObj1.get("test array", ImmutableSet.class);
     assertTrue(unspecifiedSet.isPresent());
     assertEquals(unspecifiedSet.get().size(), 2);
-    // Because we didn't specify a type the elements should be strings
-    assertEquals(unspecifiedSet.get().iterator().next().getClass(), String.class);
+    // Because we didn't specify a type the elements should be Longs (as that is what datetime serializes to)
+    assertEquals(unspecifiedSet.get().iterator().next().getClass(), Long.class);
   }
 
   // Ensure that internal values are not considered when check for equality
   @Test
   public void testIgnoreInternals() throws IOException
   {
-    final TestWObject testObj1 = TestWObject.builder().data("key", "val").data("_version", 1).build();
-    final TestWObject testObj2 = TestWObject.builder().data("key", "val").data("_version", 2).build();
+    final TestWObject testObj1 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("key", "val").data("_version", 1).build();
+    final TestWObject testObj2 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("key", "val").data("_version", 2).build();
     assertEquals(testObj1, testObj2);
   }
 
@@ -182,10 +217,19 @@ public class WObjectTest
   @Test
   public void testNullInBuilder() throws IOException
   {
-    final TestWObject testObj1 = TestWObject.builder().data("key", "val").data("key2", "val2").build();
+    final TestWObject testObj1 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("key", "val").data("key2", "val2").build();
     assertTrue(testObj1.exists("key2"));
-    final TestWObject testObj2 = TestWObject.builder(testObj1).data("key2", null).build();
+    final TestWObject testObj2 = TestWObject.builder(testObj1).id(WID.<TestWObject>generate()).data("key2", null).build();
     System.err.println(testObj2.data);
     assertFalse(testObj2.exists("key2"));
+  }
+
+  // Ensure that we cannot create objects without an ID
+  @Test(expectedExceptions = {DataError.Missing.class})
+  public void testTryCreateWithoutId()
+  {
+    TestWObject.builder().data("key", "val").build();
+    fail("Managed to create WObject without ID");
   }
 }
