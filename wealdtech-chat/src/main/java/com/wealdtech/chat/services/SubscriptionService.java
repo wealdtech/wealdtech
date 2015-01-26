@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Subscription;
+import com.wealdtech.chat.User;
 
 /**
  * Interface defining subscription service methods
@@ -30,7 +31,7 @@ public interface SubscriptionService
    */
   void remove(WID<Subscription> subscriptionId);
 
-  ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<String> users);
+  ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<WID<User>> userIds);
 
   ImmutableList<Subscription> obtainForTopic(final String topic);
 }

@@ -11,6 +11,7 @@
 package com.wealdtech.chat;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
@@ -97,6 +98,28 @@ public class ChatServicePostgreSqlImplTest
     final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
     assertChatsContain(chats, testChat1);
     assertChatsDoNotContain(chats, testChat2);
+  }
+
+  @Test
+  public void testGroupChat()
+  {
+    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
+
+    final WID<User> testId1 = WID.generate();
+    final WID<User> testId2 = WID.generate();
+
+    final Message testChat = Message.builder()
+                                    .id(WID.<Message>generate())
+                                    .from(methodName)
+                                    .scope(MessageScope.GROUP)
+                                    .to(ImmutableSet.of(testId1, testId2))
+                                    .topic(methodName + " (topic)")
+                                    .message("Test message")
+                                    .build();
+    service.add(testChat);
+
+    final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
+    assertChatsContain(chats, testChat);
   }
 
   private static void assertChatsContain(@Nullable final ImmutableList<Message> chats, final Message expectedChat)

@@ -31,14 +31,17 @@ public class ChatTest
   {
     final Message chat = Message.builder()
                                 .id(WID.<Message>fromLong(865434565612L))
-                          .from("test from")
-                          .scope(MessageScope.EVERYONE)
-                          .data("extkey1", "extval1")
-                          .data("extkey2", "extval2")
-                          .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
-                          .topic("test topic").message("foo").build();
+                                .from("test from")
+                                .scope(MessageScope.EVERYONE)
+                                .data("extkey1", "extval1")
+                                .data("extkey2", "extval2")
+                                .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
+                                .topic("test topic")
+                                .message("foo")
+                                .build();
     final String ser = WealdMapper.getServerMapper().writeValueAsString(chat);
-    assertEquals(ser, "{\"_id\":\"c97feb7bec\",\"extkey1\":\"extval1\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"message\":\"foo\",\"scope\":\"Everyone\",\"timestamp\":1234567890,\"topic\":\"test topic\"}");
+    assertEquals(ser,
+                 "{\"_id\":\"c97feb7bec\",\"extkey1\":\"extval1\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"message\":\"foo\",\"scope\":\"Everyone\",\"timestamp\":1234567890,\"topic\":\"test topic\"}");
   }
 
   @Test
@@ -46,16 +49,17 @@ public class ChatTest
   {
     final Message chat = Message.builder()
                                 .id(WID.<Message>fromLong(865434565613L))
-                          .from("test from")
-                          .scope(MessageScope.EVERYONE)
-                          .data("extkey1", "extval1")
-                          .data("extkey2", "extval2")
-                          .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
-                          .topic("test topic")
-                          .message("foo")
-                          .build();
+                                .from("test from")
+                                .scope(MessageScope.EVERYONE)
+                                .data("extkey1", "extval1")
+                                .data("extkey2", "extval2")
+                                .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
+                                .topic("test topic")
+                                .message("foo")
+                                .build();
 
-    final String ser = "{\"_id\":\"c97feb7bec\",\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":1234567890,\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}";
+    final String ser =
+        "{\"_id\":\"c97feb7bec\",\"message\":\"foo\",\"topic\":\"test topic\",\"timestamp\":1234567890,\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}";
 
     final Message testChat = WealdMapper.getServerMapper().readValue(ser, Message.class);
 

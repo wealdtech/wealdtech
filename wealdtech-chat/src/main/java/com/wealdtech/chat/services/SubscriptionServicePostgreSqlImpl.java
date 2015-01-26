@@ -14,8 +14,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import com.wealdtech.ServerError;
+import com.wealdtech.WID;
 import com.wealdtech.chat.Subscription;
+import com.wealdtech.chat.User;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
@@ -40,7 +41,7 @@ public class SubscriptionServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   }
 
   @Override
-  public ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<String> users)
+  public ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<WID<User>> userIds)
   {
     return obtain(SUBSCRIPTION_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -54,7 +55,7 @@ public class SubscriptionServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       public void setConditionValues(final PreparedStatement stmt)
       {
         setJson(stmt, 1, "{\"topic\":\"" + topic + "\"}");
-        setStringArray(stmt, 2, users);
+        setWIDArray(stmt, 2, userIds);
       }
     });
   }

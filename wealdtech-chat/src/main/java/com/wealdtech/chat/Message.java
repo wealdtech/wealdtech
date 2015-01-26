@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.DataError;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
       {
         throw new DataError.Missing("Directed chat needs 'to' information");
       }
-      final ImmutableSet<String> to = getTo();
+      final ImmutableSet<WID<User>> to = getTo();
       if (to.isEmpty())
       {
         throw new DataError.Missing("Directed chat needs 'to' information");
@@ -111,11 +112,11 @@ public class Message extends WObject<Message> implements Comparable<Message>
     return new DateTime(get(TIMESTAMP, Long.class).get());
   }
 
-  private static final TypeReference<ImmutableSet<String>> TO_TYPE_REF = new TypeReference<ImmutableSet<String>>(){};
+  private static final TypeReference<ImmutableSet<WID<User>>> TO_TYPE_REF = new TypeReference<ImmutableSet<WID<User>>>(){};
   @JsonIgnore
-  public ImmutableSet<String> getTo()
+  public ImmutableSet<WID<User>> getTo()
   {
-    return get(TO, TO_TYPE_REF).or(ImmutableSet.<String>of());
+    return get(TO, TO_TYPE_REF).or(ImmutableSet.<WID<User>>of());
   }
 
   @JsonIgnore
@@ -157,7 +158,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
       return self();
     }
 
-    public P to(final ImmutableSet<String> to)
+    public P to(final ImmutableSet<WID<User>> to)
     {
       data(TO, to);
       return self();

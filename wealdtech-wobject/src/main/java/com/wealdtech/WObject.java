@@ -337,7 +337,7 @@ public class WObject<T extends WObject> implements Comparable<T>
       return self();
     }
 
-    public P id(final WID<T> id)
+    public P id(final WID<? extends T> id)
     {
       this.data.put(ID, id);
       return self();
@@ -361,8 +361,8 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
   }
 
-  public static Builder<?, ?> builder() { return new Builder(); }
-
-  @SuppressWarnings("unchecked")
-  public static <T extends WObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }
+//  public static <T extends WObject<T>> Builder<T, ?> builder() { return new Builder<>(); }
+//
+//  @SuppressWarnings("unchecked")
+//  public static <T extends WObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }
 }

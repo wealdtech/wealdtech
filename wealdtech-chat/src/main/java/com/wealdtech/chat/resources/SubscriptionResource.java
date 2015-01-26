@@ -14,7 +14,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.wealdtech.WID;
 import com.wealdtech.chat.Subscription;
+import com.wealdtech.chat.User;
 import com.wealdtech.chat.services.SubscriptionService;
 import com.wealdtech.services.WIDService;
 import com.wordnik.swagger.annotations.Api;
@@ -59,12 +61,13 @@ public class SubscriptionResource
 
   @Timed
   @DELETE
-  @Path("{topic: .*+}")
+  @Path("{topic: .*+}/{userid: [0-9A-Fa-f]+}")
   @ApiOperation(value = "Unsubscribe from a topic")
-  public void unsubscribe(@PathParam("topic") final String topic)
+  public void unsubscribe(@PathParam("topic") final String topic,
+                          @PathParam("userid") final WID<User> userId)
   {
-    final String user = "jgm";
-    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(user));
+    final User user = User.builder().id(WID.<User>generate()).name("Jim").build();
+    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(userId));
     if (subscriptions.isEmpty())
     {
       LOG.warn("Attempt to unsubscribe from nonexistent subscription {}/{}", topic, user);

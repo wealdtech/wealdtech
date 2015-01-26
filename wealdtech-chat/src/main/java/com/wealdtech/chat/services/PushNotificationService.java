@@ -60,7 +60,7 @@ public class PushNotificationService
     {
       if (!Objects.equal(subscription.getUser(), message.getFrom()))
       {
-        notificationService.notify(ImmutableSet.of(subscription.getUser()), WObject.builder().data("msg", "foo").build());
+        notificationService.notify(ImmutableSet.of(subscription.getUser()), new WObject.Builder().data("msg", "foo").build());
       }
     }
   }
