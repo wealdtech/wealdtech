@@ -224,12 +224,4 @@ public class WObjectTest
     System.err.println(testObj2.data);
     assertFalse(testObj2.exists("key2"));
   }
-
-  // Ensure that we cannot create objects without an ID
-  @Test(expectedExceptions = {DataError.Missing.class})
-  public void testTryCreateWithoutId()
-  {
-    TestWObject.builder().data("key", "val").build();
-    fail("Managed to create WObject without ID");
-  }
 }

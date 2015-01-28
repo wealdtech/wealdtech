@@ -83,11 +83,11 @@ public class WObject<T extends WObject> implements Comparable<T>
     this.data = ImmutableSortedMap.copyOf(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
 
-    // Ensure we have an ID
-    if (!this.data.containsKey(ID))
-    {
-      throw new DataError.Missing("Missing required ID");
-    }
+//    // Ensure we have an ID
+//    if (!this.data.containsKey(ID))
+//    {
+//      throw new DataError.Missing("Missing required ID");
+//    }
 
     // Generate another map of the data which only contains external information
     this.externalData = ImmutableSortedMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
@@ -150,7 +150,8 @@ public class WObject<T extends WObject> implements Comparable<T>
   public ImmutableMap<String, Object> getData() { return externalData; }
 
   @JsonIgnore
-  public WID<T> getId() { return get(ID, ID_TYPE_REF).get();}
+  @Nullable
+  public WID<T> getId() { return get(ID, ID_TYPE_REF).orNull();}
 
   protected <U> Optional<U> getValue(final Object val, final TypeReference<U> typeRef)
   {
@@ -342,7 +343,7 @@ public class WObject<T extends WObject> implements Comparable<T>
 
     public P data(final Map<String, Object> data)
     {
-      this.data = data;
+      this.data.putAll(data);
       return self();
     }
 

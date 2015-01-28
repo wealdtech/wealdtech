@@ -12,9 +12,9 @@ dependencies
 {
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
-    compile 'org.igniterealtime.smack:smack-tcp:4.0.+'
-    compile 'org.igniterealtime.smack:smack-resolver-javax:4.0.+'
-    compile 'org.igniterealtime.smack:smack-extensions:4.0.+'
+    compile 'org.igniterealtime.smack:smack-tcp:4.0.6'
+    compile 'org.igniterealtime.smack:smack-resolver-javax:4.0.6'
+    compile 'org.igniterealtime.smack:smack-extensions:4.0.6'
 }
 
 uploadArchives {

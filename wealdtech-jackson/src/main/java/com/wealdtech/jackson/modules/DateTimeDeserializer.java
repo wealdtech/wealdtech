@@ -50,6 +50,17 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
   // PERF write our own parser given that we have hard-coded formats
   public static DateTime deserialize(final String txt) throws IOException
   {
+    // Try casting to a long first
+    try
+    {
+      final Long dt = Long.valueOf(txt);
+      return new DateTime(dt, DateTimeZone.UTC);
+    }
+    catch (final NumberFormatException nfe)
+    {
+      // Isn't a long, just keep going
+    }
+
     DateTime result;
     if (txt.indexOf(' ') == -1)
     {
