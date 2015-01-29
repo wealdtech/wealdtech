@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -56,8 +55,10 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   // Mapper used to read and write data
   private static final ObjectMapper MAPPER = WealdMapper.getServerMapper()
-                                                        .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
-                                                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+      .copy()
+//                                                              .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
+//                                                              .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
+      ;
 
   // Internal fields
   @JsonIgnore
@@ -120,11 +121,11 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected void validate() {}
 
   @JsonIgnore
-  private TypeReference<WObject<T>> GENERIC_TYPEREF = new TypeReference<WObject<T>>(){};
+  private TypeReference<WObject<T>> GENERIC_TYPE_REF = new TypeReference<WObject<T>>(){};
   @JsonIgnore
   public Optional<WObject<T>> get(final String key)
   {
-    return get(key, GENERIC_TYPEREF);
+    return get(key, GENERIC_TYPE_REF);
   }
 
   @SuppressWarnings("unchecked")
