@@ -62,7 +62,7 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   // Internal fields
   @JsonIgnore
-  private static final String ID = "_id";
+  protected static final String ID = "_id";
   @JsonIgnore
   private final TypeReference<WID<T>> ID_TYPE_REF = new TypeReference<WID<T>>(){};
 
@@ -342,7 +342,7 @@ public class WObject<T extends WObject> implements Comparable<T>
       data = Maps.newHashMap();
     }
 
-    public P data(final Map<String, Object> data)
+    public P data(final Map<String, ? extends Object> data)
     {
       this.data.putAll(data);
       return self();
