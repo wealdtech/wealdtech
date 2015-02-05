@@ -85,8 +85,9 @@ public class WObjectTest
     final TestWObject testObj1 = TestWObject.builder()
                                             .id(WID.<TestWObject>fromLong(9876543210L))
                                             .data("test string", "test value")
-                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
-                                            .build();
+                                            .data("test string 2", "test value 2")
+                                            .data("test string 3", "test value 3")
+                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
     final TestWObject testObj2 = TestWObject.builder()
                                             .id(WID.<TestWObject>fromLong(9876543211L))
                                             .data("test obj", testObj1)
@@ -94,7 +95,7 @@ public class WObjectTest
                                             .build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser,
-                 "{\"_id\":\"24cb016eb\",\"test date\":234567890000,\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":123456789000,\"test string\":\"test value\"}}");
+                 "{\"_id\":\"24cb016eb\",\"test date\":\"1977-06-07T21:44:50+00:00 UTC\",\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\",\"test string 3\":\"test value 3\"}}");
   }
 
   @Test

@@ -40,6 +40,11 @@ public interface WObjectService<T extends WObject, U>
   public void add(T item);
 
   /**
+   * Update an object
+   */
+  public void update(T item);
+
+  /**
    * Remove an object
    */
   public void remove(WID<T> itemId);

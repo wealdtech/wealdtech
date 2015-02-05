@@ -44,7 +44,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
 
   private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(d JSONB NOT NULL)";
 
-  private static final String DESTROY_TABLE_SQL = "DROP TABLE t_TABLENAME";
+  private static final String DESTROY_TABLE_SQL = "DROP TABLE IF EXISTS t_TABLENAME";
 
   private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
 
@@ -54,12 +54,15 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   private static final String OBTAIN_SQL = "SELECT d\n" +
                                            "FROM t_TABLENAME";
 
-
+  private static final String UPDATE_SQL = "UPDATE t_TABLENAME\n" +
+                                           "SET d = ?\n" +
+                                           "WHERE d->>'_id' = ?";
   private final String createTableSql;
   private final String destroyTableSql;
   private final String addSql;
   private final String removeSql;
   private final String obtainSql;
+  private final String updateSql;
 
   @Inject
   public WObjectServicePostgreSqlImpl(final PostgreSqlRepository repository,
@@ -71,6 +74,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     addSql = ADD_SQL.replaceAll("TABLENAME", tableName);
     removeSql = REMOVE_SQL.replaceAll("TABLENAME", tableName);
     obtainSql = OBTAIN_SQL.replaceAll("TABLENAME", tableName);
+    updateSql = UPDATE_SQL.replaceAll("TABLENAME", tableName);
   }
 
   @Override
@@ -86,7 +90,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      handleSqlFailure(conn, se, "Failed to create datastore");
+      throw createSqlException(conn, se, "Failed to create datastore");
     }
   }
 
@@ -103,14 +107,15 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      handleSqlFailure(conn, se, "Failed to destroy datastore");
+      throw createSqlException(conn, se, "Failed to destroy datastore");
     }
   }
 
   @Override
   public void add(final T item)
   {
-    checkState(item != null, "Passed NULL item");
+    checkState(item != null, "Passed NULL item for creation in datastore");
+    checkState(item.getId() != null, "Passed item with NULL ID for creation in datastore");
 
     Connection conn = null;
     try
@@ -126,7 +131,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
       }
       catch (final JsonProcessingException jpe)
       {
-        throw new ServerError("Failed to create json for insertion in to database", jpe);
+        throw new ServerError("Failed to create json for addition in to datastore", jpe);
       }
       stmt.setObject(1, obj);
 
@@ -134,7 +139,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      throw handleSqlFailure(conn, se, "Failed to add item to datastore");
+      throw createSqlException(conn, se, "Failed to add item to datastore");
     }
     finally
     {
@@ -145,6 +150,8 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   @Override
   public void remove(final WID<T> itemId)
   {
+    checkState(itemId != null, "Passed NULL item ID for removal from datastore");
+
     Connection conn = null;
     try
     {
@@ -156,7 +163,43 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      throw handleSqlFailure(conn, se, "Failed to remove item from datastore");
+      throw createSqlException(conn, se, "Failed to remove item from datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+  }
+
+  @Override
+  public void update(final T item)
+  {
+    checkState(item != null, "Passed NULL item for update in datastore");
+    checkState(item.getId() != null, "Passed item with NULL ID for update in datastore");
+
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      final PreparedStatement stmt = conn.prepareStatement(updateSql);
+      final PGobject obj = new PGobject();
+      obj.setType("jsonb");
+      try
+      {
+        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(item));
+      }
+      catch (final JsonProcessingException jpe)
+      {
+        throw new ServerError("Failed to create json for update in datastore", jpe);
+      }
+      stmt.setObject(1, obj);
+      stmt.setString(2, item.getId().toString());
+      stmt.execute();
+    }
+    catch (final SQLException se)
+    {
+      throw createSqlException(conn, se, "Failed to remove item from datastore");
     }
     finally
     {
@@ -205,7 +248,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-     throw handleSqlFailure(conn, se, "Failed to obtain object from datastore");
+     throw createSqlException(conn, se, "Failed to obtain object from datastore");
     }
     finally
     {
@@ -221,43 +264,46 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
    * @throws com.wealdtech.DataError Thrown when the error is due to bad data.
    * @throws ServerError Thrown when the error is due to a server issue.
    */
-  public static WealdError handleSqlFailure(final PreparedStatement stmt, final SQLException se, final String throwMessage)
+  public static WealdError createSqlException(final PreparedStatement stmt, final SQLException se, final String throwMessage)
   {
     final Connection conn;
     try
     {
       conn = stmt.getConnection();
-      return handleSqlFailure(conn, se, throwMessage, null);
+      return createSqlException(conn, se, throwMessage, null);
     }
     catch (final SQLException ignored)
     {
-      return new ServerError("Failed to obtain database connection in error!");
+      return new ServerError("Failed to obtain datastore connection in error!");
     }
   }
 
   /**
    * Handle a SQL failure, parsing the output and logging relevant information.  Throw an exception when done.
-   * @param conn A database connection.
+   * @param conn A datastore connection.
    * @param se The SQL exception.
    * @param throwMessage The message to pass back when throwing an exception.
    * @throws com.wealdtech.DataError Thrown when the error is due to bad data.
    * @throws ServerError Thrown when the error is due to a server issue.
    */
-  public static WealdError handleSqlFailure(final Connection conn, final SQLException se, final String throwMessage)
+  public static WealdError createSqlException(final Connection conn, final SQLException se, final String throwMessage)
   {
-    return handleSqlFailure(conn, se, throwMessage, null);
+    return createSqlException(conn, se, throwMessage, null);
   }
 
   /**
    * Handle a SQL failure, parsing the output and logging relevant information.  Throw an exception when done.
-   * @param conn A database connection.
+   * @param conn A datastore connection.
    * @param se The SQL exception.
    * @param throwMessage The message to pass back when throwing an exception.
    * @param obj the object which caused the problem
    * @throws com.wealdtech.DataError Thrown when the error is due to bad data.
    * @throws ServerError Thrown when the error is due to a server issue.
    */
-  public static WealdError handleSqlFailure(final Connection conn, final SQLException se, final String throwMessage, final Object obj)
+  public static WealdError createSqlException(final Connection conn,
+                                              final SQLException se,
+                                              final String throwMessage,
+                                              final Object obj)
   {
     // First things first, close the connection
     if (conn != null)
@@ -268,7 +314,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
       }
       catch (final SQLException se2)
       {
-        LOG.warn("Failed to rollback database connection on \"" + throwMessage + "\"");
+        LOG.warn("Failed to rollback datastore connection on \"" + throwMessage + "\"");
       }
     }
 
@@ -312,7 +358,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
       }
       catch (final SQLException se)
       {
-        LOG.warn("Failed to close database connection");
+        LOG.warn("Failed to close datastore connection");
       }
     }
   }

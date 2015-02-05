@@ -14,8 +14,10 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -35,6 +37,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The Weald Technology object
@@ -54,8 +57,11 @@ public class WObject<T extends WObject> implements Comparable<T>
   };
 
   // Mapper used to read and write data
+  static final SimpleModule module = new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class,
+                                                                                                                      TreeMap.class);
   private static final ObjectMapper MAPPER = WealdMapper.getServerMapper()
       .copy()
+      .registerModule(module);
 //                                                              .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
 //                                                              .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
       ;
@@ -66,12 +72,13 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   private final TypeReference<WID<T>> ID_TYPE_REF = new TypeReference<WID<T>>(){};
 
+  // We store data (and external data) as a sorted map to aid legibility when looking at this on-screen
   @JsonIgnore
-  protected final ImmutableMap<String, Object> data;
+  protected final ImmutableSortedMap<String, Object> data;
 
   // This is a convenience for us - it is a copy of the above data without any internal values
   @JsonIgnore
-  protected final ImmutableMap<String, Object> externalData;
+  protected final ImmutableSortedMap<String, Object> externalData;
 
   @JsonAnyGetter
   private ImmutableMap<String, Object> any() {
@@ -325,6 +332,16 @@ public class WObject<T extends WObject> implements Comparable<T>
       LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
       throw new ServerError("Failed to generate external representation of object");
     }
+  }
+
+  public T normalise(final Class<T> klazz)
+  {
+    return MAPPER.convertValue(this, klazz);
+  }
+
+  public T normalise(final TypeReference<T> typeReference)
+  {
+    return MAPPER.convertValue(this, typeReference);
   }
 
   public static class Builder<T extends WObject<T>, P extends Builder<T, P>>

@@ -35,7 +35,7 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
     }
     catch (final SQLException se)
     {
-      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set string");
+      throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set string");
     }
     return this;
   }
@@ -57,7 +57,7 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
     }
     catch (final SQLException se)
     {
-      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set string array");
+      throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set string array");
     }
     return this;
   }
@@ -101,7 +101,7 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
     }
     catch (final SQLException se)
     {
-      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set long");
+      throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set long");
     }
     return this;
   }
@@ -117,7 +117,7 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
     }
     catch (final SQLException se)
     {
-      throw WObjectServicePostgreSqlImpl.handleSqlFailure(stmt, se, "Failed to set JSON");
+      throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set JSON");
     }
     return this;
   }
