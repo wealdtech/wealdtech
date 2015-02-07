@@ -10,6 +10,7 @@
 
 package com.wealdtech.services;
 
+import com.google.inject.Inject;
 import com.wealdtech.WID;
 import com.wealdtech.config.WIDConfiguration;
 
@@ -29,6 +30,7 @@ public class WIDServiceLocalImpl implements WIDService
   // The first value of the ID fragment we generated this millisecond
   private int thisMsFirstId;
 
+  @Inject
   public WIDServiceLocalImpl(final WIDConfiguration configuration)
   {
     this.configuration = configuration;
