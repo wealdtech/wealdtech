@@ -12,7 +12,6 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.*;
@@ -223,7 +222,6 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
       else
       {
         final String statement = obtainSql + "\nWHERE " + cb.getConditions();
-        final int numVariables = CharMatcher.is(JDBC_VARIABLE).countIn(statement);
         stmt = conn.prepareStatement(statement);
         cb.setConditionValues(stmt);
       }
