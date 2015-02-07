@@ -108,7 +108,7 @@ public class WIDModuleTest
 
     try
     {
-      final String ser = mapper.writerWithType(Map.class).writeValueAsString(map);
+      final String ser = mapper.writerFor(Map.class).writeValueAsString(map);
       final Map<String, Object> deser = this.mapper.readValue(ser, new TypeReference<Map<String, Object>>(){});
       assertTrue(deser.get("test1") instanceof Date);
       assertTrue(deser.get("test2") instanceof InetSocketAddress);

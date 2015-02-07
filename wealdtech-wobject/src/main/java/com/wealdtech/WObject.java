@@ -22,10 +22,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import com.wealdtech.jackson.WealdMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +33,7 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -88,7 +86,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonCreator
   public WObject(final Map<String, Object> data)
   {
-    this.data = ImmutableSortedMap.copyOf(preCreate(Maps.filterValues(data, Predicates.notNull())));
+    this.data = immutify(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
 
 //    // Ensure we have an ID
@@ -110,6 +108,49 @@ public class WObject<T extends WObject> implements Comparable<T>
       LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
       throw new ServerError("Failed to generate external representation of object");
     }
+  }
+
+  // Recursively deep-immutify data
+  private ImmutableSortedMap<String, Object> immutify(final Map<String, Object> map)
+  {
+    final ImmutableSortedMap.Builder<String, Object> result = ImmutableSortedMap.naturalOrder();
+    for (final Map.Entry<String, Object> entry : map.entrySet())
+    {
+      if (entry.getValue() instanceof Map)
+      {
+        result.put(entry.getKey(), immutify((Map<String, Object>)entry.getValue()));
+      }
+      else if (entry.getValue() instanceof List)
+      {
+        result.put(entry.getKey(), immutify((List)entry.getValue()));
+      }
+      else
+      {
+        result.put(entry);
+      }
+    }
+    return result.build();
+  }
+
+  private ImmutableList<Object> immutify(final List<Object> list)
+  {
+    final ImmutableList.Builder<Object> result = ImmutableList.builder();
+    for (final Object value : list)
+    {
+      if (value instanceof Map)
+      {
+        result.add(immutify((Map<String, Object>)value));
+      }
+      else if (value instanceof List)
+      {
+        result.add(value, immutify((List)value));
+      }
+      else
+      {
+        result.add(value);
+      }
+    }
+    return result.build();
   }
 
   /**
