@@ -35,7 +35,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
   private static final String TIMESTAMP = "timestamp";
   private static final String TO = "to";
   private static final String TOPIC = "topic";
-  private static final String MESSAGE = "message";
+  private static final String TEXT = "text";
 
   @JsonCreator
   public Message(final Map<String, Object> data)
@@ -88,9 +88,9 @@ public class Message extends WObject<Message> implements Comparable<Message>
       throw new DataError.Missing("Chat needs 'topic' information");
     }
 
-    if (!exists(MESSAGE))
+    if (!exists(TEXT))
     {
-      throw new DataError.Missing("Chat needs 'message' information");
+      throw new DataError.Missing("Chat needs 'text' information");
     }
   }
 
@@ -123,9 +123,9 @@ public class Message extends WObject<Message> implements Comparable<Message>
   public String getTopic() { return get(TOPIC, String.class).get(); }
 
   @JsonIgnore
-  public String getMessage()
+  public String getText()
   {
-    return get(MESSAGE, String.class).get();
+    return get(TEXT, String.class).get();
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Message, P>
@@ -170,9 +170,9 @@ public class Message extends WObject<Message> implements Comparable<Message>
       return self();
     }
 
-    public P message(final String message)
+    public P text(final String text)
     {
-      data(MESSAGE, message);
+      data(TEXT, text);
       return self();
     }
 

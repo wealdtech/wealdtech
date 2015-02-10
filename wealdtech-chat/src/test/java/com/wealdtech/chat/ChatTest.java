@@ -37,7 +37,7 @@ public class ChatTest
                                 .data("extkey2", "extval2")
                                 .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
                                 .topic("test topic")
-                                .message("foo")
+                                .text("foo")
                                 .build();
     final String ser = WealdMapper.getServerMapper().writeValueAsString(chat);
     assertEquals(ser,
@@ -55,7 +55,7 @@ public class ChatTest
                                 .data("extkey2", "extval2")
                                 .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
                                 .topic("test topic")
-                                .message("foo")
+                                .text("foo")
                                 .build();
 
     final String ser =

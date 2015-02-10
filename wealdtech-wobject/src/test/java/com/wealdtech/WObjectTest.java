@@ -13,6 +13,7 @@ package com.wealdtech;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -65,8 +66,10 @@ public class WObjectTest
                                             .data("test string", "test value")
                                             .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
                                             .build();
-    final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
-    assertEquals(testObj1Ser, "{\"_id\":\"10338638b3a5\",\"test date\":123456789000,\"test string\":\"test value\"}");
+    final String testObj1Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj1);
+    assertEquals(testObj1Ser1, "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}");
+    final String testObj1Ser2 = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj1);
+    assertEquals(testObj1Ser2, "{\"_id\":\"10338638b3a5\",\"test date\":{\"timestamp\":123456789000},\"test string\":\"test value\"}");
   }
 
   @Test
@@ -181,9 +184,13 @@ public class WObjectTest
                                             .build();
     final TestWObject testObj2 =
         TestWObject.builder(testObj1).id(WID.<TestWObject>fromLong(1234567890L)).data("test string 2", "test value 2").build();
-    final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
-    assertEquals(testObj2Ser,
-                 "{\"_id\":\"499602d2\",\"test date\":123456789000,\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
+
+    final String testObj2Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj2);
+    assertEquals(testObj2Ser1,
+                 "{\"_id\":\"499602d2\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
+    final String testObj2Ser2 = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj2);
+    assertEquals(testObj2Ser2,
+                 "{\"_id\":\"499602d2\",\"test date\":{\"timestamp\":123456789000},\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
   }
 
   // Ensure that WObject obeys the type passed in on get
@@ -192,15 +199,13 @@ public class WObjectTest
   {
     final TestWObject testObj1 = TestWObject.builder()
                                             .id(WID.<TestWObject>fromLong(1234567890L))
-                                            .data("test array",
-                                                  ImmutableList.<DateTime>of(new DateTime(123456789000L, DateTimeZone.UTC),
-                                                                             new DateTime(234567890000L, DateTimeZone.UTC)))
+                                            .data("test array", ImmutableList.of(1, 2, 3))
                                             .build();
     final Optional<ImmutableSet> unspecifiedSet = testObj1.get("test array", ImmutableSet.class);
     assertTrue(unspecifiedSet.isPresent());
-    assertEquals(unspecifiedSet.get().size(), 2);
-    // Because we didn't specify a type the elements should be Longs (as that is what datetime serializes to)
-    assertEquals(unspecifiedSet.get().iterator().next().getClass(), Long.class);
+    assertEquals(unspecifiedSet.get().size(), 3);
+    // Because we didn't specify a type the elements should be Integers
+    assertEquals(unspecifiedSet.get().iterator().next().getClass(), Integer.class);
   }
 
   // Ensure that internal values are not considered when check for equality

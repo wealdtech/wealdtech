@@ -11,6 +11,7 @@
 package com.wealdtech.chat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.MoreObjects;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
@@ -29,7 +30,6 @@ import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
-import com.wealdtech.notifications.config.NotificationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,13 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
-      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
+//      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
+
+      // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency
+      bind(ObjectMapper.class).annotatedWith(Names.named("dbmapper"))
+                              .toInstance(WealdMapper.getServerMapper()
+                                                     .copy()
+                                                     .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
 
       // Bind Chat service to use PostgreSql
       bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("messagerepositoryconfiguration"))

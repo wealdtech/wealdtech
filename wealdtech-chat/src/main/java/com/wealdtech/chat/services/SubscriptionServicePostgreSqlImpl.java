@@ -11,9 +11,11 @@
 package com.wealdtech.chat.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.User;
@@ -35,9 +37,10 @@ public class SubscriptionServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   private static final TypeReference<Subscription> SUBSCRIPTION_TYPE_REFERENCE = new TypeReference<Subscription>(){};
 
   @Inject
-  public SubscriptionServicePostgreSqlImpl(final PostgreSqlRepository repository)
+  public SubscriptionServicePostgreSqlImpl(final PostgreSqlRepository repository,
+                                           @Named("dbmapper") final ObjectMapper mapper)
   {
-    super(repository, "subscription");
+    super(repository, mapper, "subscription");
   }
 
   @Override

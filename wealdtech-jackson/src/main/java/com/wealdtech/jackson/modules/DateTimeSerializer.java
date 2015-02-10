@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.google.common.base.Objects;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -48,7 +50,13 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   {
     if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
     {
-      gen.writeNumber(value.getMillis());
+      gen.writeStartObject();
+      gen.writeNumberField("timestamp", value.getMillis());
+      if (!Objects.equal(value.getZone(), DateTimeZone.UTC))
+      {
+        gen.writeStringField("timezone", value.getZone().toString());
+      }
+      gen.writeEndObject();
     }
     else
     {

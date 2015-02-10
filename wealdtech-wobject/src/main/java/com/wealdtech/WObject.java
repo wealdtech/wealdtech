@@ -32,10 +32,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * The Weald Technology object
@@ -57,12 +54,14 @@ public class WObject<T extends WObject> implements Comparable<T>
   // Mapper used to read and write data
   static final SimpleModule module = new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class,
                                                                                                                       TreeMap.class);
-  private static final ObjectMapper MAPPER = WealdMapper.getServerMapper()
-      .copy()
-      .registerModule(module);
-//                                                              .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
-//                                                              .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
-      ;
+  private static final ObjectMapper MAPPER;
+  static
+  {
+    MAPPER = WealdMapper.getServerMapper().copy().registerModule(module);
+    //                                                              .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
+    //                                                              .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
+    ;
+  }
 
   // Internal fields
   @JsonIgnore
@@ -72,14 +71,18 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   // We store data (and external data) as a sorted map to aid legibility when looking at this on-screen
   @JsonIgnore
-  protected final ImmutableSortedMap<String, Object> data;
+  protected final SortedMap<String, Object> data;
+//  @JsonIgnore
+//  protected final ImmutableSortedMap<String, Object> data;
 
   // This is a convenience for us - it is a copy of the above data without any internal values
   @JsonIgnore
-  protected final ImmutableSortedMap<String, Object> externalData;
+  protected final SortedMap<String, Object> externalData;
+//  @JsonIgnore
+//  protected final ImmutableSortedMap<String, Object> externalData;
 
   @JsonAnyGetter
-  private ImmutableMap<String, Object> any() {
+  private Map<String, Object> any() {
     return data;
   }
 
@@ -88,12 +91,6 @@ public class WObject<T extends WObject> implements Comparable<T>
   {
     this.data = immutify(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
-
-//    // Ensure we have an ID
-//    if (!this.data.containsKey(ID))
-//    {
-//      throw new DataError.Missing("Missing required ID");
-//    }
 
     // Generate another map of the data which only contains external information
     this.externalData = ImmutableSortedMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
@@ -170,11 +167,36 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   @JsonIgnore
   private TypeReference<WObject<T>> GENERIC_TYPE_REF = new TypeReference<WObject<T>>(){};
+
   @JsonIgnore
   public Optional<WObject<T>> get(final String key)
   {
     return get(key, GENERIC_TYPE_REF);
   }
+
+  /**
+   * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
+   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
+   * change between invocations (although the values returned from a single invocation will not).
+   * @see #getAllData
+   * @return a map of keyed data objects
+   */
+  @JsonIgnore
+  public ImmutableMap<String, Object> getData() { return ImmutableSortedMap.copyOf(externalData); }
+
+  /**
+   * Obtain the raw data for this object.  Note that this does provide the internal data.  Also note that there are no
+   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
+   * change between invocations (although the values returned from a single invocation will not).
+   * @see #getData
+   * @return a map of keyed data objects
+   */
+  @JsonIgnore
+  public ImmutableMap<String, Object> getAllData() { return ImmutableSortedMap.copyOf(data); }
+
+  @JsonIgnore
+  @Nullable
+  public WID<T> getId() { return get(ID, ID_TYPE_REF).orNull();}
 
   @SuppressWarnings("unchecked")
   @JsonIgnore
@@ -188,19 +210,6 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
     return getValue(val, typeRef);
   }
-
-  /**
-   * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
-   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
-   * change between invocations (although the values returned from a single invocation will not).
-   * @return a map of keyed data objects
-   */
-  @JsonIgnore
-  public ImmutableMap<String, Object> getData() { return externalData; }
-
-  @JsonIgnore
-  @Nullable
-  public WID<T> getId() { return get(ID, ID_TYPE_REF).orNull();}
 
   protected <U> Optional<U> getValue(final Object val, final TypeReference<U> typeRef)
   {
@@ -429,9 +438,4 @@ public class WObject<T extends WObject> implements Comparable<T>
       return new WObject<>(data);
     }
   }
-
-//  public static <T extends WObject<T>> Builder<T, ?> builder() { return new Builder<>(); }
-//
-//  @SuppressWarnings("unchecked")
-//  public static <T extends WObject<T>> Builder<T, ?> builder(final T prior) { return new Builder(prior); }
 }
