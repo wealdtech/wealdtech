@@ -12,11 +12,11 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.*;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
-import com.wealdtech.jackson.WealdMapper;
 import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,11 +63,15 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   private final String obtainSql;
   private final String updateSql;
 
+  private final ObjectMapper mapper;
+
   @Inject
   public WObjectServicePostgreSqlImpl(final PostgreSqlRepository repository,
+                                      final ObjectMapper mapper,
                                       final String tableName)
   {
     this.repository = repository;
+    this.mapper = mapper;
     createTableSql = CREATE_TABLE_SQL.replaceAll("TABLENAME", tableName);
     destroyTableSql = DESTROY_TABLE_SQL.replaceAll("TABLENAME", tableName);
     addSql = ADD_SQL.replaceAll("TABLENAME", tableName);
@@ -126,7 +130,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
       obj.setType("jsonb");
       try
       {
-        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(item));
+        obj.setValue(mapper.writeValueAsString(item));
       }
       catch (final JsonProcessingException jpe)
       {
@@ -186,7 +190,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
       obj.setType("jsonb");
       try
       {
-        obj.setValue(WealdMapper.getServerMapper().writeValueAsString(item));
+        obj.setValue(mapper.writeValueAsString(item));
       }
       catch (final JsonProcessingException jpe)
       {
@@ -233,7 +237,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
         {
           try
           {
-            objsB.add((T)WealdMapper.getServerMapper().readValue(rs.getString(1), typeRef));
+            objsB.add((T)mapper.readValue(rs.getString(1), typeRef));
           }
           catch (final IOException ioe)
           {

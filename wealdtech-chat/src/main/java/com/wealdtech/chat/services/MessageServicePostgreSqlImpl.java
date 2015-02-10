@@ -11,8 +11,10 @@
 package com.wealdtech.chat.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.wealdtech.chat.Message;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
@@ -33,9 +35,10 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
   private static final TypeReference<Message> CHAT_TYPE_REFERENCE = new TypeReference<Message>(){};
 
   @Inject
-  public MessageServicePostgreSqlImpl(final PostgreSqlRepository repository)
+  public MessageServicePostgreSqlImpl(final PostgreSqlRepository repository,
+                                      @Named("dbmapper") final ObjectMapper mapper)
   {
-    super(repository, "message");
+    super(repository, mapper, "message");
   }
 
   @Override

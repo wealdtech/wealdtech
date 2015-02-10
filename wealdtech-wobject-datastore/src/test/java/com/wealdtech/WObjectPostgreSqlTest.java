@@ -12,24 +12,25 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
+import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.services.WObjectService;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.sql.PreparedStatement;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  */
@@ -60,7 +61,7 @@ public class WObjectPostgreSqlTest
     @Inject
     public TestObjectServicePostgreSqlImpl(final PostgreSqlRepository repository)
     {
-      super(repository, "test");
+      super(repository, WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS), "test");
     }
   }
 
@@ -89,7 +90,7 @@ public class WObjectPostgreSqlTest
     final TestWObject testObj = TestWObject.builder()
                                            .id(WID.<TestWObject>generate())
                                            .data("test string", "test value")
-                                           .data("test date", new DateTime(1234567890000L))
+                                           .data("test date", new DateTime(1234567890000L).withZone(DateTimeZone.UTC))
                                            .build();
     service.add(testObj);
 

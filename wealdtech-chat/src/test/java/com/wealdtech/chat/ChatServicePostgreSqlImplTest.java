@@ -10,12 +10,14 @@
 
 package com.wealdtech.chat;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
+import com.wealdtech.jackson.WealdMapper;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,7 +39,10 @@ public class ChatServicePostgreSqlImplTest
   {
     final PostgreSqlRepository repository =
         new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "chat", "chat", "chat", null, null, null));
-    service = new MessageServicePostgreSqlImpl(repository);
+
+    service = new MessageServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
+                                                                      .copy()
+                                                                      .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     service.createDatastore();
   }
 
@@ -60,7 +65,7 @@ public class ChatServicePostgreSqlImplTest
                                     .from(methodName)
                                     .scope(MessageScope.EVERYONE)
                                     .topic("test topic")
-                                    .message("Test message")
+                                    .text("Test message")
                                     .build();
     service.add(testChat);
 
@@ -83,7 +88,7 @@ public class ChatServicePostgreSqlImplTest
                                      .from(methodName)
                                      .scope(MessageScope.EVERYONE)
                                      .topic("test topic")
-                                     .message("Test message 1")
+                                     .text("Test message 1")
                                      .build();
     service.add(testChat1);
     final Message testChat2 = Message.builder()
@@ -91,7 +96,7 @@ public class ChatServicePostgreSqlImplTest
                                      .from(methodName)
                                      .scope(MessageScope.EVERYONE)
                                      .topic("test topic 2")
-                                     .message("Test message 2")
+                                     .text("Test message 2")
                                      .build();
     service.add(testChat2);
 
@@ -114,7 +119,7 @@ public class ChatServicePostgreSqlImplTest
                                     .scope(MessageScope.GROUP)
                                     .to(ImmutableSet.of(testId1, testId2))
                                     .topic(methodName + " (topic)")
-                                    .message("Test message")
+                                    .text("Test message")
                                     .build();
     service.add(testChat);
 
@@ -129,6 +134,7 @@ public class ChatServicePostgreSqlImplTest
     int numFound = 0;
     for (final Message chat : chats)
     {
+      chat.getTimestamp(); // Triggers resolution of the chat
       if (chat.equals(expectedChat))
       {
         numFound++;
