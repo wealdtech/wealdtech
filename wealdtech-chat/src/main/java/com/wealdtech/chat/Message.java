@@ -70,7 +70,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
     }
 
     final MessageScope scope = getScope();
-    if (scope == MessageScope.GROUP || scope == MessageScope.INDIVIDUAL)
+    if (scope == MessageScope.FRIENDS || scope == MessageScope.INDIVIDUAL)
     {
       if (!exists(TO))
       {

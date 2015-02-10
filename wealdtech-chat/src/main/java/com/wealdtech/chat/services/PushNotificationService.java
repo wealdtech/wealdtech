@@ -45,7 +45,7 @@ public class PushNotificationService
     switch (message.getScope())
     {
       case INDIVIDUAL:
-      case GROUP:
+      case FRIENDS:
         // Obtain subscriptions for this topic and these users
         subscriptions = subscriptionService.obtainForTopicAndUsers(message.getTopic(), message.getTo());
         break;

@@ -111,7 +111,7 @@ public class ChatServicePostgreSqlImplTest
     final Message testChat = Message.builder()
                                     .id(WID.<Message>generate())
                                     .from(methodName)
-                                    .scope(MessageScope.GROUP)
+                                    .scope(MessageScope.FRIENDS)
                                     .to(ImmutableSet.of(testId1, testId2))
                                     .topic(methodName + " (topic)")
                                     .message("Test message")

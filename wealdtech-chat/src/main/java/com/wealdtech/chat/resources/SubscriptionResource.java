@@ -21,14 +21,10 @@ import com.wealdtech.chat.services.SubscriptionService;
 import com.wealdtech.services.WIDService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 
 /**
  * Resource for subscriptions
@@ -52,8 +48,7 @@ public class SubscriptionResource
   @Timed
   @POST
   @Path("{topic: .*+}")
-  @ApiOperation(value = "Subscribe to a topic")
-  public void subscribe(@ApiParam(value = "the ID of the topic to which to subscribe", required = true) @PathParam("topic") final String topic)
+  public void subscribe(@QueryParam("topic") final String topic)
   {
     final String user = "jgm";
     service.add(Subscription.builder().id(widService.<Subscription>obtain()).user(user).topic(topic).build());
@@ -63,11 +58,10 @@ public class SubscriptionResource
   @DELETE
   @Path("{topic: .*+}/{userid: [0-9A-Fa-f]+}")
   @ApiOperation(value = "Unsubscribe from a topic")
-  public void unsubscribe(@PathParam("topic") final String topic,
-                          @PathParam("userid") final WID<User> userId)
+  public void unsubscribe(@PathParam("topic") final String topic)
   {
     final User user = User.builder().id(WID.<User>generate()).name("Jim").build();
-    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(userId));
+    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(user.getId()));
     if (subscriptions.isEmpty())
     {
       LOG.warn("Attempt to unsubscribe from nonexistent subscription {}/{}", topic, user);
