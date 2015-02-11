@@ -50,6 +50,11 @@ public interface WObjectService<T extends WObject, U>
   public void remove(WID<T> itemId);
 
   /**
+   * Remove multiple objects based on callback conditions
+   */
+  public void remove(WObjectServiceCallback<U> cb);
+
+  /**
    * Obtain objects
    */
   public ImmutableList<T> obtain(TypeReference<T> typeRef, WObjectServiceCallback<U> cb);

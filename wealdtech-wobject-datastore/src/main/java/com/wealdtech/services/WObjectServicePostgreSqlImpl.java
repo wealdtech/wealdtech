@@ -39,16 +39,16 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
 
   private final PostgreSqlRepository repository;
 
-  public static transient final char JDBC_VARIABLE = '?';
-
   private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(d JSONB NOT NULL)";
 
   private static final String DESTROY_TABLE_SQL = "DROP TABLE IF EXISTS t_TABLENAME";
 
   private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
 
-  private static final String REMOVE_SQL = "DELETE FROM t_TABLENAME\n" +
-                                           "WHERE d->>'_id' = ?";
+  private static final String REMOVE_SQL = "DELETE FROM t_TABLENAME";
+
+  private static final String REMOVE_ITEM_SQL = "DELETE FROM t_TABLENAME\n" +
+                                                "WHERE d->>'_id' = ?";
 
   private static final String OBTAIN_SQL = "SELECT d\n" +
                                            "FROM t_TABLENAME";
@@ -59,6 +59,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   private final String createTableSql;
   private final String destroyTableSql;
   private final String addSql;
+  private final String removeItemSql;
   private final String removeSql;
   private final String obtainSql;
   private final String updateSql;
@@ -75,6 +76,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     createTableSql = CREATE_TABLE_SQL.replaceAll("TABLENAME", tableName);
     destroyTableSql = DESTROY_TABLE_SQL.replaceAll("TABLENAME", tableName);
     addSql = ADD_SQL.replaceAll("TABLENAME", tableName);
+    removeItemSql = REMOVE_ITEM_SQL.replaceAll("TABLENAME", tableName);
     removeSql = REMOVE_SQL.replaceAll("TABLENAME", tableName);
     obtainSql = OBTAIN_SQL.replaceAll("TABLENAME", tableName);
     updateSql = UPDATE_SQL.replaceAll("TABLENAME", tableName);
@@ -160,13 +162,40 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt = conn.prepareStatement(removeSql);
+      final PreparedStatement stmt = conn.prepareStatement(removeItemSql);
       stmt.setString(1, itemId.toString());
       stmt.execute();
     }
     catch (final SQLException se)
     {
       throw createSqlException(conn, se, "Failed to remove item from datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+  }
+
+  @Override
+  public void remove(final WObjectServiceCallback<PreparedStatement> cb)
+  {
+    checkState(cb != null, "Passed NULL callback for removal from datastore");
+    checkState(cb.getConditions() != null, "Passed NULL callback conditions for removal from datastore");
+
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      final PreparedStatement stmt;
+      stmt = conn.prepareStatement(removeSql + "\nWHERE " + cb.getConditions());
+      cb.setConditionValues(stmt);
+
+      stmt.execute();
+    }
+    catch (final SQLException se)
+    {
+      throw createSqlException(conn, se, "Failed to remove items from datastore");
     }
     finally
     {

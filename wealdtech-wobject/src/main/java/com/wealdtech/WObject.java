@@ -398,10 +398,13 @@ public class WObject<T extends WObject> implements Comparable<T>
   {
     protected Map<String, Object> data;
 
-    public Builder(final T prior)
+    public Builder(@Nullable final T prior)
     {
       data = Maps.newHashMap();
-      data.putAll(prior.data);
+      if (prior != null)
+      {
+        data.putAll(prior.data);
+      }
     }
 
     public Builder()
