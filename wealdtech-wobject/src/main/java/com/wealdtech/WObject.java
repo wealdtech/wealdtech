@@ -67,7 +67,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   protected static final String ID = "_id";
   @JsonIgnore
-  private final TypeReference<WID<T>> ID_TYPE_REF = new TypeReference<WID<T>>(){};
+  private static final TypeReference<WID<?>> ID_TYPE_REF = new TypeReference<WID<?>>(){};
 
   // We store data (and external data) as a sorted map to aid legibility when looking at this on-screen
   @JsonIgnore
@@ -165,15 +165,6 @@ public class WObject<T extends WObject> implements Comparable<T>
    */
   protected void validate() {}
 
-  @JsonIgnore
-  private TypeReference<WObject<T>> GENERIC_TYPE_REF = new TypeReference<WObject<T>>(){};
-
-  @JsonIgnore
-  public Optional<WObject<T>> get(final String key)
-  {
-    return get(key, GENERIC_TYPE_REF);
-  }
-
   /**
    * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
    * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
@@ -196,7 +187,7 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   @JsonIgnore
   @Nullable
-  public WID<T> getId() { return get(ID, ID_TYPE_REF).orNull();}
+  public WID<T> getId() { return (WID<T>)get(ID, ID_TYPE_REF).orNull();}
 
   @SuppressWarnings("unchecked")
   @JsonIgnore

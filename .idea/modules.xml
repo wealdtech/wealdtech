@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/wealdtech-chat.iml" filepath="$PROJECT_DIR$/wealdtech-chat/wealdtech-chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" filepath="$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" filepath="$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" filepath="$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" filepath="$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" filepath="$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" />
@@ -15,10 +14,8 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" filepath="$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" filepath="$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" filepath="$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" filepath="$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" filepath="$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject/wealdtech-wobject.iml" filepath="$PROJECT_DIR$/wealdtech-wobject/wealdtech-wobject.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject-datastore/wealdtech-wobject-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-wobject-datastore/wealdtech-wobject-datastore.iml" />
