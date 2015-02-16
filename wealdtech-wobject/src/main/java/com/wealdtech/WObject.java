@@ -165,6 +165,7 @@ public class WObject<T extends WObject> implements Comparable<T>
    */
   protected void validate() {}
 
+
   /**
    * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
    * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
@@ -185,9 +186,19 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   public ImmutableMap<String, Object> getAllData() { return ImmutableSortedMap.copyOf(data); }
 
+  @SuppressWarnings("unchecked")
   @JsonIgnore
   @Nullable
   public WID<T> getId() { return (WID<T>)get(ID, ID_TYPE_REF).orNull();}
+
+
+  private static final TypeReference<WObject> GENERIC_TYPE_REF = new TypeReference<WObject>(){};
+  @SuppressWarnings("unchecked")
+  @JsonIgnore
+  public <U extends WObject> Optional<U> get(final String key)
+  {
+    return (Optional<U>)get(key, GENERIC_TYPE_REF);
+  }
 
   @SuppressWarnings("unchecked")
   @JsonIgnore
