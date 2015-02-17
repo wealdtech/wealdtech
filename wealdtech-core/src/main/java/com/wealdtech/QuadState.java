@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
-import com.wealdtech.DataError;
 import com.wealdtech.utils.StringUtils;
 
 import java.util.Locale;
@@ -50,6 +49,16 @@ public enum QuadState
       levelMap.put(state.val, state);
     }
     _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+  }
+
+  public boolean isHigherThan(final QuadState that)
+  {
+    return this.val > that.val;
+  }
+
+  public boolean isLowerThan(final QuadState that)
+  {
+    return this.val < that.val;
   }
 
   @Override
