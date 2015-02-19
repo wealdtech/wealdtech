@@ -69,17 +69,9 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   private static final TypeReference<WID<?>> ID_TYPE_REF = new TypeReference<WID<?>>(){};
 
-  // We store data (and external data) as a sorted map to aid legibility when looking at this on-screen
+  // We store data as a sorted map to aid legibility
   @JsonIgnore
   protected final SortedMap<String, Object> data;
-//  @JsonIgnore
-//  protected final ImmutableSortedMap<String, Object> data;
-
-  // This is a convenience for us - it is a copy of the above data without any internal values
-  @JsonIgnore
-  protected final SortedMap<String, Object> externalData;
-//  @JsonIgnore
-//  protected final ImmutableSortedMap<String, Object> externalData;
 
   @JsonAnyGetter
   private Map<String, Object> any() {
@@ -89,22 +81,52 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonCreator
   public WObject(final Map<String, Object> data)
   {
-    this.data = immutify(preCreate(Maps.filterValues(data, Predicates.notNull())));
+    this.data = order(preCreate(Maps.filterValues(data, Predicates.notNull())));
     validate();
+  }
 
-    // Generate another map of the data which only contains external information
-    this.externalData = ImmutableSortedMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
-
-    // We pre-calculate a hashcode using a serialized version of our external data to avoid issues of equality where one object
-    // contains an object and another a serialized version of the object
-    try
+  // Recursively order data
+  private SortedMap<String, Object> order(final Map<String, Object> map)
+  {
+    final TreeMap<String, Object> result = Maps.newTreeMap();
+    for (final Map.Entry<String, Object> entry : map.entrySet())
     {
-      this.hashCode = Objects.hashCode(MAPPER.writeValueAsString(this.externalData));
-    } catch (final IOException ioe)
-    {
-      LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
-      throw new ServerError("Failed to generate external representation of object");
+      if (entry.getValue() instanceof Map)
+      {
+        result.put(entry.getKey(), order((Map<String, Object>)entry.getValue()));
+      }
+      else if (entry.getValue() instanceof List)
+      {
+        result.put(entry.getKey(), order((List)entry.getValue()));
+      }
+      else
+      {
+        result.put(entry.getKey(), entry.getValue());
+      }
     }
+    return result;
+  }
+
+  // We aren't re-ordering the list but if it has objects inside it we need to order them
+  private List<Object> order(final List<Object> list)
+  {
+    final List<Object> result = Lists.newArrayList();
+    for (final Object value : list)
+    {
+      if (value instanceof Map)
+      {
+        result.add(order((Map<String, Object>)value));
+      }
+      else if (value instanceof List)
+      {
+        result.add(order((List)value));
+      }
+      else
+      {
+        result.add(value);
+      }
+    }
+    return result;
   }
 
   // Recursively deep-immutify data
@@ -140,7 +162,7 @@ public class WObject<T extends WObject> implements Comparable<T>
       }
       else if (value instanceof List)
       {
-        result.add(value, immutify((List)value));
+        result.add(immutify((List)value));
       }
       else
       {
@@ -168,13 +190,13 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   /**
    * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
-   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
-   * change between invocations (although the values returned from a single invocation will not).
+   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the contents of
+   * the map will change from one call to the next.
    * @see #getAllData
    * @return a map of keyed data objects
    */
   @JsonIgnore
-  public ImmutableMap<String, Object> getData() { return ImmutableSortedMap.copyOf(externalData); }
+  public ImmutableMap<String, Object> getData() { return externalData(); }
 
   /**
    * Obtain the raw data for this object.  Note that this does provide the internal data.  Also note that there are no
@@ -184,7 +206,7 @@ public class WObject<T extends WObject> implements Comparable<T>
    * @return a map of keyed data objects
    */
   @JsonIgnore
-  public ImmutableMap<String, Object> getAllData() { return ImmutableSortedMap.copyOf(data); }
+  public ImmutableMap<String, Object> getAllData() { return ImmutableMap.copyOf(data); }
 
   @SuppressWarnings("unchecked")
   @JsonIgnore
@@ -210,27 +232,39 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return Optional.absent();
     }
-    return getValue(val, typeRef);
+    return getValue(key, val, typeRef);
   }
 
-  protected <U> Optional<U> getValue(final Object val, final TypeReference<U> typeRef)
+  protected <U> Optional<U> getValue(final String key, final Object val, final TypeReference<U> typeRef)
   {
     // Obtain the type we are after through reflection to find out if it is a collection
     final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
+    final String typeName = type.toString().replace("class ", "").replace("interface ", "");
     boolean isCollection;
     try
     {
-      isCollection = Collection.class.isAssignableFrom(Class.forName(type.toString().replace("class ", "")));
+      isCollection = Collection.class.isAssignableFrom(Class.forName(typeName));
     }
     catch (final ClassNotFoundException cnfe)
     {
       isCollection = false;
     }
 
+    if (val == null)
+    {
+      return Optional.absent();
+    }
+
+    if (Objects.equal(typeName, val.getClass().getCanonicalName()))
+    {
+      return Optional.of((U)val);
+    }
     final String valStr = stringify(val, isCollection);
     try
     {
-      return Optional.fromNullable((U)MAPPER.readValue(valStr, typeRef));
+      final U result = MAPPER.readValue(valStr, typeRef);
+      this.data.put(key, result);
+      return Optional.of(result);
     }
     catch (final IOException ioe)
     {
@@ -249,15 +283,27 @@ public class WObject<T extends WObject> implements Comparable<T>
       return Optional.absent();
     }
 
-    return getValue(val, klazz);
+    return getValue(key, val, klazz);
   }
 
-  protected <U> Optional<U> getValue(final Object val, final Class<U> klazz)
+  protected <U> Optional<U> getValue(final String key, final Object val, final Class<U> klazz)
   {
+    if (val == null)
+    {
+      return Optional.absent();
+    }
+
+    if (Objects.equal(val.getClass(), klazz))
+    {
+      return Optional.of((U)val);
+    }
+
     final String valStr = stringify(val, Collection.class.isAssignableFrom(klazz));
     try
     {
-      return Optional.fromNullable(MAPPER.readValue(valStr, klazz));
+      final U result = MAPPER.readValue(valStr, klazz);
+      data.put(key, result);
+      return Optional.of(result);
     }
     catch (final IOException ioe)
     {
@@ -331,7 +377,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   public boolean isEmpty()
   {
-    return externalData.isEmpty();
+    return externalData().isEmpty();
   }
 
   @Override
@@ -355,13 +401,33 @@ public class WObject<T extends WObject> implements Comparable<T>
     return that instanceof WObject && this.compareTo((T) that) == 0;
   }
 
-  @JsonIgnore
-  private int hashCode;
+  private ImmutableMap<String, Object> externalData()
+  {
+    return ImmutableMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
+  }
 
+  @JsonIgnore
+  private volatile int hashCode;
+
+  // Lazy evaluation of the hash code
   @Override
   public int hashCode()
   {
-    return hashCode;
+    int result = hashCode;
+    if (result == 0)
+    {
+      try
+      {
+        result = Objects.hashCode(MAPPER.writeValueAsString(externalData()));
+      } catch (final IOException ioe)
+      {
+        LOG.error("Failed to generate external representation of object {}", data, ioe);
+        throw new ServerError("Failed to generate external representation of object");
+      }
+      hashCode = result;
+    }
+
+    return result;
   }
 
   public int compareTo(@Nonnull T that)
@@ -375,13 +441,13 @@ public class WObject<T extends WObject> implements Comparable<T>
     try
     {
       return ComparisonChain.start()
-                            .compare(MAPPER.writeValueAsString(this.externalData),
-                                     MAPPER.writeValueAsString(that.externalData))
+                            .compare(MAPPER.writeValueAsString(this.getData()),
+                                     MAPPER.writeValueAsString(that.getData()))
                             .result();
     }
     catch (final IOException ioe)
     {
-      LOG.error("Failed to generate external representation of object {}", this.externalData, ioe);
+      LOG.error("Failed to generate external representation of object {}", data, ioe);
       throw new ServerError("Failed to generate external representation of object");
     }
   }

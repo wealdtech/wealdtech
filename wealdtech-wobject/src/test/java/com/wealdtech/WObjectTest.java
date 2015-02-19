@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -24,6 +25,10 @@ import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.testng.Assert.*;
@@ -56,6 +61,31 @@ public class WObjectTest
     public static Builder<?> builder(){ return new Builder(); }
 
     public static Builder<?> builder(final TestWObject prior){ return new Builder(prior); }
+  }
+
+  public static class TestWObject2 extends WObject<TestWObject2>
+  {
+    @JsonCreator
+    public TestWObject2(final Map<String, Object> data)
+    {
+      super(data);
+    }
+
+    public static class Builder<P extends Builder<P>> extends WObject.Builder<TestWObject2, P>
+    {
+      public Builder(){ super(); }
+
+      public Builder(final TestWObject2 prior){ super(prior); }
+
+      public TestWObject2 build()
+      {
+        return new TestWObject2(data);
+      }
+    }
+
+    public static Builder<?> builder(){ return new Builder(); }
+
+    public static Builder<?> builder(final TestWObject2 prior){ return new Builder(prior); }
   }
 
   @Test
@@ -114,6 +144,22 @@ public class WObjectTest
     assertEquals(testObj2.get("test date", DateTime.class).orNull(), new DateTime(234567890000L, DateTimeZone.UTC));
     assertEquals(testObj2.get("test obj", TestWObject.class).orNull(), testObj1);
     assertEquals(testObj1.get("test date", DateTime.class).orNull(), new DateTime(123456789000L, DateTimeZone.UTC));
+  }
+
+  @Test
+  public void testTest() throws Exception
+  {
+    final TypeReference<List<String>> typeRef = new TypeReference<List<String>>(){};
+
+    // Obtain the Java reflection type from the TypeReference
+    System.err.println("Class is " + (Class)typeRef.getType());
+    final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
+
+    // Obtain the name of the class (or interface)
+    final String typeName = type.toString().replace("class ", "").replace("interface ", "");
+
+    // And find out if it is a Collection
+    final boolean isCollection = Collection.class.isAssignableFrom(Class.forName(typeName));
   }
 
   @Test
@@ -229,5 +275,30 @@ public class WObjectTest
     final TestWObject testObj2 = TestWObject.builder(testObj1).id(WID.<TestWObject>generate()).data("key2", null).build();
     System.err.println(testObj2.data);
     assertFalse(testObj2.exists("key2"));
+  }
+
+  @Test
+  public void testRepeatedGets() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("dt", "1234567890000").data("wid", "1").build();
+    final WID<String> wid = testObj1.get("wid", new TypeReference<WID<String>>() {}).get();
+    final WID<String> wid2 = testObj1.get("wid", new TypeReference<WID<String>>(){}).get();
+    final WID<DateTime> wid3 = testObj1.get("wid", new TypeReference<WID<DateTime>>(){}).get();
+    final DateTime dt1 = testObj1.get("dt", DateTime.class).get();
+    final DateTime dt2 = testObj1.get("dt", DateTime.class).get();
+  }
+
+  @Test
+  public void testOrdering() throws IOException
+  {
+    final TestWObject2 subObj1 =
+        TestWObject2.builder().id(WID.<TestWObject2>generate()).data("c", "1").data("b", "2").data("a", "3").build();
+    final TestWObject testObj1 = TestWObject.builder().data("dt", "1234567890000").data("wid", "1").data("obj", subObj1).build();
+
+    final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
+
+    final TestWObject testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
+
+    assertTrue(Objects.equal(testObj1Deser, testObj1));
   }
 }
