@@ -69,17 +69,15 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
                                 TypeSerializer typeSer)
       throws IOException, JsonProcessingException
   {
+    typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
     if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
     {
-      typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
       jgen.writeNumber(value.getMillis());
-      typeSer.writeTypeSuffixForScalar(value, jgen);
     }
     else
     {
-      typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
       serialize(value, jgen, provider);
-      typeSer.writeTypeSuffixForScalar(value, jgen);
     }
+    typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }
