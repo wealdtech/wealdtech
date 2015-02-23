@@ -149,12 +149,12 @@ public class WObjectTest
   @Test
   public void testTest() throws Exception
   {
-    final TypeReference<List<String>> typeRef = new TypeReference<List<String>>(){};
+    final TypeReference<List<List<String>>> typeRef = new TypeReference<List<List<String>>>(){};
 
     // Obtain the Java reflection type from the TypeReference
-    System.err.println("Class is " + (Class)typeRef.getType());
     final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
-
+    final Class clazz = (Class)(typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType());
+    final Class klazz = (Class)type;
     // Obtain the name of the class (or interface)
     final String typeName = type.toString().replace("class ", "").replace("interface ", "");
 
@@ -273,7 +273,6 @@ public class WObjectTest
         TestWObject.builder().id(WID.<TestWObject>generate()).data("key", "val").data("key2", "val2").build();
     assertTrue(testObj1.exists("key2"));
     final TestWObject testObj2 = TestWObject.builder(testObj1).id(WID.<TestWObject>generate()).data("key2", null).build();
-    System.err.println(testObj2.data);
     assertFalse(testObj2.exists("key2"));
   }
 

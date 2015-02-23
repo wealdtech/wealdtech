@@ -31,7 +31,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -238,24 +237,27 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected <U> Optional<U> getValue(final String key, final Object val, final TypeReference<U> typeRef)
   {
     // Obtain the type we are after through reflection to find out if it is a collection
-    final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
-    final String typeName = type.toString().replace("class ", "").replace("interface ", "");
-    boolean isCollection;
-    try
-    {
-      isCollection = Collection.class.isAssignableFrom(Class.forName(typeName));
-    }
-    catch (final ClassNotFoundException cnfe)
-    {
-      isCollection = false;
-    }
+//    final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
+//    final String typeName = type.toString().replace("class ", "").replace("interface ", "");
+//    boolean isCollection;
+//    try
+//    {
+//      isCollection = Collection.class.isAssignableFrom(Class.forName(typeName));
+//    }
+//    catch (final ClassNotFoundException cnfe)
+//    {
+//      isCollection = false;
+//    }
 
+    final Class requiredClass = (Class)(typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType());
+    final boolean isCollection = Collection.class.isAssignableFrom(requiredClass);
     if (val == null)
     {
       return Optional.absent();
     }
 
-    if (Objects.equal(typeName, val.getClass().getCanonicalName()))
+//    if (Objects.equal(typeName, val.getClass().getCanonicalName()))
+    if (Objects.equal(requiredClass, val.getClass()))
     {
       return Optional.of((U)val);
     }
