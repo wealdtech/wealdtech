@@ -1,8 +1,13 @@
+build_image: shippableimages/ubuntu1404_java
+
 language: java
 
 before_script:
+  - sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+  - shippable_retry sudo apt-get update
+  - shippable_retry sudo apt-get install -y postgresql-9.4 postgresql-contrib-9.4 postgresql-client-9.4
+  - sudo echo "host all all localhost trust" > /etc/postgresql/9.4/main/pg_hba.conf
+  - sudo echo "local all all trust" >> /etc/postgresql/9.4/main/pg_hba.conf
+  - sudo service postgresql start
   - psql -c "CREATE ROLE chat WITH LOGIN CREATEDB" -U postgres
   - psql -c "CREATE DATABASE chat" -U chat postgres
-
-addons:
- postgresql : "9.3"
