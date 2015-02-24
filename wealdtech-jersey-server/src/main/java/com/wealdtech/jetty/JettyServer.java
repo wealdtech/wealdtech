@@ -26,6 +26,7 @@ import com.wealdtech.jetty.config.MetricsServletContextListener;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -150,6 +151,8 @@ public class JettyServer
     admin.setContextPath(configuration.getMetricsEndpoint());
     admin.addServlet(AdminServlet.class, "/*");
     handlers.addHandler(admin);
+
+    handlers.addHandler(new ShutdownHandler(configuration.getShutdownToken()));
 
     final ServletContextHandler root = new ServletContextHandler();
     root.addEventListener(new GuiceServletContextListener()

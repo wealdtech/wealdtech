@@ -95,7 +95,7 @@ public class TriValModuleTest
     final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ssZZ");
 
     final TriVal<DateTime> trv = TriVal.<DateTime>of(DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("Europe/Paris")));
-    final String ser = this.mapper.writeValueAsString(trv);
+    final String ser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(trv);
     assertEquals(ser, "\"2012-02-03T04:05:06+01:00 Europe/Paris\"");
   }
 

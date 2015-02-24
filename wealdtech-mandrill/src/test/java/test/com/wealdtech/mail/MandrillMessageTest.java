@@ -33,7 +33,7 @@ public class MandrillMessageTest
                                                                  .build();
 
     final String serialized = WealdMapper.getMapper().writeValueAsString(message);
-    assertEquals("{\"subject\":\"Test subject\",\"from_name\":\"Test user\",\"from_email\":\"test@test.com\",\"recipients\":[{\"name\":\"Test recipient 1\",\"email\":\"recipient1@test.com\",\"type\":\"to\"},{\"name\":\"Test recipient 2\",\"email\":\"recipient2@test.com\",\"type\":\"to\"}],\"important\":false,\"track_opens\":true,\"track_clicks\":false,\"auto_text\":false,\"inline_css\":false,\"url_strip_qs\":false,\"preserve_recipients\":false,\"view_content_link\":false,\"merge\":true,\"merge_language\":\"mailchimp\"}", serialized);
+    assertEquals("{\"from_name\":\"Test user\",\"from_email\":\"test@test.com\",\"to\":[{\"name\":\"Test recipient 1\",\"email\":\"recipient1@test.com\",\"type\":\"to\"},{\"name\":\"Test recipient 2\",\"email\":\"recipient2@test.com\",\"type\":\"to\"}],\"important\":false,\"track_opens\":true,\"track_clicks\":false,\"auto_text\":false,\"inline_css\":false,\"url_strip_qs\":false,\"preserve_recipients\":false,\"view_content_link\":false,\"merge\":true,\"merge_language\":\"mailchimp\"}", serialized);
 
   }
 

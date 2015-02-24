@@ -13,10 +13,12 @@ package com.wealdtech;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -56,11 +58,21 @@ public class WObject<T extends WObject> implements Comparable<T>
   private static final ObjectMapper MAPPER;
   static
   {
-    MAPPER = WealdMapper.getServerMapper().copy().registerModule(module);
-    //                                                              .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
-    //                                                              .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
+    MAPPER = WealdMapper.getServerMapper()
+                        .copy()
+                        .registerModule(module)
+                        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+                        .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
+                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
     ;
   }
+
+  /**
+   * Obtain the Object Mapper used in WObject Jackson operations.
+   * This is actually a copy of the object mapper, so changes made it it will not affect WObject serialization
+   * @return a copy of the Object Mapper used in WObject Jackson operations
+   */
+  public static ObjectMapper getObjectMapper() { return MAPPER.copy(); }
 
   // Internal fields
   @JsonIgnore

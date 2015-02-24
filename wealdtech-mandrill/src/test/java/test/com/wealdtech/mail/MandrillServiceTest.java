@@ -10,11 +10,8 @@
 
 package test.com.wealdtech.mail;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.wealdtech.mail.MailActor;
 import com.wealdtech.mail.MandrillClient;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -42,8 +39,8 @@ public class MandrillServiceTest
   @Test(groups = {"base"})
   public void testSendTemplate()
   {
-    client.sendTemplate("dev-welcome", ImmutableList.of(ImmutableMap.of("name", "userid", "content", "testuserid"),
-                                                        ImmutableMap.of("name", "token", "content", "testtoken")),
-                        ImmutableList.of(new MailActor("Jim McDonald", "Jim@mcdee.net")));
+//    client.sendTemplate("dev-welcome", ImmutableList.of(ImmutableMap.of("name", "userid", "content", "testuserid"),
+//                                                        ImmutableMap.of("name", "token", "content", "testtoken")),
+//                        ImmutableList.of(new MailActor("Test User", "Test@example.com")));
   }
 }

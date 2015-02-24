@@ -109,7 +109,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
   @JsonIgnore
   public DateTime getTimestamp()
   {
-    return new DateTime(get(TIMESTAMP, Long.class).get());
+    return get(TIMESTAMP, DateTime.class).get();
   }
 
   private static final TypeReference<ImmutableSet<WID<User>>> TO_TYPE_REF = new TypeReference<ImmutableSet<WID<User>>>(){};

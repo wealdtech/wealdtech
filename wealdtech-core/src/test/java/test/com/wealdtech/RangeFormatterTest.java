@@ -26,27 +26,29 @@ import static org.testng.Assert.assertEquals;
 
 public class RangeFormatterTest
 {
-  private static DateTime testDateTime1 = new DateTime(2014, 3, 1, 0, 0, DateTimeZone.UTC);
-  private static DateTime testDateTime2 = new DateTime(2014, 3, 1, 1, 0, DateTimeZone.UTC);
+  private static final int thisYear = new DateTime().getYear();
+  private static DateTime testDateTime1 = new DateTime(thisYear, 3, 1, 0, 0, DateTimeZone.UTC);
+  private static DateTime testDateTime2 = new DateTime(thisYear, 3, 1, 1, 0, DateTimeZone.UTC);
   private static Range<DateTime> testDateTimeRange1 = Range.closedOpen(testDateTime1, testDateTime2);
 
-  private static DateTime testDateTime3 = new DateTime(2013, 4, 2, 6, 0, DateTimeZone.UTC);
-  private static DateTime testDateTime4 = new DateTime(2013, 4, 4, 15, 0, DateTimeZone.UTC);
+  private static DateTime testDateTime3 = new DateTime(thisYear - 1, 4, 2, 6, 0, DateTimeZone.UTC);
+  private static DateTime testDateTime4 = new DateTime(thisYear - 1, 4, 4, 15, 0, DateTimeZone.UTC);
   private static Range<DateTime> testDateTimeRange2 = Range.closedOpen(testDateTime3, testDateTime4);
 
-  private static DateTime testDateTime5 = new DateTime(2013, 3, 2, 8, 0, DateTimeZone.forID("Asia/Tokyo"));
-  private static DateTime testDateTime6 = new DateTime(2013, 3, 3, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
+  private static DateTime testDateTime5 = new DateTime(thisYear - 1, 3, 2, 8, 0, DateTimeZone.forID("Asia/Tokyo"));
+  private static DateTime testDateTime6 = new DateTime(thisYear - 1, 3, 3, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
   private static Range<DateTime> testDateTimeRange3 = Range.closedOpen(testDateTime5, testDateTime6);
 
-  private static DateTime testDateTime7 = new DateTime(2013, 4, 30, 12, 0, DateTimeZone.forID("Asia/Tokyo"));
-  private static DateTime testDateTime8 = new DateTime(2013, 6, 1, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
+  private static DateTime testDateTime7 = new DateTime(thisYear - 1, 4, 30, 12, 0, DateTimeZone.forID("Asia/Tokyo"));
+  private static DateTime testDateTime8 = new DateTime(thisYear - 1, 6, 1, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
   private static Range<DateTime> testDateTimeRange4 = Range.closedOpen(testDateTime7, testDateTime8);
 
-  private static DateTime testDateTime9 = new DateTime(2011, 4, 30, 12, 0, DateTimeZone.forID("Asia/Tokyo"));
-  private static DateTime testDateTime10 = new DateTime(2013, 6, 1, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
+  private static DateTime testDateTime9 = new DateTime(thisYear - 2, 4, 30, 12, 0, DateTimeZone.forID("Asia/Tokyo"));
+  private static DateTime testDateTime10 = new DateTime(thisYear - 1, 6, 1, 9, 0, DateTimeZone.forID("Asia/Tokyo"));
   private static Range<DateTime> testDateTimeRange5 = Range.closedOpen(testDateTime9, testDateTime10);
 
   private static final DateTimeFormatter shortDayFmt = new DateTimeFormatterBuilder().appendDayOfWeekShortText().toFormatter();
+  private static final DateTimeFormatter longDayFmt = new DateTimeFormatterBuilder().appendDayOfWeekText().toFormatter();
   private static final DateTimeFormatter shortMonthFmt = new DateTimeFormatterBuilder().appendMonthOfYearShortText().toFormatter();
   private static final DateTimeFormatter timeFmt = new DateTimeFormatterBuilder().appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).toFormatter();
   private static final DateTimeFormatter yearFmt = new DateTimeFormatterBuilder().appendYear(4, 4).toFormatter();
@@ -55,63 +57,73 @@ public class RangeFormatterTest
   public void testSingleDate()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDate(testDateTime1), "Sat 1 Mar");
+    final String day = testDateTime1.toString(shortDayFmt);
+    assertEquals(formatter.formatDate(testDateTime1), day + " 1 Mar");
   }
 
   @Test
   public void testSingleDateLongForm()
   {
     final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
-    assertEquals(formatter.formatDate(testDateTime1), "Saturday 1 March");
+    final String day = testDateTime1.toString(longDayFmt);
+    assertEquals(formatter.formatDate(testDateTime1), day + " 1 March");
   }
 
   @Test
   public void testSingleDateDifferentYear()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDate(testDateTime5), "Sat 2 Mar 2013");
+    final String day = testDateTime5.toString(shortDayFmt);
+    assertEquals(formatter.formatDate(testDateTime5), day + " 2 Mar " + Long.toString(thisYear - 1));
   }
 
   @Test
   public void testSingleDateDifferentYearLongForm()
   {
     final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
-    assertEquals(formatter.formatDate(testDateTime5), "Saturday 2 March 2013");
+    final String day = testDateTime5.toString(longDayFmt);
+    assertEquals(formatter.formatDate(testDateTime5), day + " 2 March " + Long.toString(thisYear - 1));
   }
 
   @Test
   public void testSingleDateTime()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDateTime(testDateTime1), "Sat 1 Mar 00:00");
+    final String day = testDateTime1.toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTime1), day + " 1 Mar 00:00");
   }
 
   @Test
   public void testSingleDateNonDefaultLocale()
   {
     final RangeFormatter formatter = new RangeFormatter(Locale.FRANCE, RangeFormatter.Style.NORMAL);
-    assertEquals(formatter.formatDateTime(testDateTime1), "sam. 1 mars 00:00");
+    final DateTimeFormatter frShortDayFmt = new DateTimeFormatterBuilder().appendDayOfWeekShortText().toFormatter().withLocale(Locale.FRANCE);
+    final String day = testDateTime1.toString(frShortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTime1), day + " 1 mars 00:00");
   }
 
   @Test
   public void testSingleDateTimeLongForm()
   {
     final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
-    assertEquals(formatter.formatDateTime(testDateTime1), "Saturday 1 March 00:00");
+    final String day = testDateTime1.toString(longDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTime1), day + " 1 March 00:00");
   }
 
   @Test
   public void testSingleDateTimeDifferentYear()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDateTime(testDateTime5), "Sat 2 Mar 2013 08:00");
+    final String day = testDateTime5.toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTime5), day + " 2 Mar " + Long.toString(thisYear - 1) + " 08:00");
   }
 
   @Test
   public void testSingleDateTimeDifferentYearLongForm()
   {
     final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.FULL);
-    assertEquals(formatter.formatDateTime(testDateTime5), "Saturday 2 March 2013 08:00");
+    final String day = testDateTime5.toString(longDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTime5), day + " 2 March " + Long.toString(thisYear - 1) + " 08:00");
   }
 
   @Test
@@ -147,8 +159,9 @@ public class RangeFormatterTest
   public void testRangeDateSameDay()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    final Range<DateTime> testRange = Range.closedOpen(new DateTime(2014, 7, 3, 0, 0), new DateTime(2014, 7, 4, 0, 0));
-    assertEquals(formatter.formatDate(testRange), "Thu 3 Jul");
+    final Range<DateTime> testRange = Range.closedOpen(new DateTime(thisYear, 7, 3, 0, 0), new DateTime(thisYear, 7, 4, 0, 0));
+    final String day = testRange.lowerEndpoint().toString(shortDayFmt);
+    assertEquals(formatter.formatDate(testRange), day + " 3 Jul");
   }
 
 
@@ -156,28 +169,35 @@ public class RangeFormatterTest
   public void testRangeDateSpanningDays()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDate(testDateTimeRange2), "Tue 2 - Wed 3 Apr 2013");
+    final String startDay = testDateTimeRange2.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange2.upperEndpoint().minusDays(1).toString(shortDayFmt);
+    assertEquals(formatter.formatDate(testDateTimeRange2), startDay + " 2 - " + endDay + " 3 Apr " + Long.toString(thisYear - 1));
   }
 
   @Test
   public void testRangeDateSpanningMonths()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDate(testDateTimeRange4), "Tue 30 Apr - Fri 31 May 2013");
+    final String startDay = testDateTimeRange4.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange4.upperEndpoint().minusDays(1).toString(shortDayFmt);
+    assertEquals(formatter.formatDate(testDateTimeRange4), startDay + " 30 Apr - " + endDay + " 31 May " + Long.toString(thisYear - 1));
   }
 
   @Test
   public void testRangeDateSpanningYears()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDate(testDateTimeRange5), "Sat 30 Apr 2011 - Fri 31 May 2013");
+    final String startDay = testDateTimeRange5.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange5.upperEndpoint().minusDays(1).toString(shortDayFmt);
+    assertEquals(formatter.formatDate(testDateTimeRange5), startDay + " 30 Apr " + Long.toString(thisYear - 2) + " - " + endDay + " 31 May " + Long.toString(thisYear - 1));
   }
 
   @Test
   public void testRangeDateTime()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDateTime(testDateTimeRange1), "Sat 1 Mar 00:00 - 01:00");
+    final String startDay = testDateTimeRange1.lowerEndpoint().toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTimeRange1), startDay + " 1 Mar 00:00 - 01:00");
   }
 
   @Test
@@ -201,21 +221,27 @@ public class RangeFormatterTest
   public void testRangeDateTimeSpanningDays()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDateTime(testDateTimeRange2), "Tue 2 Apr 2013 06:00 - Thu 4 Apr 2013 15:00");
+    final String startDay = testDateTimeRange2.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange2.upperEndpoint().toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTimeRange2), startDay + " 2 Apr " + Long.toString(thisYear - 1) + " 06:00 - " + endDay + " 4 Apr " + Long.toString(thisYear - 1) + " 15:00");
   }
 
   @Test
   public void testRangeDateTimeSpanningMonths()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDateTime(testDateTimeRange4), "Tue 30 Apr 2013 12:00 - Sat 1 Jun 2013 09:00");
+    final String startDay = testDateTimeRange4.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange4.upperEndpoint().toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTimeRange4), startDay + " 30 Apr " + Long.toString(thisYear - 1) + " 12:00 - " + endDay + " 1 Jun " + Long.toString(thisYear - 1) + " 09:00");
   }
 
   @Test
   public void testRangeDateTimeSpanningYears()
   {
     final RangeFormatter formatter = new RangeFormatter();
-    assertEquals(formatter.formatDateTime(testDateTimeRange5), "Sat 30 Apr 2011 12:00 - Sat 1 Jun 2013 09:00");
+    final String startDay = testDateTimeRange5.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange5.upperEndpoint().toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTimeRange5), startDay + " 30 Apr " + Long.toString(thisYear - 2) + " 12:00 - " + endDay + " 1 Jun " + Long.toString(thisYear - 1) + " 09:00");
   }
 
   @Test

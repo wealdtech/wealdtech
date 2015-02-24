@@ -370,28 +370,61 @@ public class JacksonModulesTest
   }
 
   @Test
-  public void testSerDateTime() throws Exception
+  public void testSerDateTimeAsLong() throws Exception
   {
     final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.forID("Europe/London"));
-    final String value = this.mapper.writeValueAsString(dt1);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(dt1);
     assertEquals(value, "{\"timestamp\":1328238306000,\"timezone\":\"Europe/London\"}");
   }
 
   @Test
-  public void testSerLocalDateTime() throws Exception
+  public void testSerUTCDateTimeAsLong() throws Exception
+  {
+    final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.UTC);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(dt1);
+    assertEquals(value, "{\"timestamp\":1328238306000}");
+  }
+
+  @Test
+  public void testSerDateTimeAsString() throws Exception
+  {
+    final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.forID("Europe/London"));
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(dt1);
+    assertEquals(value, "\"2012-02-03T03:05:06+00:00 Europe/London\"");
+  }
+
+  @Test
+  public void testSerLocalDateTimeAsLong() throws Exception
   {
     final LocalDateTime ldt1 = LocalDateTime.parse("2012-02-03T04:05:06");
-    final String value = this.mapper.writeValueAsString(ldt1);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(ldt1);
+    assertEquals(value, "1328241906000");
+  }
+
+  @Test
+  public void testSerLocalDateTimeAsString() throws Exception
+  {
+    final LocalDateTime ldt1 = LocalDateTime.parse("2012-02-03T04:05:06");
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(ldt1);
     assertEquals(value, "\"2012-02-03T04:05:06\"");
   }
 
   @Test
-  public void testSerLocalDateTime2() throws Exception
+  public void testSerLocalDateTime2AsString() throws Exception
   {
     final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.forID("Europe/London"));
     final LocalDateTime ldt1 = dt1.toLocalDateTime();
-    final String value = this.mapper.writeValueAsString(ldt1);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(ldt1);
     assertEquals(value, "\"2012-05-06T09:02:03\"");
+  }
+
+  @Test
+  public void testSerLocalDateTime2AsLong() throws Exception
+  {
+    final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.forID("Europe/London"));
+    final LocalDateTime ldt1 = dt1.toLocalDateTime();
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(ldt1);
+    assertEquals(value, "1336298523000");
   }
 
   @Test

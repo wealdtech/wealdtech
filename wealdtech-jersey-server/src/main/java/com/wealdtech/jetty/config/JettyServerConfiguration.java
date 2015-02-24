@@ -33,6 +33,7 @@ public final class JettyServerConfiguration implements Configuration
   private JettyResponseConfiguration responseConfiguration = new JettyResponseConfiguration();
   private ImmutableList<JettyInstanceConfiguration> instanceConfigurations = ImmutableList.of(new JettyInstanceConfiguration());
   private String metricsEndpoint = "/admin";
+  private String shutdownToken = "9w24hwu24t824";
 
   @Inject
   public JettyServerConfiguration()
@@ -45,13 +46,15 @@ public final class JettyServerConfiguration implements Configuration
                                    @JsonProperty("detailedthreadnameenabled") final Boolean detailedThreadName,
                                    @JsonProperty("response") final JettyResponseConfiguration responseConfiguration,
                                    @JsonProperty("instances") final List<JettyInstanceConfiguration> instanceConfigurations,
-                                   @JsonProperty("metricsendpoint") final String metricsEndpoint)
+                                   @JsonProperty("metricsendpoint") final String metricsEndpoint,
+                                   @JsonProperty("shutdowntoken") final String shutdownToken)
   {
     this.bodyPrefetch = MoreObjects.firstNonNull(bodyPrefetch, this.bodyPrefetch);
     this.detailedThreadName = MoreObjects.firstNonNull(detailedThreadName, this.detailedThreadName);
     this.responseConfiguration = MoreObjects.firstNonNull(responseConfiguration, this.responseConfiguration);
     this.instanceConfigurations = ImmutableList.copyOf(MoreObjects.firstNonNull(instanceConfigurations, this.instanceConfigurations));
     this.metricsEndpoint = MoreObjects.firstNonNull(metricsEndpoint, this.metricsEndpoint);
+    this.shutdownToken = MoreObjects.firstNonNull(shutdownToken, this.shutdownToken);
   }
 
   public boolean getBodyPrefetch()
@@ -75,4 +78,6 @@ public final class JettyServerConfiguration implements Configuration
   }
 
   public String getMetricsEndpoint() { return this.metricsEndpoint; }
+
+  public String getShutdownToken() { return this.shutdownToken; }
 }
