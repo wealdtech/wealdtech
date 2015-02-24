@@ -1,4 +1,4 @@
-build_image: shippableimages/ubuntu1404_java
+language: java
 
 before_script:
   - psql -c "CREATE ROLE chat WITH LOGIN CREATEDB" -U postgres
