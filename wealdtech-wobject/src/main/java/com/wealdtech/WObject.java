@@ -58,7 +58,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   private static final ObjectMapper MAPPER;
   static
   {
-    MAPPER = WealdMapper.getServerMapper()
+    MAPPER = WealdMapper.getMapper()
                         .copy()
                         .registerModule(module)
                         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
