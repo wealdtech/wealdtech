@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.*;
 import com.wealdtech.jackson.WealdMapper;
@@ -43,14 +42,6 @@ import java.util.*;
 public class WObject<T extends WObject> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
-
-  // Helper predicate to strip out the internal fields (which start with "_")
-  private static final Predicate<String> FILTER_OUT_INTERNAL_PREDICATE = new Predicate<String>(){
-    @Override
-    public boolean apply(@Nullable final String input)
-    {
-      return input != null && !input.startsWith("_");}
-  };
 
   // Mapper used to read and write data
   static final SimpleModule module = new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class,
@@ -102,6 +93,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     final TreeMap<String, Object> result = Maps.newTreeMap();
     for (final Map.Entry<String, Object> entry : map.entrySet())
     {
+      // Don't need to handle WObjects here as they will already be ordered
       if (entry.getValue() instanceof Map)
       {
         result.put(entry.getKey(), order((Map<String, Object>)entry.getValue()));
@@ -124,6 +116,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     final List<Object> result = Lists.newArrayList();
     for (final Object value : list)
     {
+      // Don't need to handle WObjects here as they will already be ordered
       if (value instanceof Map)
       {
         result.add(order((Map<String, Object>)value));
@@ -140,48 +133,106 @@ public class WObject<T extends WObject> implements Comparable<T>
     return result;
   }
 
-  // Recursively deep-immutify data
-  private ImmutableSortedMap<String, Object> immutify(final Map<String, Object> map)
+  // Recursively strip internal data
+  private ImmutableSortedMap<String, Object> strip(final Map<String, Object> map)
   {
-    final ImmutableSortedMap.Builder<String, Object> result = ImmutableSortedMap.naturalOrder();
+    final ImmutableSortedMap.Builder<String, Object> resultB = ImmutableSortedMap.naturalOrder();
     for (final Map.Entry<String, Object> entry : map.entrySet())
     {
-      if (entry.getValue() instanceof Map)
+      // The check for the key being a string is not redundant.  A map inside a WObject could have anything as its key, even though
+      // our contract says it should be a string.  This is because someone could pass a value which is a map with a different class
+      // for the key, for example WObject.builder().data("bad", ImmutableMap.<Integer, Integer>of(1, 1).build()
+      // This is allowable so we need to handle it here
+      if (!(entry.getKey() instanceof String) || !entry.getKey().startsWith("_"))
       {
-        result.put(entry.getKey(), immutify((Map<String, Object>)entry.getValue()));
-      }
-      else if (entry.getValue() instanceof List)
-      {
-        result.put(entry.getKey(), immutify((List)entry.getValue()));
-      }
-      else
-      {
-        result.put(entry);
+        if (entry.getValue() instanceof WObject<?>)
+        {
+          resultB.put(entry.getKey(), new WObject(((WObject<?>)entry.getValue()).getData()));
+        }
+        else if (entry.getValue() instanceof Map)
+        {
+          resultB.put(entry.getKey(), strip((Map<String, Object>)entry.getValue()));
+        }
+        else if (entry.getValue() instanceof List)
+        {
+          resultB.put(entry.getKey(), strip((List)entry.getValue()));
+        }
+        else
+        {
+          resultB.put(entry.getKey(), entry.getValue());
+        }
       }
     }
-    return result.build();
+    return resultB.build();
   }
 
-  private ImmutableList<Object> immutify(final List<Object> list)
+  private ImmutableList<Object> strip(final List<Object> list)
   {
-    final ImmutableList.Builder<Object> result = ImmutableList.builder();
+    final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
     for (final Object value : list)
     {
-      if (value instanceof Map)
+      if (value instanceof WObject<?>)
       {
-        result.add(immutify((Map<String, Object>)value));
+        resultB.add(new WObject(((WObject<?>)value).getData()));
+      }
+      else if (value instanceof Map)
+      {
+        resultB.add(strip((Map<String, Object>)value));
       }
       else if (value instanceof List)
       {
-        result.add(immutify((List)value));
+        resultB.add(strip((List)value));
       }
       else
       {
-        result.add(value);
+        resultB.add(value);
       }
     }
-    return result.build();
+    return resultB.build();
   }
+
+//  // Recursively deep-immutify data
+//  private ImmutableSortedMap<String, Object> immutify(final Map<String, Object> map)
+//  {
+//    final ImmutableSortedMap.Builder<String, Object> result = ImmutableSortedMap.naturalOrder();
+//    for (final Map.Entry<String, Object> entry : map.entrySet())
+//    {
+//      if (entry.getValue() instanceof Map)
+//      {
+//        result.put(entry.getKey(), immutify((Map<String, Object>)entry.getValue()));
+//      }
+//      else if (entry.getValue() instanceof List)
+//      {
+//        result.put(entry.getKey(), immutify((List)entry.getValue()));
+//      }
+//      else
+//      {
+//        result.put(entry);
+//      }
+//    }
+//    return result.build();
+//  }
+//
+//  private ImmutableList<Object> immutify(final List<Object> list)
+//  {
+//    final ImmutableList.Builder<Object> result = ImmutableList.builder();
+//    for (final Object value : list)
+//    {
+//      if (value instanceof Map)
+//      {
+//        result.add(immutify((Map<String, Object>)value));
+//      }
+//      else if (value instanceof List)
+//      {
+//        result.add(immutify((List)value));
+//      }
+//      else
+//      {
+//        result.add(value);
+//      }
+//    }
+//    return result.build();
+//  }
 
   /**
    * Carry out any operations required to manage the object prior to creation.  For example, this could add a
@@ -224,7 +275,6 @@ public class WObject<T extends WObject> implements Comparable<T>
   @Nullable
   public WID<T> getId() { return (WID<T>)get(ID, ID_TYPE_REF).orNull();}
 
-
   private static final TypeReference<WObject> GENERIC_TYPE_REF = new TypeReference<WObject>(){};
   @SuppressWarnings("unchecked")
   @JsonIgnore
@@ -249,18 +299,6 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected <U> Optional<U> getValue(final String key, final Object val, final TypeReference<U> typeRef)
   {
     // Obtain the type we are after through reflection to find out if it is a collection
-//    final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
-//    final String typeName = type.toString().replace("class ", "").replace("interface ", "");
-//    boolean isCollection;
-//    try
-//    {
-//      isCollection = Collection.class.isAssignableFrom(Class.forName(typeName));
-//    }
-//    catch (final ClassNotFoundException cnfe)
-//    {
-//      isCollection = false;
-//    }
-
     final Class requiredClass = (Class)(typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType());
     final boolean isCollection = Collection.class.isAssignableFrom(requiredClass);
     if (val == null)
@@ -359,26 +397,6 @@ public class WObject<T extends WObject> implements Comparable<T>
     return valStr;
   }
 
-  /**
-   * Overlay another WObject on top of this one, updating where required
-   *
-   * @param overlay another WObject
-   *
-   * @return the combined WObject
-   */
-  public WObject<T> overlay(@Nullable final WObject<T> overlay)
-  {
-    if (overlay == null)
-    {
-      return this;
-    }
-    final Map<String, Object> data = Maps.newHashMap();
-    data.putAll(data);
-    data.putAll(overlay.data);
-
-    return new WObject<>(data);
-  }
-
   public boolean exists(final String key)
   {
     return data.containsKey(key);
@@ -417,7 +435,7 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   private ImmutableMap<String, Object> externalData()
   {
-    return ImmutableMap.copyOf(Maps.filterKeys(this.data, FILTER_OUT_INTERNAL_PREDICATE));
+    return strip(this.data);
   }
 
   @JsonIgnore
@@ -455,8 +473,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     try
     {
       return ComparisonChain.start()
-                            .compare(MAPPER.writeValueAsString(this.getData()),
-                                     MAPPER.writeValueAsString(that.getData()))
+                            .compare(MAPPER.writeValueAsString(this.getData()), MAPPER.writeValueAsString(that.getData()))
                             .result();
     }
     catch (final IOException ioe)
@@ -464,16 +481,6 @@ public class WObject<T extends WObject> implements Comparable<T>
       LOG.error("Failed to generate external representation of object {}", data, ioe);
       throw new ServerError("Failed to generate external representation of object");
     }
-  }
-
-  public T normalise(final Class<T> klazz)
-  {
-    return MAPPER.convertValue(this, klazz);
-  }
-
-  public T normalise(final TypeReference<T> typeReference)
-  {
-    return MAPPER.convertValue(this, typeReference);
   }
 
   public static class Builder<T extends WObject<T>, P extends Builder<T, P>>
@@ -516,11 +523,6 @@ public class WObject<T extends WObject> implements Comparable<T>
     protected P self()
     {
       return (P)this;
-    }
-
-    public WObject<T> build()
-    {
-      return new WObject<>(data);
     }
   }
 }

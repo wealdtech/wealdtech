@@ -11,7 +11,6 @@
 package com.wealdtech.notifications;
 
 import com.google.common.collect.ImmutableSet;
-import com.wealdtech.WObject;
 import com.wealdtech.notifications.config.NotificationConfiguration;
 import com.wealdtech.notifications.service.NotificationService;
 import org.testng.annotations.Test;
@@ -24,6 +23,6 @@ public class NotificationProviderLogImplTest
   public void testSimple()
   {
     final NotificationService service = new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderLogImpl", null, null));
-    service.notify(ImmutableSet.of("test1", "test2"), new WObject.Builder().data("key1", "val1").data("key2", "val2").build());
+    service.notify(ImmutableSet.of("test1", "test2"), Notification.builder().data("key1", "val1").data("key2", "val2").build());
   }
 }

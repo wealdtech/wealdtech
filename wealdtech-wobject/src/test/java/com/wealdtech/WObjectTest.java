@@ -16,18 +16,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -147,22 +142,6 @@ public class WObjectTest
   }
 
   @Test
-  public void testTest() throws Exception
-  {
-    final TypeReference<List<List<String>>> typeRef = new TypeReference<List<List<String>>>(){};
-
-    // Obtain the Java reflection type from the TypeReference
-    final Type type = typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType();
-    final Class clazz = (Class)(typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType());
-    final Class klazz = (Class)type;
-    // Obtain the name of the class (or interface)
-    final String typeName = type.toString().replace("class ", "").replace("interface ", "");
-
-    // And find out if it is a Collection
-    final boolean isCollection = Collection.class.isAssignableFrom(Class.forName(typeName));
-  }
-
-  @Test
   public void testArrays() throws IOException
   {
     final TestWObject testObj1 = TestWObject.builder()
@@ -259,7 +238,7 @@ public class WObjectTest
   public void testIgnoreInternals() throws IOException
   {
     final TestWObject testObj1 =
-        TestWObject.builder().id(WID.<TestWObject>generate()).data("key", "val").data("_version", 1).build();
+        TestWObject.builder().id(WID.<TestWObject>generate()).data(ImmutableMap.of("key", "val", "_version", 1)).build();
     final TestWObject testObj2 =
         TestWObject.builder().id(WID.<TestWObject>generate()).data("key", "val").data("_version", 2).build();
     assertEquals(testObj1, testObj2);
@@ -281,8 +260,8 @@ public class WObjectTest
   {
     final TestWObject testObj1 = TestWObject.builder().data("dt", "1234567890000").data("wid", "1").build();
     final WID<String> wid = testObj1.get("wid", new TypeReference<WID<String>>() {}).get();
-    final WID<String> wid2 = testObj1.get("wid", new TypeReference<WID<String>>(){}).get();
-    final WID<DateTime> wid3 = testObj1.get("wid", new TypeReference<WID<DateTime>>(){}).get();
+    final WID<String> wid2 = testObj1.get("wid", new TypeReference<WID<String>>() {}).get();
+    final WID<DateTime> wid3 = testObj1.get("wid", new TypeReference<WID<DateTime>>() {}).get();
     final DateTime dt1 = testObj1.get("dt", DateTime.class).get();
     final DateTime dt2 = testObj1.get("dt", DateTime.class).get();
   }
@@ -299,5 +278,78 @@ public class WObjectTest
     final TestWObject testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
 
     assertTrue(Objects.equal(testObj1Deser, testObj1));
+  }
+
+  @Test
+  public void testDeepOrdering() throws IOException
+  {
+    final TestWObject2 subObj1 =
+        TestWObject2.builder().id(WID.<TestWObject2>generate()).data("c", "1").data("b", "2").data("a", "3").build();
+    final TestWObject2 subObj2 =
+        TestWObject2.builder().id(WID.<TestWObject2>generate()).data("foo", "1").data("bar", "2").data("baz", "3").build();
+    final TestWObject2 subObj3 =
+        TestWObject2.builder().id(WID.<TestWObject2>generate()).data("Do", "1").data("Re", "2").data("Mi", "3").build();
+    final List<TestWObject2> subObjs = Lists.newArrayList(subObj1, subObj2, subObj3);
+    final TestWObject testObj1 = TestWObject.builder().data("dt", "1234567890000").data("wid", "1").data("subs", subObjs).build();
+
+    final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
+
+    final TestWObject testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
+
+    assertTrue(Objects.equal(testObj1Deser, testObj1));
+  }
+
+  @Test
+  public void testConsistentHash() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("dt", ImmutableMap.of("timestamp", 123456789000L)).build();
+    final int preFetchHashCode = testObj1.hashCode();
+    testObj1.get("dt", DateTime.class);
+    // internal structure of WObject will now contain the date time but the hash should remain the same
+    final int postFetchHashCode = testObj1.hashCode();
+    assertEquals(preFetchHashCode, postFetchHashCode);
+
+    // Also ensure that WObject built with real object from the start provides the same hash
+    final TestWObject testObj2 = TestWObject.builder().data("dt", new DateTime(123456789000L, DateTimeZone.UTC)).build();
+    final int realObjectHashCode = testObj2.hashCode();
+    assertEquals(preFetchHashCode, realObjectHashCode);
+  }
+
+  @Test
+  public void testAbsent()
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("here", 1).build();
+    assertFalse(testObj1.get("nothere", String.class).isPresent());
+    assertFalse(testObj1.get("nothere", new TypeReference<ImmutableList<String>>() {}).isPresent());
+  }
+
+  @Test
+  public void testAllData()
+  {
+    final WID<TestWObject> wid = WID.generate();
+    final TestWObject testObj1 = TestWObject.builder().id(wid).data("int", 1).build();
+    assertEquals(testObj1.getId(), wid);
+    assertFalse(testObj1.getData().containsKey("_id"));
+    assertTrue(testObj1.getAllData().containsKey("_id"));
+  }
+
+  @Test
+  public void testGeneric()
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("one", 1).data("two", "{\"a\":2}").build();
+    assertFalse(testObj1.get("one").isPresent());
+    assertTrue(testObj1.get("two").isPresent());
+  }
+
+  // We can embed a map of any sort in to a WObject; ensure that it doesn't cause problems
+  @Test
+  public void testNonStringKeys()
+  {
+    final Map<WID, String> map = ImmutableMap.<WID, String>of(WID.generate(), "1", WID.generate(), "2");
+    final TestWObject testObj1 = TestWObject.builder().data("one", "1").data("map", map).build();
+    testObj1.getData();
+    testObj1.getAllData();
+    testObj1.hashCode();
+    testObj1.toString();
   }
 }

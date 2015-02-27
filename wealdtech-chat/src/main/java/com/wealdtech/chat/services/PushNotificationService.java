@@ -14,9 +14,9 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
-import com.wealdtech.WObject;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Subscription;
+import com.wealdtech.notifications.Notification;
 import com.wealdtech.notifications.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class PushNotificationService
     {
       if (!Objects.equal(subscription.getUser(), message.getFrom()))
       {
-        notificationService.notify(ImmutableSet.of(subscription.getUser()), new WObject.Builder().data("msg", "foo").build());
+        notificationService.notify(ImmutableSet.of(subscription.getUser()), Notification.builder().data("msg", "foo").build());
       }
     }
   }
