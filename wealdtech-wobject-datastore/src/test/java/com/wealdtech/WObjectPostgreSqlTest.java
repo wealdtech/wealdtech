@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.UnmodifiableIterator;
 import com.google.inject.Inject;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repository.PostgreSqlRepository;
@@ -54,7 +55,7 @@ public class WObjectPostgreSqlTest
       }
     }
     public static Builder<?> builder() { return new Builder(); }
-  };
+  }
 
   public class TestObjectServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<TestWObject>
   {
@@ -85,8 +86,6 @@ public class WObjectPostgreSqlTest
   @Test
   public void testAdd()
   {
-    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
-
     final TestWObject testObj = TestWObject.builder()
                                            .id(WID.<TestWObject>generate())
                                            .data("test string", "test value")
@@ -102,7 +101,6 @@ public class WObjectPostgreSqlTest
   @Test
   public void testConditionalObtain()
   {
-    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
     final TestWObject testObj1 = TestWObject.builder()
                                             .id(WID.<TestWObject>generate())
                                             .data("val", "foo")
@@ -130,14 +128,13 @@ public class WObjectPostgreSqlTest
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setString(stmt, index++, "foo");
+        setString(stmt, index, "foo");
       }
     });
 
     assertNotNull(testObjs);
     assertEquals(testObjs.size(), 2);
   }
-
 
   @Test
   public void testRemove()
@@ -185,5 +182,59 @@ public class WObjectPostgreSqlTest
     assertEquals(testObjs2.size(), 2);
     assertTrue(testObjs2.contains(testObj1));
     assertTrue(testObjs2.contains(testObj3));
+  }
+
+  @Test
+  public void testOrdering()
+  {
+    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
+    final TestWObject testObj1 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("val", methodName).data("num", 1).build();
+    service.add(testObj1);
+    final TestWObject testObj2 =
+        TestWObject.builder().id(WID.<TestWObject>generate()).data("val", methodName).data("num", 2).build();
+    service.add(testObj2);
+
+    final ImmutableList<TestWObject> testObjs1 = service.obtain(new TypeReference<TestWObject>() {}, new WObjectServiceCallbackPostgreSqlImpl() {
+      @Override
+      public String getConditions()
+      {
+        return "d->>'val' = ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        setString(stmt, 1, methodName);
+      }
+
+      @Override
+      public String getOrder(){return "(d->>'num')::INT";}
+    });
+    assertEquals(testObjs1.size(), 2);
+    UnmodifiableIterator<TestWObject> testObjs1Iterator = testObjs1.iterator();
+    assertEquals(testObjs1Iterator.next().get("num", Integer.class).orNull(), (Integer)1);
+    assertEquals(testObjs1Iterator.next().get("num", Integer.class).orNull(), (Integer)2);
+
+    final ImmutableList<TestWObject> testObjs2 = service.obtain(new TypeReference<TestWObject>() {}, new WObjectServiceCallbackPostgreSqlImpl() {
+      @Override
+      public String getConditions()
+      {
+        return "d->>'val' = ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        setString(stmt, 1, methodName);
+      }
+
+      @Override
+      public String getOrder(){return "(d->>'num')::INT DESC";}
+    });
+    assertEquals(testObjs2.size(), 2);
+    UnmodifiableIterator<TestWObject> testObjs2Iterator = testObjs2.iterator();
+    assertEquals(testObjs2Iterator.next().get("num", Integer.class).orNull(), (Integer)2);
+    assertEquals(testObjs2Iterator.next().get("num", Integer.class).orNull(), (Integer)1);
   }
 }

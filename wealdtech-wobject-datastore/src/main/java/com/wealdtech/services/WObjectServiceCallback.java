@@ -23,6 +23,8 @@ public interface WObjectServiceCallback<T>
 
   void setConditionValues(T stmt);
 
+  @Nullable String getOrder();
+
   WObjectServiceCallback<T> setString(T stmt, int index, @Nullable String val);
 
   WObjectServiceCallback<T> setStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);

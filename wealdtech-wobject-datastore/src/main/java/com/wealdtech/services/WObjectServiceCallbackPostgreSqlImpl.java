@@ -23,9 +23,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * A conditions callback for PostgreSql services
+ * A callback for PostgreSQL services
  */
-public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectServiceCallback<PreparedStatement>
+public class WObjectServiceCallbackPostgreSqlImpl implements WObjectServiceCallback<PreparedStatement>
 {
   public WObjectServiceCallbackPostgreSqlImpl setString(final PreparedStatement stmt, final int index, @Nullable final String val)
   {
@@ -121,4 +121,17 @@ public abstract class WObjectServiceCallbackPostgreSqlImpl implements WObjectSer
     }
     return this;
   }
+
+  @Override
+  public String getConditions()
+  {
+    return null;
+  }
+
+  @Override
+  public void setConditionValues(PreparedStatement stmt) {}
+
+  @Override
+  public String getOrder() { return null; }
+
 }

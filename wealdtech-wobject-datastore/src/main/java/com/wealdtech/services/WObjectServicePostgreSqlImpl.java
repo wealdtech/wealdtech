@@ -239,6 +239,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public ImmutableList<T> obtain(final TypeReference<T>typeRef, @Nullable final WObjectServiceCallback<PreparedStatement> cb)
   {
@@ -247,15 +248,30 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     {
       conn = repository.getConnection();
 
-      final PreparedStatement stmt;
-      if (cb == null || cb.getConditions() == null)
+      String statement;
+      if (cb == null || (cb.getConditions() == null && cb.getOrder() == null))
       {
-        stmt = conn.prepareStatement(obtainSql);
+        statement = obtainSql;
       }
       else
       {
-        final String statement = obtainSql + "\nWHERE " + cb.getConditions();
-        stmt = conn.prepareStatement(statement);
+        if (cb.getConditions() == null)
+        {
+          statement = obtainSql + "\nORDER BY " + cb.getOrder();
+        }
+        else if (cb.getOrder() == null)
+        {
+          statement = obtainSql + "\nWHERE " + cb.getConditions();
+        }
+        else
+        {
+          statement = obtainSql + "\nWHERE " + cb.getConditions() + "\nORDER BY " + cb.getOrder();
+        }
+      }
+
+      final PreparedStatement stmt = conn.prepareStatement(statement);
+      if (cb != null)
+      {
         cb.setConditionValues(stmt);
       }
 
