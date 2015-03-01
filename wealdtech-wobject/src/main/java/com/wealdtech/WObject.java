@@ -157,6 +157,14 @@ public class WObject<T extends WObject> implements Comparable<T>
         {
           resultB.put(entry.getKey(), strip((List)entry.getValue()));
         }
+        else if (entry.getValue() instanceof Set)
+        {
+          resultB.put(entry.getKey(), strip((Set)entry.getValue()));
+        }
+        else if (entry.getValue() instanceof Collection)
+        {
+          resultB.put(entry.getKey(), strip((Collection)entry.getValue()));
+        }
         else
         {
           resultB.put(entry.getKey(), entry.getValue());
@@ -166,6 +174,38 @@ public class WObject<T extends WObject> implements Comparable<T>
     return resultB.build();
   }
 
+  private ImmutableList<Object> strip(final Collection<Object> collection)
+  {
+    final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
+    for (final Object value : collection)
+    {
+      if (value instanceof WObject<?>)
+      {
+        resultB.add(new WObject(((WObject<?>)value).getData()));
+      }
+      else if (value instanceof Map)
+      {
+        resultB.add(strip((Map<String, Object>)value));
+      }
+      else if (value instanceof List)
+      {
+        resultB.add(strip((List)value));
+      }
+      else if (value instanceof Set)
+      {
+        resultB.add(strip((Set)value));
+      }
+      else if (value instanceof Collection)
+      {
+        resultB.add(strip((Collection)value));
+      }
+      else
+      {
+        resultB.add(value);
+      }
+    }
+    return resultB.build();
+  }
   private ImmutableList<Object> strip(final List<Object> list)
   {
     final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
@@ -182,6 +222,46 @@ public class WObject<T extends WObject> implements Comparable<T>
       else if (value instanceof List)
       {
         resultB.add(strip((List)value));
+      }
+      else if (value instanceof Set)
+      {
+        resultB.add(strip((Set)value));
+      }
+      else if (value instanceof Collection)
+      {
+        resultB.add(strip((Collection)value));
+      }
+      else
+      {
+        resultB.add(value);
+      }
+    }
+    return resultB.build();
+  }
+  private ImmutableSet<Object> strip(final Set<Object> set)
+  {
+    final ImmutableSet.Builder<Object> resultB = ImmutableSet.builder();
+    for (final Object value : set)
+    {
+      if (value instanceof WObject<?>)
+      {
+        resultB.add(new WObject(((WObject<?>)value).getData()));
+      }
+      else if (value instanceof Map)
+      {
+        resultB.add(strip((Map<String, Object>)value));
+      }
+      else if (value instanceof List)
+      {
+        resultB.add(strip((List)value));
+      }
+      else if (value instanceof Set)
+      {
+        resultB.add(strip((Set)value));
+      }
+      else if (value instanceof Collection)
+      {
+        resultB.add(strip((Collection)value));
       }
       else
       {
@@ -384,7 +464,11 @@ public class WObject<T extends WObject> implements Comparable<T>
       }
     }
 
-    if (val instanceof Enum<?>)
+    // Check for a type which should be passed through without quoting.  Valid JSON would be a boolean or a number, and we add
+    // enums to the list
+    if (val instanceof Enum<?> ||
+        val instanceof Boolean ||
+        val instanceof Number)
     {
       return valStr;
     }

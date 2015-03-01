@@ -20,6 +20,7 @@ import com.google.common.collect.*;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -351,5 +352,21 @@ public class WObjectTest
     testObj1.getAllData();
     testObj1.hashCode();
     testObj1.toString();
+  }
+
+  @Test
+  public void testBoolean()
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("one", true).data("two", "true").build();
+    assertTrue(testObj1.get("one", Boolean.class).get());
+    assertTrue(testObj1.get("two", Boolean.class).get());
+  }
+
+  @Test
+  public void testLocalDateTime()
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("one", new LocalDateTime(1234567890000L)).data("two", 1234567890000L).build();
+    assertEquals(testObj1.get("one", LocalDateTime.class).get(), new LocalDateTime(1234567890000L));
+    assertEquals(testObj1.get("two", LocalDateTime.class).get(), new LocalDateTime(1234567890000L));
   }
 }
