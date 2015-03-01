@@ -496,25 +496,38 @@ public class WObject<T extends WObject> implements Comparable<T>
     return externalData().isEmpty();
   }
 
+  @JsonIgnore
+  private volatile String stringRepresentation = null;
+
+  /**
+   * <em>N.B.</em>The string representation of the data does not show internal fields.  As such it should not be used as a way of
+   * transmitting or storing the object
+   */
   @Override
   public String toString()
   {
-    try
+    String result = stringRepresentation;
+    if (result == null)
     {
-      return MAPPER.writeValueAsString(this);
+      try
+      {
+        result = MAPPER.writeValueAsString(externalData());
+      }
+      catch (final JsonProcessingException e)
+      {
+        System.err.println("Failed to generate string");
+        return "{\"error\":\"toString() failed: " + e.getMessage() + "\"}";
+      }
+      stringRepresentation = result;
     }
-    catch (final JsonProcessingException e)
-    {
-      System.err.println("Failed to generate string");
-      return "{\"error\":\"toString() failed: " + e.getMessage() + "\"}";
-    }
+    return result;
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof WObject && this.compareTo((T) that) == 0;
+    return that instanceof WObject && this.hashCode() == that.hashCode() && this.compareTo((T) that) == 0;
   }
 
   private ImmutableMap<String, Object> externalData()
@@ -532,14 +545,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     int result = hashCode;
     if (result == 0)
     {
-      try
-      {
-        result = Objects.hashCode(MAPPER.writeValueAsString(externalData()));
-      } catch (final IOException ioe)
-      {
-        LOG.error("Failed to generate external representation of object {}", data, ioe);
-        throw new ServerError("Failed to generate external representation of object");
-      }
+      result = Objects.hashCode(toString());
       hashCode = result;
     }
 
@@ -551,20 +557,9 @@ public class WObject<T extends WObject> implements Comparable<T>
     // We cannot compare the objects directly because a native object might contain, for example,
     // a datetime whereas the deserialized object will contain a serialized String of that datetime.
     // The safest way to compare is to turn them both in to simple strings and compare them, although
-    // this might not be cheap
-
+    // this might not be cheap.  We use toString(), which caches the data so we only do it once
     // We also want to remove any internal fields, as they don't count when carrying out comparisons
-    try
-    {
-      return ComparisonChain.start()
-                            .compare(MAPPER.writeValueAsString(this.getData()), MAPPER.writeValueAsString(that.getData()))
-                            .result();
-    }
-    catch (final IOException ioe)
-    {
-      LOG.error("Failed to generate external representation of object {}", data, ioe);
-      throw new ServerError("Failed to generate external representation of object");
-    }
+    return ComparisonChain.start().compare(this.toString(), that.toString()).result();
   }
 
   public static class Builder<T extends WObject<T>, P extends Builder<T, P>>
