@@ -56,6 +56,10 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   private static final String UPDATE_SQL = "UPDATE t_TABLENAME\n" +
                                            "SET d = ?\n" +
                                            "WHERE d->>'_id' = ?";
+
+  private static final String UPDATE_WITH_CONDITIONS_SQL = "UPDATE t_TABLENAME\n" +
+                                                           "SET d = ?\n" +
+                                                           "WHERE ";
   private final String createTableSql;
   private final String destroyTableSql;
   private final String addSql;
@@ -63,6 +67,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   private final String removeSql;
   private final String obtainSql;
   private final String updateSql;
+  private final String updateWithConditionsSql;
 
   private final ObjectMapper mapper;
 
@@ -80,6 +85,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     removeSql = REMOVE_SQL.replaceAll("TABLENAME", tableName);
     obtainSql = OBTAIN_SQL.replaceAll("TABLENAME", tableName);
     updateSql = UPDATE_SQL.replaceAll("TABLENAME", tableName);
+    updateWithConditionsSql = UPDATE_WITH_CONDITIONS_SQL.replaceAll("TABLENAME", tableName);
   }
 
   @Override
@@ -231,7 +237,44 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      throw createSqlException(conn, se, "Failed to remove item from datastore");
+      throw createSqlException(conn, se, "Failed to update item in datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+  }
+
+  @Override
+  public void update(final T item, final WObjectServiceCallback<PreparedStatement> cb)
+  {
+    checkState(item != null, "Passed NULL item for update in datastore");
+    checkState(cb != null, "Passed NULL callback for update in datastore");
+    checkState(cb.getConditions() != null, "Passed empty callback conditions for update in datastore");
+
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      final PreparedStatement stmt = conn.prepareStatement(updateWithConditionsSql + cb.getConditions());
+      final PGobject obj = new PGobject();
+      obj.setType("jsonb");
+      try
+      {
+        obj.setValue(mapper.writeValueAsString(item));
+      }
+      catch (final JsonProcessingException jpe)
+      {
+        throw new ServerError("Failed to create json for update in datastore", jpe);
+      }
+      stmt.setObject(1, obj);
+      cb.setConditionValues(stmt);
+      stmt.execute();
+    }
+    catch (final SQLException se)
+    {
+      throw createSqlException(conn, se, "Failed to update item in datastore");
     }
     finally
     {

@@ -40,9 +40,14 @@ public interface WObjectService<T extends WObject, U>
   public void add(T item);
 
   /**
-   * Update an object
+   * Update an object.  The item to be updated is defined by the ID of the item provided
    */
   public void update(T item);
+
+  /**
+   * Update an object.  The object to be updated is defined by the callback provided
+   */
+  public void update(T item, WObjectServiceCallback<U> cb);
 
   /**
    * Remove an object
