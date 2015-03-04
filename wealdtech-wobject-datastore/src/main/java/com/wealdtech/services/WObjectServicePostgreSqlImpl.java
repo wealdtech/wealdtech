@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -161,7 +162,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   @Override
   public void remove(final WID<T> itemId)
   {
-    checkState(itemId != null, "Passed NULL item ID for removal from datastore");
+    checkState(itemId != null, "Passed NULL item ID for removal from the datastore");
 
     Connection conn = null;
     try
@@ -174,7 +175,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      throw createSqlException(conn, se, "Failed to remove item from datastore");
+      throw createSqlException(conn, se, "Failed to remove item from the datastore");
     }
     finally
     {
@@ -185,8 +186,8 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
   @Override
   public void remove(final WObjectServiceCallback<PreparedStatement> cb)
   {
-    checkState(cb != null, "Passed NULL callback for removal from datastore");
-    checkState(cb.getConditions() != null, "Passed NULL callback conditions for removal from datastore");
+    checkState(cb != null, "Passed NULL callback for removal from the datastore");
+    checkState(cb.getConditions() != null, "Passed NULL callback conditions for removal from the datastore");
 
     Connection conn = null;
     try
@@ -201,7 +202,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-      throw createSqlException(conn, se, "Failed to remove items from datastore");
+      throw createSqlException(conn, se, "Failed to remove items from the datastore");
     }
     finally
     {
@@ -291,7 +292,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     {
       conn = repository.getConnection();
 
-      String statement;
+      final String statement;
       if (cb == null || (cb.getConditions() == null && cb.getOrder() == null))
       {
         statement = obtainSql;
@@ -338,7 +339,82 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     }
     catch (final SQLException se)
     {
-     throw createSqlException(conn, se, "Failed to obtain object from datastore");
+     throw createSqlException(conn, se, "Failed to obtain object from the datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <V> ImmutableList<V> query(final TypeReference<V>typeRef, @Nullable final WObjectServiceCallback<PreparedStatement> cb)
+  {
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      if (cb == null || cb.getQuery() == null)
+      {
+        throw new DataError.Bad("query() requires a callback with a query to operate");
+      }
+
+      final PreparedStatement stmt = conn.prepareStatement(cb.getQuery());
+      cb.setConditionValues(stmt);
+
+      final Class requiredClass = (Class)(typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType());
+
+      try (ResultSet rs = stmt.executeQuery())
+      {
+        final ImmutableList.Builder<V> objsB = ImmutableList.builder();
+        while (rs.next())
+        {
+          // Pull primitives directly without deserializing
+          if (String.class.isAssignableFrom(requiredClass))
+          {
+            objsB.add((V)rs.getString(1));
+          }
+          else if (Boolean.class.isAssignableFrom(requiredClass))
+          {
+            objsB.add((V)(Boolean)rs.getBoolean(1));
+          }
+          else if (Integer.class.isAssignableFrom(requiredClass))
+          {
+            objsB.add((V)(Integer)rs.getInt(1));
+          }
+          else if (Long.class.isAssignableFrom(requiredClass))
+          {
+            objsB.add((V)(Long)rs.getLong(1));
+          }
+          else if (Float.class.isAssignableFrom(requiredClass))
+          {
+            objsB.add((V)(Float)rs.getFloat(1));
+          }
+          else if (Double.class.isAssignableFrom(requiredClass))
+          {
+            objsB.add((V)(Double)rs.getDouble(1));
+          }
+          else
+          {
+            try
+            {
+              objsB.add((V)mapper.readValue(rs.getString(1), typeRef));
+            }
+            catch (final IOException ioe)
+            {
+              LOG.error("Failed to parse object: ", ioe);
+              throw new ServerError("Failed to obtain information");
+            }
+          }
+        }
+        return objsB.build();
+      }
+    }
+    catch (final SQLException se)
+    {
+      throw createSqlException(conn, se, "Failed to query information from the datastore");
     }
     finally
     {

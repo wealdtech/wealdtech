@@ -63,4 +63,9 @@ public interface WObjectService<T extends WObject, U>
    * Obtain objects
    */
   public ImmutableList<T> obtain(TypeReference<T> typeRef, WObjectServiceCallback<U> cb);
+
+  /**
+   * Run a generic query
+   */
+  public <V> ImmutableList<V> query(TypeReference<V> typeRef, WObjectServiceCallback<U> cb);
 }

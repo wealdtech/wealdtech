@@ -62,6 +62,28 @@ public class WObjectServiceCallbackPostgreSqlImpl implements WObjectServiceCallb
     return this;
   }
 
+  public WObjectServiceCallbackPostgreSqlImpl setCIStringArray(final PreparedStatement stmt,
+                                                             final int index,
+                                                             @Nullable final ImmutableCollection<String> val)
+  {
+    try
+    {
+      if (val == null)
+      {
+        stmt.setNull(index, Types.ARRAY);
+      }
+      else
+      {
+        stmt.setArray(index, stmt.getConnection().createArrayOf("citext", val.toArray()));
+      }
+    }
+    catch (final SQLException se)
+    {
+      throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set case-insensitive string array");
+    }
+    return this;
+  }
+
   public WObjectServiceCallbackPostgreSqlImpl setWID(final PreparedStatement stmt, final int index, @Nullable final WID<?> val)
   {
     return setString(stmt, index, val == null ? null : val.toString());
@@ -121,6 +143,9 @@ public class WObjectServiceCallbackPostgreSqlImpl implements WObjectServiceCallb
     }
     return this;
   }
+
+  @Override
+  public String getQuery() { return null;  }
 
   @Override
   public String getConditions()

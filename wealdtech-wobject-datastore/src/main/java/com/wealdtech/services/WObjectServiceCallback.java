@@ -16,18 +16,35 @@ import com.wealdtech.WID;
 import javax.annotation.Nullable;
 
 /**
+ * Callbacks for the WObject service.  This allows calls to the WObject service to obtain parameters
  */
 public interface WObjectServiceCallback<T>
 {
+  /**
+   * Obtain the query for the callback.  This is only used when running a generic query.  In all other cases it is ignored
+   */
+  @Nullable String getQuery();
+
+  /**
+   * Obtain the conditions when obtaining or updating objects.
+   */
   @Nullable String getConditions();
 
+  /**
+   * Obtain the values for conditions when obtaining or updating objects.
+   */
   void setConditionValues(T stmt);
 
+  /**
+   * Obtain the required ordering when obtaining objects
+   */
   @Nullable String getOrder();
 
   WObjectServiceCallback<T> setString(T stmt, int index, @Nullable String val);
 
   WObjectServiceCallback<T> setStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);
+
+  WObjectServiceCallback<T> setCIStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);
 
   WObjectServiceCallback<T> setWID(T stmt, int index, @Nullable WID<?> val);
 

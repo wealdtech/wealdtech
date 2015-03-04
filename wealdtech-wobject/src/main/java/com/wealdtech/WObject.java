@@ -386,7 +386,6 @@ public class WObject<T extends WObject> implements Comparable<T>
       return Optional.absent();
     }
 
-//    if (Objects.equal(typeName, val.getClass().getCanonicalName()))
     if (Objects.equal(requiredClass, val.getClass()))
     {
       return Optional.of((U)val);
@@ -395,7 +394,11 @@ public class WObject<T extends WObject> implements Comparable<T>
     try
     {
       final U result = MAPPER.readValue(valStr, typeRef);
-      this.data.put(key, result);
+      // It is possible that data has not been initialised yet.  This is because we can call this method from preCreate()
+      if (data != null)
+      {
+        data.put(key, result);
+      }
       return Optional.of(result);
     }
     catch (final IOException ioe)
@@ -434,7 +437,11 @@ public class WObject<T extends WObject> implements Comparable<T>
     try
     {
       final U result = MAPPER.readValue(valStr, klazz);
-      data.put(key, result);
+      // It is possible that data has not been initialised yet.  This is because we can call this method from preCreate()
+      if (data != null)
+      {
+        data.put(key, result);
+      }
       return Optional.of(result);
     }
     catch (final IOException ioe)
