@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" filepath="$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/google/google.iml" filepath="$PROJECT_DIR$/wealdtech-services/google/google.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/wealdtech-chat.iml" filepath="$PROJECT_DIR$/wealdtech-chat/wealdtech-chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" filepath="$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" />
@@ -19,6 +21,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-rationale/wealdtech-rationale.iml" filepath="$PROJECT_DIR$/wealdtech-rationale/wealdtech-rationale.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" filepath="$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" filepath="$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/wealdtech-services.iml" filepath="$PROJECT_DIR$/wealdtech-services/wealdtech-services.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" filepath="$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject/wealdtech-wobject.iml" filepath="$PROJECT_DIR$/wealdtech-wobject/wealdtech-wobject.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject-datastore/wealdtech-wobject-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-wobject-datastore/wealdtech-wobject-datastore.iml" />

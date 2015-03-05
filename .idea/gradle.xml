@@ -25,6 +25,9 @@
             <option value="$PROJECT_DIR$/wealdtech-rationale" />
             <option value="$PROJECT_DIR$/wealdtech-retrofit" />
             <option value="$PROJECT_DIR$/wealdtech-roberto" />
+            <option value="$PROJECT_DIR$/wealdtech-services" />
+            <option value="$PROJECT_DIR$/wealdtech-services/askgeo" />
+            <option value="$PROJECT_DIR$/wealdtech-services/google" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
             <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />

@@ -1,0 +1,21 @@
+archivesBaseName = 'wealdtech-services-google'
+
+dependencies {
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-wobject')
+  compile project(':wealdtech-retrofit')
+
+  testCompile 'commons-io:commons-io:2.1'
+
+  uploadArchives {
+      repositories {
+          mavenDeployer {
+              pom.artifactId = 'wealdtech-services-google'
+              pom.project {
+                  name 'Wealdtech Google Service'
+                  description 'Access to google services'
+              } 
+          }
+      }
+  }
+}
