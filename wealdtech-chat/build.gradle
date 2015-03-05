@@ -13,6 +13,7 @@ dependencies
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
+    compile project(':wealdtech-configuration-logging')
     compile project(':wealdtech-wobject')
     compile project(':wealdtech-wobject-datastore')
     compile project(':wealdtech-jersey-server')

@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/wealdtech-chat" />
             <option value="$PROJECT_DIR$/wealdtech-conditions" />
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
+            <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-gcm" />
