@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,11 +7,11 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
+
 package com.wealdtech.utils;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -35,6 +35,7 @@ import static com.wealdtech.Preconditions.checkNotNull;
 public enum Hash
 {
   INSTANCE;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Hash.class);
 
   // Cache of (input, salt), match
@@ -69,17 +70,6 @@ public enum Hash
   }
 
   /**
-   * Hash an input string using a random salt.
-   * @param input the input string
-   * @return The hash of the input string.
-   */
-  public static String hash(final String input)
-  {
-    checkNotNull(input, "Cannot hash NULL");
-    return BCrypt.hashpw(input, BCrypt.gensalt(CONFIGURATION.getStrength()));
-  }
-
-  /**
    * Check to see if a plaintext input matches a hash
    * @param input the input
    * @param hashed the hash
@@ -89,7 +79,7 @@ public enum Hash
   {
     checkNotNull(hashed, "Cannot compare NULL");
     LOOKUPS.mark();
-    final Context context = GETS.time();
+    final Timer.Context context = GETS.time();
     try
     {
       boolean result = false;

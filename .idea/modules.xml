@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" filepath="$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" filepath="$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-gcm/wealdtech-gcm.iml" filepath="$PROJECT_DIR$/wealdtech-gcm/wealdtech-gcm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-hash-cache/wealdtech-hash-cache.iml" filepath="$PROJECT_DIR$/wealdtech-hash-cache/wealdtech-hash-cache.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" filepath="$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" filepath="$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />
