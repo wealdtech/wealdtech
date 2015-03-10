@@ -10,29 +10,11 @@
 
 package com.wealdtech.roberto;
 
+import javax.annotation.Nullable;
+
 /**
- * Information on the current state of a data provider
  */
-public enum DataProviderState
+public interface OnDataProviderDataChangedListener<T>
 {
-  /**
-   * The provider is not providing data
-   */
-  NOT_PROVIDING,
-  /**
-   * The provider wants to provide data but is not configured
-   */
-  AWAITING_CONFIGURATION,
-  /**
-   * The provider is providing data
-   */
-  PROVIDING,
-  /**
-   * The provider is providing in a degraded fashion
-   */
-  DEGRADED,
-  /**
-   * The provider has failed
-   */
-  FAILED;
+  void onDataProviderDataChanged(@Nullable T data);
 }

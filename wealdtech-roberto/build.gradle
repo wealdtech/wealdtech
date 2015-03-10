@@ -14,6 +14,7 @@ dependencies
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-retrofit')
+    compile project(':wealdtech-wobject')
 }
 
 uploadArchives {

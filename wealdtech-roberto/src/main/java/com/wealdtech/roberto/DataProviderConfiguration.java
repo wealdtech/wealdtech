@@ -10,7 +10,24 @@
 
 package com.wealdtech.roberto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Optional;
+import com.wealdtech.WObject;
+
+import java.util.Map;
+
 /**
+ * A generic object to contain configuration for data providers
  */
-public interface DataSink
-{}
+public class DataProviderConfiguration extends WObject<DataProviderConfiguration>
+{
+  @JsonIgnore
+  public static final String UPDATE_INTERVAL = "updateinterval";
+
+  @JsonCreator
+  public DataProviderConfiguration(final Map<String, Object> data) {super(data);}
+
+  @JsonIgnore
+  public Optional<Long> getUpdateInterval() { return get(UPDATE_INTERVAL, Long.class); }
+}

@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class JettyServer
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
 
   private transient Server server;
 
@@ -120,7 +120,8 @@ public class JettyServer
     final List<Connector> connectors = Lists.newArrayList();
     for (final JettyConnectorConfiguration connectorConfiguration : configuration.getConnectorConfigurations())
     {
-      LOGGER.debug("Creating connector {}:{} for instance \"{}\"", connectorConfiguration.getBindHost(), connectorConfiguration.getPort(), configuration.getName());
+      LOG.debug("Creating connector {}:{} for instance \"{}\"", connectorConfiguration.getBindHost(),
+                   connectorConfiguration.getPort(), configuration.getName());
       JettyConnectorFactory factory;
       try
       {
@@ -165,11 +166,21 @@ public class JettyServer
     });
     if (configuration.getDetailedThreadName())
     {
+      LOG.info("Adding thread name filter");
       root.addFilter(ThreadNameFilter.class, "/*", null);
+    }
+    else
+    {
+      LOG.info("Not adding thread name filter");
     }
     if (configuration.getBodyPrefetch())
     {
+      LOG.info("Adding body prefetch filter");
       root.addFilter(BodyPrefetchFilter.class, "/*", null);
+    }
+    else
+    {
+      LOG.info("Not adding body prefetch filter");
     }
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");

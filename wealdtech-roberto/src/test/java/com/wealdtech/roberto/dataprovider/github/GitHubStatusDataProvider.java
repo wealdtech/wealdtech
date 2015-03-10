@@ -8,27 +8,28 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.roberto.dataprovider;
+package com.wealdtech.roberto.dataprovider.github;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
+import com.wealdtech.GitHubStatus;
 import com.wealdtech.roberto.DataProviderConfiguration;
 import com.wealdtech.roberto.DataProviderConfigurationState;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.wealdtech.roberto.dataprovider.AbstractDataProvider;
 
 /**
- * A data provider which returns the current date
+ * A test dataprovider to obtain status of the GitHub API
  */
-public class DateTimeDataProvider extends AbstractDataProvider<DateTime>
+public class GitHubStatusDataProvider extends AbstractDataProvider<GitHubStatus>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(DateTimeDataProvider.class);
+  private Optional<GitHubStatus> status = Optional.absent();
 
-  public DateTimeDataProvider()
+  public GitHubStatusDataProvider()
   {
-    super("Date/time");
-    // Update every second
-    configure(new DataProviderConfiguration(ImmutableMap.<String, Object>of(DataProviderConfiguration.UPDATE_INTERVAL, 1000L)));
+    super("GitHub status");
+    // No configuration so start providing straight away
+    configure(new DataProviderConfiguration(ImmutableMap.<String, Object>of(DataProviderConfiguration.UPDATE_INTERVAL, 60 * 1000L)));
+    startProviding();
   }
 
   @Override
@@ -39,9 +40,8 @@ public class DateTimeDataProvider extends AbstractDataProvider<DateTime>
   }
 
   @Override
-  protected DateTime obtainData()
+  protected GitHubStatus obtainData()
   {
-    LOG.error("Obtaining data");
-    return new DateTime();
+    return GitHubClient.getInstance().status();
   }
 }

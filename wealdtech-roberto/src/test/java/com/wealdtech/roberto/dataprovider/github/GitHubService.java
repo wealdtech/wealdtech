@@ -8,31 +8,18 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.roberto;
+package com.wealdtech.roberto.dataprovider.github;
+
+import com.wealdtech.GitHubStatus;
+import retrofit.http.GET;
 
 /**
- * Information on the current state of a data provider
  */
-public enum DataProviderState
+public interface GitHubService
 {
   /**
-   * The provider is not providing data
+   * Obtain status of API
    */
-  NOT_PROVIDING,
-  /**
-   * The provider wants to provide data but is not configured
-   */
-  AWAITING_CONFIGURATION,
-  /**
-   * The provider is providing data
-   */
-  PROVIDING,
-  /**
-   * The provider is providing in a degraded fashion
-   */
-  DEGRADED,
-  /**
-   * The provider has failed
-   */
-  FAILED;
+  @GET("/status.json")
+  GitHubStatus status();
 }

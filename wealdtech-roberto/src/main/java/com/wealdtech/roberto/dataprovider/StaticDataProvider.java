@@ -10,9 +10,6 @@
 
 package com.wealdtech.roberto.dataprovider;
 
-import com.google.common.base.Optional;
-import com.wealdtech.roberto.DataProviderState;
-
 /**
  * A data provider which returns a static value
  */
@@ -22,14 +19,14 @@ public class StaticDataProvider<T> extends AbstractDataProvider<T>
 
   public StaticDataProvider(final T data)
   {
-    super();
+    super("Static");
     this.data = data;
-    setState(DataProviderState.OPERATIONAL);
+    startProviding();
   }
 
   @Override
-  public Optional<T> get()
+  protected T obtainData()
   {
-    return Optional.fromNullable(data);
+    return data;
   }
 }

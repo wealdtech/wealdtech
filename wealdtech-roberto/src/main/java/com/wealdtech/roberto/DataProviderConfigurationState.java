@@ -11,6 +11,16 @@
 package com.wealdtech.roberto;
 
 /**
+ * Information on the current configuration state of a data provider
  */
-public interface DataSource
-{}
+public enum DataProviderConfigurationState
+{
+  /**
+   * Not configured for providing data
+   */
+  NOT_CONFIGURED,
+  /**
+   * Configured for providing data
+   */
+  CONFIGURED;
+}

@@ -13,7 +13,10 @@ package com.wealdtech.roberto;
 import com.google.common.base.Optional;
 
 /**
- * Interface for Robert data providers
+ * Interface for Robert data providers.
+ * A data provider provides a specific piece of data.  The availability of the data might change over time, as might the data
+ * itself.  The data provider provides notifications when the provided data changes as well as when the state of the provider
+ * changes.
  */
 public interface DataProvider<T>
 {
@@ -29,7 +32,41 @@ public interface DataProvider<T>
 
   /**
    * Add a listener to be informed when the data provider changes state
-   * @param listener the listener to be informed
+   * @param listener the listener to be added
    */
   void addOnDataProviderStateChangedListener(OnDataProviderStateChangedListener listener);
+
+  /**
+   * Remove a listener to be informed when the data provider changes state
+   * @param listener the listener to be removed
+   */
+  void removeOnDataProviderStateChangedListener(OnDataProviderStateChangedListener listener);
+
+  /**
+   * Add a listener to be informed when the data provided changes
+   * @param listener the listener to be added
+   */
+  void addOnDataProviderDataChangedListener(OnDataProviderDataChangedListener<T> listener);
+
+  /**
+   * Remove a listener to be informed when the data provided changes
+   * @param listener the listener to be Remove
+   */
+  void removeOnDataProviderDataChangedListener(OnDataProviderDataChangedListener<T> listener);
+
+  /**
+   * Start providing data
+   * @throws IllegalStateException if the provider is not configured
+   */
+  void startProviding() throws IllegalStateException;
+
+  /**
+   * Stop providing data
+   */
+  void stopProviding();
+
+  /**
+   * Obtain the name of this data provider
+   */
+  String getName();
 }

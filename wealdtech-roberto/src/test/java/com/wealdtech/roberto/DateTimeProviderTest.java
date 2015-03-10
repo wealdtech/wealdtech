@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 /**
  * Test of datetime data provider
@@ -26,7 +27,27 @@ public class DateTimeProviderTest
   public void simpleTest()
   {
     final DateTimeDataProvider provider = new DateTimeDataProvider();
+    provider.startProviding();
+    provider.fetch();
     final Optional<DateTime> dt = provider.get();
     assertTrue(dt.isPresent());
+  }
+
+  @Test
+  public void repeatedTest()
+  {
+    final DateTimeDataProvider provider = new DateTimeDataProvider();
+    provider.startProviding();
+    provider.fetch();
+    final Optional<DateTime> dt = provider.get();
+    assertTrue(dt.isPresent());
+    try { Thread.sleep(1000L); }
+    catch (final InterruptedException ie)
+    {
+      fail("Interrupted");
+    }
+    final Optional<DateTime> dt2 = provider.get();
+    assertTrue(dt2.isPresent());
+    assertTrue(dt2.get().isAfter(dt.get()));
   }
 }
