@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.*;
 import com.wealdtech.jackson.WealdMapper;
@@ -37,11 +38,19 @@ import java.util.*;
 /**
  * The Weald Technology object
  * A generic immutable object which allows for arbitrary storage of data, serialization and deserialization through
- * Jackson, and object validation
+ * Jackson, and object validation.
+ * A WObject contains three different types of data: external, internal and scratch  External data is the meat of the data, defining
+ * the information held within the WObject.  External data is used for comparisons.  Internal data is metadata, such as ID, version
+ * or last modified date.  Internal data is stored with external data when serialising the WObject, but is not used when comparing
+ * objects for equality.  Scratch data is neither persisted nor used for comparison purposes, and is used to augment existing
+ * objects with additional information rather than use secondary data structures
  */
 public class WObject<T extends WObject> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
+
+  // Key for scratch data
+  private static final String SCRATCH = "__scratch";
 
   // Mapper used to read and write data
   static final SimpleModule module = new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class,
@@ -57,6 +66,24 @@ public class WObject<T extends WObject> implements Comparable<T>
                         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
     ;
   }
+
+  /** A simple predicate to find scratch entries */
+  private static final Predicate<String> SCRATCH_PREDICATE = new Predicate<String>(){
+    @Override
+    public boolean apply(@Nullable final String input)
+    {
+      return input != null && input.startsWith("__");
+    }
+  };
+
+  /** A simple predicate to find not scratch entries */
+  private static final Predicate<String> NOT_SCRATCH_PREDICATE = new Predicate<String>(){
+    @Override
+    public boolean apply(@Nullable final String input)
+    {
+      return input != null && !input.startsWith("__");
+    }
+  };
 
   /**
    * Obtain the Object Mapper used in WObject Jackson operations.
@@ -75,6 +102,10 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   protected final SortedMap<String, Object> data;
 
+  // Scratch data is transient so held separately
+  @JsonIgnore
+  protected final Map<String, Object> scratchData;
+
   @JsonAnyGetter
   private Map<String, Object> any() {
     return data;
@@ -83,7 +114,9 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonCreator
   public WObject(final Map<String, Object> data)
   {
-    this.data = order(preCreate(Maps.filterValues(data, Predicates.notNull())));
+    final Map<String, Object> preCreatedData = preCreate(Maps.filterValues(data, Predicates.notNull()));
+    this.scratchData = Maps.filterKeys(preCreatedData, SCRATCH_PREDICATE);
+    this.data = order(Maps.filterKeys(preCreatedData, NOT_SCRATCH_PREDICATE));
     validate();
   }
 
@@ -409,6 +442,18 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   @JsonIgnore
+  public <U> Optional<U> getScratch(final String key)
+  {
+    return Optional.fromNullable((U)scratchData.get(key));
+  }
+
+  @JsonIgnore
+  public <U> void setScratch(final String key, final U obj)
+  {
+    scratchData.put(key, obj);
+  }
+
+  @JsonIgnore
   public <U> Optional<U> get(final String key, final Class<U> klazz)
   {
     LOG.trace("Attempting to fetch {} as {}", key, klazz.getSimpleName());
@@ -587,15 +632,15 @@ public class WObject<T extends WObject> implements Comparable<T>
       data = Maps.newHashMap();
     }
 
-    public P data(final Map<String, ? extends Object> data)
-    {
-      this.data.putAll(data);
-      return self();
-    }
-
     public P id(final WID<? extends T> id)
     {
       this.data.put(ID, id);
+      return self();
+    }
+
+    public P data(final Map<String, ? extends Object> data)
+    {
+      this.data.putAll(data);
       return self();
     }
 

@@ -41,7 +41,6 @@ public class DateTimeDataProvider extends AbstractDataProvider<DateTime>
   @Override
   protected DateTime obtainData()
   {
-    LOG.error("Obtaining data");
     return new DateTime();
   }
 }

@@ -10,6 +10,8 @@
 
 package com.wealdtech.roberto.dataprovider;
 
+import com.wealdtech.roberto.DataProviderConfigurationState;
+
 /**
  * A data provider which returns a static value
  */
@@ -21,6 +23,7 @@ public class StaticDataProvider<T> extends AbstractDataProvider<T>
   {
     super("Static");
     this.data = data;
+    setConfigurationState(DataProviderConfigurationState.CONFIGURED);
     startProviding();
   }
 

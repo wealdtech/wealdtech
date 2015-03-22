@@ -129,6 +129,7 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
     }
     else
     {
+      providerState = DataProviderState.PROVIDING;
       if (isPollingProvider())
       {
         startPolling();
@@ -137,7 +138,6 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
       {
         fetch();
       }
-      providerState = DataProviderState.PROVIDING;
     }
   }
 

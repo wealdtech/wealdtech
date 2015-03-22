@@ -41,7 +41,7 @@ public class DateTimeProviderTest
     provider.fetch();
     final Optional<DateTime> dt = provider.get();
     assertTrue(dt.isPresent());
-    try { Thread.sleep(1000L); }
+    try { Thread.sleep(2000L); }
     catch (final InterruptedException ie)
     {
       fail("Interrupted");
