@@ -11,7 +11,6 @@
 package com.wealdtech.roberto.dataprovider.github;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
 import com.wealdtech.GitHubStatus;
 import com.wealdtech.roberto.DataProviderConfiguration;
 import com.wealdtech.roberto.DataProviderConfigurationState;
@@ -28,7 +27,7 @@ public class GitHubStatusDataProvider extends AbstractDataProvider<GitHubStatus>
   {
     super("GitHub status");
     // No configuration so start providing straight away
-    configure(new DataProviderConfiguration(ImmutableMap.<String, Object>of(DataProviderConfiguration.UPDATE_INTERVAL, 60 * 1000L)));
+    configure(DataProviderConfiguration.builder().updateInterval(1000L).build());
     startProviding();
   }
 

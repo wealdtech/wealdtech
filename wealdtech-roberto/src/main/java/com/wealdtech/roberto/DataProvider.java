@@ -28,7 +28,7 @@ public interface DataProvider<T>
   /**
    * @return the current state of the data provider
    */
-  DataProviderState getState();
+  DataProviderState getProviderState();
 
   /**
    * Add a listener to be informed when the data provider changes state

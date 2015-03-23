@@ -551,6 +551,41 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   private volatile String stringRepresentation = null;
 
+  @Nullable
+  public static String serialize(@Nullable final WObject<?> obj)
+  {
+    if (obj == null)
+    {
+      return null;
+    }
+    try
+    {
+      return MAPPER.writeValueAsString(obj);
+    }
+    catch (JsonProcessingException e)
+    {
+      throw new ServerError("Failed to serialize object: ", e);
+    }
+  }
+
+  @Nullable
+  public static <T> T deserialize(@Nullable final String val, final Class<T> klazz)
+  {
+    if (val == null)
+    {
+      return null;
+    }
+    try
+    {
+      return MAPPER.readValue(val, klazz);
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
+
+  }
+
   /**
    * <em>N.B.</em>The string representation of the data does not show internal fields.  As such it should not be used as a way of
    * transmitting or storing the object

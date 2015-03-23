@@ -13,6 +13,7 @@ package com.wealdtech.roberto.dataprovider;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.wealdtech.DataError;
 import com.wealdtech.roberto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
   private DataProviderState providerState;
   private DataProviderConfigurationState configurationState;
 
-  // Items handling obtaning data
+  // Items handling obtaining data
   private boolean dataObtained = false;
   private final Object mutex = new Object();
 
@@ -84,7 +85,7 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
   public String getName(){ return name; }
 
   @Override
-  public DataProviderState getState()
+  public DataProviderState getProviderState()
   {
     return providerState;
   }
@@ -120,6 +121,11 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
     this.configurationState = state;
   }
 
+  protected DataProviderConfigurationState getConfigurationState()
+  {
+    return this.configurationState;
+  }
+
   public void startProviding() throws IllegalStateException
   {
     if (configurationState == DataProviderConfigurationState.NOT_CONFIGURED)
@@ -129,6 +135,11 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
     }
     else
     {
+      if (providerState == DataProviderState.PROVIDING || providerState == DataProviderState.DEGRADED ||
+          providerState == DataProviderState.FAILED)
+      {
+        throw new DataError.Bad("Data provider already providing");
+      }
       providerState = DataProviderState.PROVIDING;
       if (isPollingProvider())
       {
@@ -234,7 +245,6 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
         if (!dataObtained)
         {
           final T newData = obtainData();
-          dataObtained = true;
           setData(newData);
         }
       }
@@ -248,8 +258,9 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
    *
    * @param data the new data; can be {@code null}
    */
-  private void setData(final @Nullable T data)
+  protected void setData(final @Nullable T data)
   {
+    dataObtained = true;
     if (!Objects.equal(data, this.data))
     {
       this.data = Optional.fromNullable(data);

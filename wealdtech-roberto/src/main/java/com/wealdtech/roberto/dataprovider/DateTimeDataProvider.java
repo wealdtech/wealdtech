@@ -10,7 +10,6 @@
 
 package com.wealdtech.roberto.dataprovider;
 
-import com.google.common.collect.ImmutableMap;
 import com.wealdtech.roberto.DataProviderConfiguration;
 import com.wealdtech.roberto.DataProviderConfigurationState;
 import org.joda.time.DateTime;
@@ -28,7 +27,7 @@ public class DateTimeDataProvider extends AbstractDataProvider<DateTime>
   {
     super("Date/time");
     // Update every second
-    configure(new DataProviderConfiguration(ImmutableMap.<String, Object>of(DataProviderConfiguration.UPDATE_INTERVAL, 1000L)));
+    configure(DataProviderConfiguration.builder().updateInterval(1000L).build());
   }
 
   @Override

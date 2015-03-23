@@ -23,11 +23,36 @@ import java.util.Map;
 public class DataProviderConfiguration extends WObject<DataProviderConfiguration>
 {
   @JsonIgnore
-  public static final String UPDATE_INTERVAL = "updateinterval";
+  private static final String UPDATE_INTERVAL = "updateinterval";
 
   @JsonCreator
   public DataProviderConfiguration(final Map<String, Object> data) {super(data);}
 
   @JsonIgnore
   public Optional<Long> getUpdateInterval() { return get(UPDATE_INTERVAL, Long.class); }
+
+  public static class Builder<P extends Builder<P>> extends WObject.Builder<DataProviderConfiguration, P>
+  {
+    public Builder()
+    {
+      super();
+    }
+
+    public Builder(final DataProviderConfiguration prior)
+    {
+      super(prior);
+    }
+
+    public P updateInterval(final Long updateInterval)
+    {
+      data(UPDATE_INTERVAL, updateInterval);
+      return self();
+    }
+
+    public DataProviderConfiguration build() { return new DataProviderConfiguration(data);}
+  }
+
+  public static Builder<?> builder() { return new Builder(); }
+
+  public static Builder<?> builder(final DataProviderConfiguration prior) { return new Builder(prior); }
 }
