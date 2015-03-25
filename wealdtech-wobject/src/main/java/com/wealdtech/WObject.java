@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -62,6 +63,9 @@ public class WObject<T extends WObject> implements Comparable<T>
                         .copy()
                         .registerModule(module)
                         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+                        .configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
+                        .configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false)
+                        .configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
                         .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
                         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
     ;
@@ -411,9 +415,32 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   protected <U> Optional<U> getValue(final String key, final Object val, final TypeReference<U> typeRef)
   {
-    // Obtain the type we are after through reflection to find out if it is a collection
-    final Class requiredClass = (Class)(typeRef.getType() instanceof ParameterizedType ? ((ParameterizedType)typeRef.getType()).getRawType() : typeRef.getType());
-    final boolean isCollection = Collection.class.isAssignableFrom(requiredClass);
+    // Obtain the type we are after through reflection to find out if it is a collection.
+    final Class requiredClass;
+    final Class wrappedClass;
+    if (typeRef.getType() instanceof ParameterizedType)
+    {
+      // This is a parameterized type, it might be wrapped in an Optional or TriVal in which case we need the inner class for
+      // determining if it is a collection
+      ParameterizedType type = (ParameterizedType)typeRef.getType();
+      requiredClass = (Class)type.getRawType();
+      if (Objects.equal(requiredClass, Optional.class) || (Objects.equal(requiredClass, TriVal.class)))
+      {
+        final Type subType = type.getActualTypeArguments()[0];
+        wrappedClass = (Class)(subType instanceof ParameterizedType ? ((ParameterizedType)subType).getRawType() : subType);
+      }
+      else
+      {
+        wrappedClass = requiredClass;
+      }
+    }
+    else
+    {
+      // This is a simple class
+      requiredClass = (Class)typeRef.getType();
+      wrappedClass = requiredClass;
+    }
+    final boolean isCollection = Collection.class.isAssignableFrom(wrappedClass);
     if (val == null)
     {
       return Optional.absent();
@@ -526,7 +553,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
 
     // TODO need to escape " in the string (but only if in the string - already done?)
-    if (!isCollection && !valStr.startsWith("{") && !valStr.startsWith("\""))
+    if ((isCollection && !valStr.startsWith("[")) || (!isCollection && !valStr.startsWith("{") && !valStr.startsWith("\"")))
     {
       valStr = "\"" + valStr + "\"";
     }

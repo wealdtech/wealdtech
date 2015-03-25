@@ -10,8 +10,6 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -19,6 +17,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.wealdtech.TriVal;
+
+import java.io.IOException;
 
 public class TriValDeserializer extends StdDeserializer<TriVal<?>>
 {
@@ -41,7 +41,7 @@ public class TriValDeserializer extends StdDeserializer<TriVal<?>>
   @Override
   public TriVal<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException
   {
-    if (jp.getCurrentToken() == JsonToken.VALUE_STRING && jp.getText().length() == 0)
+    if (jp.getCurrentToken() == JsonToken.VALUE_STRING && jp.getText().equals("__"))
     {
       return TriVal.clear();
     }

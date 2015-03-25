@@ -93,9 +93,12 @@ public class WObjectTest
                                             .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
                                             .build();
     final String testObj1Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj1);
-    assertEquals(testObj1Ser1, "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}");
-    final String testObj1Ser2 = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj1);
-    assertEquals(testObj1Ser2, "{\"_id\":\"10338638b3a5\",\"test date\":{\"timestamp\":123456789000},\"test string\":\"test value\"}");
+    assertEquals(testObj1Ser1,
+                 "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}");
+    final String testObj1Ser2 =
+        WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj1);
+    assertEquals(testObj1Ser2,
+                 "{\"_id\":\"10338638b3a5\",\"test date\":{\"timestamp\":123456789000},\"test string\":\"test value\"}");
   }
 
   @Test
@@ -116,7 +119,8 @@ public class WObjectTest
                                             .data("test string", "test value")
                                             .data("test string 2", "test value 2")
                                             .data("test string 3", "test value 3")
-                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC)).build();
+                                            .data("test date", new DateTime(123456789000L, DateTimeZone.UTC))
+                                            .build();
     final TestWObject testObj2 = TestWObject.builder()
                                             .id(WID.<TestWObject>fromLong(9876543211L))
                                             .data("test obj", testObj1)
@@ -214,7 +218,8 @@ public class WObjectTest
     final String testObj2Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser1,
                  "{\"_id\":\"499602d2\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
-    final String testObj2Ser2 = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj2);
+    final String testObj2Ser2 =
+        WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj2);
     assertEquals(testObj2Ser2,
                  "{\"_id\":\"499602d2\",\"test date\":{\"timestamp\":123456789000},\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
   }
@@ -223,10 +228,8 @@ public class WObjectTest
   @Test
   public void testClassGeneric() throws IOException
   {
-    final TestWObject testObj1 = TestWObject.builder()
-                                            .id(WID.<TestWObject>fromLong(1234567890L))
-                                            .data("test array", ImmutableList.of(1, 2, 3))
-                                            .build();
+    final TestWObject testObj1 =
+        TestWObject.builder().id(WID.<TestWObject>fromLong(1234567890L)).data("test array", ImmutableList.of(1, 2, 3)).build();
     final Optional<ImmutableSet> unspecifiedSet = testObj1.get("test array", ImmutableSet.class);
     assertTrue(unspecifiedSet.isPresent());
     assertEquals(unspecifiedSet.get().size(), 3);
@@ -365,8 +368,89 @@ public class WObjectTest
   @Test
   public void testLocalDateTime()
   {
-    final TestWObject testObj1 = TestWObject.builder().data("one", new LocalDateTime(1234567890000L)).data("two", 1234567890000L).build();
+    final TestWObject testObj1 =
+        TestWObject.builder().data("one", new LocalDateTime(1234567890000L)).data("two", 1234567890000L).build();
     assertEquals(testObj1.get("one", LocalDateTime.class).get(), new LocalDateTime(1234567890000L));
     assertEquals(testObj1.get("two", LocalDateTime.class).get(), new LocalDateTime(1234567890000L));
+  }
+
+  @Test
+  public void testSimpleTriVal() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder().data("one", TriVal.of("One")).build();
+
+    final String testObj1Ser = WealdMapper.getServerMapper().writeValueAsString(testObj1);
+
+    final TestWObject testObj1Deser = WealdMapper.getServerMapper().readValue(testObj1Ser, TestWObject.class);
+
+    assertTrue(Objects.equal(testObj1Deser, testObj1));
+  }
+
+  @Test
+  public void testListTriVal() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .data("one", TriVal.of(ImmutableList.of("One", "One1")))
+                                            .data("two", TriVal.clear())
+                                            .data("three", TriVal.absent())
+                                            .build();
+
+    final String testObj1Ser = TestWObject.serialize(testObj1);
+    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
+    assertNotNull(testObj1Deser);
+
+    assertEquals(testObj1Deser.get("three", TriVal.class), Optional.absent());
+    assertEquals(testObj1Deser.get("two", TriVal.class).get(), TriVal.clear());
+  }
+
+  @Test
+  public void testEmptyString() throws IOException
+  {
+    final String testObj1Ser = "{\"one\":\"\"}";
+    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
+    assertNotNull(testObj1Deser);
+    assertEquals(testObj1Deser.get("one", new TypeReference<String>(){}).get(), "");
+  }
+
+  @Test
+  public void testTriValString() throws IOException
+  {
+    final String testObj1Ser = "{\"one\":\"test\"}";
+    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
+    assertNotNull(testObj1Deser);
+
+    assertEquals(testObj1Deser.get("one", new TypeReference<TriVal<String>>(){}).get(), TriVal.of("test"));
+  }
+
+  @Test
+  public void testTriValList() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .data("one", TriVal.of(ImmutableList.of("One", "One1")))
+                                            .data("two", TriVal.clear())
+                                            .data("three", TriVal.absent())
+                                            .build();
+
+    final String testObj1Ser = TestWObject.serialize(testObj1);
+    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
+    assertNotNull(testObj1Deser);
+
+    assertEquals(testObj1Deser.get("one", new TypeReference<TriVal<ImmutableList<String>>>(){}).get(), TriVal.of(ImmutableList.of("One",
+                                                                                                                                  "One1")));
+  }
+
+  @Test
+  public void testTriValClear() throws IOException
+  {
+    final TestWObject testObj1 = TestWObject.builder()
+                                            .data("clear", TriVal.clear())
+                                            .build();
+
+    final String testObj1Ser = TestWObject.serialize(testObj1);
+    assertEquals(testObj1Ser, "{\"clear\":\"__\"}");
+    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
+    assertNotNull(testObj1Deser);
+
+    assertEquals(testObj1Deser.get("clear", new TypeReference<TriVal<ImmutableList<DateTime>>>(){}).get(), TriVal.clear());
   }
 }
