@@ -36,6 +36,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
  * The Weald Technology object
  * A generic immutable object which allows for arbitrary storage of data, serialization and deserialization through
@@ -119,7 +121,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   public WObject(final Map<String, Object> data)
   {
     final Map<String, Object> preCreatedData = preCreate(Maps.filterValues(data, Predicates.notNull()));
-    this.scratchData = Maps.filterKeys(preCreatedData, SCRATCH_PREDICATE);
+    this.scratchData = Maps.newHashMap(Maps.filterKeys(preCreatedData, SCRATCH_PREDICATE));
     this.data = order(Maps.filterKeys(preCreatedData, NOT_SCRATCH_PREDICATE));
     validate();
   }
@@ -471,13 +473,19 @@ public class WObject<T extends WObject> implements Comparable<T>
   @JsonIgnore
   public <U> Optional<U> getScratch(final String key)
   {
+    checkState(key != null, "Cannot get scratch data with NULL key");
+
     return Optional.fromNullable((U)scratchData.get(key));
   }
 
   @JsonIgnore
-  public <U> void setScratch(final String key, final U obj)
+  public <U> T setScratch(final String key, final U obj)
   {
+    checkState(key != null, "Cannot set scratch data with NULL key");
+
     scratchData.put(key, obj);
+
+    return (T)this;
   }
 
   @JsonIgnore
