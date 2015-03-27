@@ -13,6 +13,7 @@ package com.wealdtech.utils;
 import com.google.common.collect.Range;
 import com.wealdtech.DataError;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,8 @@ public class RangeFormatter
   {
     FULL,
     NORMAL,
-    TIME_ONLY
+    TIME_ONLY,
+    TIME_AND_DURATION
   }
 
   private final Locale locale;
@@ -111,33 +113,51 @@ public class RangeFormatter
     }
 
     lowerDetails.showTime = true;
-    if (!isSameDay(lower, curDateTime))
+    if (!(style == Style.TIME_AND_DURATION) && !isSameDay(lower, curDateTime))
     {
       lowerDetails.showDayOfWeek = true;
       lowerDetails.showDayOfMonth = true;
       lowerDetails.showMonthOfYear = true;
     }
-    if ((!isSameYear(lower, upper)) || (!isSameYear(lower, curDateTime)))
+    if (!(style == Style.TIME_AND_DURATION) && ((!isSameYear(lower, upper)) || (!isSameYear(lower, curDateTime))))
     {
       lowerDetails.showYear = true;
     }
     sb.append(doFormat(lower, lowerDetails));
     if (!isSameMinute(lower, upper))
     {
-      sb.append(" - ");
-      upperDetails.showTime = true;
-      if (!isSameDay(lower, upper))
+      if (style == Style.TIME_AND_DURATION)
       {
-        upperDetails.showDayOfWeek = true;
-        upperDetails.showDayOfMonth = true;
-        upperDetails.showMonthOfYear = true;
-        if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
+        sb.append("\n");
+        final int minutes = Minutes.minutesBetween(lower, upper).getMinutes();
+        if (minutes / 60 > 0)
         {
-          upperDetails.showYear = true;
+          sb.append(String.valueOf(minutes / 60));
+          sb.append("hr");
+        }
+        if (minutes % 60 != 0)
+        {
+          sb.append(String.valueOf(minutes % 60));
+          sb.append("m");
         }
       }
+      else
+      {
+        sb.append(" - ");
+        upperDetails.showTime = true;
+        if (!isSameDay(lower, upper))
+        {
+          upperDetails.showDayOfWeek = true;
+          upperDetails.showDayOfMonth = true;
+          upperDetails.showMonthOfYear = true;
+          if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
+          {
+            upperDetails.showYear = true;
+          }
+        }
+        sb.append(doFormat(upper, upperDetails));
+      }
 
-      sb.append(doFormat(upper, upperDetails));
     }
     return sb.toString();
   }
@@ -152,7 +172,7 @@ public class RangeFormatter
   @Nullable
   public String formatDate(@Nullable final Range<DateTime> range)
   {
-    if (range == null || style == Style.TIME_ONLY)
+    if (range == null || style == Style.TIME_ONLY || style == Style.TIME_AND_DURATION)
     {
       return null;
     }
@@ -258,7 +278,7 @@ public class RangeFormatter
   @Nullable
   public String formatDate(@Nullable final DateTime dateTime)
   {
-    return dateTime == null || style == Style.TIME_ONLY ? null : formatDateAndTime(dateTime, true, false);
+    return dateTime == null || style == Style.TIME_ONLY || style == Style.TIME_AND_DURATION ? null : formatDateAndTime(dateTime, true, false);
   }
 
   /**
@@ -273,7 +293,6 @@ public class RangeFormatter
   {
     return dateTime == null ? null : formatDateAndTime(dateTime, false, true);
   }
-
 
   /**
    * Format the date and time of a single date/time

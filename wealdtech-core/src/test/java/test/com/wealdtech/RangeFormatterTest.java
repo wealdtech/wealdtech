@@ -164,6 +164,32 @@ public class RangeFormatterTest
     assertEquals(formatter.formatDate(testRange), day + " 3 Jul");
   }
 
+  @Test
+  public void testRangeTodayDayDuration()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> testRange =
+        Range.closedOpen(new DateTime().withHourOfDay(8).withMinuteOfHour(0), new DateTime().withHourOfDay(10).withMinuteOfHour(0));
+    assertEquals(formatter.formatDateTime(testRange), "08:00\n2hr");
+  }
+
+  @Test
+  public void testRangeTodayDayDurationWithMinutes()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> testRange =
+        Range.closedOpen(new DateTime().withHourOfDay(8).withMinuteOfHour(0), new DateTime().withHourOfDay(10).withMinuteOfHour(15));
+    assertEquals(formatter.formatDateTime(testRange), "08:00\n2hr15m");
+  }
+
+  @Test
+  public void testRangeTodayDayDurationWithoutHours()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> testRange =
+        Range.closedOpen(new DateTime().withHourOfDay(8).withMinuteOfHour(0), new DateTime().withHourOfDay(8).withMinuteOfHour(45));
+    assertEquals(formatter.formatDateTime(testRange), "08:00\n45m");
+  }
 
   @Test
   public void testRangeDateSpanningDays()
@@ -172,6 +198,15 @@ public class RangeFormatterTest
     final String startDay = testDateTimeRange2.lowerEndpoint().toString(shortDayFmt);
     final String endDay = testDateTimeRange2.upperEndpoint().minusDays(1).toString(shortDayFmt);
     assertEquals(formatter.formatDate(testDateTimeRange2), startDay + " 2 - " + endDay + " 3 Apr " + Long.toString(thisYear - 1));
+  }
+
+  @Test
+  public void testRangeSpanningDays()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final String startDay = testDateTimeRange2.lowerEndpoint().toString(shortDayFmt);
+    final String endDay = testDateTimeRange2.upperEndpoint().minusDays(1).toString(shortDayFmt);
+    assertEquals(formatter.formatDateTime(testDateTimeRange2), "06:00\n57hr");
   }
 
   @Test
