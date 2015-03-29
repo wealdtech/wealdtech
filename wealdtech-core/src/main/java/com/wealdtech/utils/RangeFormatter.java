@@ -304,7 +304,14 @@ public class RangeFormatter
   @Nullable
   public String formatDateTime(@Nullable final DateTime dateTime)
   {
-    return dateTime == null ? null : formatDateAndTime(dateTime, true, true);
+    if (dateTime == null)
+    {
+      return null;
+    }
+    else
+    {
+      return formatDateAndTime(dateTime, style != Style.TIME_AND_DURATION && style != Style.TIME_ONLY, true);
+    }
   }
 
   /**

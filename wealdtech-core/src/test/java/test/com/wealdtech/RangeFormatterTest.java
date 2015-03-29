@@ -134,10 +134,37 @@ public class RangeFormatterTest
   }
 
   @Test
+  public void testSingleDateTimeTimeAndDuration()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    assertEquals(formatter.formatDateTime(testDateTime3), "06:00");
+  }
+
+  @Test
   public void testSingleTimeNonDefaultLocale()
   {
     final RangeFormatter formatter = new RangeFormatter(Locale.CANADA, RangeFormatter.Style.NORMAL);
     assertEquals(formatter.formatTime(testDateTime3), "06:00");
+  }
+
+  @Test
+  public void testZeroRangeTodayDayDuration()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> testRange =
+        Range.closedOpen(new DateTime().withHourOfDay(8).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0),
+                         new DateTime().withHourOfDay(8).withMinuteOfHour(0).withSecondOfMinute(1).withMillisOfSecond(0));
+    assertEquals(formatter.formatDateTime(testRange), "08:00");
+  }
+
+  @Test
+  public void testZeroRangeDuration()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> testRange =
+        Range.closedOpen(testDateTime1.withHourOfDay(8).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0),
+                         testDateTime1.withHourOfDay(8).withMinuteOfHour(0).withSecondOfMinute(1).withMillisOfSecond(0));
+    assertEquals(formatter.formatDateTime(testRange), "08:00");
   }
 
   @Test
