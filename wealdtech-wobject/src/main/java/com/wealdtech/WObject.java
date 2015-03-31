@@ -471,6 +471,19 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   @JsonIgnore
+  public void setScratch(final Map<String, Object> scratch)
+  {
+    scratchData.clear();
+    scratchData.putAll(scratch);
+  }
+
+  @JsonIgnore
+  public Map<String, Object> getScratch()
+  {
+    return scratchData;
+  }
+
+  @JsonIgnore
   public <U> Optional<U> getScratch(final String key)
   {
     checkState(key != null, "Cannot get scratch data with NULL key");
