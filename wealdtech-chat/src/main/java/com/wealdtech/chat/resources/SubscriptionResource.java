@@ -19,8 +19,6 @@ import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.User;
 import com.wealdtech.chat.services.SubscriptionService;
 import com.wealdtech.services.WIDService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,6 @@ import javax.ws.rs.*;
  * Resource for subscriptions
  */
 @Path("/subscriptions")
-@Api(value = "/subscriptions", description = "Manage subscriptions to topics")
 public class SubscriptionResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(SubscriptionResource.class);
@@ -57,7 +54,6 @@ public class SubscriptionResource
   @Timed
   @DELETE
   @Path("{topic: .*+}/{userid: [0-9A-Fa-f]+}")
-  @ApiOperation(value = "Unsubscribe from a topic")
   public void unsubscribe(@PathParam("topic") final String topic)
   {
     final User user = User.builder().id(WID.<User>generate()).name("Jim").build();

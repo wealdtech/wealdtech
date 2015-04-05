@@ -9,6 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/wealdtech-authentication" />
+            <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
+            <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
             <option value="$PROJECT_DIR$/wealdtech-chat" />
             <option value="$PROJECT_DIR$/wealdtech-conditions" />
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
@@ -28,6 +31,7 @@
             <option value="$PROJECT_DIR$/wealdtech-services" />
             <option value="$PROJECT_DIR$/wealdtech-services/askgeo" />
             <option value="$PROJECT_DIR$/wealdtech-services/google" />
+            <option value="$PROJECT_DIR$/wealdtech-users" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
             <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />

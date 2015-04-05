@@ -19,15 +19,16 @@ dependencies
     compile project(':wealdtech-jersey-server')
     compile project(':wealdtech-wid-service')
     compile project(':wealdtech-notifications')
+    compile project(':wealdtech-authentication')
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-chat'
+            pom.artifactId = 'wealdtech-users'
             pom.project {
-                name 'Wealdtech Chat'
-                description 'Weald Technology Chat server'
+                name 'Wealdtech Users'
+                description 'Weald Technology Users server'
             }
         }
     }

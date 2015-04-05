@@ -10,24 +10,17 @@
 
 dependencies
 {
-    compile project(':wealdtech-core')
-    compile project(':wealdtech-jackson')
-    compile project(':wealdtech-configuration')
-    compile project(':wealdtech-configuration-logging')
-    compile project(':wealdtech-wobject')
-    compile project(':wealdtech-wobject-datastore')
-    compile project(':wealdtech-jersey-server')
-    compile project(':wealdtech-wid-service')
-    compile project(':wealdtech-notifications')
+    compile project(':wealdtech-authentication')
+    compile project(':wealdtech-crypt')
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-chat'
+            pom.artifactId = 'wealdtech-authentication-password'
             pom.project {
-                name 'Wealdtech Chat'
-                description 'Weald Technology Chat server'
+                name 'Wealdtech Password Authentication'
+                description 'Weald Technology Authentication via password'
             }
         }
     }

@@ -24,10 +24,10 @@ dependencies
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-chat'
+            pom.artifactId = 'wealdtech-users'
             pom.project {
-                name 'Wealdtech Chat'
-                description 'Weald Technology Chat server'
+                name 'Wealdtech Users'
+                description 'Weald Technology Users server'
             }
         }
     }

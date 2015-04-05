@@ -57,11 +57,12 @@ public class ApplicationModule extends AbstractModule
       bind(ObjectMapper.class).toInstance(WealdMapper.getServerMapper());
 
       // Bind configuration information
-      final ChatDConfiguration configuration = new ConfigurationSource<ChatDConfiguration>().getConfiguration(this.configFile, ChatDConfiguration.class);
+      final ChatDConfiguration configuration =
+          new ConfigurationSource<ChatDConfiguration>().getConfiguration(this.configFile, ChatDConfiguration.class);
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
-//      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
+      //      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
 
       // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency
       bind(ObjectMapper.class).annotatedWith(Names.named("dbmapper"))
@@ -69,7 +70,7 @@ public class ApplicationModule extends AbstractModule
                                                      .copy()
                                                      .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
 
-      // Bind Chat service to use PostgreSql
+      // Bind Message service to use PostgreSql
       bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("messagerepositoryconfiguration"))
                                          .toInstance(configuration.getPostgreSqlConfiguration());
       bind(MessageRepository.class).to(MessageRepositoryPostgreSqlImpl.class).in(Singleton.class);
