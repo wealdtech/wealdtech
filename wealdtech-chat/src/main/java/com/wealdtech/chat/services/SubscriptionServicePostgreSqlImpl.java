@@ -19,7 +19,7 @@ import com.google.inject.name.Named;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.User;
-import com.wealdtech.datastore.repository.PostgreSqlRepository;
+import com.wealdtech.repositories.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;

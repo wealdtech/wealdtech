@@ -32,6 +32,8 @@
             <option value="$PROJECT_DIR$/wealdtech-services/askgeo" />
             <option value="$PROJECT_DIR$/wealdtech-services/google" />
             <option value="$PROJECT_DIR$/wealdtech-users" />
+            <option value="$PROJECT_DIR$/wealdtech-users-daemon" />
+            <option value="$PROJECT_DIR$/wealdtech-users-datastore" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
             <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />

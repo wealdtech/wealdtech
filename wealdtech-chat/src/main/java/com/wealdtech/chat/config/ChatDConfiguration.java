@@ -13,7 +13,7 @@ package com.wealdtech.chat.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wealdtech.configuration.Configuration;
 import com.wealdtech.config.LoggingConfiguration;
-import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.repositories.config.PostgreSqlConfiguration;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
 import com.wealdtech.notifications.config.NotificationConfiguration;

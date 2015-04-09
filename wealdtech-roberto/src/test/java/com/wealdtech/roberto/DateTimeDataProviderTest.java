@@ -21,7 +21,7 @@ import static org.testng.Assert.fail;
 /**
  * Test of datetime data provider
  */
-public class DateTimeProviderTest
+public class DateTimeDataProviderTest
 {
   @Test
   public void simpleTest()

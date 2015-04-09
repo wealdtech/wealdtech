@@ -12,7 +12,6 @@ package com.wealdtech.authentication;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wealdtech.utils.Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +20,9 @@ import java.util.Map;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
+ * Password-based credentials for authentication.
+ * Password-based credentials are based on two pieces of information: a name, which identifies a user and a password, which
+ * authenticates the user.  Both are required
  */
 public class PasswordCredentials extends AbstractCredentials
 {
@@ -28,6 +30,7 @@ public class PasswordCredentials extends AbstractCredentials
 
   public static final String PASSWORD_CREDENTIALS = "Password";
 
+  private static final String NAME = "name";
   private static final String PASSWORD = "password";
 
   @JsonCreator
@@ -37,29 +40,18 @@ public class PasswordCredentials extends AbstractCredentials
   }
 
   @Override
-  protected Map<String, Object> preCreate(Map<String, Object> data)
-  {
-    data = super.preCreate(data);
-
-    // Ensure that the password is hashed
-    final String password = (String)data.get(PASSWORD);
-    if (!Crypt.isHashed(password))
-    {
-      data.put(PASSWORD, Crypt.hash(password));
-    }
-
-    return data;
-  }
-
-  @Override
   protected void validate()
   {
     super.validate();
+    checkState(exists(NAME), "Password authentication method failed validation: must contain name");
     checkState(exists(PASSWORD), "Password authentication method failed validation: must contain password");
   }
 
   @JsonIgnore
   public String getType(){return PASSWORD_CREDENTIALS;}
+
+  @JsonIgnore
+  public String getName(){return get(NAME, String.class).get();}
 
   @JsonIgnore
   public String getPassword(){return get(PASSWORD, String.class).get();}
@@ -77,6 +69,12 @@ public class PasswordCredentials extends AbstractCredentials
     {
       super(prior);
       data(TYPE, PASSWORD_CREDENTIALS);
+    }
+
+    public P name(final String name)
+    {
+      data(NAME, name);
+      return self();
     }
 
     public P password(final String password)

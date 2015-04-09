@@ -20,18 +20,19 @@ import java.util.Map;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
- * A token-based authentication method
+ * Token-based credentials for authentication.
+ * Token-based credentials are based on a single piece of information: the token itself
  */
-public class TokenAuthenticationMethod extends AuthenticationMethod
+public class TokenCredentials extends AbstractCredentials
 {
-  private static final Logger LOG = LoggerFactory.getLogger(TokenAuthenticationMethod.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TokenCredentials.class);
 
-  public static final String TOKEN_AUTHENTICATION = "Token";
+  public static final String TOKEN_CREDENTIALS = "Token";
 
   private static final String TOKEN = "token";
 
   @JsonCreator
-  public TokenAuthenticationMethod(final Map<String, Object> data)
+  public TokenCredentials(final Map<String, Object> data)
   {
     super(data);
   }
@@ -40,28 +41,28 @@ public class TokenAuthenticationMethod extends AuthenticationMethod
   protected void validate()
   {
     super.validate();
-    checkState(exists(TOKEN), "Token authentication method failed validation: must contain token");
+    checkState(exists(TOKEN), "token authentication method failed validation: must contain token");
   }
 
   @JsonIgnore
-  public String getType(){return TOKEN_AUTHENTICATION;}
+  public String getType(){return TOKEN_CREDENTIALS;}
 
   @JsonIgnore
   public String getToken(){return get(TOKEN, String.class).get();}
 
   // Builder boilerplate
-  public static class Builder<P extends Builder<P>> extends AuthenticationMethod.Builder<P>
+  public static class Builder<P extends Builder<P>> extends AbstractCredentials.Builder<P>
   {
     public Builder()
     {
       super();
-      data(TYPE, TOKEN_AUTHENTICATION);
+      data(TYPE, TOKEN_CREDENTIALS);
     }
 
-    public Builder(final TokenAuthenticationMethod prior)
+    public Builder(final TokenCredentials prior)
     {
       super(prior);
-      data(TYPE, TOKEN_AUTHENTICATION);
+      data(TYPE, TOKEN_CREDENTIALS);
     }
 
     public P token(final String token)
@@ -70,12 +71,12 @@ public class TokenAuthenticationMethod extends AuthenticationMethod
       return self();
     }
 
-    public TokenAuthenticationMethod build(){ return new TokenAuthenticationMethod(data); }
+    public TokenCredentials build(){ return new TokenCredentials(data); }
   }
 
   public static Builder<?> builder(){ return new Builder(); }
 
-  public static Builder<?> builder(final TokenAuthenticationMethod prior)
+  public static Builder<?> builder(final TokenCredentials prior)
   {
     return new Builder(prior);
   }

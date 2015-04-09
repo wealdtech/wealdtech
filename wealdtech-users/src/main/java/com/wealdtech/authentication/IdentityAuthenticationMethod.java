@@ -25,7 +25,7 @@ import static com.wealdtech.Preconditions.checkState;
 /**
  * An authentication method where a user can identify themself as another user
  */
-public class IdentityAuthenticationMethod extends AbstractAuthenticationMethod
+public class IdentityAuthenticationMethod extends AuthenticationMethod
 {
   private static final Logger LOG = LoggerFactory.getLogger(IdentityAuthenticationMethod.class);
 
@@ -56,7 +56,7 @@ public class IdentityAuthenticationMethod extends AbstractAuthenticationMethod
   public WID<User> getUserId(){return get(USER_ID, USER_ID_TYPEREF).get();}
 
   // Builder boilerplate
-  public static class Builder<P extends Builder<P>> extends AbstractAuthenticationMethod.Builder<P>
+  public static class Builder<P extends Builder<P>> extends AuthenticationMethod.Builder<P>
   {
     public Builder()
     {

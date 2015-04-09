@@ -8,24 +8,11 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-dependencies
-{
-    compile project(':wealdtech-wobject')
-    compile project(':wealdtech-configuration')
-    compile project(':wealdtech-configuration-logging')
-    compile project(':wealdtech-authentication')
-    testCompile project(':wealdtech-authentication:password')
-    testCompile project(':wealdtech-authentication:token')
-}
+package com.wealdtech.repositories.repository;
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.artifactId = 'wealdtech-users'
-            pom.project {
-                name 'Wealdtech Users'
-                description 'Weald Technology Users server'
-            }
-        }
-    }
+/**
+ */
+public interface Repository<T>
+{
+  T getConnection();
 }

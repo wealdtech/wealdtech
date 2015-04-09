@@ -8,22 +8,9 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.authentication;
-
-import com.google.common.collect.ImmutableCollection;
+package com.wealdtech.repositories;
 
 /**
- * Definition of a system to authenticate
  */
-public interface Authenticator
-{
-  /**
-   * Authenticate given a set of credentials
-   *
-   * @param credentials the credentials to use for authentication
-   * @param methods the allowable authentication methods
-   *
-   * @return the resultant authorisation scope
-   */
-  AuthorisationScope authenticate(Credentials credentials, final ImmutableCollection<AuthenticationMethod> methods);
-}
+public interface UserRepository
+{}

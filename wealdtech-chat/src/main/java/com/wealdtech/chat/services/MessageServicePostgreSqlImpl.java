@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.chat.Message;
-import com.wealdtech.datastore.repository.PostgreSqlRepository;
+import com.wealdtech.repositories.repository.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;

@@ -26,7 +26,7 @@ import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.chat.services.SubscriptionService;
 import com.wealdtech.chat.services.SubscriptionServicePostgreSqlImpl;
 import com.wealdtech.configuration.ConfigurationSource;
-import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.repositories.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;

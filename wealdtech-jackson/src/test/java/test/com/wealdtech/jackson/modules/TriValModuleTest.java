@@ -47,7 +47,7 @@ public class TriValModuleTest
   @Test
   public void testDeserStrClear() throws Exception
   {
-    final String ser = "\"\"";
+    final String ser = "\"__\"";
     final TriVal<String> deser = this.mapper.readValue(ser, new TypeReference<TriVal<String>>(){});
     assertTrue(deser.isClear());
   }
@@ -65,7 +65,7 @@ public class TriValModuleTest
   {
     final TriVal<String> trv = TriVal.clear();
     final String ser = this.mapper.writeValueAsString(trv);
-    assertEquals(ser, "\"\"");
+    assertEquals(ser, "\"__\"");
   }
 
 
@@ -84,7 +84,7 @@ public class TriValModuleTest
   @Test
   public void testDeserDateTimeClear() throws Exception
   {
-    final String ser = "\"\"";
+    final String ser = "\"__\"";
     final TriVal<DateTime> deser = this.mapper.readValue(ser, new TypeReference<TriVal<String>>(){});
     assertTrue(deser.isClear());
   }
@@ -104,6 +104,6 @@ public class TriValModuleTest
   {
     final TriVal<DateTime> trv = TriVal.clear();
     final String ser = this.mapper.writeValueAsString(trv);
-    assertEquals(ser, "\"\"");
+    assertEquals(ser, "\"__\"");
   }
 }

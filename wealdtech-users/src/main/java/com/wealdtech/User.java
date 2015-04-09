@@ -488,7 +488,7 @@ public class User extends WObject<User> implements Comparable<User>
       return self();
     }
 
-    public P authenticationMethods(final ImmutableSet<AuthenticationMethod> authenticationMethods)
+    public P authenticationMethods(final ImmutableSet<? extends AuthenticationMethod> authenticationMethods)
     {
       data(AUTHENTICATION_METHODS, authenticationMethods);
       return self();

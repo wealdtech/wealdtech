@@ -23,7 +23,7 @@ import static com.wealdtech.Preconditions.checkState;
 /**
  * A password-based authentication method
  */
-public class PasswordAuthenticationMethod extends AbstractAuthenticationMethod
+public class PasswordAuthenticationMethod extends AuthenticationMethod
 {
   private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationMethod.class);
 
@@ -66,7 +66,7 @@ public class PasswordAuthenticationMethod extends AbstractAuthenticationMethod
   public String getPassword(){return get(PASSWORD, String.class).get();}
 
   // Builder boilerplate
-  public static class Builder<P extends Builder<P>> extends AbstractAuthenticationMethod.Builder<P>
+  public static class Builder<P extends Builder<P>> extends AuthenticationMethod.Builder<P>
   {
     public Builder()
     {

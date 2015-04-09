@@ -13,7 +13,6 @@ package com.wealdtech.roberto.dataprovider;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.wealdtech.DataError;
 import com.wealdtech.roberto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +137,8 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
       if (providerState == DataProviderState.PROVIDING || providerState == DataProviderState.DEGRADED ||
           providerState == DataProviderState.FAILED)
       {
-        throw new DataError.Bad("Data provider already providing");
+        // We're currently providing - stop it prior to restarting
+        stopProviding();
       }
       providerState = DataProviderState.PROVIDING;
       if (isPollingProvider())
@@ -203,9 +203,10 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
   }
 
   /**
-   * Get the current data held by the provider.
-   * Although this is immediate there is no guarantee about the freshness of the data.  In general the data should be obtained by
-   * listening to changes with the {@link com.wealdtech.roberto.OnDataProviderDataChangedListener} interface
+   * Get the current data held by the provider. Although this is immediate there is no guarantee about the freshness of the data.
+   * In general the data should be obtained by listening to changes with the {@link com.wealdtech.roberto.OnDataProviderDataChangedListener}
+   * interface
+   *
    * @return the current data
    * @throws IllegalStateException if the provider is not ready or able to provide data
    */
@@ -240,7 +241,7 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
 
     if (!dataObtained)
     {
-      synchronized(mutex)
+      synchronized (mutex)
       {
         if (!dataObtained)
         {

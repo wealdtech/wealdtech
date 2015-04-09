@@ -12,8 +12,8 @@ package com.wealdtech.chat.repositories;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.datastore.repository.PostgreSqlRepository;
+import com.wealdtech.repositories.config.PostgreSqlConfiguration;
+import com.wealdtech.repositories.repository.PostgreSqlRepository;
 
 /**
  */

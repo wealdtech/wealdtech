@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -471,10 +472,11 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   @JsonIgnore
-  public void setScratch(final Map<String, Object> scratch)
+  public T setScratch(final Map<String, Object> scratch)
   {
     scratchData.clear();
     scratchData.putAll(scratch);
+    return (T)this;
   }
 
   @JsonIgnore
@@ -737,6 +739,51 @@ public class WObject<T extends WObject> implements Comparable<T>
     protected P self()
     {
       return (P)this;
+    }
+  }
+
+  /**
+   * Recast a WObject.  This is useful when we have abstract classes or interfaces defined in a WObject and need to recast to a
+   * concrete class
+   * @param obj the object to recast
+   * @param klazz the class to which to recast
+   * @return the recasted object
+   */
+  @Nullable
+  public static <P extends WObject<?>> P recast(@Nullable WObject<?> obj, final Class<P> klazz)
+  {
+    if (obj == null)
+    {
+      return null;
+    }
+
+    // When recasting an object we keep all data, including scratch data
+    final P recastObj;
+    try
+    {
+      recastObj = klazz.getConstructor(Map.class).newInstance(obj.getAllData());
+      recastObj.setScratch(obj.getScratch());
+      return recastObj;
+    }
+    catch (final InstantiationException e)
+    {
+      LOG.error("Failed to instantiate class: ", e);
+      throw new ServerError(e);
+    }
+    catch (final IllegalAccessException e)
+    {
+      LOG.error("Failed to access class: ", e);
+      throw new ServerError(e);
+    }
+    catch (final InvocationTargetException e)
+    {
+      LOG.error("Failed to invoke class: ", e);
+      throw new ServerError(e);
+    }
+    catch (final NoSuchMethodException e)
+    {
+      LOG.error("Failed to find suitable method: ", e);
+      throw new ServerError(e);
     }
   }
 }

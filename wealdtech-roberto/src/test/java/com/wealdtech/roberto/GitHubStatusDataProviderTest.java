@@ -21,7 +21,7 @@ import static org.testng.Assert.assertTrue;
 /**
  * Test of JSON API data provider
  */
-public class GitHubStatusProviderTest
+public class GitHubStatusDataProviderTest
 {
   @Test
   public void gitHubStatusTest()

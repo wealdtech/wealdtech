@@ -12,36 +12,33 @@ package com.wealdtech.authentication;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableCollection;
-import com.wealdtech.WObject;
-import com.wealdtech.utils.Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  */
-public class PasswordAuthenticator implements Authenticator
+public class TokenAuthenticator implements Authenticator
 {
-  private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TokenAuthenticator.class);
 
   @Override
-  public AuthorisationScope authenticate(final Credentials credentials,
-                                         final ImmutableCollection<AuthenticationMethod> methods)
+  public AuthorisationScope authenticate(final Credentials credentials, final ImmutableCollection<AuthenticationMethod> methods)
   {
     AuthorisationScope scope = AuthorisationScope.NONE;
 
     final String credentialsType = credentials.getType();
-    // Ensure that we are dealing with password credentials
-    if (Objects.equal(credentialsType, PasswordCredentials.PASSWORD_CREDENTIALS))
+    // Ensure that we are dealing with token credentials
+    if (Objects.equal(credentialsType, TokenCredentials.TOKEN_CREDENTIALS))
     {
-      final PasswordCredentials passwordCredentials = (PasswordCredentials)credentials;
+      final TokenCredentials tokenCredentials = (TokenCredentials)credentials;
       for (final AuthenticationMethod method : methods)
       {
-        if (Objects.equal(method.getType(), PasswordAuthenticationMethod.PASSWORD_AUTHENTICATION))
+        if (Objects.equal(method.getType(), TokenAuthenticationMethod.TOKEN_AUTHENTICATION))
         {
-          final PasswordAuthenticationMethod passwordMethod = WObject.recast(method, PasswordAuthenticationMethod.class);
-          if (Crypt.matches(passwordCredentials.getPassword(), passwordMethod.getPassword()))
+          final TokenAuthenticationMethod tokenMethod = (TokenAuthenticationMethod)method;
+          if (Objects.equal(tokenMethod.getToken(), tokenCredentials.getToken()))
           {
-            scope = method.getScope();
+            scope = tokenMethod.getScope();
             break;
           }
         }

@@ -10,21 +10,22 @@
 
 dependencies
 {
-    compile project(':wealdtech-wobject')
+    compile project(':wealdtech-users-datastore')
+    compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-configuration-logging')
-    compile project(':wealdtech-authentication')
-    testCompile project(':wealdtech-authentication:password')
-    testCompile project(':wealdtech-authentication:token')
+    compile project(':wealdtech-jersey-server')
+    compile project(':wealdtech-wid-service')
+    compile project(':wealdtech-notifications')
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-users'
+            pom.artifactId = 'wealdtech-users-daemon'
             pom.project {
-                name 'Wealdtech Users'
-                description 'Weald Technology Users server'
+                name 'Wealdtech Users daemon'
+                description 'Weald Technology Users Daemon'
             }
         }
     }
