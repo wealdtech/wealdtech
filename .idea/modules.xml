@@ -9,6 +9,8 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/wealdtech-authentication.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/wealdtech-authentication.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/wealdtech-chat.iml" filepath="$PROJECT_DIR$/wealdtech-chat/wealdtech-chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-chat-daemon/wealdtech-chat-daemon.iml" filepath="$PROJECT_DIR$/wealdtech-chat-daemon/wealdtech-chat-daemon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-chat-datastore/wealdtech-chat-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-chat-datastore/wealdtech-chat-datastore.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" filepath="$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" filepath="$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration-logging/wealdtech-configuration-logging.iml" filepath="$PROJECT_DIR$/wealdtech-configuration-logging/wealdtech-configuration-logging.iml" />

@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.*;
-import com.wealdtech.repositories.repository.PostgreSqlRepository;
+import com.wealdtech.datastore.repositories.PostgreSqlRepository;
 import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

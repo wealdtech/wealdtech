@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
             <option value="$PROJECT_DIR$/wealdtech-chat" />
+            <option value="$PROJECT_DIR$/wealdtech-chat-daemon" />
+            <option value="$PROJECT_DIR$/wealdtech-chat-datastore" />
             <option value="$PROJECT_DIR$/wealdtech-conditions" />
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
