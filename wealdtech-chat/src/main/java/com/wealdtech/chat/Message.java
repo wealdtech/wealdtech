@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
-import com.wealdtech.WObject;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ import java.util.Map;
 /**
  * A chat element
  */
-public class Message extends WObject<Message> implements Comparable<Message>
+public class Message extends ChatObject<Message> implements Comparable<Message>
 {
   private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
@@ -43,8 +42,9 @@ public class Message extends WObject<Message> implements Comparable<Message>
     super(data);
   }
 
-  protected Map<String, Object> preCreate(final Map<String, Object> data)
+  protected Map<String, Object> preCreate(Map<String, Object> data)
   {
+    data = super.preCreate(data);
     if (!data.containsKey(TIMESTAMP))
     {
       data.put(TIMESTAMP, new DateTime());
@@ -54,6 +54,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
 
   protected void validate()
   {
+    super.validate();
     if (!exists(FROM))
     {
       throw new DataError.Missing("Chat needs 'from' information");
@@ -128,7 +129,7 @@ public class Message extends WObject<Message> implements Comparable<Message>
     return get(TEXT, String.class).get();
   }
 
-  public static class Builder<P extends Builder<P>> extends WObject.Builder<Message, P>
+  public static class Builder<P extends Builder<P>> extends ChatObject.Builder<Message, P>
   {
     public Builder()
     {

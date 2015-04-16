@@ -10,7 +10,6 @@
 
 package com.wealdtech.chat;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wealdtech.DataError;
 import com.wealdtech.WObject;
@@ -20,66 +19,49 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * A user in the chat system.
+ * Elements which exist in every chat object
  */
-public class User extends ChatObject<User> implements Comparable<User>
+public abstract class ChatObject<T extends ChatObject<T>> extends WObject<T> implements Comparable<T>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(User.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ChatObject.class);
 
-  private static final String NAME = "name";
+  private static final String APP_ID = "_appid";
 
-  @JsonCreator
-  public User(final Map<String, Object> data)
+  public ChatObject(final Map<String, Object> data)
   {
     super(data);
   }
 
   protected void validate()
   {
-    super.validate();
-    if (!exists(NAME))
+    if (!exists(APP_ID))
     {
-      throw new DataError.Missing("User needs 'name' information");
+      throw new DataError.Missing("Application ID is required");
     }
   }
 
   @JsonIgnore
-  public String getUseName()
+  public String getAppId()
   {
-    return get(NAME, String.class).get();
+    return get(APP_ID, String.class).get();
   }
 
-  public static class Builder<P extends Builder<P>> extends WObject.Builder<User, P>
+  public static class Builder<T extends ChatObject<T>, P extends Builder<T, P>> extends WObject.Builder<T, P>
   {
     public Builder()
     {
       super();
     }
 
-    public Builder(final User prior)
+    public Builder(final T prior)
     {
       super(prior);
     }
 
-    public P name(final String name)
+    public P appId(final String appId)
     {
-      data(NAME, name);
+      data(APP_ID, appId);
       return self();
     }
-
-    public User build()
-    {
-      return new User(data);
-    }
-  }
-
-  public static Builder<?> builder()
-  {
-    return new Builder();
-  }
-
-  public static Builder<?> builder(final User prior)
-  {
-    return new Builder(prior);
   }
 }

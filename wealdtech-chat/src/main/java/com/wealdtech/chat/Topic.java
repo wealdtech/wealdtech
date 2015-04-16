@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * A chat topic.
  */
-public class Topic extends WObject<Topic> implements Comparable<Topic>
+public class Topic extends ChatObject<Topic> implements Comparable<Topic>
 {
   private static final Logger LOG = LoggerFactory.getLogger(Topic.class);
 
@@ -39,6 +39,7 @@ public class Topic extends WObject<Topic> implements Comparable<Topic>
 
   protected void validate()
   {
+    super.validate();
     if (!exists(NAME))
     {
       throw new DataError.Missing("Topic needs 'name' information");

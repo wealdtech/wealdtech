@@ -39,8 +39,7 @@ public class MessageResource
   private final PushNotificationService notificationService;
 
   @Inject
-  public MessageResource(final MessageService messageService,
-                         final PushNotificationService notificationService)
+  public MessageResource(final MessageService messageService, final PushNotificationService notificationService)
   {
     this.messageService = messageService;
     this.notificationService = notificationService;
@@ -51,7 +50,7 @@ public class MessageResource
   @Produces({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
   public ImmutableMultimap<String, Message> getChats(@QueryParam("since") final DateTime since)
   {
-    final ImmutableList<Message> chats = messageService.getChats(null, null);
+    final ImmutableList<Message> chats = messageService.obtain(null, null);
     if (chats.isEmpty())
     {
       return ImmutableMultimap.of();
@@ -72,28 +71,29 @@ public class MessageResource
 
   /**
    * Obtain chats for a single topic
+   *
    * @param topic the name of the topic for which to fetch chats
    */
   @Timed
   @GET
   @Path("{topic: .*+}")
   @Produces(MediaType.APPLICATION_JSON)
-  public ImmutableList<Message> getChats(@PathParam("topic") final String topic,
-                                      @QueryParam("since") final DateTime since)
+  public ImmutableList<Message> getChats(@PathParam("topic") final String topic, @QueryParam("since") final DateTime since)
   {
-    return messageService.getChats(null, topic);
+    return messageService.obtain(null, topic);
   }
 
   /**
    * Add a message to a topic
+   *
    * @param message the message
    */
   @Timed
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public void addChat(final Message message)
+  public void crateMessage(final Message message)
   {
-    messageService.add(message);
+    messageService.create(message);
     notificationService.notify(message);
   }
 }

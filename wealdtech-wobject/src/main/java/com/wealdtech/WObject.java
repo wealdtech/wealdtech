@@ -699,7 +699,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     return ComparisonChain.start().compare(this.toString(), that.toString()).result();
   }
 
-  public static class Builder<T extends WObject<T>, P extends Builder<T, P>>
+  public static class Builder<T extends WObject<?>, P extends Builder<T, P>>
   {
     protected Map<String, Object> data;
 

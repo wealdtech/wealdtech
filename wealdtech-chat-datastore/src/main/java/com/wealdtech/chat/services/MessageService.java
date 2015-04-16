@@ -16,17 +16,17 @@ import com.wealdtech.chat.Message;
 import javax.annotation.Nullable;
 
 /**
- * Interface defining chat service methods
+ * Interface defining message service methods
  */
 public interface MessageService
 {
   /**
-   * Add a chat
+   * Create a message
    */
-  public void add(Message chat);
+  public void create(Message chat);
 
   /**
-   * Get chats
+   * Obtain messages
    */
-  public ImmutableList<Message> getChats(String from, @Nullable String topic);
+  public ImmutableList<Message> obtain(String from, @Nullable String topic);
 }

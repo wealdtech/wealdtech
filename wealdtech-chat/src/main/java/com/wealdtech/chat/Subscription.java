@@ -23,7 +23,7 @@ import java.util.Map;
  * A subscription to a topic.
  * A single user can only be subscribed to a topic once.
  */
-public class Subscription extends WObject<Subscription> implements Comparable<Subscription>
+public class Subscription extends ChatObject<Subscription> implements Comparable<Subscription>
 {
   private static final Logger LOG = LoggerFactory.getLogger(Subscription.class);
 
@@ -38,6 +38,7 @@ public class Subscription extends WObject<Subscription> implements Comparable<Su
 
   protected void validate()
   {
+    super.validate();
     if (!exists(USER))
     {
       throw new DataError.Missing("Subscription needs 'user' information");

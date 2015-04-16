@@ -13,10 +13,14 @@ package com.wealdtech.chat.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
+import com.wealdtech.chat.User;
 import com.wealdtech.datastore.repositories.PostgreSqlRepository;
+import com.wealdtech.notifications.service.NotificationService;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;
@@ -34,15 +38,31 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
 
   private static final TypeReference<Message> CHAT_TYPE_REFERENCE = new TypeReference<Message>(){};
 
+  private final NotificationService<Message> notificationService;
+
   @Inject
   public MessageServicePostgreSqlImpl(final PostgreSqlRepository repository,
-                                      @Named("dbmapper") final ObjectMapper mapper)
+                                      @Named("dbmapper") final ObjectMapper mapper,
+                                      final NotificationService<Message> notificationService)
   {
     super(repository, mapper, "message");
+    this.notificationService = notificationService;
   }
 
   @Override
-  public ImmutableList<Message> getChats(final String from, @Nullable final String topic)
+  public void create(final Message message)
+  {
+    super.add(message);
+    final ImmutableSet.Builder<String> toB = ImmutableSet.builder();
+    for (final WID<User> userId : message.getTo())
+    {
+      toB.add(userId.toString());
+    }
+    notificationService.notify(toB.build(), message);
+  }
+
+  @Override
+  public ImmutableList<Message> obtain(@Nullable final String topic, final String from)
   {
     return obtain(CHAT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {

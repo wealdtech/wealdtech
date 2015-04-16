@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -18,6 +18,8 @@ import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.notifications.config.NotificationConfiguration;
+import com.wealdtech.notifications.service.NotificationService;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -27,12 +29,14 @@ import javax.annotation.Nullable;
 import static org.testng.Assert.*;
 
 /**
- * Test for the PostgreSQL implementation of the chat service
+ * Test for the PostgreSQL implementation of the message service
  */
-public class ChatServicePostgreSqlImplTest
+public class MessageServicePostgreSqlImplTest
 {
-  MessageServicePostgreSqlImpl service;
+  MessageServicePostgreSqlImpl messageService;
   PostgreSqlRepository repo;
+
+  private static final String APP_ID = "message service test";
 
   @BeforeClass
   public void setUp()
@@ -40,36 +44,39 @@ public class ChatServicePostgreSqlImplTest
     final PostgreSqlRepository repository =
         new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "chat", "chat", "chat", null, null, null));
 
-    service = new MessageServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
-                                                                      .copy()
-                                                                      .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
-    service.createDatastore();
+    messageService = new MessageServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
+                                                                             .copy()
+                                                                             .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS),
+                                                      new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderLogImpl",
+                                                                                                            "appid", "accesskey")));
+    messageService.createDatastore();
   }
 
   @AfterClass
   public void tearDown()
   {
-    if (service != null)
+    if (messageService != null)
     {
-      service.destroyDatastore();
+      messageService.destroyDatastore();
     }
   }
 
   @Test
-  public void testAdd()
+  public void testCreate()
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
 
     final Message testChat = Message.builder()
+                                    .appId(APP_ID)
                                     .id(WID.<Message>generate())
                                     .from(methodName)
                                     .scope(MessageScope.EVERYONE)
                                     .topic("test topic")
                                     .text("Test message")
                                     .build();
-    service.add(testChat);
+    messageService.create(testChat);
 
-    final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
+    final ImmutableList<Message> chats = messageService.obtain("test topic", methodName);
     assertChatsContain(chats, testChat);
   }
 
@@ -84,23 +91,25 @@ public class ChatServicePostgreSqlImplTest
   {
     final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
     final Message testChat1 = Message.builder()
+                                     .appId(APP_ID)
                                      .id(WID.<Message>generate())
                                      .from(methodName)
                                      .scope(MessageScope.EVERYONE)
                                      .topic("test topic")
                                      .text("Test message 1")
                                      .build();
-    service.add(testChat1);
+    messageService.create(testChat1);
     final Message testChat2 = Message.builder()
+                                     .appId(APP_ID)
                                      .id(WID.<Message>generate())
                                      .from(methodName)
                                      .scope(MessageScope.EVERYONE)
                                      .topic("test topic 2")
                                      .text("Test message 2")
                                      .build();
-    service.add(testChat2);
+    messageService.create(testChat2);
 
-    final ImmutableList<Message> chats = service.getChats(methodName, "test topic");
+    final ImmutableList<Message> chats = messageService.obtain("test topic", methodName);
     assertChatsContain(chats, testChat1);
     assertChatsDoNotContain(chats, testChat2);
   }
@@ -114,6 +123,7 @@ public class ChatServicePostgreSqlImplTest
     final WID<User> testId2 = WID.generate();
 
     final Message testChat = Message.builder()
+                                    .appId(APP_ID)
                                     .id(WID.<Message>generate())
                                     .from(methodName)
                                     .scope(MessageScope.FRIENDS)
@@ -121,9 +131,9 @@ public class ChatServicePostgreSqlImplTest
                                     .topic(methodName + " (topic)")
                                     .text("Test message")
                                     .build();
-    service.add(testChat);
+    messageService.create(testChat);
 
-    final ImmutableList<Message> chats = service.getChats(methodName, methodName + " (topic)");
+    final ImmutableList<Message> chats = messageService.obtain(methodName + " (topic)", methodName);
     assertChatsContain(chats, testChat);
   }
 
