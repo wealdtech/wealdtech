@@ -13,6 +13,8 @@ package com.wealdtech.notifications.providers;
 import com.google.common.collect.ImmutableSet;
 
 /**
+ * A notification provider provides the ability to notify a number of recipients with a specific message.
+ * The message will be sent directly using it's {@code toString} method
  */
 public interface NotificationProvider<T>
 {
