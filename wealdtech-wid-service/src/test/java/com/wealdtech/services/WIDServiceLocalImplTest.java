@@ -66,14 +66,14 @@ public class WIDServiceLocalImplTest
     ConcurrentHashMap<WID<?>, Boolean> map = new ConcurrentHashMap<>();
     final Set<WID<?>> set = Collections.newSetFromMap(map);
 
-    final ExecutorService executor = Executors.newFixedThreadPool(32);
-    for (int i = 0; i < 32; i++) {
+    final ExecutorService executor = Executors.newFixedThreadPool(128);
+    for (int i = 0; i < 128; i++) {
 
       Runnable worker = new Runnable(){
         @Override
         public void run()
         {
-          for (int j = 0; j <1024; j++)
+          for (int j = 0; j <10240; j++)
           {
             map.put(service.obtain(), true);
           }
@@ -84,6 +84,6 @@ public class WIDServiceLocalImplTest
     executor.shutdown();
     while (!executor.isTerminated()) {}
 
-    assertEquals(set.size(), 1024*32, "Incorrect number of WIDs obtained: " + set.size());
+    assertEquals(set.size(), 10240*128, "Incorrect number of WIDs obtained: " + set.size());
   }
 }

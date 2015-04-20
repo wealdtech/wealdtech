@@ -331,7 +331,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
           catch (final IOException ioe)
           {
             LOG.error("Failed to parse object {}: ", rs.getString(1), ioe);
-            throw new ServerError("Failed to obtain information");
+            throw new ServerError("Failed to obtain information", ioe);
           }
         }
         return objsB.build();
@@ -405,7 +405,7 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
             catch (final IOException ioe)
             {
               LOG.error("Failed to parse object: ", ioe);
-              throw new ServerError("Failed to obtain information");
+              throw new ServerError("Failed to obtain information", ioe);
             }
           }
         }
