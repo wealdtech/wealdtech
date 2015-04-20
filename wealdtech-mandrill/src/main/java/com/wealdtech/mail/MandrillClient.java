@@ -21,7 +21,6 @@ import retrofit.RestAdapter;
 import retrofit.converter.Converter;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Retrofit client for accessing the Mandrill API
@@ -42,22 +41,40 @@ public class MandrillClient
     this.configuration = configuration;
 
     final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
-                                                         .setConverter(converter)
-                                                         .setLogLevel(RestAdapter.LogLevel.FULL)
-                                                         .build();
+    final RestAdapter adapter =
+        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).setLogLevel(RestAdapter.LogLevel.FULL).build();
     this.service = adapter.create(MandrillService.class);
   }
 
-  public List<MandrillSendResponse> sendTemplate(final String template, final ImmutableList<ImmutableMap<String, String>> globalMergeVars, final ImmutableList<MailActor> recipients)
+  public List<MandrillSendResponse> sendTemplate(final String template,
+                                                 final ImmutableList<ImmutableMap<String, String>> globalMergeVars,
+                                                 final ImmutableList<MailActor> recipients)
   {
-    final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template, new MandrillMessage.Builder().recipients(recipients).sender(configuration.getSender()).globalMergeVars(globalMergeVars).build());
-    return service.sendTemplate(request);
+    if (configuration.isActive())
+    {
+      final MandrillSendRequest request = new MandrillSendRequest(configuration.getKey(), template,
+                                                                  new MandrillMessage.Builder().recipients(recipients)
+                                                                                               .sender(configuration.getSender())
+                                                                                               .globalMergeVars(globalMergeVars)
+                                                                                               .build());
+      return service.sendTemplate(request);
+    }
+    else
+    {
+      return ImmutableList.of();
+    }
   }
 
   public boolean ping()
   {
-    return "PONG!".equals(service.ping(ImmutableMap.<String, String>of("key", configuration.getKey())));
+    if (configuration.isActive())
+    {
+      return "PONG!".equals(service.ping(ImmutableMap.<String, String>of("key", configuration.getKey())));
+    }
+    else
+    {
+      return false;
+    }
   }
 }
 

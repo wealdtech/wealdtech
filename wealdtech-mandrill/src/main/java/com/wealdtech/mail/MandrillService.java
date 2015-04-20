@@ -26,6 +26,4 @@ public interface MandrillService
 
   @POST("/users/ping.json")
   String ping(@Body final ImmutableMap<String, String> key);
-
-
 }
