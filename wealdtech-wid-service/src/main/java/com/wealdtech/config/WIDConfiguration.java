@@ -13,6 +13,8 @@ package com.wealdtech.config;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+import com.wealdtech.DataError;
+import com.wealdtech.WID;
 import com.wealdtech.configuration.Configuration;
 
 /**
@@ -26,6 +28,10 @@ public class WIDConfiguration implements Configuration
   public WIDConfiguration(@JsonProperty("shardid") final Long shardId)
   {
     this.shardId = MoreObjects.firstNonNull(shardId, 0L);
+    if (shardId < 0 || shardId > WID.MAX_SHARD)
+    {
+      throw new DataError.Bad("Invalid shard ID");
+    }
   }
 
   /**

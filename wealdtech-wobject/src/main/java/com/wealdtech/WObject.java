@@ -66,6 +66,7 @@ public class WObject<T extends WObject> implements Comparable<T>
                         .copy()
                         .registerModule(module)
                         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+                        .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
                         .configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
                         .configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false)
                         .configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
