@@ -12,7 +12,7 @@ package com.wealdtech.jetty.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.wealdtech.configuration.Configuration;
 
 /**
@@ -37,9 +37,9 @@ public final class JettyThreadPoolConfiguration implements Configuration
                                        @JsonProperty("maxthreads") final Integer maxThreads,
                                        @JsonProperty("idletimeout") final Integer idleTimeout)
   {
-    this.minThreads = Objects.firstNonNull(minThreads, this.minThreads);
-    this.maxThreads = Objects.firstNonNull(maxThreads, this.maxThreads);
-    this.idleTimeout = Objects.firstNonNull(idleTimeout, this.idleTimeout);
+    this.minThreads = MoreObjects.firstNonNull(minThreads, this.minThreads);
+    this.maxThreads = MoreObjects.firstNonNull(maxThreads, this.maxThreads);
+    this.idleTimeout = MoreObjects.firstNonNull(idleTimeout, this.idleTimeout);
   }
 
   public int getMinThreads()

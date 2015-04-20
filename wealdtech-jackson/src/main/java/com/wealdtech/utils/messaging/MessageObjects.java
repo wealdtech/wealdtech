@@ -24,7 +24,7 @@ import static com.wealdtech.Preconditions.checkState;
  * change of state.  This can be used to pass around detailed state change information without having to use additional services
  * to obtain details of what has changed.
  */
-public class MessageObjects<T extends Object> implements Serializable
+public class MessageObjects<T> implements Serializable
 {
   private static final long serialVersionUID = 6306799063373268531L;
 
@@ -89,9 +89,9 @@ public class MessageObjects<T extends Object> implements Serializable
    * Obtain the type of the object.
    * @return the class of the object
    */
-  public Class<? extends Object> getType()
+  public Class<?> getType()
   {
-    Class<? extends Object> retclass;
+    Class<?> retclass;
     if (this.prior == null)
     {
       retclass = this.current.getClass();

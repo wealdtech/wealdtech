@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,5 +43,10 @@ public class DateTimeZoneDeserializer extends JsonDeserializer<DateTimeZone>
       throw new IOException("Invalid datetimezone value \"" + node.textValue() + "\"", iae);
     }
     return result;
+  }
+
+  public static DateTimeZone deserialize(final String txt)
+  {
+    return txt == null ? null :  DateTimeZone.forID(txt);
   }
 }

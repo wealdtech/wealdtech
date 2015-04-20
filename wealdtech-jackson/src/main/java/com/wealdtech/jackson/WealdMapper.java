@@ -35,12 +35,16 @@ public enum WealdMapper
     clientConfiguration.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     CLIENT_MAPPER = new ObjectMapperFactory().build(clientConfiguration)
                                              .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                                             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                                             .disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
                                              .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
 
     ObjectMapperConfiguration serverConfiguration = new ObjectMapperConfiguration();
     serverConfiguration.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     SERVER_MAPPER = new ObjectMapperFactory().build(serverConfiguration)
                                              .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                                             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                                             .disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
                                              .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
   }
 

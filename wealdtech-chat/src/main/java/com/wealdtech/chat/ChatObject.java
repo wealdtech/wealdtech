@@ -1,0 +1,67 @@
+/*
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
+ */
+
+package com.wealdtech.chat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wealdtech.DataError;
+import com.wealdtech.WObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+
+/**
+ * Elements which exist in every chat object
+ */
+public abstract class ChatObject<T extends ChatObject<T>> extends WObject<T> implements Comparable<T>
+{
+  private static final Logger LOG = LoggerFactory.getLogger(ChatObject.class);
+
+  private static final String APP_ID = "_appid";
+
+  public ChatObject(final Map<String, Object> data)
+  {
+    super(data);
+  }
+
+  protected void validate()
+  {
+    if (!exists(APP_ID))
+    {
+      throw new DataError.Missing("Application ID is required");
+    }
+  }
+
+  @JsonIgnore
+  public String getAppId()
+  {
+    return get(APP_ID, String.class).get();
+  }
+
+  public static class Builder<T extends ChatObject<T>, P extends Builder<T, P>> extends WObject.Builder<T, P>
+  {
+    public Builder()
+    {
+      super();
+    }
+
+    public Builder(final T prior)
+    {
+      super(prior);
+    }
+
+    public P appId(final String appId)
+    {
+      data(APP_ID, appId);
+      return self();
+    }
+  }
+}

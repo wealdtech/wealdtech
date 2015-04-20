@@ -12,7 +12,7 @@ package com.wealdtech.jetty.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.wealdtech.configuration.Configuration;
 
 /**
@@ -35,8 +35,8 @@ public final class JettyResponseConfiguration implements Configuration
   private JettyResponseConfiguration(@JsonProperty("servername") final String serverName,
                                      @JsonProperty("retryperiod") final Integer retryPeriod)
   {
-    this.serverName = Objects.firstNonNull(serverName, this.serverName);
-    this.retryPeriod = Objects.firstNonNull(retryPeriod, this.retryPeriod);
+    this.serverName = MoreObjects.firstNonNull(serverName, this.serverName);
+    this.retryPeriod = MoreObjects.firstNonNull(retryPeriod, this.retryPeriod);
   }
 
   public String getServerName()

@@ -19,6 +19,7 @@ import com.google.common.base.Splitter;
 import com.google.common.primitives.Longs;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Random;
@@ -55,12 +56,12 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   public static final long EPOCH = 1325376000000L;
 
   // Masks for the pieces of the ID
-  private static final long TIMESTAMPMASK = 0xffffffffff800000L;
+  private static final long TIMESTAMPMASK = 0x7fffffffffc00000L;
   private static final int TIMESTAMPOFFSET = 22;
   private static final int TIMESTAMPSIZE = 41;
   public static final long MAX_TIMESTAMP = (1L << TIMESTAMPSIZE) - 1;
 
-  private static final long SHARDMASK = 0x00000000007fe000L;
+  private static final long SHARDMASK = 0x00000000003ffc00L;
   private static final int SHARDOFFSET = 10;
   private static final int SHARDSIZE = 12;
   public static final long MAX_SHARD = (1L << SHARDSIZE) - 1;
@@ -204,9 +205,9 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
   public static <T> WID<T> fromComponents(final long shardId, final long timestamp, final long id, final Long subId)
   {
     final long adjustedTimestamp = timestamp - EPOCH;
-    checkArgument(shardId >=0 && shardId < MAX_SHARD, "Shard ID %s out of range %s", shardId);
+    checkArgument(shardId >=0 && shardId <= MAX_SHARD, "Shard ID %s out of range %s", shardId);
     checkArgument(timestamp >= EPOCH && adjustedTimestamp < MAX_TIMESTAMP, "Timestamp %s out of range %s", timestamp, MAX_TIMESTAMP);
-    checkArgument(id >=0 && id < MAX_IID, "ID %s out of range", id);
+    checkArgument(id >=0 && id <= MAX_IID, "ID %s out of range", id);
     return new WID<>(((shardId << SHARDOFFSET) & SHARDMASK) |
                       ((adjustedTimestamp << TIMESTAMPOFFSET) & TIMESTAMPMASK) |
                       (id & IIDMASK), subId);
@@ -240,18 +241,20 @@ public class WID<T> implements Comparable<WID<T>>, Serializable
    */
   public static <T> WID<T> generate()
   {
-    return generate(RANDOM.nextInt((int)MAX_SHARD));
+    return generate((long)RANDOM.nextInt((int)MAX_SHARD));
   }
 
   /**
    * Generate a WID with random shard ID and ID.
+   * @param shardId the ID of the shard; if {@code null} then will be 0
    * @return a new WID
    */
-  public static <T> WID<T> generate(final int shardId)
+  public static <T> WID<T> generate(@Nullable final Long shardId)
   {
+    final long shard = shardId == null ? 0 : shardId;
     final long timestamp = System.currentTimeMillis();
     final long id = RANDOM.nextInt((int)MAX_IID);
-    return fromComponents(shardId, timestamp, id);
+    return fromComponents(shard, timestamp, id);
   }
 
   /**

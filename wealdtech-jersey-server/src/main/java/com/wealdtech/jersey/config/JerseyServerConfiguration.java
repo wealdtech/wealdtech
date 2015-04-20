@@ -12,7 +12,7 @@ package com.wealdtech.jersey.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
@@ -33,7 +33,7 @@ public class JerseyServerConfiguration implements Configuration
   @JsonCreator
   private JerseyServerConfiguration(@JsonProperty("cors") final CORSConfiguration corsConfiguration)
   {
-    this.corsConfiguration = Objects.firstNonNull(corsConfiguration, this.corsConfiguration);
+    this.corsConfiguration = MoreObjects.firstNonNull(corsConfiguration, this.corsConfiguration);
   }
 
   public CORSConfiguration getCORSConfiguration()

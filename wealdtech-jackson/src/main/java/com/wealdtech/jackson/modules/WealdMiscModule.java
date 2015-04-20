@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.google.common.collect.Range;
+import com.wealdtech.jackson.JDoc;
 import com.wealdtech.utils.messaging.MessageObjects;
 
 import java.net.InetSocketAddress;

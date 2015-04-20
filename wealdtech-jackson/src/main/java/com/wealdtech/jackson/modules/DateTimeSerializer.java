@@ -12,10 +12,13 @@ package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.google.common.base.Objects;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -45,7 +48,20 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
   @Override
   public void serialize(final DateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeString(formatter.print(value));
+    if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
+    {
+      gen.writeStartObject();
+      gen.writeNumberField("timestamp", value.getMillis());
+      if (!Objects.equal(value.getZone(), DateTimeZone.UTC))
+      {
+        gen.writeStringField("timezone", value.getZone().toString());
+      }
+      gen.writeEndObject();
+    }
+    else
+    {
+      gen.writeString(formatter.print(value));
+    }
   }
 
   @Override
@@ -54,7 +70,14 @@ public class DateTimeSerializer extends StdSerializer<DateTime>
       throws IOException, JsonProcessingException
   {
     typeSer.writeTypePrefixForScalar(value, jgen, DateTime.class);
-    serialize(value, jgen, provider);
+    if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
+    {
+      jgen.writeNumber(value.getMillis());
+    }
+    else
+    {
+      serialize(value, jgen, provider);
+    }
     typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

@@ -12,7 +12,7 @@ package com.wealdtech.jersey.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
@@ -41,10 +41,10 @@ public class CORSConfiguration implements Configuration
                             @JsonProperty("allowedmethods") final String allowedMethods,
                             @JsonProperty("reflectrequest") final Boolean reflectRequest)
   {
-    this.origin = Objects.firstNonNull(origin, this.origin);
-    this.allowCredentials = Objects.firstNonNull(allowCredentials, this.allowCredentials);
-    this.allowedMethods = Objects.firstNonNull(allowedMethods, this.allowedMethods);
-    this.reflectRequest = Objects.firstNonNull(reflectRequest, this.reflectRequest);
+    this.origin = MoreObjects.firstNonNull(origin, this.origin);
+    this.allowCredentials = MoreObjects.firstNonNull(allowCredentials, this.allowCredentials);
+    this.allowedMethods = MoreObjects.firstNonNull(allowedMethods, this.allowedMethods);
+    this.reflectRequest = MoreObjects.firstNonNull(reflectRequest, this.reflectRequest);
   }
 
   public String getOrigin()

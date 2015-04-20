@@ -30,7 +30,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
   @Override
   public Response toResponse(final WebApplicationException exception)
   {
-    LOGGER.debug(exception.getMessage());
+    LOGGER.debug("Caught exception: ", exception);
     return Response.status(exception.getResponse().getStatus())
                    .entity("")
                    .type(MediaType.APPLICATION_JSON)

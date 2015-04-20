@@ -1,0 +1,37 @@
+<h3 id="message">Message</h3>
+
+<p>A message contains the following elements:</p>
+
+<ul>
+  <li><a href="#/data-types#text"><code>topic</code></a> the topic to which to post the message</li>
+  <li><a href="#/data-types#"><code>scope</code></a> the scope of the message.  This can be one of three options:
+    <ul>
+      <li><code>Everyone</code> the message will be made available to everyone</li>
+      <li><code>Friends</code> the message will be made available to your friends</li>
+      <li><code>Individual</code> the message will be made available to a single other person</li>
+    </ul>
+  </li>
+  <li><a href="#/data-types#text"><code>to</code></a> the recipient of the message.  This is required if <code>scope</code> was set to <code>Individual</code>, otherwise this is not required and will be ignored if provided</li>
+  <li><a href="#/data-types#text"><code>text</code></a> the text of the message.</li>
+</ul>
+
+<p>In addition, when receiving a message the following additional elements will be present:</p>
+
+<ul>
+  <li><a href="#/data-types#text"><code>from</code></a> the name of the user who created the message</li>
+  <li><a href="#/data-types#timestamp"><code>timestamp</code></a> the time when the message was receieved by the chat server</li>
+</ul>
+
+<h3 id="examples">Examples</h3>
+<p><code>{
+    "topic": "myTopic",
+    "scope": "Everyone",
+    "text": "Hello world",
+}</code></p>
+
+<p><code>{
+    "topic": "myTopic",
+    "scope": "Individual",
+    "to": "a0b124fd23",
+    "text": "Hello Fred",
+}</code></p>

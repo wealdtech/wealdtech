@@ -11,6 +11,7 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import org.joda.time.DateTime;
@@ -32,6 +33,36 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
   @Override
   public DateTime deserialize(final JsonParser jp, final DeserializationContext deserializationContext) throws IOException
   {
+    final JsonToken token = jp.getCurrentToken();
+    if (token == JsonToken.VALUE_NUMBER_INT)
+    {
+      return new DateTime(jp.getLongValue(), DateTimeZone.UTC);
+    }
+    else if (token == JsonToken.START_OBJECT)
+    {
+      String timezone = null;
+      Long timestamp = null;
+      while (jp.nextToken() != JsonToken.END_OBJECT)
+      {
+        final String fieldName = jp.getCurrentName();
+        jp.nextToken();
+        if ("timestamp".equals(fieldName))
+        {
+          timestamp = jp.getLongValue();
+        } else if ("timezone".equals(fieldName))
+        {
+          timezone = jp.getText();
+        }
+      }
+      if (timezone == null)
+      {
+        return new DateTime(timestamp).withZone(DateTimeZone.UTC);
+      }
+      else
+      {
+        return new DateTime(timestamp).withZone(DateTimeZone.forID(timezone));
+      }
+    }
     final String txt = jp.getText();
     if (txt == null)
     {
@@ -43,6 +74,17 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
 
   public static DateTime deserialize(final String txt) throws IOException
   {
+    // Try casting to a long first
+    try
+    {
+      final Long dt = Long.valueOf(txt);
+      return new DateTime(dt, DateTimeZone.UTC);
+    }
+    catch (final NumberFormatException nfe)
+    {
+      // Isn't a long, just keep going
+    }
+
     DateTime result;
     if (txt.indexOf(' ') == -1)
     {

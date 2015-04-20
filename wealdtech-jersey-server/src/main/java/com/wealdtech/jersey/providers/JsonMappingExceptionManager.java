@@ -17,13 +17,13 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Objects;
 import com.wealdtech.errors.ErrorInfo;
 import com.wealdtech.jackson.ObjectMapperFactory;
 
@@ -45,7 +45,7 @@ public class JsonMappingExceptionManager implements ExceptionMapper<JsonMappingE
   {
     LOGGER.info("JSON mapping exception", exception);
     ResponseBuilder builder = Response.status(Status.BAD_REQUEST)
-                                      .entity(defaultJSON(Objects.firstNonNull(exception.getCause(), exception)))
+                                      .entity(defaultJSON(MoreObjects.firstNonNull(exception.getCause(), exception)))
                                       .type(MediaType.APPLICATION_JSON);
     return builder.build();
   }

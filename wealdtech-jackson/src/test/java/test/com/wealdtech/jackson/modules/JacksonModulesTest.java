@@ -27,11 +27,10 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 import static org.testng.Assert.*;
-import static org.testng.Assert.assertEquals;
 
 public class JacksonModulesTest
 {
-  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper().copy();
+  private final ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper().copy();
 
   @BeforeClass
   public void setUp()
@@ -129,6 +128,11 @@ public class JacksonModulesTest
     final DateTime dt5 = this.mapper.readValue("\"2013-11-04T16:00:00+01:00 Europe/Paris\"", DateTime.class);
     final DateTime basedt5 = DateTime.parse("2013-11-04 16:00:00+01:00 Europe/Paris", fmt);
     assertEquals(dt5, basedt5);
+
+    // serialization in parts
+    final DateTime dt6 = this.mapper.readValue("{\"timestamp\":1375916523000,\"timezone\":\"Europe/Paris\"}", DateTime.class);
+    final DateTime basedt6 = DateTime.parse("2013-08-08 01:02:03+02:00 Europe/Paris", fmt);
+    assertEquals(dt6, basedt6);
   }
 
   @Test
@@ -366,28 +370,61 @@ public class JacksonModulesTest
   }
 
   @Test
-  public void testSerDateTime() throws Exception
+  public void testSerDateTimeAsLong() throws Exception
   {
-    final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100");
-    final String value = this.mapper.writeValueAsString(dt1);
-    assertEquals(value, "\"2012-02-03T04:05:06+01:00 +01:00\"");
+    final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.forID("Europe/London"));
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(dt1);
+    assertEquals(value, "{\"timestamp\":1328238306000,\"timezone\":\"Europe/London\"}");
   }
 
   @Test
-  public void testSerLocalDateTime() throws Exception
+  public void testSerUTCDateTimeAsLong() throws Exception
+  {
+    final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.UTC);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(dt1);
+    assertEquals(value, "{\"timestamp\":1328238306000}");
+  }
+
+  @Test
+  public void testSerDateTimeAsString() throws Exception
+  {
+    final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.forID("Europe/London"));
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(dt1);
+    assertEquals(value, "\"2012-02-03T03:05:06+00:00 Europe/London\"");
+  }
+
+  @Test
+  public void testSerLocalDateTimeAsLong() throws Exception
   {
     final LocalDateTime ldt1 = LocalDateTime.parse("2012-02-03T04:05:06");
-    final String value = this.mapper.writeValueAsString(ldt1);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(ldt1);
+    assertEquals(value, "1328241906000");
+  }
+
+  @Test
+  public void testSerLocalDateTimeAsString() throws Exception
+  {
+    final LocalDateTime ldt1 = LocalDateTime.parse("2012-02-03T04:05:06");
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(ldt1);
     assertEquals(value, "\"2012-02-03T04:05:06\"");
   }
 
   @Test
-  public void testSerLocalDateTime2() throws Exception
+  public void testSerLocalDateTime2AsString() throws Exception
   {
     final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.forID("Europe/London"));
     final LocalDateTime ldt1 = dt1.toLocalDateTime();
-    final String value = this.mapper.writeValueAsString(ldt1);
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(ldt1);
     assertEquals(value, "\"2012-05-06T09:02:03\"");
+  }
+
+  @Test
+  public void testSerLocalDateTime2AsLong() throws Exception
+  {
+    final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.forID("Europe/London"));
+    final LocalDateTime ldt1 = dt1.toLocalDateTime();
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(ldt1);
+    assertEquals(value, "1336298523000");
   }
 
   @Test
@@ -424,6 +461,6 @@ public class JacksonModulesTest
     final WealdInterval interval = new WealdInterval(fromDt, toDt);
 
     final String value = this.mapper.writeValueAsString(interval);
-    assertEquals(value, "{\"start\":\"2013-08-08T01:02:03+02:00 Europe/Paris\",\"end\":\"2013-08-08T01:02:05+01:00 Europe/London\"}");
+    assertEquals(value, "{\"start\":{\"timestamp\":1375916523000,\"timezone\":\"Europe/Paris\"},\"end\":{\"timestamp\":1375920125000,\"timezone\":\"Europe/London\"}}");
   }
 }

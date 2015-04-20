@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Range;
 import com.wealdtech.jackson.ObjectMapperFactory;
+import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.testng.annotations.BeforeClass;
@@ -50,6 +51,15 @@ public class MiscModuleTest
     final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
     assertEquals(deser,  Range.closedOpen(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London")),
                                           new DateTime(2013, 1, 2, 4, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London"))));
+  }
+
+  @Test
+  public void testDeserRange2() throws Exception
+  {
+    final String ser = "\"[2014-06-01T00:00:00.000+01:00‥2016-10-01T00:00:00.000+01:00)\"";
+    final Range<DateTime> deser = WealdMapper.getMapper().readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(deser,  Range.closedOpen(new DateTime(2014, 6, 1, 0, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London")),
+                                          new DateTime(2016, 10, 1, 0, 0, 0).withZoneRetainFields(DateTimeZone.forID("Europe/London"))));
   }
 
   @Test

@@ -23,7 +23,7 @@ import java.io.IOException;
  * Custom serializer for message objects.
  * This serializer provides type info as well as prior and current representations of the object.
  */
-public class MessageObjectsSerializer extends StdSerializer<MessageObjects<? extends Object>>
+public class MessageObjectsSerializer extends StdSerializer<MessageObjects<?>>
 {
   public MessageObjectsSerializer()
   {
@@ -31,7 +31,7 @@ public class MessageObjectsSerializer extends StdSerializer<MessageObjects<? ext
   }
 
   @Override
-  public void serialize(final MessageObjects<? extends Object> mo,
+  public void serialize(final MessageObjects<?> mo,
                         final JsonGenerator jgen,
                         final SerializerProvider provider) throws IOException
   {
@@ -55,7 +55,7 @@ public class MessageObjectsSerializer extends StdSerializer<MessageObjects<? ext
   }
 
   @Override
-  public void serializeWithType(final MessageObjects<? extends Object> value, JsonGenerator jgen, SerializerProvider provider,
+  public void serializeWithType(final MessageObjects<?> value, JsonGenerator jgen, SerializerProvider provider,
                                 TypeSerializer typeSer)
       throws IOException, JsonProcessingException
   {

@@ -12,6 +12,7 @@ package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -38,7 +39,14 @@ public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime>
   @Override
   public void serialize(final LocalDateTime value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeString(formatter.print(value.toDateTime().withZone(DateTimeZone.UTC)));
+    if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
+    {
+      gen.writeNumber(value.toDateTime(DateTimeZone.UTC).getMillis());
+    }
+    else
+    {
+      gen.writeString(formatter.print(value.toDateTime().withZone(DateTimeZone.UTC)));
+    }
   }
 
   @Override
@@ -47,7 +55,14 @@ public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime>
       throws IOException, JsonProcessingException
   {
     typeSer.writeTypePrefixForScalar(value, jgen, LocalDateTime.class);
-    serialize(value, jgen, provider);
+    if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
+    {
+      jgen.writeNumber(value.toDateTime(DateTimeZone.UTC).getMillis());
+    }
+    else
+    {
+      serialize(value, jgen, provider);
+    }
     typeSer.writeTypeSuffixForScalar(value, jgen);
   }
 }

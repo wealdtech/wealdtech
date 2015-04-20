@@ -17,7 +17,6 @@ import com.google.common.collect.ObjectArrays;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.wealdtech.jersey.filters.CORSFilter;
 import com.wealdtech.jersey.filters.RequestHintFilter;
@@ -60,7 +59,6 @@ public class JerseyServletModule extends ServletModule
   {
     final Map<String, String> params = new HashMap<String, String>();
     params.put(PackagesResourceConfig.PROPERTY_PACKAGES, this.packages);
-    params.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE.toString());
 
     final String requestFilters = joinClassNames(RequestLoggingFilter.class, RequestHintFilter.class, GZIPContentEncodingFilter.class);
     final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeaderFilter.class, CORSFilter.class, GZIPContentEncodingFilter.class);
@@ -77,8 +75,8 @@ public class JerseyServletModule extends ServletModule
    */
   private void setPackages(final String... additionalPackages)
   {
-    String[] packagesList = ObjectArrays.concat("com.wealdtech.jersey", additionalPackages);
-    packagesList = ObjectArrays.concat("com.codahale.metrics", packagesList);
+    final String[] packagesList = ObjectArrays.concat("com.wealdtech.jersey", additionalPackages);
+//    packagesList = ObjectArrays.concat("com.codahale.metrics", packagesList);
     this.packages = Joiner.on(',').skipNulls().join(packagesList);
   }
 

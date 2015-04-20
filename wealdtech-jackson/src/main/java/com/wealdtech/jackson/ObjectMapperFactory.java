@@ -12,7 +12,6 @@ package com.wealdtech.jackson;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -41,8 +40,6 @@ public class ObjectMapperFactory
     DEFAULTMAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     // Ensure that JSON keys are completely lower-case
     DEFAULTMAPPER.setPropertyNamingStrategy(new LcStrategy());
-    // If people send us "" treat as NULL
-    // DEFAULTMAPPER.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
     // Register our custom serializers and deserializers
     DEFAULTMAPPER.registerModule(new WealdJodaModule());
     // Use Guava custom serializers and deserializers
@@ -51,9 +48,7 @@ public class ObjectMapperFactory
     DEFAULTMAPPER.registerModule(new TriValModule());
     // Handle various other types
     DEFAULTMAPPER.registerModule(new WealdMiscModule());
-    // Add flag stating that this is a client mapper
-    final InjectableValues clientinject = new InjectableValues.Std().addValue("AllowPartials", Boolean.FALSE);
-    DEFAULTMAPPER.setInjectableValues(clientinject);
+    // Allow comments in JSON
     DEFAULTMAPPER.configure(Feature.ALLOW_COMMENTS, true);
   }
 

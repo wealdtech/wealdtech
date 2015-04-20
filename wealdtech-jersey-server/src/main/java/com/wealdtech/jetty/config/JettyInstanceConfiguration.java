@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
@@ -44,10 +44,10 @@ public final class JettyInstanceConfiguration implements Configuration
                                      @JsonProperty("connectors") final List<JettyConnectorConfiguration> connectorConfigurations,
                                      @JsonProperty("ssl") final JettySslConfiguration sslConfiguration)
   {
-    this.name = Objects.firstNonNull(name, this.name);
-    this.threadPoolConfiguration = Objects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
-    this.connectorConfigurations = ImmutableList.copyOf(Objects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
-    this.sslConfiguration = Objects.firstNonNull(sslConfiguration, this.sslConfiguration);
+    this.name = MoreObjects.firstNonNull(name, this.name);
+    this.threadPoolConfiguration = MoreObjects.firstNonNull(threadPoolConfiguration, this.threadPoolConfiguration);
+    this.connectorConfigurations = ImmutableList.copyOf(MoreObjects.firstNonNull(connectorConfigurations, this.connectorConfigurations));
+    this.sslConfiguration = MoreObjects.firstNonNull(sslConfiguration, this.sslConfiguration);
   }
 
   public String getName()

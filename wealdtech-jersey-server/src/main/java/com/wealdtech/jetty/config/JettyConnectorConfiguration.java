@@ -10,12 +10,12 @@
 
 package com.wealdtech.jetty.config;
 
+import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
 import com.wealdtech.configuration.Configuration;
 import com.wealdtech.jetty.JettyConnectorFactory;
 import com.wealdtech.jetty.JettyHttpConnectorFactory;
@@ -77,26 +77,26 @@ public final class JettyConnectorConfiguration implements Configuration
                                       @JsonProperty("bufferpoolincrement") final Integer bufferPoolIncremenet,
                                       @JsonProperty("maxbufferpoolsize") final Integer maxBufferPoolSize)
   {
-    this.bindHost = Objects.firstNonNull(bindHost, this.bindHost);
-    this.port = Objects.firstNonNull(port, this.port);
-    this.type = Objects.firstNonNull(classFromType(type), this.type);
-    this.acceptQueueSize = Objects.firstNonNull(acceptQueueSize, this.acceptQueueSize);
-    this.idleTimeout = Objects.firstNonNull(idleTimeout, this.idleTimeout);
-    this.reuseAddress = Objects.firstNonNull(reuseAddress, this.reuseAddress);
-    this.soLingerTime = Objects.firstNonNull(soLingerTime, this.soLingerTime);
-    this.requestHeaderSize = Objects.firstNonNull(requestHeaderSize, this.requestHeaderSize);
-    this.responseHeaderSize = Objects.firstNonNull(responseHeaderSize, this.responseHeaderSize);
-    this.headerCacheSize = Objects.firstNonNull(inputBufferSize, this.headerCacheSize);
-    this.inputBufferSize = Objects.firstNonNull(inputBufferSize, this.inputBufferSize);
-    this.outputBufferSize = Objects.firstNonNull(outputBufferSize, this.outputBufferSize);
-    this.sendServerVersion = Objects.firstNonNull(sendServerVersion, this.sendServerVersion);
-    this.sendDateHeader = Objects.firstNonNull(sendDateHeader, this.sendDateHeader);
-    this.useForwardedHeaders = Objects.firstNonNull(useForwardedHeaders, this.useForwardedHeaders);
-    this.acceptorThreads = Objects.firstNonNull(acceptorThreads, this.acceptorThreads);
-    this.selectorThreads = Objects.firstNonNull(selectorThreads, this.selectorThreads);
-    this.minBufferPoolSize = Objects.firstNonNull(minBufferPoolSize, this.minBufferPoolSize);
-    this.bufferPoolIncrement = Objects.firstNonNull(bufferPoolIncrement, this.bufferPoolIncrement);
-    this.maxBufferPoolSize = Objects.firstNonNull(maxBufferPoolSize, this.maxBufferPoolSize);
+    this.bindHost = MoreObjects.firstNonNull(bindHost, this.bindHost);
+    this.port = MoreObjects.firstNonNull(port, this.port);
+    this.type = MoreObjects.firstNonNull(classFromType(type), this.type);
+    this.acceptQueueSize = MoreObjects.firstNonNull(acceptQueueSize, this.acceptQueueSize);
+    this.idleTimeout = MoreObjects.firstNonNull(idleTimeout, this.idleTimeout);
+    this.reuseAddress = MoreObjects.firstNonNull(reuseAddress, this.reuseAddress);
+    this.soLingerTime = MoreObjects.firstNonNull(soLingerTime, this.soLingerTime);
+    this.requestHeaderSize = MoreObjects.firstNonNull(requestHeaderSize, this.requestHeaderSize);
+    this.responseHeaderSize = MoreObjects.firstNonNull(responseHeaderSize, this.responseHeaderSize);
+    this.headerCacheSize = MoreObjects.firstNonNull(inputBufferSize, this.headerCacheSize);
+    this.inputBufferSize = MoreObjects.firstNonNull(inputBufferSize, this.inputBufferSize);
+    this.outputBufferSize = MoreObjects.firstNonNull(outputBufferSize, this.outputBufferSize);
+    this.sendServerVersion = MoreObjects.firstNonNull(sendServerVersion, this.sendServerVersion);
+    this.sendDateHeader = MoreObjects.firstNonNull(sendDateHeader, this.sendDateHeader);
+    this.useForwardedHeaders = MoreObjects.firstNonNull(useForwardedHeaders, this.useForwardedHeaders);
+    this.acceptorThreads = MoreObjects.firstNonNull(acceptorThreads, this.acceptorThreads);
+    this.selectorThreads = MoreObjects.firstNonNull(selectorThreads, this.selectorThreads);
+    this.minBufferPoolSize = MoreObjects.firstNonNull(minBufferPoolSize, this.minBufferPoolSize);
+    this.bufferPoolIncrement = MoreObjects.firstNonNull(bufferPoolIncrement, this.bufferPoolIncrement);
+    this.maxBufferPoolSize = MoreObjects.firstNonNull(maxBufferPoolSize, this.maxBufferPoolSize);
   }
 
   public String getBindHost()

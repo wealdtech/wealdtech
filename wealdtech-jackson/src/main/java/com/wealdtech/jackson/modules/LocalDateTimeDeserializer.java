@@ -11,6 +11,7 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -30,19 +31,27 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime>
   private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(DateTimeZone.UTC);
 
   @Override
-  public LocalDateTime deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException
+  public LocalDateTime deserialize(final JsonParser jp, final DeserializationContext deserializationContext) throws IOException
   {
-    final ObjectCodec oc = jsonParser.getCodec();
-    final JsonNode node = oc.readTree(jsonParser);
-
-    try
+    final JsonToken token = jp.getCurrentToken();
+    if (token == JsonToken.VALUE_NUMBER_INT)
     {
-      return formatter.parseDateTime(node.textValue()).withZone(DateTimeZone.UTC).toLocalDateTime();
+      return new LocalDateTime(jp.getLongValue(), DateTimeZone.UTC);
     }
-    catch (IllegalArgumentException iae)
+    else
     {
-      LOGGER.warn("Attempt to deserialize invalid localdatetime {}", node.textValue());
-      throw new IOException("Invalid localdatetime value \"" + node.textValue() + "\"", iae);
+      final ObjectCodec oc = jp.getCodec();
+      final JsonNode node = oc.readTree(jp);
+
+      try
+      {
+        return formatter.parseDateTime(node.textValue()).withZone(DateTimeZone.UTC).toLocalDateTime();
+      }
+      catch (IllegalArgumentException iae)
+      {
+        LOGGER.warn("Attempt to deserialize invalid localdatetime {}", node.textValue());
+        throw new IOException("Invalid localdatetime value \"" + node.textValue() + "\"", iae);
+      }
     }
   }
 }

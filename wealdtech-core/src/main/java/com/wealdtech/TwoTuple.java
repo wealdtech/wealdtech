@@ -12,6 +12,7 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -57,11 +58,7 @@ public class TwoTuple<S, T>
   @Override
   public String toString()
   {
-    return Objects.toStringHelper(this)
-                  .add("s", this.s)
-                  .add("t", this.t)
-                  .omitNullValues()
-                  .toString();
+    return MoreObjects.toStringHelper(this).add("s", this.s).add("t", this.t).omitNullValues().toString();
   }
 
   @Override
