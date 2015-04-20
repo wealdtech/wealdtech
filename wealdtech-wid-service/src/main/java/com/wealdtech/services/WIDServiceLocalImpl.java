@@ -41,7 +41,7 @@ class WIDServiceLocalImpl implements WIDService
     nextId = 0;
   }
 
-  public <T> WID<T> obtain()
+  public synchronized <T> WID<T> obtain()
   {
     nextId = (int)((nextId + 1) % (WID.MAX_IID + 1));
     long ms = System.currentTimeMillis();
@@ -65,6 +65,7 @@ class WIDServiceLocalImpl implements WIDService
         thisMsFirstId = nextId;
       }
     }
+
     return WID.fromComponents(configuration.getShardId(), thisMs, nextId);
   }
 }

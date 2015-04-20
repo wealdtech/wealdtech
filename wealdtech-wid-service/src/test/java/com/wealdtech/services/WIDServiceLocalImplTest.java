@@ -17,6 +17,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.testng.Assert.assertEquals;
 
@@ -52,5 +57,33 @@ public class WIDServiceLocalImplTest
       ids.add(service.obtain());
     }
     assertEquals(Sets.newHashSet(ids).size(), ids.size());
+  }
+
+  // Ensure that multithreaded obtains do not return duplicate IDs
+  @Test
+  public void testUniqueMultithreaded()
+  {
+    ConcurrentHashMap<WID<?>, Boolean> map = new ConcurrentHashMap<>();
+    final Set<WID<?>> set = Collections.newSetFromMap(map);
+
+    final ExecutorService executor = Executors.newFixedThreadPool(32);
+    for (int i = 0; i < 32; i++) {
+
+      Runnable worker = new Runnable(){
+        @Override
+        public void run()
+        {
+          for (int j = 0; j <1024; j++)
+          {
+            map.put(service.obtain(), true);
+          }
+        }
+      };
+      executor.execute(worker);
+    }
+    executor.shutdown();
+    while (!executor.isTerminated()) {}
+
+    assertEquals(set.size(), 1024*32, "Incorrect number of WIDs obtained: " + set.size());
   }
 }
