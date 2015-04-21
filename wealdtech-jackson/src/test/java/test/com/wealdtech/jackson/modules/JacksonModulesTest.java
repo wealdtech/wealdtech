@@ -145,7 +145,7 @@ public class JacksonModulesTest
   }
 
   @Test
-  public void testDeserLocalDate() throws Exception
+  public void testDeserLocalDate() throws IOException
   {
     final LocalDate ld1 = this.mapper.readValue("\"2012-02-03\"", LocalDate.class);
     final LocalDate baseld1 = LocalDate.parse("2012-02-03");
@@ -153,13 +153,20 @@ public class JacksonModulesTest
   }
 
   @Test
-  public void testDeserPeriod() throws Exception
+  public void testDeserPeriod() throws IOException
   {
     final Period p1 = this.mapper.readValue("\"P1W2DT5M\"", Period.class);
     final Period basep1 = Period.parse("P1W2DT5M");
     assertEquals(p1, basep1);
   }
 
+  @Test
+
+  public void testDeserOffsetDateTime() throws IOException
+  {
+    final DateTime dt1 = this.mapper.readValue("\"2014-06-02T00:00:00.000+01:00\"", DateTime.class);
+    assertEquals(dt1, new DateTime(2014, 6, 2, 0, 0, 0, DateTimeZone.forID("Europe/London")).withZone(DateTimeZone.UTC));
+  }
   @Test
   public void testDeserInvalidDateTime() throws Exception
   {

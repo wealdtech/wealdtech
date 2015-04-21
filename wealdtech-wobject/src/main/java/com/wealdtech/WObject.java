@@ -152,26 +152,26 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   // We aren't re-ordering the list but if it has objects inside it we need to order them
-  private List<Object> order(final List<Object> list)
+  private ImmutableList<Object> order(final List<Object> list)
   {
-    final List<Object> result = Lists.newArrayList();
+    final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
     for (final Object value : list)
     {
       // Don't need to handle WObjects here as they will already be ordered
       if (value instanceof Map)
       {
-        result.add(order((Map<String, Object>)value));
+        resultB.add(order((Map<String, Object>)value));
       }
       else if (value instanceof List)
       {
-        result.add(order((List)value));
+        resultB.add(order((List)value));
       }
       else
       {
-        result.add(value);
+        resultB.add(value);
       }
     }
-    return result;
+    return resultB.build();
   }
 
   // Recursively strip internal data
@@ -420,28 +420,33 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected <U> Optional<U> getValue(final String key, final Object val, final TypeReference<U> typeRef)
   {
     // Obtain the type we are after through reflection to find out if it is a collection.
+    final Type requiredType;
     final Class requiredClass;
+    final Type wrappedType;
     final Class wrappedClass;
     if (typeRef.getType() instanceof ParameterizedType)
     {
       // This is a parameterized type, it might be wrapped in an Optional or TriVal in which case we need the inner class for
       // determining if it is a collection
-      ParameterizedType type = (ParameterizedType)typeRef.getType();
-      requiredClass = (Class)type.getRawType();
+      requiredType = typeRef.getType();
+      requiredClass = (Class)((ParameterizedType)requiredType).getRawType();
       if (Objects.equal(requiredClass, Optional.class) || (Objects.equal(requiredClass, TriVal.class)))
       {
-        final Type subType = type.getActualTypeArguments()[0];
-        wrappedClass = (Class)(subType instanceof ParameterizedType ? ((ParameterizedType)subType).getRawType() : subType);
+        wrappedType = ((ParameterizedType)requiredType).getActualTypeArguments()[0];
+        wrappedClass = (Class)(wrappedType instanceof ParameterizedType ? ((ParameterizedType)wrappedType).getRawType() : wrappedType);
       }
       else
       {
+        wrappedType = requiredType;
         wrappedClass = requiredClass;
       }
     }
     else
     {
       // This is a simple class
+      requiredType = typeRef.getType();
       requiredClass = (Class)typeRef.getType();
+      wrappedType = requiredType;
       wrappedClass = requiredClass;
     }
     final boolean isCollection = Collection.class.isAssignableFrom(wrappedClass);
@@ -450,9 +455,41 @@ public class WObject<T extends WObject> implements Comparable<T>
       return Optional.absent();
     }
 
-    if (Objects.equal(requiredClass, val.getClass()))
+    if (requiredClass.isAssignableFrom(val.getClass()))
     {
-      return Optional.of((U)val);
+      if (isCollection)
+      {
+        // Check that the element objects' class is correct as well
+        final Type elementType = ((ParameterizedType)wrappedType).getActualTypeArguments()[0];
+        final Class<?> elementClass = (Class)(elementType instanceof ParameterizedType ? ((ParameterizedType)elementType).getRawType() : elementType);
+        if (((Collection)val).isEmpty() || Objects.equal(((Collection)val).iterator().next().getClass(), elementClass))
+        {
+          return Optional.of((U)val);
+        }
+        else
+        {
+          final String valStr = stringify(val, isCollection);
+          try
+          {
+            final U result = MAPPER.readValue(valStr, typeRef);
+            // It is possible that data has not been initialised yet.  This is because we can call this method from preCreate()
+            if (data != null)
+            {
+              data.put(key, result);
+            }
+            return Optional.of(result);
+          }
+          catch (final IOException ioe)
+          {
+            LOG.error("Failed to parse value: ", ioe);
+            return Optional.absent();
+          }
+        }
+      }
+      else
+      {
+        return Optional.of((U)val);
+      }
     }
     final String valStr = stringify(val, isCollection);
     try

@@ -63,7 +63,7 @@ public class WIDServiceLocalImplTest
   @Test
   public void testUniqueMultithreaded()
   {
-    ConcurrentHashMap<WID<?>, Boolean> map = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<WID<?>, Boolean> map = new ConcurrentHashMap<>();
     final Set<WID<?>> set = Collections.newSetFromMap(map);
 
     final ExecutorService executor = Executors.newFixedThreadPool(128);

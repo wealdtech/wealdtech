@@ -30,40 +30,42 @@ public class ChatTest
   @Test
   public void testSer() throws JsonProcessingException
   {
-    final Message chat = Message.builder()
-                                .id(WID.<Message>fromLong(865434565612L))
-                                .from("test from")
-                                .scope(MessageScope.EVERYONE)
-                                .data("extkey1", "extval1")
-                                .data("extkey2", "extval2")
-                                .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
-                                .topic("test topic")
-                                .text("foo")
-                                .build();
-    final String ser = WObject.getObjectMapper().writeValueAsString(chat);
+    final Message message = Message.builder()
+                                   .id(WID.<Message>fromLong(865434565612L))
+                                   .appId("test")
+                                   .from("test from")
+                                   .scope(MessageScope.EVERYONE)
+                                   .data("extkey1", "extval1")
+                                   .data("extkey2", "extval2")
+                                   .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
+                                   .topic("test topic")
+                                   .text("foo")
+                                   .build();
+    final String ser = WObject.getObjectMapper().writeValueAsString(message);
     assertEquals(ser,
-                 "{\"_id\":\"c97feb7bec\",\"extkey1\":\"extval1\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"scope\":\"Everyone\",\"text\":\"foo\",\"timestamp\":{\"timestamp\":1234567890,\"timezone\":\"America/New_York\"},\"topic\":\"test topic\"}");
+                 "{\"_appid\":\"test\",\"_id\":\"c97feb7bec\",\"extkey1\":\"extval1\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"scope\":\"Everyone\",\"text\":\"foo\",\"timestamp\":{\"timestamp\":1234567890,\"timezone\":\"America/New_York\"},\"topic\":\"test topic\"}");
   }
 
   @Test
   public void testDeser() throws IOException
   {
-    final Message chat = Message.builder()
-                                .id(WID.<Message>fromLong(865434565613L))
-                                .from("test from")
-                                .scope(MessageScope.EVERYONE)
-                                .data("extkey1", "extval1")
-                                .data("extkey2", "extval2")
-                                .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
-                                .topic("test topic")
-                                .text("foo")
-                                .build();
+    final Message message = Message.builder()
+                                   .id(WID.<Message>fromLong(865434565613L))
+                                   .appId("test")
+                                   .from("test from")
+                                   .scope(MessageScope.EVERYONE)
+                                   .data("extkey1", "extval1")
+                                   .data("extkey2", "extval2")
+                                   .timestamp(new DateTime(1234567890L, DateTimeZone.forID("America/New_York")))
+                                   .topic("test topic")
+                                   .text("foo")
+                                   .build();
 
     final String ser =
-        "{\"_id\":\"c97feb7bec\",\"text\":\"foo\",\"topic\":\"test topic\",\"timestamp\":{\"timestamp\":1234567890,\"timezone\":\"America/New_York\"},\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}";
+        "{\"_id\":\"c97feb7bec\",\"_appid\":\"test\",\"text\":\"foo\",\"topic\":\"test topic\",\"timestamp\":{\"timestamp\":1234567890,\"timezone\":\"America/New_York\"},\"scope\":\"Everyone\",\"extkey2\":\"extval2\",\"from\":\"test from\",\"extkey1\":\"extval1\"}";
 
-    final Message testChat = WealdMapper.getServerMapper().readValue(ser, Message.class);
+    final Message testMessage = WealdMapper.getServerMapper().readValue(ser, Message.class);
 
-    assertEquals(chat, testChat);
+    assertEquals(message, testMessage);
   }
 }

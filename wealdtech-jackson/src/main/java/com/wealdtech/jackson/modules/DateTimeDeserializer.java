@@ -85,26 +85,68 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
       // Isn't a long, just keep going
     }
 
-    DateTime result;
-    if (txt.indexOf(' ') == -1)
+    int offset = 0;
+
+    // Manually parse out the pieces to build a datetime
+    final int year = Integer.parseInt(txt.substring(offset, 4 + offset));
+    final int monthOfYear = Integer.parseInt(txt.substring(5 + offset, 7 + offset));
+    final int dayOfMonth = Integer.parseInt(txt.substring(8 + offset, 10 + offset));
+    final int hourOfDay = Integer.parseInt(txt.substring(11 + offset, 13 + offset));
+    final int minuteOfHour = Integer.parseInt(txt.substring(14 + offset, 16 + offset));
+    final int secondOfMinute = Integer.parseInt(txt.substring(17 + offset, 19 + offset));
+
+    // There are three possibilities for how the datetime ends.  It might just stop at this point, in which case it is UTC,
+    // it might be in ISO8601 format, or it might have a full timezone appended after a space separator
+
+    int additionalHours = 0;
+    int additionalMinutes = 0;
+
+    if (txt.length() == 19 + offset)
     {
-      // No timezone
-      if (txt.indexOf('.') == -1)
-      {
-        // Use the Wealdtech format and set timezone to UTC
-        result = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(txt).withZone(DateTimeZone.UTC);
-      }
-      else
-      {
-        // ISO8601 format and set timezone to UTC
-        result = DATE_TIME_FORMATTER_ISO.parseDateTime(txt).withZone(DateTimeZone.UTC);
-      }
+      // No more information
+      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, DateTimeZone.UTC);
     }
-    else
+
+    if (txt.charAt(19 + offset) == '.')
     {
-      // Timezone supplied
-      result = DATE_TIME_FORMATTER.parseDateTime(txt);
+      // Milliseconds have been added in the form .sss  We ignore these
+      offset += 4;
     }
-    return result;
+
+    if (txt.charAt(19 + offset) == '+')
+    {
+      additionalHours = -Integer.parseInt(txt.substring(20 + offset, 22 + offset));
+      if (txt.charAt(22 + offset) == ':')
+      {
+        offset++;
+      }
+      additionalMinutes = -Integer.parseInt(txt.substring(22 + offset, 24 + offset));
+      offset += 4;
+    }
+    else if (txt.charAt(19 + offset) == '-')
+    {
+      additionalHours = Integer.parseInt(txt.substring(20 + offset, 21 + offset));
+      if (txt.charAt(22 + offset) == ':')
+      {
+        offset++;
+      }
+      additionalMinutes = Integer.parseInt(txt.substring(22 + offset, 24 + offset));
+      offset += 3;
+    }
+    else if (txt.charAt(19 + offset) == 'Z')
+    {
+      // Just skip the UTC zone information as it doesn't do anything
+      offset += 1;
+    }
+
+    if (txt.indexOf(' ') > 19)
+    {
+      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
+                          DateTimeZone.UTC).plusMinutes(additionalMinutes)
+                                           .plusHours(additionalHours)
+                                           .withZone(DateTimeZone.forID(txt.substring(txt.indexOf(' ') + 1)));
+    }
+
+    return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, DateTimeZone.UTC).plusMinutes(additionalMinutes).plusHours(additionalHours);
   }
 }
