@@ -424,23 +424,6 @@ public class WObjectTest
   }
 
   @Test
-  public void testTriValList() throws IOException
-  {
-    final TestWObject testObj1 = TestWObject.builder()
-                                            .data("one", TriVal.of(ImmutableList.of("One", "One1")))
-                                            .data("two", TriVal.clear())
-                                            .data("three", TriVal.absent())
-                                            .build();
-
-    final String testObj1Ser = TestWObject.serialize(testObj1);
-    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
-    assertNotNull(testObj1Deser);
-
-    assertEquals(testObj1Deser.get("one", new TypeReference<TriVal<ImmutableList<String>>>() {}).get(),
-                 TriVal.of(ImmutableList.of("One", "One1")));
-  }
-
-  @Test
   public void testTriValClear() throws IOException
   {
     final TestWObject testObj1 = TestWObject.builder().data("clear", TriVal.clear()).build();
@@ -510,11 +493,23 @@ public class WObjectTest
   }
 
   @Test
+  public void testTriValList() throws IOException
+  {
+    final TriVal<ImmutableList<DateTime>> list =
+        TriVal.of(ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                         new DateTime(3456789000000L, DateTimeZone.UTC)));
+    GenericWObject testObj1 = GenericWObject.builder().data("list", list).build();
+    final TypeReference<TriVal<List<DateTime>>> listTypeRef = new TypeReference<TriVal<List<DateTime>>>(){};
+    final TriVal<List<DateTime>> res = testObj1.get("list", listTypeRef).get();
+    assertEquals(res.get().get(0).getClass(), DateTime.class);
+  }
+
+  @Test
   public void testTriValListRoundtrip() throws IOException
   {
-    final ImmutableList<DateTime> list =
-        ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
-                         new DateTime(3456789000000L, DateTimeZone.UTC));
+    final TriVal<ImmutableList<DateTime>> list =
+        TriVal.of(ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                                   new DateTime(3456789000000L, DateTimeZone.UTC)));
     GenericWObject testObj1 = GenericWObject.builder().data("list", list).build();
     testObj1 = GenericWObject.deserialize(GenericWObject.serialize(testObj1), GenericWObject.class);
     final TypeReference<TriVal<List<DateTime>>> listTypeRef = new TypeReference<TriVal<List<DateTime>>>(){};

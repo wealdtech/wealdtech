@@ -21,6 +21,7 @@ import org.joda.time.DateTimeZone;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import static org.testng.Assert.assertEquals;
@@ -57,7 +58,7 @@ public class MiscModuleTest
   public void testDeserRange2() throws Exception
   {
     final String ser = "\"[2014-06-02T00:00:00.000+01:00‥2016-10-02T00:00:00.000+01:00)\"";
-    final Range<DateTime> deser = WealdMapper.getMapper().readValue(ser, new TypeReference<Range<DateTime>>(){});
+    final Range<DateTime> deser = WealdMapper.getMapper().readValue(ser, new TypeReference<Range<DateTime>>() {});
     assertEquals(deser,  Range.closedOpen(new DateTime(2014, 6, 1, 23, 0, 0, DateTimeZone.UTC),
                                           new DateTime(2016, 10, 1, 23, 0, 0, DateTimeZone.UTC)));
   }
@@ -66,7 +67,7 @@ public class MiscModuleTest
   public void testDeserUnboundedRange() throws Exception
   {
     final String ser = "\"[2013-01-02T03:00:00+13:45 Pacific/Chatham,+∞)\"";
-    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>() {});
     assertEquals(deser, Range.atLeast(new DateTime(2013, 1, 2, 3, 0, 0).withZoneRetainFields(DateTimeZone.forID("Pacific/Chatham"))));
   }
 
@@ -136,5 +137,15 @@ public class MiscModuleTest
     final Range<DateTime> range = Range.all();
     final String ser = this.mapper.writeValueAsString(range);
     assertEquals(ser, "\"(-∞,+∞)\"");
+  }
+
+  @Test
+  public void testDeserTimeZonedRange() throws IOException
+  {
+    final Range<DateTime> range = Range.closedOpen(new DateTime(2014, 3, 25, 18, 0, 0, DateTimeZone.forID("America/New_York")),
+                                                   new DateTime(2014, 3, 25, 19, 0, 0, DateTimeZone.forID("America/New_York")));
+    final String ser = "\"[2014-03-25T18:00:00-04:00 America/New_York,2014-03-25T19:00:00-04:00 America/New_York)\"";
+    final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
+    assertEquals(range, deser);
   }
 }

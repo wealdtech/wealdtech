@@ -125,7 +125,7 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
     }
     else if (txt.charAt(19 + offset) == '-')
     {
-      additionalHours = Integer.parseInt(txt.substring(20 + offset, 21 + offset));
+      additionalHours = Integer.parseInt(txt.substring(20 + offset, 22 + offset));
       if (txt.charAt(22 + offset) == ':')
       {
         offset++;

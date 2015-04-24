@@ -396,5 +396,34 @@ public class RangeFormatterTest
 
     assertEquals(formatter.formatDate(range), "...");
   }
+
+  @Test
+  public void testTimeAndDurationRangeDateTimeNoLowerBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final DateTime upper = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(14).withMonthOfYear(10).plusYears(1);
+    final Range<DateTime> range = Range.upTo(upper, BoundType.OPEN);
+
+    assertEquals(formatter.formatDateTime(range), "...\n9hr");
+  }
+
+  @Test
+  public void testTimeAndDurationRangeDateTimeNoUpperBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final DateTime lower = DateTime.now().withHourOfDay(9).withMinuteOfHour(0).withDayOfMonth(14).withMonthOfYear(10).plusYears(1);
+    final Range<DateTime> range = Range.downTo(lower, BoundType.CLOSED);
+
+    assertEquals(formatter.formatDateTime(range), "09:00\n...");
+  }
+
+  @Test
+  public void testTimeAndDurationRangeDateTimeNoBound()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> range = Range.all();
+
+    assertEquals(formatter.formatDateTime(range), "...");
+  }
  }
 
