@@ -13,6 +13,7 @@ package com.wealdtech.notifications.service;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.wealdtech.ServerError;
+import com.wealdtech.WObject;
 import com.wealdtech.notifications.config.NotificationConfiguration;
 import com.wealdtech.notifications.providers.NotificationProvider;
 import org.slf4j.Logger;
@@ -23,12 +24,12 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  */
-public class NotificationService<T>
+public class NotificationService
 {
   private static final Logger LOG = LoggerFactory.getLogger(NotificationService.class);
 
   private final NotificationConfiguration configuration;
-  private final NotificationProvider<T> provider;
+  private final NotificationProvider provider;
 
   @Inject
   public NotificationService(final NotificationConfiguration configuration)
@@ -37,18 +38,19 @@ public class NotificationService<T>
 
     try
     {
-      Class<NotificationProvider<T>> clazz = (Class<NotificationProvider<T>>)Class.forName(configuration.getProvider());
-      Constructor<NotificationProvider<T>> constructor = clazz.getConstructor();
+      LOG.error("Provider is {}", configuration.getProvider());
+      Class<NotificationProvider> clazz = (Class<NotificationProvider>)Class.forName(configuration.getProvider());
+      Constructor<NotificationProvider> constructor = clazz.getConstructor();
       this.provider = constructor.newInstance();
     }
     catch (final ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e)
     {
       LOG.error("Failed to find notification service class {}: ", configuration.getProvider(), e);
-      throw new ServerError("Failed to find notification service class " + configuration.getProvider());
+      throw new ServerError("Failed to find notification service class " + configuration.getProvider(), e);
     }
   }
 
-  public void notify(ImmutableSet<String> recipients, T msg)
+  public void notify(ImmutableSet<String> recipients, WObject<?> msg)
   {
     provider.notify(configuration.getAppId(), configuration.getAccessKey(), recipients, msg);
   }

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * A chat element
+ * A chat message.  The chat message contains the message itself as well as its associated metadata
  */
 public class Message extends ChatObject<Message> implements Comparable<Message>
 {
@@ -33,7 +33,6 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
   private static final String SCOPE = "scope";
   private static final String TIMESTAMP = "timestamp";
   private static final String TO = "to";
-  private static final String TOPIC = "topic";
   private static final String TEXT = "text";
 
   @JsonCreator
@@ -57,17 +56,17 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
     super.validate();
     if (!exists(FROM))
     {
-      throw new DataError.Missing("Chat needs 'from' information");
+      throw new DataError.Missing("Message needs 'from' information");
     }
 
     if (!exists(SCOPE))
     {
-      throw new DataError.Missing("Chat needs 'scope' information");
+      throw new DataError.Missing("Message needs 'scope' information");
     }
 
     if (!exists(TIMESTAMP))
     {
-      throw new DataError.Missing("Chat needs 'timestamp' information");
+      throw new DataError.Missing("Message needs 'timestamp' information");
     }
 
     final MessageScope scope = getScope();
@@ -75,30 +74,26 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
     {
       if (!exists(TO))
       {
-        throw new DataError.Missing("Directed chat needs 'to' information");
+        throw new DataError.Missing("Directed message needs 'to' information");
       }
       final ImmutableSet<WID<User>> to = getTo();
       if (to.isEmpty())
       {
-        throw new DataError.Missing("Directed chat needs 'to' information");
+        throw new DataError.Missing("Directed message needs 'to' information");
       }
-    }
-
-    if (!exists(TOPIC))
-    {
-      throw new DataError.Missing("Chat needs 'topic' information");
     }
 
     if (!exists(TEXT))
     {
-      throw new DataError.Missing("Chat needs 'text' information");
+      throw new DataError.Missing("Message needs 'text' information");
     }
   }
 
+  private static final TypeReference<WID<User>> FROM_TYPE_REF = new TypeReference<WID<User>>(){};
   @JsonIgnore
-  public String getFrom()
+  public WID<User> getFrom()
   {
-    return get(FROM, String.class).get();
+    return get(FROM, FROM_TYPE_REF).get();
   }
 
   @JsonIgnore
@@ -121,9 +116,6 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
   }
 
   @JsonIgnore
-  public String getTopic() { return get(TOPIC, String.class).get(); }
-
-  @JsonIgnore
   public String getText()
   {
     return get(TEXT, String.class).get();
@@ -141,7 +133,7 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
       super(prior);
     }
 
-    public P from(final String from)
+    public P from(final WID<User> from)
     {
       data(FROM, from);
       return self();
@@ -162,12 +154,6 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
     public P to(final ImmutableSet<WID<User>> to)
     {
       data(TO, to);
-      return self();
-    }
-
-    public P topic(final String topic)
-    {
-      data(TOPIC, topic);
       return self();
     }
 

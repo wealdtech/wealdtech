@@ -10,13 +10,18 @@
 
 package com.wealdtech.jersey.guice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ObjectArrays;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.wealdtech.jersey.filters.CORSFilter;
 import com.wealdtech.jersey.filters.RequestHintFilter;
@@ -66,6 +71,8 @@ public class JerseyServletModule extends ServletModule
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, requestFilters);
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, responseFilters);
 
+    params.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
+
     serve("/*").with(GuiceContainer.class, params);
   }
 
@@ -96,5 +103,19 @@ public class JerseyServletModule extends ServletModule
     List<String> names = Lists.transform(Lists.newArrayList(clazz), classToName);
 
     return Joiner.on(',').skipNulls().join(names);
+  }
+
+//  @Provides
+//  @Singleton
+//  ObjectMapper objectMapper()
+//  {
+//    return WealdMapper.getServerMapper();
+//  }
+
+  @Provides
+  @Singleton
+  JacksonJsonProvider jacksonJsonProvider(final ObjectMapper mapper)
+  {
+    return new JacksonJsonProvider(mapper);
   }
 }

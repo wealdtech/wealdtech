@@ -18,8 +18,6 @@ import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.datastore.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.notifications.config.NotificationConfiguration;
-import com.wealdtech.notifications.service.NotificationService;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -36,7 +34,7 @@ public class MessageServicePostgreSqlImplTest
   MessageServicePostgreSqlImpl messageService;
   PostgreSqlRepository repo;
 
-  private static final String APP_ID = "message service test";
+  private static final WID<Application> appId = WID.<Application>generate();
 
   @BeforeClass
   public void setUp()
@@ -46,9 +44,7 @@ public class MessageServicePostgreSqlImplTest
 
     messageService = new MessageServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
                                                                              .copy()
-                                                                             .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS),
-                                                      new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderLogImpl",
-                                                                                                            "appid", "accesskey")));
+                                                                             .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     messageService.createDatastore();
   }
 
@@ -64,20 +60,18 @@ public class MessageServicePostgreSqlImplTest
   @Test
   public void testCreate()
   {
-    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
+    final WID<Topic> topicId = WID.<Topic>generate();
 
-    final Message testChat = Message.builder()
-                                    .appId(APP_ID)
+    final Message testMessage = Message.builder()
                                     .id(WID.<Message>generate())
-                                    .from(methodName)
+                                    .from(WID.<User>generate())
                                     .scope(MessageScope.EVERYONE)
-                                    .topic("test topic")
                                     .text("Test message")
                                     .build();
-    messageService.create(testChat);
+    messageService.create(appId, topicId, testMessage);
 
-    final ImmutableList<Message> chats = messageService.obtain("test topic", methodName);
-    assertChatsContain(chats, testChat);
+    final Message message = messageService.obtain(appId, topicId, testMessage.getId());
+    fail("Need to confirm message is correct");
   }
 
   @Test
@@ -89,52 +83,47 @@ public class MessageServicePostgreSqlImplTest
   @Test
   public void testTopicGet()
   {
-    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
-    final Message testChat1 = Message.builder()
-                                     .appId(APP_ID)
+    final WID<Topic> topicId = WID.generate();
+
+    final Message testMessage1 = Message.builder()
                                      .id(WID.<Message>generate())
-                                     .from(methodName)
+                                     .from(WID.<User>generate())
                                      .scope(MessageScope.EVERYONE)
-                                     .topic("test topic")
                                      .text("Test message 1")
                                      .build();
-    messageService.create(testChat1);
-    final Message testChat2 = Message.builder()
-                                     .appId(APP_ID)
+    messageService.create(appId, topicId, testMessage1);
+    final Message testMessage2 = Message.builder()
                                      .id(WID.<Message>generate())
-                                     .from(methodName)
+                                     .from(WID.<User>generate())
                                      .scope(MessageScope.EVERYONE)
-                                     .topic("test topic 2")
                                      .text("Test message 2")
                                      .build();
-    messageService.create(testChat2);
+    messageService.create(appId, topicId, testMessage2);
 
-    final ImmutableList<Message> chats = messageService.obtain("test topic", methodName);
-    assertChatsContain(chats, testChat1);
-    assertChatsDoNotContain(chats, testChat2);
+    final ImmutableList<Message> messages = messageService.obtain(appId, topicId);
+    assertChatsContain(messages, testMessage1);
+    assertChatsDoNotContain(messages, testMessage2);
   }
 
   @Test
   public void testGroupChat()
   {
-    final String methodName = new Object() {}.getClass().getEnclosingMethod().getName();
-
+    final WID<Topic> topicId = WID.generate();
     final WID<User> testId1 = WID.generate();
     final WID<User> testId2 = WID.generate();
+    final WID<User> testId3 = WID.generate();
 
     final Message testChat = Message.builder()
-                                    .appId(APP_ID)
                                     .id(WID.<Message>generate())
-                                    .from(methodName)
+                                    .from(testId1)
                                     .scope(MessageScope.FRIENDS)
-                                    .to(ImmutableSet.of(testId1, testId2))
-                                    .topic(methodName + " (topic)")
+                                    .to(ImmutableSet.of(testId2, testId3))
                                     .text("Test message")
                                     .build();
-    messageService.create(testChat);
+    messageService.create(appId, topicId, testChat);
 
-    final ImmutableList<Message> chats = messageService.obtain(methodName + " (topic)", methodName);
-    assertChatsContain(chats, testChat);
+    final ImmutableList<Message> messages = messageService.obtain(appId, topicId, ImmutableSet.of(testId2));
+    assertChatsContain(messages, testChat);
   }
 
   private static void assertChatsContain(@Nullable final ImmutableList<Message> chats, final Message expectedChat)

@@ -11,12 +11,13 @@
 package com.wealdtech.notifications.providers;
 
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.WObject;
 
 /**
  * A notification provider provides the ability to notify a number of recipients with a specific message.
  * The message will be sent directly using it's {@code toString} method
  */
-public interface NotificationProvider<T>
+public interface NotificationProvider
 {
-  void notify(String appId, String accessKey, ImmutableSet<String> recipients, T msg);
+  void notify(String appId, String accessKey, ImmutableSet<String> recipients, WObject<?> msg);
 }

@@ -32,6 +32,7 @@
             <option value="$PROJECT_DIR$/wealdtech-roberto" />
             <option value="$PROJECT_DIR$/wealdtech-services" />
             <option value="$PROJECT_DIR$/wealdtech-services/askgeo" />
+            <option value="$PROJECT_DIR$/wealdtech-services/chat" />
             <option value="$PROJECT_DIR$/wealdtech-services/google" />
             <option value="$PROJECT_DIR$/wealdtech-users" />
             <option value="$PROJECT_DIR$/wealdtech-users-daemon" />

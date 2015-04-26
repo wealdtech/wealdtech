@@ -189,7 +189,6 @@ public class JettyServer
     return handlers;
   }
 
-
   public void registerHandler(final String path, final Class<? extends Servlet> klazz)
   {
     // TODO add rather than overwrite

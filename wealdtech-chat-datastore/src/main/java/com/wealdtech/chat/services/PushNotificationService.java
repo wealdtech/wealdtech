@@ -11,11 +11,13 @@
 package com.wealdtech.chat.services;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.wealdtech.WID;
+import com.wealdtech.chat.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Subscription;
+import com.wealdtech.chat.Topic;
 import com.wealdtech.notifications.Notification;
 import com.wealdtech.notifications.service.NotificationService;
 import org.slf4j.Logger;
@@ -39,22 +41,22 @@ public class PushNotificationService
     this.notificationService = notificationService;
   }
 
-  public void notify(final Message message)
+  public void notify(final WID<Application> appId, final WID<Topic> topicId, final Message message)
   {
-    final ImmutableList<Subscription> subscriptions;
+    final ImmutableSet<Subscription> subscriptions;
     switch (message.getScope())
     {
       case INDIVIDUAL:
       case FRIENDS:
         // Obtain subscriptions for this topic and these users
-        subscriptions = subscriptionService.obtainForTopicAndUsers(message.getTopic(), message.getTo());
+        subscriptions = subscriptionService.obtain(appId, topicId, message.getTo());
         break;
       case EVERYONE:
-        subscriptions = subscriptionService.obtainForTopic(message.getTopic());
+        subscriptions = subscriptionService.obtain(appId, topicId);
         break;
       default:
         LOG.warn("Unknown message scope {}", message.getScope());
-        subscriptions = ImmutableList.of();
+        subscriptions = ImmutableSet.of();
     }
     for (final Subscription subscription: subscriptions)
     {

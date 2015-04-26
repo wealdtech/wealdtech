@@ -17,19 +17,16 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.wealdtech.DataError;
-import com.wealdtech.chat.datastore.repositories.MessageRepository;
-import com.wealdtech.chat.datastore.repositories.MessageRepositoryPostgreSqlImpl;
-import com.wealdtech.chat.datastore.repositories.SubscriptionRepository;
-import com.wealdtech.chat.datastore.repositories.SubscriptionRepositoryPostgreSqlImpl;
-import com.wealdtech.chat.services.MessageService;
-import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
-import com.wealdtech.chat.services.SubscriptionService;
-import com.wealdtech.chat.services.SubscriptionServicePostgreSqlImpl;
+import com.wealdtech.chat.datastore.repositories.*;
+import com.wealdtech.chat.services.*;
+import com.wealdtech.config.WIDConfiguration;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
+import com.wealdtech.notifications.config.NotificationConfiguration;
+import com.wealdtech.services.WIDServiceLocalModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,13 +59,19 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
-      //      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
+      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
 
       // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency
       bind(ObjectMapper.class).annotatedWith(Names.named("dbmapper"))
                               .toInstance(WealdMapper.getServerMapper()
                                                      .copy()
                                                      .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
+
+      // Bind Topic service to use PostgreSql
+      bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("topicrepositoryconfiguration"))
+                                         .toInstance(configuration.getPostgreSqlConfiguration());
+      bind(TopicRepository.class).to(TopicRepositoryPostgreSqlImpl.class).in(Singleton.class);
+      bind(TopicService.class).to(TopicServicePostgreSqlImpl.class).in(Singleton.class);
 
       // Bind Message service to use PostgreSql
       bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("messagerepositoryconfiguration"))
@@ -81,6 +84,13 @@ public class ApplicationModule extends AbstractModule
                                          .toInstance(configuration.getPostgreSqlConfiguration());
       bind(SubscriptionRepository.class).to(SubscriptionRepositoryPostgreSqlImpl.class).in(Singleton.class);
       bind(SubscriptionService.class).to(SubscriptionServicePostgreSqlImpl.class).in(Singleton.class);
+
+      // Use a local WID module
+      bind(WIDConfiguration.class).toInstance(configuration.getWIDConfiguration());
+      install(new WIDServiceLocalModule());
+
+      // Use the asynchronous chat service
+      bind(ChatService.class).to(ChatServiceAsynchronousImpl.class).in(Singleton.class);
     }
     catch (final DataError de)
     {

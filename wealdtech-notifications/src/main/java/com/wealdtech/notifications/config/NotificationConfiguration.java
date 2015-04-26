@@ -11,6 +11,7 @@
 package com.wealdtech.notifications.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.inject.Inject;
 import com.wealdtech.configuration.Configuration;
 
 /**
@@ -21,6 +22,7 @@ public class NotificationConfiguration implements Configuration
   private final String appId;
   private final String accessKey;
 
+  @Inject
   public NotificationConfiguration(@JsonProperty("provider") final String provider,
                                    @JsonProperty("appid") final String appId,
                                    @JsonProperty("accesskey") final String accessKey)

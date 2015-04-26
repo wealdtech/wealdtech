@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" filepath="$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/chat/chat.iml" filepath="$PROJECT_DIR$/wealdtech-services/chat/chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/google/google.iml" filepath="$PROJECT_DIR$/wealdtech-services/google/google.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/token/token.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/token/token.iml" />

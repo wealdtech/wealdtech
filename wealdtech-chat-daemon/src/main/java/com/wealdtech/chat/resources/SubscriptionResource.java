@@ -11,12 +11,9 @@
 package com.wealdtech.chat.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
-import com.wealdtech.WID;
+import com.wealdtech.ServerError;
 import com.wealdtech.chat.Subscription;
-import com.wealdtech.chat.User;
 import com.wealdtech.chat.services.SubscriptionService;
 import com.wealdtech.services.WIDService;
 import org.slf4j.Logger;
@@ -56,12 +53,13 @@ public class SubscriptionResource
   @Path("{topic: .*+}/{userid: [0-9A-Fa-f]+}")
   public void unsubscribe(@PathParam("topic") final String topic)
   {
-    final User user = User.builder().id(WID.<User>generate()).name("Jim").build();
-    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(user.getId()));
-    if (subscriptions.isEmpty())
-    {
-      LOG.warn("Attempt to unsubscribe from nonexistent subscription {}/{}", topic, user);
-    }
-    service.remove(subscriptions.iterator().next().getId());
+    throw new ServerError("Not implemented");
+//    final User user = User.builder().id(WID.<User>generate()).name("Jim").build();
+//    final ImmutableList<Subscription> subscriptions = service.obtainForTopicAndUsers(topic, ImmutableSet.of(user.getId()));
+//    if (subscriptions.isEmpty())
+//    {
+//      LOG.warn("Attempt to unsubscribe from nonexistent subscription {}/{}", topic, user);
+//    }
+//    service.remove(subscriptions.iterator().next().getId());
   }
 }

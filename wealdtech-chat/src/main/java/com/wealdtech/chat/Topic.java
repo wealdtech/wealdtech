@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.DataError;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +23,16 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * A chat topic.
+ * A chat topic.  The topic defines a container for a set of messages.
+ * Each topic has a set of owner IDs and participant IDs.
  */
 public class Topic extends ChatObject<Topic> implements Comparable<Topic>
 {
   private static final Logger LOG = LoggerFactory.getLogger(Topic.class);
 
   private static final String NAME = "name";
-  private static final String USERS = "users";
+  private static final String OWNER_IDS = "ownerids";
+  private static final String PARTICIPANT_IDS = "participantids";
 
   @JsonCreator
   public Topic(final Map<String, Object> data)
@@ -45,18 +48,31 @@ public class Topic extends ChatObject<Topic> implements Comparable<Topic>
       throw new DataError.Missing("Topic needs 'name' information");
     }
 
-    if (!exists(USERS))
+    if (!exists(OWNER_IDS))
     {
-      throw new DataError.Missing("Subscription needs 'users' information");
+      throw new DataError.Missing("Topic needs 'ownerids' information");
+    }
+
+    if (!exists(PARTICIPANT_IDS))
+    {
+      throw new DataError.Missing("Topic needs 'userids' information");
     }
   }
 
-  private static final TypeReference<ImmutableSet<String>> USERS_TYPEREF = new TypeReference<ImmutableSet<String>>() {};
+  private static final TypeReference<ImmutableSet<WID<User>>> OWNER_IDS_TYPEREF = new TypeReference<ImmutableSet<WID<User>>>() {};
 
   @JsonIgnore
-  public ImmutableSet<String> getUsers()
+  public ImmutableSet<WID<User>> getOwnerIds()
   {
-    return get(USERS, USERS_TYPEREF).get();
+    return get(OWNER_IDS, OWNER_IDS_TYPEREF).get();
+  }
+
+  private static final TypeReference<ImmutableSet<WID<User>>> PARTICIPANT_IDS_TYPEREF = new TypeReference<ImmutableSet<WID<User>>>() {};
+
+  @JsonIgnore
+  public ImmutableSet<WID<User>> getParticipantIds()
+  {
+    return get(PARTICIPANT_IDS, PARTICIPANT_IDS_TYPEREF).get();
   }
 
   @JsonIgnore
@@ -83,9 +99,15 @@ public class Topic extends ChatObject<Topic> implements Comparable<Topic>
       return self();
     }
 
-    public P users(final ImmutableSet<String> users)
+    public P participantIds(final ImmutableSet<WID<User>> participantIds)
     {
-      data(USERS, users);
+      data(PARTICIPANT_IDS, participantIds);
+      return self();
+    }
+
+    public P ownerIds(final ImmutableSet<WID<User>> ownerIds)
+    {
+      data(OWNER_IDS, ownerIds);
       return self();
     }
 

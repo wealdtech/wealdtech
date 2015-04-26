@@ -8,22 +8,18 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.notifications.providers;
+package com.wealdtech.chat;
 
-import com.google.common.collect.ImmutableSet;
-import com.wealdtech.WObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeSuite;
 
 /**
+ * Setup and teardown methods for the test suite
  */
-public class NotificationProviderLogImpl implements NotificationProvider
+public class SetupTest
 {
-  private static final Logger LOG = LoggerFactory.getLogger(NotificationProviderLogImpl.class);
-
-  @Override
-  public void notify(final String appId, final String accessKey, final ImmutableSet<String> recipients, final WObject<?> msg)
+  @BeforeSuite
+  public void setUp()
   {
-    LOG.info("Message to {}: {}", recipients, msg);
+    ChatD.main(null);
   }
 }

@@ -10,36 +10,30 @@
 
 package com.wealdtech.chat.services;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Application;
-import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.Topic;
-import com.wealdtech.chat.User;
+
+import javax.annotation.Nullable;
 
 /**
- * Interface defining subscription service methods
+ * Interface defining topic service methods
  */
-public interface SubscriptionService
+public interface TopicService
 {
   /**
-   * Add a subscription
+   * Create a topic
    */
-  void add(Subscription subscription);
+  void create(WID<Application> appId, Topic topic);
 
   /**
-   * Remove a subscription
+   * Update a topic
    */
-  void remove(WID<Subscription> subscriptionId);
+  void update(WID<Application> appId, Topic topic);
 
   /**
-   * Obtain all subscriptions to a particular topic
+   * Obtain a topic
    */
-  ImmutableSet<Subscription> obtain(final WID<Application> appId, WID<Topic> topicId);
-
-  /**
-   * Obtain all subscriptions to a particular topic and set of users
-   */
-  ImmutableSet<Subscription> obtain(final WID<Application> appId, WID<Topic> topicId, ImmutableCollection<WID<User>> userIds);
+  @Nullable
+  Topic obtain(WID<Application> appId, WID<Topic> topicId);
 }

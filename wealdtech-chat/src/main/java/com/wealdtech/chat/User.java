@@ -44,7 +44,7 @@ public class User extends ChatObject<User> implements Comparable<User>
   }
 
   @JsonIgnore
-  public String getUseName()
+  public String getName()
   {
     return get(NAME, String.class).get();
   }

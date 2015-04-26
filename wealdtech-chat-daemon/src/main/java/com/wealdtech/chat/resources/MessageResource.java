@@ -11,76 +11,46 @@
 package com.wealdtech.chat.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimaps;
 import com.google.inject.Inject;
+import com.wealdtech.WID;
+import com.wealdtech.chat.Application;
 import com.wealdtech.chat.Message;
-import com.wealdtech.chat.services.MessageService;
-import com.wealdtech.chat.services.PushNotificationService;
-import org.joda.time.DateTime;
+import com.wealdtech.chat.Topic;
+import com.wealdtech.chat.services.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for chat methods
  */
-@Path("/messages")
+@Path("{appid: [0-9A-Za-z]+}/topics/{topicid: [0-9A-Za-z]+}/messages")
 public class MessageResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageResource.class);
 
-  private final MessageService messageService;
-  private final PushNotificationService notificationService;
+  private final ChatService chatService;
 
   @Inject
-  public MessageResource(final MessageService messageService, final PushNotificationService notificationService)
+  public MessageResource(final ChatService chatService)
   {
-    this.messageService = messageService;
-    this.notificationService = notificationService;
-  }
-
-  @Timed
-  @GET
-  @Produces({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
-  public ImmutableMultimap<String, Message> getChats(@QueryParam("since") final DateTime since)
-  {
-    final ImmutableList<Message> chats = messageService.obtain(null, null);
-    if (chats.isEmpty())
-    {
-      return ImmutableMultimap.of();
-    }
-    else
-    {
-      return Multimaps.index(chats, new Function<Message, String>()
-      {
-        @Nullable
-        @Override
-        public String apply(final Message input)
-        {
-          return input.getTopic();
-        }
-      });
-    }
+    this.chatService = chatService;
   }
 
   /**
-   * Obtain chats for a single topic
-   *
-   * @param topic the name of the topic for which to fetch chats
+   * Obtain a single message
    */
   @Timed
   @GET
-  @Path("{topic: .*+}")
+  @Path("{messageid: [A-Za-z0-9]+}")
   @Produces(MediaType.APPLICATION_JSON)
-  public ImmutableList<Message> getChats(@PathParam("topic") final String topic, @QueryParam("since") final DateTime since)
+  public Message getMessage(@PathParam("appid") final WID<Application> appId,
+                            @PathParam("topicid") final WID<Topic> topicId,
+                            @PathParam("messageid") final WID<Message> messageId)
   {
-    return messageService.obtain(null, topic);
+    return chatService.obtainMessage(appId, topicId, messageId);
   }
 
   /**
@@ -90,10 +60,11 @@ public class MessageResource
    */
   @Timed
   @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  public void crateMessage(final Message message)
+  @Consumes({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
+  public void createMessage(@PathParam("appid") final WID<Application> appId,
+                            @PathParam("topicid") final WID<Topic> topicId,
+                            final Message message)
   {
-    messageService.create(message);
-    notificationService.notify(message);
+    chatService.createMessage(appId, topicId, message);
   }
 }
