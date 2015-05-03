@@ -11,7 +11,7 @@
 package com.wealdtech.chat.services;
 
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Topic;
 
 import javax.annotation.Nullable;

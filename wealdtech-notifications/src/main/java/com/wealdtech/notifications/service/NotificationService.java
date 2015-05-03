@@ -38,7 +38,6 @@ public class NotificationService
 
     try
     {
-      LOG.error("Provider is {}", configuration.getProvider());
       Class<NotificationProvider> clazz = (Class<NotificationProvider>)Class.forName(configuration.getProvider());
       Constructor<NotificationProvider> constructor = clazz.getConstructor();
       this.provider = constructor.newInstance();
@@ -52,6 +51,6 @@ public class NotificationService
 
   public void notify(ImmutableSet<String> recipients, WObject<?> msg)
   {
-    provider.notify(configuration.getAppId(), configuration.getAccessKey(), recipients, msg);
+    provider.notify(recipients, msg);
   }
 }

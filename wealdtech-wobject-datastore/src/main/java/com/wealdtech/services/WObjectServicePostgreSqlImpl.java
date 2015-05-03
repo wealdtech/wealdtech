@@ -129,6 +129,9 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     checkState(item != null, "Passed NULL item for creation in datastore");
     checkState(item.getId() != null, "Passed item with NULL ID for creation in datastore");
 
+    // Allow the item to carry out its own internal processing prior to storage
+    item.onPriorToStore();
+
     Connection conn = null;
     try
     {
@@ -216,6 +219,9 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     checkState(item != null, "Passed NULL item for update in datastore");
     checkState(item.getId() != null, "Passed item with NULL ID for update in datastore");
 
+    // Allow the item to carry out its own internal processing prior to storage
+    item.onPriorToStore();
+
     Connection conn = null;
     try
     {
@@ -252,6 +258,9 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     checkState(item != null, "Passed NULL item for update in datastore");
     checkState(cb != null, "Passed NULL callback for update in datastore");
     checkState(cb.getConditions() != null, "Passed empty callback conditions for update in datastore");
+
+    // Allow the item to carry out its own internal processing prior to storage
+    item.onPriorToStore();
 
     Connection conn = null;
     try

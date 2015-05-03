@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.ServerError;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.datastore.repositories.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
@@ -40,7 +40,7 @@ public class TopicServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Top
   @Inject
   public TopicServicePostgreSqlImpl(final PostgreSqlRepository repository, @Named("dbmapper") final ObjectMapper mapper)
   {
-    super(repository, mapper, "message");
+    super(repository, mapper, "topic");
   }
 
   @Override
@@ -73,8 +73,8 @@ public class TopicServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Top
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"appid\":\"" + appId.toString() + "\"}");
-        setJson(stmt, index++, "{\"topicid\":\"" + topicId.toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, index++, "{\"_id\":\"" + topicId.toString() + "\"}");
       }
     }), null);
   }

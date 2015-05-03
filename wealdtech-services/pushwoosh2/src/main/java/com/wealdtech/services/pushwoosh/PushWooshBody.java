@@ -8,68 +8,60 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.chat;
+package com.wealdtech.services.pushwoosh;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wealdtech.DataError;
 import com.wealdtech.WObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
- * A user in the chat system.
  */
-public class User extends ChatObject<User> implements Comparable<User>
+public class PushWooshBody extends WObject<PushWooshBody>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(User.class);
-
-  private static final String NAME = "name";
+  private static final String REQUEST = "request";
 
   @JsonCreator
-  public User(final Map<String, Object> data)
+  public PushWooshBody(final Map<String, Object> data)
   {
     super(data);
   }
 
+  @Override
   protected void validate()
   {
-    super.validate();
-    if (!exists(NAME))
+    if (!exists(REQUEST))
     {
-      throw new DataError.Missing("User needs 'name' information");
+      throw new DataError.Missing("PushWoosh body failed validation: requires request");
     }
   }
 
   @JsonIgnore
-  public String getName()
-  {
-    return get(NAME, String.class).get();
-  }
+  public PushWooshRequest getRequest() { return get(REQUEST, PushWooshRequest.class).get(); }
 
-  public static class Builder<P extends Builder<P>> extends WObject.Builder<User, P>
+  public static class Builder<P extends Builder<P>> extends WObject.Builder<PushWooshBody, P>
   {
     public Builder()
     {
       super();
     }
 
-    public Builder(final User prior)
+    public Builder(final PushWooshBody prior)
     {
       super(prior);
     }
 
-    public P name(final String name)
+    public P request(final PushWooshRequest request)
     {
-      data(NAME, name);
+      data(REQUEST, request);
       return self();
     }
 
-    public User build()
+    public PushWooshBody build()
     {
-      return new User(data);
+      return new PushWooshBody(data);
     }
   }
 
@@ -78,7 +70,7 @@ public class User extends ChatObject<User> implements Comparable<User>
     return new Builder();
   }
 
-  public static Builder<?> builder(final User prior)
+  public static Builder<?> builder(final PushWooshBody prior)
   {
     return new Builder(prior);
   }

@@ -10,13 +10,12 @@
 
 package com.wealdtech.chat.services;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.Application;
+import com.wealdtech.User;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
-import com.wealdtech.chat.User;
 
 /**
  * Interface defining message service methods
@@ -29,17 +28,23 @@ public interface MessageService
   void create(WID<Application> appId, WID<Topic> topicId, Message message);
 
   /**
-   * Obtain messages
+   * Obtain messages for a given topic
    */
   ImmutableList<Message> obtain(WID<Application> appId, WID<Topic> topicId);
 
   /**
-   * Obtain message
+   * Obtain a message given its ID
    */
   Message obtain(WID<Application> appId, WID<Topic> topicId, WID<Message> messageId);
 
   /**
-   * Obtain messages
+   * Obtain messages for a topic from a given user
    */
-  ImmutableList<Message> obtain(WID<Application> appId, WID<Topic> topicId, ImmutableCollection<WID<User>> userIds);
+  ImmutableList<Message> obtainFrom(WID<Application> appId, WID<Topic> topicId, WID<User> userId);
+
+  /**
+   * Obtain messages for a topic to a given user, either explicitly when they are named as a recipient or implicitly when the
+   * message is sent to everyone
+   */
+  ImmutableList<Message> obtainTo(WID<Application> appId, WID<Topic> topicId, WID<User> userId);
 }

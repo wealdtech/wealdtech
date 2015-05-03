@@ -840,4 +840,12 @@ public class WObject<T extends WObject> implements Comparable<T>
       throw new ServerError(e);
     }
   }
+
+  /**
+   * Called prior to an object being stored.  This is useful in situations where, for example, a structured type is stored
+   * differently in the datastore than its string representation might suggest.  The obvious example of this is datetimes, which
+   * are often shown in (for example) the format 'YYYY-MM-DD HH:MM:SS' but might want to be stored in the database as longs.
+   * In this situation this method can ensure that the relevant field is a datetime rather than a string prior to serialization
+   */
+  public void onPriorToStore(){}
 }

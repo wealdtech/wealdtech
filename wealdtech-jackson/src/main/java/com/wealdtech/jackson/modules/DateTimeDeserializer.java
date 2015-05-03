@@ -49,7 +49,8 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
         if ("timestamp".equals(fieldName))
         {
           timestamp = jp.getLongValue();
-        } else if ("timezone".equals(fieldName))
+        }
+        else if ("timezone".equals(fieldName))
         {
           timezone = jp.getText();
         }
@@ -80,10 +81,9 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
       final Long dt = Long.valueOf(txt);
       return new DateTime(dt, DateTimeZone.UTC);
     }
-    catch (final NumberFormatException nfe)
-    {
-      // Isn't a long, just keep going
-    }
+    catch (final NumberFormatException ignored) {}
+
+    // If we have reached here then it isn't a long so should be a number
 
     int offset = 0;
 
@@ -94,6 +94,7 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
     final int hourOfDay = Integer.parseInt(txt.substring(11 + offset, 13 + offset));
     final int minuteOfHour = Integer.parseInt(txt.substring(14 + offset, 16 + offset));
     final int secondOfMinute = Integer.parseInt(txt.substring(17 + offset, 19 + offset));
+    int millisOfSecond = 0;
 
     // There are three possibilities for how the datetime ends.  It might just stop at this point, in which case it is UTC,
     // it might be in ISO8601 format, or it might have a full timezone appended after a space separator
@@ -104,12 +105,13 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
     if (txt.length() == 19 + offset)
     {
       // No more information
-      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, DateTimeZone.UTC);
+      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond, DateTimeZone.UTC);
     }
 
     if (txt.charAt(19 + offset) == '.')
     {
-      // Milliseconds have been added in the form .sss  We ignore these
+      // Milliseconds have been added in the form .sss
+      millisOfSecond = Integer.parseInt(txt.substring(20 + offset, 23 + offset));
       offset += 4;
     }
 
@@ -141,12 +143,13 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
 
     if (txt.indexOf(' ') > 19)
     {
-      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
+      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond,
                           DateTimeZone.UTC).plusMinutes(additionalMinutes)
                                            .plusHours(additionalHours)
                                            .withZone(DateTimeZone.forID(txt.substring(txt.indexOf(' ') + 1)));
     }
 
-    return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, DateTimeZone.UTC).plusMinutes(additionalMinutes).plusHours(additionalHours);
+    return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond,
+                        DateTimeZone.UTC).plusMinutes(additionalMinutes).plusHours(additionalHours);
   }
 }

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.DataError;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
     }
 
     final MessageScope scope = getScope();
-    if (scope == MessageScope.FRIENDS || scope == MessageScope.INDIVIDUAL)
+    if (scope == MessageScope.GROUP || scope == MessageScope.INDIVIDUAL)
     {
       if (!exists(TO))
       {
@@ -119,6 +120,13 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
   public String getText()
   {
     return get(TEXT, String.class).get();
+  }
+
+  @Override
+  public void onPriorToStore()
+  {
+    // Ensure that our timestamp is a datetime and not a string
+    getTimestamp();
   }
 
   public static class Builder<P extends Builder<P>> extends ChatObject.Builder<Message, P>

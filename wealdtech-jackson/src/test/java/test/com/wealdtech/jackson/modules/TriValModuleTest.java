@@ -74,10 +74,11 @@ public class TriValModuleTest
   {
     final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ssZZ");
 
-    final String ser = "\"2012-02-03T04:05:06+0100 Europe/Paris\"";
+    final String ser = "\"2012-02-03T04:05:06.000+0100 Europe/Paris\"";
     final TriVal<DateTime> deser = this.mapper.readValue(ser, new TypeReference<TriVal<DateTime>>(){});
 
-    final TriVal<DateTime> val = TriVal.<DateTime>of(DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("Europe/Paris")));
+    final TriVal<DateTime> val = TriVal.of(DateTime.parse("2012-02-03 04:05:06+0100", fmt)
+                                                   .withZone(DateTimeZone.forID("Europe/Paris")));
     assertEquals(deser, val);
   }
 
@@ -96,7 +97,7 @@ public class TriValModuleTest
 
     final TriVal<DateTime> trv = TriVal.<DateTime>of(DateTime.parse("2012-02-03 04:05:06+0100", fmt).withZone(DateTimeZone.forID("Europe/Paris")));
     final String ser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(trv);
-    assertEquals(ser, "\"2012-02-03T04:05:06+01:00 Europe/Paris\"");
+    assertEquals(ser, "\"2012-02-03T04:05:06.000+01:00 Europe/Paris\"");
   }
 
   @Test

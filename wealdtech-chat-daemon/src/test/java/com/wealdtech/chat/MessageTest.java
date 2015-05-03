@@ -11,8 +11,11 @@
 package com.wealdtech.chat;
 
 import com.google.common.collect.ImmutableSet;
-import com.wealdtech.WID;
+import com.wealdtech.*;
+import com.wealdtech.authentication.AuthorisationScope;
+import com.wealdtech.authentication.PasswordAuthenticationMethod;
 import com.wealdtech.services.chat.ChatClient;
+import com.wealdtech.utils.StringUtils;
 import org.joda.time.DateTime;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -31,8 +34,35 @@ public class MessageTest
   @BeforeClass
   public void setUp()
   {
-    u1 = User.builder().id(WID.<User>generate()).name("MessageTest1").build();
-    u2 = User.builder().id(WID.<User>generate()).name("MessageTest2").build();
+    final String salt = StringUtils.generateRandomString(6);
+    u1 = User.builder()
+             .id(WID.<User>generate())
+             .name("MessageTest1")
+             .emails(ImmutableSet.of(Email.builder()
+                                          .address("messagetest1" + salt + "@test.wealdtech.com")
+                                          .primary(true)
+                                          .verified(true)
+                                          .build()))
+             .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
+                                                                                .scope(AuthorisationScope.FULL)
+                                                                                .password("test")
+                                                                                .build()))
+             .deviceRegistrations(ImmutableSet.of(DeviceRegistration.builder().type(DeviceType.ANDROID).deviceId("foo").build()))
+             .build();
+    u2 = User.builder()
+             .id(WID.<User>generate())
+             .name("MessageTest1")
+             .emails(ImmutableSet.of(Email.builder()
+                                          .address("messagetest2" + salt + "@test.wealdtech.com")
+                                          .primary(true)
+                                          .verified(true)
+                                          .build()))
+             .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
+                                                                                .scope(AuthorisationScope.FULL)
+                                                                                .password("test")
+                                                                                .build()))
+             .deviceRegistrations(ImmutableSet.of(DeviceRegistration.builder().type(DeviceType.ANDROID).deviceId("foo").build()))
+             .build();
     appId = WID.generate();
   }
 
@@ -63,6 +93,7 @@ public class MessageTest
 
       // Ensure that we can obtain the message
       final Message message = ChatClient.getInstance().obtainMessage(appId, topicId, testMessage.getId());
+      // Serialize before comparison to avoid issues with comparing complex objects with strings
       assertEquals(Message.serialize(Message.builder(testMessage).data("appid", appId).data("topicid", topicId).build()),
                    Message.serialize(message));
     }
@@ -70,7 +101,7 @@ public class MessageTest
     {
       if (testMessage != null)
       {
-        //        ChatClient.getInstance().removeMessage(appId, topicId, testMessage.getId());
+//        ChatClient.getInstance().removeMessage(appId, topicId, testMessage.getId());
       }
     }
   }

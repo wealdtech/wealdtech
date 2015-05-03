@@ -48,6 +48,13 @@ public interface UserService
   User obtain(WID<User> id);
 
   /**
+   * Obtain a set of users given their IDs
+   * @param ids the IDs of the users to be obtained
+   * @return the users; can be empty if no users with the provided IDs exist
+   */
+  ImmutableSet<User> obtain(ImmutableCollection<WID<User>> ids);
+
+  /**
    * Obtain a user given an email address.  The email address match is case-insensitive
    * @param emailAddress the email address of the user to be obtained
    * @return the user; can be {@code null} if no user with that email address exists

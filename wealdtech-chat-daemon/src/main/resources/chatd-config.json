@@ -55,7 +55,7 @@
   },
   "notifications":
   {
-    "provider": "com.wealdtech.notifications.providers.NotificationProviderLogImpl"
+    "provider": "com.wealdtech.notifications.providers.NotificationProviderPushWooshImpl"
   },
   "wid":
   {

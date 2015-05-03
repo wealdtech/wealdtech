@@ -13,10 +13,10 @@ package com.wealdtech.chat.services;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.Topic;
-import com.wealdtech.chat.User;
+import com.wealdtech.User;
 
 /**
  * Interface defining subscription service methods

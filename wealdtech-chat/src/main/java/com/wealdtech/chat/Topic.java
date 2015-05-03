@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.DataError;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import org.slf4j.Logger;

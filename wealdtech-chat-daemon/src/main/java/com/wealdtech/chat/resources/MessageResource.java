@@ -12,8 +12,8 @@ package com.wealdtech.chat.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
+import com.wealdtech.Application;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.chat.services.ChatService;
@@ -65,6 +65,9 @@ public class MessageResource
                             @PathParam("topicid") final WID<Topic> topicId,
                             final Message message)
   {
+    // Ensure that the application ID presented is valid
+
+    // Create the message
     chatService.createMessage(appId, topicId, message);
   }
 }

@@ -1,4 +1,4 @@
-archivesBaseName = 'wealdtech-services-google'
+archivesBaseName = 'wealdtech-services-chat'
 
 dependencies {
   compile project(':wealdtech-configuration')

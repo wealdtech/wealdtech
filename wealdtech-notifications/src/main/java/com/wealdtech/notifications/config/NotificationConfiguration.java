@@ -19,22 +19,12 @@ import com.wealdtech.configuration.Configuration;
 public class NotificationConfiguration implements Configuration
 {
   private final String provider;
-  private final String appId;
-  private final String accessKey;
 
   @Inject
-  public NotificationConfiguration(@JsonProperty("provider") final String provider,
-                                   @JsonProperty("appid") final String appId,
-                                   @JsonProperty("accesskey") final String accessKey)
+  public NotificationConfiguration(@JsonProperty("provider") final String provider)
   {
     this.provider = provider;
-    this.appId = appId;
-    this.accessKey = accessKey;
   }
 
   public String getProvider() { return this.provider; }
-
-  public String getAppId() { return this.appId; }
-
-  public String getAccessKey() { return this.accessKey; }
 }

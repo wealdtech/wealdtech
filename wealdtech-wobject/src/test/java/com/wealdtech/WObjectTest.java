@@ -95,7 +95,7 @@ public class WObjectTest
                                             .build();
     final String testObj1Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj1);
     assertEquals(testObj1Ser1,
-                 "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}");
+                 "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09.000+00:00 UTC\",\"test string\":\"test value\"}");
     final String testObj1Ser2 =
         WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj1);
     assertEquals(testObj1Ser2,
@@ -129,7 +129,7 @@ public class WObjectTest
                                             .build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser,
-                 "{\"_id\":\"24cb016eb\",\"test date\":\"1977-06-07T21:44:50+00:00 UTC\",\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\",\"test string 3\":\"test value 3\"}}");
+                 "{\"_id\":\"24cb016eb\",\"test date\":\"1977-06-07T21:44:50.000+00:00 UTC\",\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":\"1973-11-29T21:33:09.000+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\",\"test string 3\":\"test value 3\"}}");
   }
 
   @Test
@@ -218,7 +218,7 @@ public class WObjectTest
 
     final String testObj2Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser1,
-                 "{\"_id\":\"499602d2\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
+                 "{\"_id\":\"499602d2\",\"test date\":\"1973-11-29T21:33:09.000+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
     final String testObj2Ser2 =
         WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj2);
     assertEquals(testObj2Ser2,

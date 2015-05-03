@@ -19,5 +19,5 @@ import com.wealdtech.WObject;
  */
 public interface NotificationProvider
 {
-  void notify(String appId, String accessKey, ImmutableSet<String> recipients, WObject<?> msg);
+  void notify(ImmutableSet<String> recipients, WObject<?> msg);
 }

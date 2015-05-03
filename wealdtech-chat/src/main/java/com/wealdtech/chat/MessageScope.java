@@ -22,7 +22,7 @@ import java.util.Locale;
 public enum MessageScope
 {
   INDIVIDUAL,
-  FRIENDS,
+  GROUP,
   EVERYONE;
 
   @Override

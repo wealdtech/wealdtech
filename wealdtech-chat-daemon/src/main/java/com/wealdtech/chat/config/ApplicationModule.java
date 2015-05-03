@@ -22,10 +22,14 @@ import com.wealdtech.chat.services.*;
 import com.wealdtech.config.WIDConfiguration;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.datastore.repositories.UserRepository;
+import com.wealdtech.datastore.repositories.UserRepositoryPostgreSqlImpl;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
 import com.wealdtech.notifications.config.NotificationConfiguration;
+import com.wealdtech.services.UserService;
+import com.wealdtech.services.UserServicePostgreSqlImpl;
 import com.wealdtech.services.WIDServiceLocalModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,11 +65,18 @@ public class ApplicationModule extends AbstractModule
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
       bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
 
-      // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency
+      // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency when
+      // searching for values
       bind(ObjectMapper.class).annotatedWith(Names.named("dbmapper"))
                               .toInstance(WealdMapper.getServerMapper()
                                                      .copy()
                                                      .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
+
+      // Bind User service to use PostgreSql
+      bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("userrepositoryconfiguration"))
+                                         .toInstance(configuration.getPostgreSqlConfiguration());
+      bind(UserRepository.class).to(UserRepositoryPostgreSqlImpl.class).in(Singleton.class);
+      bind(UserService.class).to(UserServicePostgreSqlImpl.class).in(Singleton.class);
 
       // Bind Topic service to use PostgreSql
       bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("topicrepositoryconfiguration"))

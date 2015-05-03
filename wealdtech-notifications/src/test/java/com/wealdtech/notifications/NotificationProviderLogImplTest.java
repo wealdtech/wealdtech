@@ -22,7 +22,7 @@ public class NotificationProviderLogImplTest
   @Test
   public void testSimple()
   {
-    final NotificationService service = new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderLogImpl", null, null));
+    final NotificationService service = new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderLogImpl"));
     service.notify(ImmutableSet.of("test1", "test2"), Notification.builder().data("key1", "val1").data("key2", "val2").build());
   }
 }

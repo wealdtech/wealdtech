@@ -11,15 +11,15 @@
 package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import com.wealdtech.DataError;
-import com.wealdtech.GenericWObject;
-import com.wealdtech.ServerError;
+import com.wealdtech.Application;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
+import com.wealdtech.chat.events.MessageEvent;
 import com.wealdtech.notifications.service.NotificationService;
+import com.wealdtech.services.WIDService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,82 +32,71 @@ public class ChatServiceAsynchronousImpl implements ChatService
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageServicePostgreSqlImpl.class);
 
+  private final EventBus eventBus;
   private final MessageService messageService;
   private final NotificationService notificationService;
   private final SubscriptionService subscriptionService;
   private final TopicService topicService;
+  private final WIDService widService;
 
   @Inject
-  public ChatServiceAsynchronousImpl(final MessageService messageService,
+  public ChatServiceAsynchronousImpl(final EventBus eventBus,
+                                     final MessageService messageService,
                                      final NotificationService notificationService,
                                      final SubscriptionService subscriptionService,
-                                     final TopicService topicService)
+                                     final TopicService topicService,
+                                     final WIDService widService)
   {
+    this.eventBus = eventBus;
     this.notificationService = notificationService;
     this.messageService = messageService;
     this.subscriptionService = subscriptionService;
     this.topicService = topicService;
+    this.widService = widService;
   }
 
   @Override
-  public void createTopic(final WID<Application> appId,
-                          final Topic topic)
+  public void createTopic(final WID<Application> appId, final Topic topic)
   {
     topicService.create(appId, topic);
   }
 
   @Override
-  public void updateTopic(final WID<Application> appId,
-                          final Topic topic)
+  public void updateTopic(final WID<Application> appId, final Topic topic)
   {
     topicService.update(appId, topic);
   }
 
   @Override
   @Nullable
-  public Topic obtainTopic(final WID<Application> appId,
-                          final WID<Topic> topicId)
+  public Topic obtainTopic(final WID<Application> appId, final WID<Topic> topicId)
   {
     return topicService.obtain(appId, topicId);
   }
 
   @Override
-  public Message obtainMessage(final WID<Application> appId,
-                               final WID<Topic> topicId,
-                               final WID<Message> messageId)
+  public Message obtainMessage(final WID<Application> appId, final WID<Topic> topicId, final WID<Message> messageId)
   {
     return messageService.obtain(appId, topicId, messageId);
   }
 
   @Override
-  public void createMessage(final WID<Application> appId,
-                            final WID<Topic> topicId,
-                            final Message message)
+  public void createMessage(final WID<Application> appId, final WID<Topic> topicId, final Message message)
   {
-    messageService.create(appId, topicId, message);
-    // Obtain recipients given the message
-    ImmutableSet<String> recipients;
-    switch(message.getScope())
+    // Obtain the topic
+    Topic topic = topicService.obtain(appId, topicId);
+    if (topic == null)
     {
-      case INDIVIDUAL:
-        recipients = ImmutableSet.of(message.getTo().iterator().next().toString());
-        break;
-      case FRIENDS:
-        throw new ServerError("Not supported");
-//        break;
-      case EVERYONE:
-        throw new ServerError("Not supported");
-//        break;
-      default:
-        throw new DataError.Bad("Unhandled message scope \"" + message.getScope().toString() + "\"");
+      // This means that this is the first message in the topic: auto-create
+      topic = Topic.builder()
+                   .id(topicId)
+                   .name("Unnamed conversation")
+                   .ownerIds(ImmutableSet.of(message.getFrom()))
+                   .participantIds(ImmutableSet.of(message.getFrom()))
+                   .build();
+      topicService.create(appId, topic);
     }
-
-    // Create the message
-    final GenericWObject msg = GenericWObject.builder()
-                                             .data("timestamp", message.getTimestamp().getMillis())
-                                             .data("topic", topicId.toString())
-                                             .data("msg", message.getId())
-                                             .build();
-    notificationService.notify(recipients, msg);
+    messageService.create(appId, topicId, message);
+    eventBus.post(new MessageEvent(MessageEvent.Type.CREATED, appId, topicId, message));
   }
 }

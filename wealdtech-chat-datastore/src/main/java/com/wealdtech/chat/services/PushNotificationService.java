@@ -14,7 +14,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.Topic;
@@ -47,7 +47,7 @@ public class PushNotificationService
     switch (message.getScope())
     {
       case INDIVIDUAL:
-      case FRIENDS:
+      case GROUP:
         // Obtain subscriptions for this topic and these users
         subscriptions = subscriptionService.obtain(appId, topicId, message.getTo());
         break;

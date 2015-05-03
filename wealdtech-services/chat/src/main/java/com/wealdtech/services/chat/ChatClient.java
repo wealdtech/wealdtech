@@ -11,7 +11,7 @@
 package com.wealdtech.services.chat;
 
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;

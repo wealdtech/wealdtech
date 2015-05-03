@@ -22,7 +22,7 @@ public class NotificationProviderLogImpl implements NotificationProvider
   private static final Logger LOG = LoggerFactory.getLogger(NotificationProviderLogImpl.class);
 
   @Override
-  public void notify(final String appId, final String accessKey, final ImmutableSet<String> recipients, final WObject<?> msg)
+  public void notify(final ImmutableSet<String> recipients, final WObject<?> msg)
   {
     LOG.info("Message to {}: {}", recipients, msg);
   }

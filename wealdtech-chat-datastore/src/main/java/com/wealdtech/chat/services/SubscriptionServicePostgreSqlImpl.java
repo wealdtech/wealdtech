@@ -17,10 +17,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.WID;
-import com.wealdtech.chat.Application;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Subscription;
 import com.wealdtech.chat.Topic;
-import com.wealdtech.chat.User;
+import com.wealdtech.User;
 import com.wealdtech.datastore.repositories.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
@@ -59,8 +59,8 @@ public class SubscriptionServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
-        setJson(stmt, 1, "{\"appid\":\"" + appId.toString() + "\"}");
-        setJson(stmt, 2, "{\"topicid\":\"" + topicId.toString() + "\"}");
+        setJson(stmt, 1, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, 2, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
       }
     }));
   }
@@ -79,8 +79,8 @@ public class SubscriptionServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
-        setJson(stmt, 1, "{\"appid\":\"" + appId.toString() + "\"}");
-        setJson(stmt, 2, "{\"topicid\":\"" + topicId.toString() + "\"}");
+        setJson(stmt, 1, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, 2, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
         setWIDArray(stmt, 3, userIds);
       }
     }));

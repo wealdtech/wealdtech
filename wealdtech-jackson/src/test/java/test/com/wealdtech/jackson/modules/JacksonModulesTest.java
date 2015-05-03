@@ -397,7 +397,7 @@ public class JacksonModulesTest
   {
     final DateTime dt1 = DateTime.parse("2012-02-03T04:05:06+0100").withZone(DateTimeZone.forID("Europe/London"));
     final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(dt1);
-    assertEquals(value, "\"2012-02-03T03:05:06+00:00 Europe/London\"");
+    assertEquals(value, "\"2012-02-03T03:05:06.000+00:00 Europe/London\"");
   }
 
   @Test

@@ -11,8 +11,11 @@
 package com.wealdtech.chat;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.Application;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
@@ -51,10 +54,10 @@ public class MessageServicePostgreSqlImplTest
   @AfterClass
   public void tearDown()
   {
-    if (messageService != null)
-    {
-      messageService.destroyDatastore();
-    }
+    //    if (messageService != null)
+    //    {
+    //      messageService.destroyDatastore();
+    //    }
   }
 
   @Test
@@ -63,15 +66,16 @@ public class MessageServicePostgreSqlImplTest
     final WID<Topic> topicId = WID.<Topic>generate();
 
     final Message testMessage = Message.builder()
-                                    .id(WID.<Message>generate())
-                                    .from(WID.<User>generate())
-                                    .scope(MessageScope.EVERYONE)
-                                    .text("Test message")
-                                    .build();
+                                       .id(WID.<Message>generate())
+                                       .from(WID.<User>generate())
+                                       .scope(MessageScope.EVERYONE)
+                                       .text("Test message")
+                                       .build();
     messageService.create(appId, topicId, testMessage);
 
     final Message message = messageService.obtain(appId, topicId, testMessage.getId());
-    fail("Need to confirm message is correct");
+    assertEquals(Message.serialize(Message.builder(testMessage).data("appid", appId).data("topicid", topicId).build()),
+                 Message.serialize(message));
   }
 
   @Test
@@ -83,26 +87,28 @@ public class MessageServicePostgreSqlImplTest
   @Test
   public void testTopicGet()
   {
-    final WID<Topic> topicId = WID.generate();
+    final WID<Topic> topicId1 = WID.generate();
+    final WID<Topic> topicId2 = WID.generate();
 
     final Message testMessage1 = Message.builder()
-                                     .id(WID.<Message>generate())
-                                     .from(WID.<User>generate())
-                                     .scope(MessageScope.EVERYONE)
-                                     .text("Test message 1")
-                                     .build();
-    messageService.create(appId, topicId, testMessage1);
+                                        .id(WID.<Message>generate())
+                                        .from(WID.<User>generate())
+                                        .scope(MessageScope.EVERYONE)
+                                        .text("Test message 1")
+                                        .build();
+    messageService.create(appId, topicId1, testMessage1);
     final Message testMessage2 = Message.builder()
-                                     .id(WID.<Message>generate())
-                                     .from(WID.<User>generate())
-                                     .scope(MessageScope.EVERYONE)
-                                     .text("Test message 2")
-                                     .build();
-    messageService.create(appId, topicId, testMessage2);
+                                        .id(WID.<Message>generate())
+                                        .from(WID.<User>generate())
+                                        .scope(MessageScope.EVERYONE)
+                                        .text("Test message 2")
+                                        .build();
+    messageService.create(appId, topicId2, testMessage2);
 
-    final ImmutableList<Message> messages = messageService.obtain(appId, topicId);
-    assertChatsContain(messages, testMessage1);
-    assertChatsDoNotContain(messages, testMessage2);
+    final ImmutableList<Message> messages = messageService.obtain(appId, topicId1);
+    assertMessagesContain(messages, Message.builder(testMessage1).data("appid", appId).data("topicid", topicId1).build());
+    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", appId).data("topicid", topicId1).build());
+    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", appId).data("topicid", topicId2).build());
   }
 
   @Test
@@ -113,48 +119,47 @@ public class MessageServicePostgreSqlImplTest
     final WID<User> testId2 = WID.generate();
     final WID<User> testId3 = WID.generate();
 
-    final Message testChat = Message.builder()
-                                    .id(WID.<Message>generate())
-                                    .from(testId1)
-                                    .scope(MessageScope.FRIENDS)
-                                    .to(ImmutableSet.of(testId2, testId3))
-                                    .text("Test message")
-                                    .build();
-    messageService.create(appId, topicId, testChat);
+    final Message testMessage = Message.builder()
+                                       .id(WID.<Message>generate())
+                                       .from(testId1)
+                                       .scope(MessageScope.GROUP)
+                                       .to(ImmutableSet.of(testId2, testId3))
+                                       .text("Test message")
+                                       .build();
+    messageService.create(appId, topicId, testMessage);
 
-    final ImmutableList<Message> messages = messageService.obtain(appId, topicId, ImmutableSet.of(testId2));
-    assertChatsContain(messages, testChat);
+    final ImmutableList<Message> messages = messageService.obtainTo(appId, topicId, testId2);
+    assertMessagesContain(messages, Message.builder(testMessage).data("appid", appId).data("topicid", topicId).build());
   }
 
-  private static void assertChatsContain(@Nullable final ImmutableList<Message> chats, final Message expectedChat)
+  private static void assertMessagesContain(@Nullable final ImmutableList<Message> messages, final Message expectedMessage)
   {
-    assertNotNull(chats, "Chats not supplied");
-    assertFalse(chats.isEmpty(), "Chats are empty");
+    assertNotNull(messages, "Messages not supplied");
+    assertFalse(messages.isEmpty(), "Messages are empty");
     int numFound = 0;
-    for (final Message chat : chats)
+    for (final Message message : messages)
     {
-      chat.getTimestamp(); // Triggers resolution of the chat
-      if (chat.equals(expectedChat))
+      if (Objects.equal(Message.serialize(message), Message.serialize(expectedMessage)))
       {
         numFound++;
       }
     }
-    assertNotEquals(numFound, 0, "Failed to find matching chat");
-    assertEquals(numFound, 1, "Found incorrect number of matching chats");
+    assertNotEquals(numFound, 0, "Failed to find matching message");
+    assertEquals(numFound, 1, "Found incorrect number of matching messages");
   }
 
-  private static void assertChatsDoNotContain(@Nullable final ImmutableList<Message> chats, final Message expectedChat)
+  private static void assertMessagesDoNotContain(@Nullable final ImmutableList<Message> messages, final Message expectedMessage)
   {
-    assertNotNull(chats, "Chats not supplied");
-    assertFalse(chats.isEmpty(), "Chats are empty");
+    assertNotNull(messages, "Message not supplied");
+    assertFalse(messages.isEmpty(), "Messages are empty");
     int numFound = 0;
-    for (final Message chat : chats)
+    for (final Message message : messages)
     {
-      if (chat.equals(expectedChat))
+      if (Objects.equal(Message.serialize(message), Message.serialize(expectedMessage)))
       {
         numFound++;
       }
     }
-    assertEquals(numFound, 0, "Found incorrect number of matching chats");
+    assertEquals(numFound, 0, "Found incorrect number of matching messages");
   }
 }
