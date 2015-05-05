@@ -24,16 +24,21 @@ public interface TopicService
   /**
    * Create a topic
    */
-  void create(WID<Application> appId, Topic topic);
+  void create(Application app, Topic topic);
 
   /**
    * Update a topic
    */
-  void update(WID<Application> appId, Topic topic);
+  void update(Application app, Topic topic);
 
   /**
    * Obtain a topic
    */
   @Nullable
-  Topic obtain(WID<Application> appId, WID<Topic> topicId);
+  Topic obtain(Application app, WID<Topic> topicId);
+
+  /**
+   * Remove a topic
+   */
+  void remove(Application app, Topic topic);
 }

@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import com.wealdtech.Application;
 import com.wealdtech.DeviceRegistration;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.User;
@@ -21,6 +22,7 @@ import com.wealdtech.chat.Topic;
 import com.wealdtech.chat.events.MessageEvent;
 import com.wealdtech.chat.services.TopicService;
 import com.wealdtech.notifications.service.NotificationService;
+import com.wealdtech.services.ApplicationService;
 import com.wealdtech.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,15 +36,18 @@ public class MessageListener
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageListener.class);
 
+  private ApplicationService applicationService;
   private NotificationService notificationService;
   private TopicService topicService;
   private UserService userService;
 
   @Inject
-  public MessageListener(final NotificationService notificationService,
+  public MessageListener(final ApplicationService applicationService,
+                         final NotificationService notificationService,
                          final TopicService topicService,
                          final UserService userService)
   {
+    this.applicationService = applicationService;
     this.notificationService = notificationService;
     this.topicService = topicService;
     this.userService = userService;
@@ -57,7 +62,9 @@ public class MessageListener
       case CREATED:
         LOG.debug("Message created: {}/{}/{}", event.getAppId(), event.getTopicId(), event.getBody());
         // Let the relevant people know that the message exists
-        final Topic topic = topicService.obtain(event.getAppId(), event.getTopicId());
+        final Application app = applicationService.obtain(event.getAppId());
+        checkState(app != null, "Failed to obtain application information");
+        final Topic topic = topicService.obtain(app, event.getTopicId());
         checkState(topic != null, "Failed to obtain topic information");
         final ImmutableSet<User> topicUsers = userService.obtain(topic.getParticipantIds());
         final ImmutableSet.Builder<String> deviceIdsB = ImmutableSet.builder();

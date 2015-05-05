@@ -22,10 +22,11 @@ import com.wealdtech.chat.Topic;
  */
 public interface ChatService
 {
-  void createTopic(WID<Application> appId, Topic topic);
-  void updateTopic(WID<Application> appId, Topic topic);
-  Topic obtainTopic(WID<Application> appId, WID<Topic> topic);
+  void createTopic(Application app, Topic topic);
+  void updateTopic(Application app, Topic topic);
+  Topic obtainTopic(Application app, WID<Topic> topicId);
+  void removeTopic(Application app, Topic topic);
 
-  void createMessage(WID<Application> appId, WID<Topic> topicId, Message message);
-  Message obtainMessage(WID<Application> appId, WID<Topic> topicId, WID<Message> messageId);
+  void createMessage(Application app, WID<Topic> topicId, Message message);
+  Message obtainMessage(Application app, WID<Topic> topicId, WID<Message> messageId);
 }

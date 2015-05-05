@@ -46,16 +46,16 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
   }
 
   @Override
-  public void create(final WID<Application> appId, final WID<Topic> topicId, final Message message)
+  public void create(final Application app, final WID<Topic> topicId, final Message message)
   {
     // Add the application Id and topic ID to the message before creating it
     final Message messageToCreate =
-        Message.builder(message).data(ChatDatastoreConstants.APP_ID, appId).data(ChatDatastoreConstants.TOPIC_ID, topicId).build();
+        Message.builder(message).data(ChatDatastoreConstants.APP_ID, app.getId()).data(ChatDatastoreConstants.TOPIC_ID, topicId).build();
     super.add(messageToCreate);
   }
 
   @Override
-  public ImmutableList<Message> obtain(final WID<Application> appId, final WID<Topic> topicId)
+  public ImmutableList<Message> obtain(final Application app, final WID<Topic> topicId)
   {
     return obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -69,7 +69,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
         setJson(stmt, index++, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
       }
     });
@@ -77,7 +77,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
 
   @Override
   @Nullable
-  public Message obtain(final WID<Application> appId, final WID<Topic> topicId, final WID<Message> messageId)
+  public Message obtain(final Application app, final WID<Topic> topicId, final WID<Message> messageId)
   {
     return Iterables.getFirst(obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -91,7 +91,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
         setJson(stmt, index++, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
         setJson(stmt, index++, "{\"_id\":\"" + messageId.toString() + "\"}");
       }
@@ -99,7 +99,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
   }
 
   @Override
-  public ImmutableList<Message> obtainFrom(final WID<Application> appId, final WID<Topic> topicId, final WID<User> userId)
+  public ImmutableList<Message> obtainFrom(final Application app, final WID<Topic> topicId, final WID<User> userId)
   {
     return obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -113,7 +113,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"appid\":\"" + appId.toString() + "\"}");
+        setJson(stmt, index++, "{\"appid\":\"" + app.getId().toString() + "\"}");
         setJson(stmt, index++, "{\"topicid\":\"" + topicId.toString() + "\"}");
         setJson(stmt, index++, "{\"from\":\"" + userId.toString() + "\"}");
       }
@@ -121,7 +121,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
   }
 
   @Override
-  public ImmutableList<Message> obtainTo(final WID<Application> appId, final WID<Topic> topicId, final WID<User> userId)
+  public ImmutableList<Message> obtainTo(final Application app, final WID<Topic> topicId, final WID<User> userId)
   {
     return obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -135,7 +135,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"appid\":\"" + appId.toString() + "\"}");
+        setJson(stmt, index++, "{\"appid\":\"" + app.getId().toString() + "\"}");
         setJson(stmt, index++, "{\"topicid\":\"" + topicId.toString() + "\"}");
         setJson(stmt, index++, "{\"to\":[\"" + userId.toString() + "\"]}");
       }

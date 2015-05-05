@@ -21,12 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 /**
  * Resource for chat methods
  */
-@Path("{appid: [0-9A-Za-z]+}/topics/{topicid: [0-9A-Za-z]+}/messages")
+@Path("topics/{topicid: [0-9A-Za-z]+}/messages")
 public class MessageResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageResource.class);
@@ -46,11 +47,11 @@ public class MessageResource
   @GET
   @Path("{messageid: [A-Za-z0-9]+}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Message getMessage(@PathParam("appid") final WID<Application> appId,
+  public Message getMessage(@Context final Application app,
                             @PathParam("topicid") final WID<Topic> topicId,
                             @PathParam("messageid") final WID<Message> messageId)
   {
-    return chatService.obtainMessage(appId, topicId, messageId);
+    return chatService.obtainMessage(app, topicId, messageId);
   }
 
   /**
@@ -61,13 +62,13 @@ public class MessageResource
   @Timed
   @POST
   @Consumes({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
-  public void createMessage(@PathParam("appid") final WID<Application> appId,
+  public void createMessage(@Context final Application app,
                             @PathParam("topicid") final WID<Topic> topicId,
                             final Message message)
   {
     // Ensure that the application ID presented is valid
 
     // Create the message
-    chatService.createMessage(appId, topicId, message);
+    chatService.createMessage(app, topicId, message);
   }
 }

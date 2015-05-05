@@ -11,14 +11,9 @@
 package com.wealdtech.chat;
 
 import com.google.common.collect.ImmutableSet;
-import com.wealdtech.*;
-import com.wealdtech.authentication.AuthorisationScope;
-import com.wealdtech.authentication.PasswordAuthenticationMethod;
+import com.wealdtech.WID;
 import com.wealdtech.services.chat.ChatClient;
-import com.wealdtech.utils.StringUtils;
 import org.joda.time.DateTime;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -28,54 +23,13 @@ import static org.testng.Assert.assertEquals;
  */
 public class MessageTest
 {
-  User u1, u2;
-  WID<Application> appId;
-
-  @BeforeClass
-  public void setUp()
-  {
-    final String salt = StringUtils.generateRandomString(6);
-    u1 = User.builder()
-             .id(WID.<User>generate())
-             .name("MessageTest1")
-             .emails(ImmutableSet.of(Email.builder()
-                                          .address("messagetest1" + salt + "@test.wealdtech.com")
-                                          .primary(true)
-                                          .verified(true)
-                                          .build()))
-             .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
-                                                                                .scope(AuthorisationScope.FULL)
-                                                                                .password("test")
-                                                                                .build()))
-             .deviceRegistrations(ImmutableSet.of(DeviceRegistration.builder().type(DeviceType.ANDROID).deviceId("foo").build()))
-             .build();
-    u2 = User.builder()
-             .id(WID.<User>generate())
-             .name("MessageTest1")
-             .emails(ImmutableSet.of(Email.builder()
-                                          .address("messagetest2" + salt + "@test.wealdtech.com")
-                                          .primary(true)
-                                          .verified(true)
-                                          .build()))
-             .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
-                                                                                .scope(AuthorisationScope.FULL)
-                                                                                .password("test")
-                                                                                .build()))
-             .deviceRegistrations(ImmutableSet.of(DeviceRegistration.builder().type(DeviceType.ANDROID).deviceId("foo").build()))
-             .build();
-    appId = WID.generate();
-  }
-
-  @AfterClass
-  public void tearDown()
-  {
-
-  }
-
   // Ensure we can send and retrieve a simple message
   @Test
   public void testSimpleMessage()
   {
+    final ChatClient user1ChatClient =
+        new ChatClient(ChatDTest.application.getId().toString(), ChatDTest.user1.getEmails().iterator().next().getAddress(),
+                       "test");
     final WID<Topic> topicId = WID.generate();
 
     Message testMessage = null;
@@ -83,25 +37,27 @@ public class MessageTest
     {
       testMessage = Message.builder()
                            .id(WID.<Message>generate())
-                           .from(u1.getId())
+                           .from(ChatDTest.user1.getId())
                            .scope(MessageScope.INDIVIDUAL)
-                           .to(ImmutableSet.of(u2.getId()))
+                           .to(ImmutableSet.of(ChatDTest.user2.getId()))
                            .timestamp(new DateTime())
                            .text("Simple message")
                            .build();
-      ChatClient.getInstance().createMessage(appId, topicId, testMessage);
+      user1ChatClient.createMessage(topicId, testMessage);
 
       // Ensure that we can obtain the message
-      final Message message = ChatClient.getInstance().obtainMessage(appId, topicId, testMessage.getId());
+      final Message message = user1ChatClient.obtainMessage(topicId, testMessage.getId());
       // Serialize before comparison to avoid issues with comparing complex objects with strings
-      assertEquals(Message.serialize(Message.builder(testMessage).data("appid", appId).data("topicid", topicId).build()),
-                   Message.serialize(message));
+      assertEquals(Message.serialize(Message.builder(testMessage)
+                                            .data("appid", ChatDTest.application.getId())
+                                            .data("topicid", topicId)
+                                            .build()), Message.serialize(message));
     }
     finally
     {
       if (testMessage != null)
       {
-//        ChatClient.getInstance().removeMessage(appId, topicId, testMessage.getId());
+        user1ChatClient.removeTopic(topicId);
       }
     }
   }

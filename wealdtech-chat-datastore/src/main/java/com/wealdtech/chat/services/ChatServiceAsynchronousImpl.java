@@ -52,35 +52,41 @@ public class ChatServiceAsynchronousImpl implements ChatService
   }
 
   @Override
-  public void createTopic(final WID<Application> appId, final Topic topic)
+  public void createTopic(final Application app, final Topic topic)
   {
-    topicService.create(appId, topic);
+    topicService.create(app, topic);
   }
 
   @Override
-  public void updateTopic(final WID<Application> appId, final Topic topic)
+  public void updateTopic(final Application app, final Topic topic)
   {
-    topicService.update(appId, topic);
+    topicService.update(app, topic);
   }
 
   @Override
   @Nullable
-  public Topic obtainTopic(final WID<Application> appId, final WID<Topic> topicId)
+  public Topic obtainTopic(final Application app, final WID<Topic> topicId)
   {
-    return topicService.obtain(appId, topicId);
+    return topicService.obtain(app, topicId);
   }
 
   @Override
-  public Message obtainMessage(final WID<Application> appId, final WID<Topic> topicId, final WID<Message> messageId)
+  public void removeTopic(final Application app, final Topic topic)
   {
-    return messageService.obtain(appId, topicId, messageId);
+    topicService.remove(app, topic);
   }
 
   @Override
-  public void createMessage(final WID<Application> appId, final WID<Topic> topicId, final Message message)
+  public Message obtainMessage(final Application app, final WID<Topic> topicId, final WID<Message> messageId)
+  {
+    return messageService.obtain(app, topicId, messageId);
+  }
+
+  @Override
+  public void createMessage(final Application app, final WID<Topic> topicId, final Message message)
   {
     // Obtain the topic
-    Topic topic = topicService.obtain(appId, topicId);
+    Topic topic = topicService.obtain(app, topicId);
     if (topic == null)
     {
       // This means that this is the first message in the topic: auto-create
@@ -90,9 +96,9 @@ public class ChatServiceAsynchronousImpl implements ChatService
                    .ownerIds(ImmutableSet.of(message.getFrom()))
                    .participantIds(ImmutableSet.of(message.getFrom()))
                    .build();
-      topicService.create(appId, topic);
+      topicService.create(app, topic);
     }
-    messageService.create(appId, topicId, message);
-    eventBus.post(new MessageEvent(MessageEvent.Type.CREATED, appId, topicId, message));
+    messageService.create(app, topicId, message);
+    eventBus.post(new MessageEvent(MessageEvent.Type.CREATED, app.getId(), topicId, message));
   }
 }

@@ -55,8 +55,10 @@
   },
   "pushwoosh":
   {
-    "appid": "%%PUSHWOOSH_APP_ID%%",
-    "apikey": "%%PUSHWOOSH_API_KEY%%"
+//    "appid": "%%PUSHWOOSH_APP_ID%%",
+//    "apikey": "%%PUSHWOOSH_API_KEY%%"
+    "appid": "096F1-E38E8",
+    "apikey": "hLmMCGOGKidOoubRY28h9jyc9YW6gxDBsaCKLXFIa2URmdjrfARm59TsLhvtE2qMsJNwlA8FW1j8rOnWla7W"
   },
   "wid":
   {

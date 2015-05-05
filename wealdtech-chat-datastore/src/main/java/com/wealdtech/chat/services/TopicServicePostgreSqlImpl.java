@@ -44,22 +44,22 @@ public class TopicServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Top
   }
 
   @Override
-  public void create(final WID<Application> appId, final Topic topic)
+  public void create(final Application app, final Topic topic)
   {
     // Add the application ID to the topic before creating it
-    final Topic topicToCreate = Topic.builder(topic).data(ChatDatastoreConstants.APP_ID, appId).build();
+    final Topic topicToCreate = Topic.builder(topic).data(ChatDatastoreConstants.APP_ID, app.getId()).build();
     super.add(topicToCreate);
   }
 
   @Override
-  public void update(final WID<Application> appId, final Topic topic)
+  public void update(final Application app, final Topic topic)
   {
     throw new ServerError("Not implemented");
   }
 
   @Override
   @Nullable
-  public Topic obtain(final WID<Application> appId, final WID<Topic> topicId)
+  public Topic obtain(final Application app, final WID<Topic> topicId)
   {
     return Iterables.getFirst(obtain(TOPIC_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -73,9 +73,15 @@ public class TopicServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Top
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
         setJson(stmt, index++, "{\"_id\":\"" + topicId.toString() + "\"}");
       }
     }), null);
+  }
+
+  @Override
+  public void remove(final Application app, final Topic topic)
+  {
+    LOG.error("Need to implement topic removal");
   }
 }

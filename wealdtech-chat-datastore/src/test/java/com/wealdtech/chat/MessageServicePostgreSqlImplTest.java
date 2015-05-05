@@ -21,6 +21,7 @@ import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.utils.StringUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,7 +38,11 @@ public class MessageServicePostgreSqlImplTest
   MessageServicePostgreSqlImpl messageService;
   PostgreSqlRepository repo;
 
-  private static final WID<Application> appId = WID.<Application>generate();
+  private static final Application app = Application.builder()
+                                                    .id(WID.<Application>generate())
+                                                    .name("MessageServicePostgreSqlImplTest_" + StringUtils.generateRandomString(6))
+                                             .ownerId("owner")
+                                                    .build();
 
   @BeforeClass
   public void setUp()
@@ -71,10 +76,10 @@ public class MessageServicePostgreSqlImplTest
                                        .scope(MessageScope.EVERYONE)
                                        .text("Test message")
                                        .build();
-    messageService.create(appId, topicId, testMessage);
+    messageService.create(app, topicId, testMessage);
 
-    final Message message = messageService.obtain(appId, topicId, testMessage.getId());
-    assertEquals(Message.serialize(Message.builder(testMessage).data("appid", appId).data("topicid", topicId).build()),
+    final Message message = messageService.obtain(app, topicId, testMessage.getId());
+    assertEquals(Message.serialize(Message.builder(testMessage).data("appid", app.getId()).data("topicid", topicId).build()),
                  Message.serialize(message));
   }
 
@@ -96,19 +101,19 @@ public class MessageServicePostgreSqlImplTest
                                         .scope(MessageScope.EVERYONE)
                                         .text("Test message 1")
                                         .build();
-    messageService.create(appId, topicId1, testMessage1);
+    messageService.create(app, topicId1, testMessage1);
     final Message testMessage2 = Message.builder()
                                         .id(WID.<Message>generate())
                                         .from(WID.<User>generate())
                                         .scope(MessageScope.EVERYONE)
                                         .text("Test message 2")
                                         .build();
-    messageService.create(appId, topicId2, testMessage2);
+    messageService.create(app, topicId2, testMessage2);
 
-    final ImmutableList<Message> messages = messageService.obtain(appId, topicId1);
-    assertMessagesContain(messages, Message.builder(testMessage1).data("appid", appId).data("topicid", topicId1).build());
-    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", appId).data("topicid", topicId1).build());
-    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", appId).data("topicid", topicId2).build());
+    final ImmutableList<Message> messages = messageService.obtain(app, topicId1);
+    assertMessagesContain(messages, Message.builder(testMessage1).data("appid", app.getId()).data("topicid", topicId1).build());
+    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topicId1).build());
+    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topicId2).build());
   }
 
   @Test
@@ -126,10 +131,10 @@ public class MessageServicePostgreSqlImplTest
                                        .to(ImmutableSet.of(testId2, testId3))
                                        .text("Test message")
                                        .build();
-    messageService.create(appId, topicId, testMessage);
+    messageService.create(app, topicId, testMessage);
 
-    final ImmutableList<Message> messages = messageService.obtainTo(appId, topicId, testId2);
-    assertMessagesContain(messages, Message.builder(testMessage).data("appid", appId).data("topicid", topicId).build());
+    final ImmutableList<Message> messages = messageService.obtainTo(app, topicId, testId2);
+    assertMessagesContain(messages, Message.builder(testMessage).data("appid", app.getId()).data("topicid", topicId).build());
   }
 
   private static void assertMessagesContain(@Nullable final ImmutableList<Message> messages, final Message expectedMessage)

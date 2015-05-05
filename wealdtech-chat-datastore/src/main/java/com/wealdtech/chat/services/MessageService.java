@@ -25,26 +25,26 @@ public interface MessageService
   /**
    * Create a message
    */
-  void create(WID<Application> appId, WID<Topic> topicId, Message message);
+  void create(Application app, WID<Topic> topicId, Message message);
 
   /**
    * Obtain messages for a given topic
    */
-  ImmutableList<Message> obtain(WID<Application> appId, WID<Topic> topicId);
+  ImmutableList<Message> obtain(Application app, WID<Topic> topicId);
 
   /**
    * Obtain a message given its ID
    */
-  Message obtain(WID<Application> appId, WID<Topic> topicId, WID<Message> messageId);
+  Message obtain(Application app, WID<Topic> topicId, WID<Message> messageId);
 
   /**
    * Obtain messages for a topic from a given user
    */
-  ImmutableList<Message> obtainFrom(WID<Application> appId, WID<Topic> topicId, WID<User> userId);
+  ImmutableList<Message> obtainFrom(Application app, WID<Topic> topicId, WID<User> userId);
 
   /**
    * Obtain messages for a topic to a given user, either explicitly when they are named as a recipient or implicitly when the
    * message is sent to everyone
    */
-  ImmutableList<Message> obtainTo(WID<Application> appId, WID<Topic> topicId, WID<User> userId);
+  ImmutableList<Message> obtainTo(Application app, WID<Topic> topicId, WID<User> userId);
 }

@@ -10,15 +10,21 @@
 
 package com.wealdtech.services.chat;
 
+import com.google.inject.Inject;
+import com.wealdtech.ApplicationHeaders;
+import com.wealdtech.ServerError;
 import com.wealdtech.WID;
-import com.wealdtech.Application;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.Converter;
+
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Client forWealdtech Chat
@@ -29,46 +35,58 @@ public class ChatClient
 
   private static final String ENDPOINT = "http://localhost:8080";
 
-  private static volatile ChatClient instance = null;
-
   public final ChatService service;
 
-  public static ChatClient getInstance()
-  {
-    if (instance == null)
-    {
-      synchronized (ChatClient.class)
-      {
-        if (instance == null)
-        {
-          instance = new ChatClient();
-        }
-      }
-    }
-    return instance;
-  }
-
-  private ChatClient()
+  @Inject
+  public ChatClient(final String appId, final String username, final String password)
   {
     final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).setLogLevel(RestAdapter.LogLevel.FULL).build();
+    final RequestInterceptor authenticationInterceptor = new RequestInterceptor()
+    {
+      @Override
+      public void intercept(RequestFacade request)
+      {
+        request.addHeader(ApplicationHeaders.APPLICATION_HEADER, appId);
+        try
+        {
+          request.addHeader("Authorization",
+                            "Basic " + DatatypeConverter.printBase64Binary((username + ":" + password).getBytes("UTF-8")));
+        }
+        catch (UnsupportedEncodingException e)
+        {
+          throw new ServerError("Unable to encode username and password for basic authorisation");
+        }
+      }
+    };
+    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
+                                                         .setConverter(converter)
+                                                         .setLogLevel(RestAdapter.LogLevel.FULL)
+                                                         .setRequestInterceptor(authenticationInterceptor)
+                                                         .build();
     this.service = adapter.create(ChatService.class);
   }
 
   /**
    * Create a message
    */
-  public void createMessage(final WID<Application> appId, final WID<Topic> topicId, final Message message)
+  public void createMessage(final WID<Topic> topicId, final Message message)
   {
-    service.createMessage(appId.toString(), topicId.toString(), message);
+    service.createMessage(topicId.toString(), message);
   }
 
   /**
    * Obtain a message
    */
-  public Message obtainMessage(final WID<Application> appId, final WID<Topic> topicId, final WID<Message> messageId)
+  public Message obtainMessage(final WID<Topic> topicId, final WID<Message> messageId)
   {
-    return service.obtainMessage(appId.toString(), topicId.toString(), messageId.toString());
+    return service.obtainMessage(topicId.toString(), messageId.toString());
+  }
+
+  /**
+   * Remove an entire topic
+   */
+  public void removeTopic(final WID<Topic> topicId)
+  {
+    service.removeTopic(topicId.toString());
   }
 }
