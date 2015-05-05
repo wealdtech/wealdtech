@@ -249,7 +249,7 @@ public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User
     final User dbUser = obtain(user.getId());
 
     // Ensure that we are deleting what we think we are deleting
-    if (!Objects.equal(user, dbUser))
+    if (!Objects.equal(User.serialize(user), User.serialize(dbUser)))
     {
       throw new ServerError("Must provide matching user for deletion");
     }

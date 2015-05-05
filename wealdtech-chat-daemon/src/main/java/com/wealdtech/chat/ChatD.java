@@ -10,12 +10,15 @@
 
 package com.wealdtech.chat;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.wealdtech.chat.config.ApplicationModule;
 import com.wealdtech.chat.listeners.MessageListener;
 import com.wealdtech.config.WealdInstrumentationModule;
 import com.wealdtech.guice.EventBusAsynchronousModule;
+import com.wealdtech.jersey.filters.*;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
 
@@ -31,10 +34,18 @@ public class ChatD
 {
   public static void main(final String[] args)
   {
-    final Injector injector = Guice.createInjector(new ApplicationModule("chatd-config.json"),
-                                                   new WealdInstrumentationModule(),
+    final Injector injector = Guice.createInjector(new ApplicationModule("chatd-config.json"), new WealdInstrumentationModule(),
                                                    new EventBusAsynchronousModule(),
-                                                   new JerseyServletModule("com.wealdtech.chat.resources"));
+                                                   new JerseyServletModule(ImmutableList.of(RequestLoggingFilter.class,
+                                                                                            RequestHintFilter.class,
+                                                                                            GZIPContentEncodingFilter.class,
+                                                                                            ApplicationFilter.class,
+                                                                                            WealdAuthenticationFilter.class),
+                                                                           ImmutableList.of(RequestLoggingFilter.class,
+                                                                                            ServerHeaderFilter.class,
+                                                                                            CORSFilter.class,
+                                                                                            GZIPContentEncodingFilter.class),
+                                                                           ImmutableList.of("com.wealdtech.chat.resources")));
     final JettyServer server = injector.getInstance(JettyServer.class);
 
     // Inject our listeners

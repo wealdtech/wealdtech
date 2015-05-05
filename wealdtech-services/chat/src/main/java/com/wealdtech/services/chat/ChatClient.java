@@ -11,7 +11,6 @@
 package com.wealdtech.services.chat;
 
 import com.google.inject.Inject;
-import com.wealdtech.ApplicationHeaders;
 import com.wealdtech.ServerError;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
@@ -46,7 +45,7 @@ public class ChatClient
       @Override
       public void intercept(RequestFacade request)
       {
-        request.addHeader(ApplicationHeaders.APPLICATION_HEADER, appId);
+        request.addHeader("Application-ID", appId);
         try
         {
           request.addHeader("Authorization",

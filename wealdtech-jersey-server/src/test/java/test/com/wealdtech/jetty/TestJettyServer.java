@@ -10,12 +10,14 @@
 
 package test.com.wealdtech.jetty;
 
-import test.com.wealdtech.config.ApplicationModule;
-
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.sun.jersey.spi.container.ContainerRequestFilter;
+import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
+import test.com.wealdtech.config.ApplicationModule;
 
 /**
  * A simple Jetty container to test Weald Jetty and Jersey servers
@@ -26,7 +28,9 @@ public class TestJettyServer
   {
     // Create an injector with our basic configuration
     final Injector injector = Guice.createInjector(new ApplicationModule("config-multi.json"),
-                                                   new JerseyServletModule("test.com.wealdtech.jersey.resources"));
+                                                   new JerseyServletModule(ImmutableList.<Class<? extends ContainerRequestFilter>>of(),
+                                                                           ImmutableList.<Class<? extends ContainerResponseFilter>>of(),
+                                                                           ImmutableList.of("test.com.wealdtech.jersey.resources")));
     final JettyServer server = injector.getInstance(JettyServer.class);
     server.start();
     server.join();

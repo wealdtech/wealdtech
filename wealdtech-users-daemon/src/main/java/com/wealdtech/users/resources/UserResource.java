@@ -54,11 +54,11 @@ public class UserResource
   public User getUser(@Context final Application application,
                       @Context final UserAuthorisation authorisation,
                       @Context final RequestHint hint,
-                      @Context final User authenticatedUser,
+                      @Context final User user,
                       @PathParam("userid") final WID<User> userId)
   {
     // We already have the user so just return them
-    return authenticatedUser;
+    return user;
   }
 
 //  /**

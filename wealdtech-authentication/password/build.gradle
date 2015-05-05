@@ -11,7 +11,7 @@
 dependencies
 {
     compile project(':wealdtech-authentication')
-    compile project(':wealdtech-crypt')
+    compile project(':wealdtech-hash-cache')
 }
 
 uploadArchives {

@@ -10,8 +10,11 @@
 
 package com.wealdtech.users;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
+import com.wealdtech.jersey.filters.*;
 import com.wealdtech.users.config.ApplicationModule;
 import com.wealdtech.config.WealdInstrumentationModule;
 import com.wealdtech.guice.EventBusAsynchronousModule;
@@ -29,7 +32,16 @@ public class UserD
     final Injector injector = Guice.createInjector(new ApplicationModule("userd-config.json"),
                                                    new WealdInstrumentationModule(),
                                                    new EventBusAsynchronousModule(),
-                                                   new JerseyServletModule("com.wealdtech.users.resources"));
+                                                   new JerseyServletModule(ImmutableList.of(RequestLoggingFilter.class,
+                                                                                            RequestHintFilter.class,
+                                                                                            GZIPContentEncodingFilter.class,
+                                                                                            ApplicationFilter.class,
+                                                                                            WealdAuthenticationFilter.class),
+                                                                           ImmutableList.of(RequestLoggingFilter.class,
+                                                                                            ServerHeaderFilter.class,
+                                                                                            CORSFilter.class,
+                                                                                            GZIPContentEncodingFilter.class),
+                                                                           ImmutableList.of("com.wealdtech.users.resources")));
     final JettyServer server = injector.getInstance(JettyServer.class);
 
     // Inject our listeners

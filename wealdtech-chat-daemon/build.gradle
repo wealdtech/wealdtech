@@ -17,6 +17,8 @@ dependencies
     compile project(':wealdtech-wid-service')
     compile project(':wealdtech-notifications')
     compile project(':wealdtech-notifications-providers:pushwoosh')
+    compile project(':wealdtech-application-jersey')
+    compile project(':wealdtech-users-jersey')
 
     testCompile project(':wealdtech-services:chat')
 }

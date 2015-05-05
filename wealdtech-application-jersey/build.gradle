@@ -10,9 +10,8 @@
 
 dependencies
 {
-    compile project(':wealdtech-jersey-server')
-    compile project(':wealdtech-application-jersey')
     compile project(':wealdtech-application-datastore')
+    compile project(':wealdtech-jersey-server')
 }
 
 uploadArchives {

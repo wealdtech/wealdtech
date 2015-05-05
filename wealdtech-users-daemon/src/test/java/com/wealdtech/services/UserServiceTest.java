@@ -37,7 +37,7 @@ public class UserServiceTest
   @BeforeClass
   public void setUp()
   {
-    salt = StringUtils.generateRandomString(6);
+    salt = "_" + StringUtils.generateRandomString(6);
     applicationService =
         new ApplicationServicePostgreSqlImpl(new ApplicationRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432,
                                                                                                                  "user",
@@ -74,7 +74,7 @@ public class UserServiceTest
       user = User.builder()
                  .id(WID.<User>generate())
                  .name(testName)
-                 .emails(ImmutableSet.of(Email.builder().address("test@test.wealdtech.com").primary(true).verified(true).build()))
+                 .emails(ImmutableSet.of(Email.builder().address("test"+salt+"@test.wealdtech.com").primary(true).verified(true).build()))
                  .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
                                                                                     .scope(AuthorisationScope.FULL)
                                                                                     .password("test")
