@@ -21,9 +21,9 @@ import com.wealdtech.jetty.config.JettyServerConfiguration;
  */
 public class ServerHeaderFilter implements ContainerResponseFilter
 {
-  private static final String SERVERHEADER = "Server";
+  private static final String SERVER_HEADER = "Server";
 
-  private final transient JettyServerConfiguration configuration;
+  private final JettyServerConfiguration configuration;
 
   @Inject
   public ServerHeaderFilter(final JettyServerConfiguration configuration)
@@ -34,7 +34,7 @@ public class ServerHeaderFilter implements ContainerResponseFilter
   @Override
   public ContainerResponse filter(final ContainerRequest request, final ContainerResponse response)
   {
-    response.getHttpHeaders().add(SERVERHEADER, this.configuration.getResponseConfiguration().getServerName());
+    response.getHttpHeaders().add(SERVER_HEADER, this.configuration.getResponseConfiguration().getServerName());
     return response;
   }
 }

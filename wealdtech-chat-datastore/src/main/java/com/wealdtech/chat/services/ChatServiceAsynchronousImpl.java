@@ -18,7 +18,6 @@ import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.chat.events.MessageEvent;
-import com.wealdtech.notifications.service.NotificationService;
 import com.wealdtech.services.WIDService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,6 @@ public class ChatServiceAsynchronousImpl implements ChatService
 
   private final EventBus eventBus;
   private final MessageService messageService;
-  private final NotificationService notificationService;
   private final SubscriptionService subscriptionService;
   private final TopicService topicService;
   private final WIDService widService;
@@ -42,13 +40,11 @@ public class ChatServiceAsynchronousImpl implements ChatService
   @Inject
   public ChatServiceAsynchronousImpl(final EventBus eventBus,
                                      final MessageService messageService,
-                                     final NotificationService notificationService,
                                      final SubscriptionService subscriptionService,
                                      final TopicService topicService,
                                      final WIDService widService)
   {
     this.eventBus = eventBus;
-    this.notificationService = notificationService;
     this.messageService = messageService;
     this.subscriptionService = subscriptionService;
     this.topicService = topicService;

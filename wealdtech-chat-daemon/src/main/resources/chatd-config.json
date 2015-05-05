@@ -53,9 +53,10 @@
     "username": "chat",
     "password": "chat"
   },
-  "notifications":
+  "pushwoosh":
   {
-    "provider": "com.wealdtech.notifications.providers.NotificationProviderPushWooshImpl"
+    "appid": "%%PUSHWOOSH_APP_ID%%",
+    "apikey": "%%PUSHWOOSH_API_KEY%%"
   },
   "wid":
   {

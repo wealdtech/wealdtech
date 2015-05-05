@@ -11,6 +11,7 @@
 package com.wealdtech.chat.listeners;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.wealdtech.DeviceRegistration;
@@ -48,6 +49,7 @@ public class MessageListener
   }
 
   @Subscribe
+  @AllowConcurrentEvents
   public void messageEvent(final MessageEvent event)
   {
     switch (event.getType())

@@ -22,15 +22,17 @@ import com.wealdtech.chat.services.*;
 import com.wealdtech.config.WIDConfiguration;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.datastore.repositories.UserRepository;
-import com.wealdtech.datastore.repositories.UserRepositoryPostgreSqlImpl;
+import com.wealdtech.repositories.UserRepository;
+import com.wealdtech.repositories.UserRepositoryPostgreSqlImpl;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
-import com.wealdtech.notifications.config.NotificationConfiguration;
+import com.wealdtech.notifications.providers.NotificationProvider;
+import com.wealdtech.notifications.providers.NotificationProviderPushWooshImpl;
 import com.wealdtech.services.UserService;
 import com.wealdtech.services.UserServicePostgreSqlImpl;
 import com.wealdtech.services.WIDServiceLocalModule;
+import com.wealdtech.services.config.PushWooshConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,8 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
-      bind(NotificationConfiguration.class).toInstance(configuration.getNotificationsConfiguration());
+      bind(PushWooshConfiguration.class).toInstance(configuration.getPushWooshConfiguration());
+      bind(NotificationProvider.class).to(NotificationProviderPushWooshImpl.class).in(Singleton.class);
 
       // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency when
       // searching for values

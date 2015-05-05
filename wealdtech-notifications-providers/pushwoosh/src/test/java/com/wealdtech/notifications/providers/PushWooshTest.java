@@ -12,8 +12,9 @@ package com.wealdtech.notifications.providers;
 
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.GenericWObject;
-import com.wealdtech.notifications.config.NotificationConfiguration;
 import com.wealdtech.notifications.service.NotificationService;
+import com.wealdtech.services.config.PushWooshConfiguration;
+import com.wealdtech.services.pushwoosh.PushWooshClient;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -27,7 +28,9 @@ public class PushWooshTest
   @BeforeClass
   public void setUp()
   {
-    notificationService = new NotificationService(new NotificationConfiguration("com.wealdtech.notifications.providers.NotificationProviderPushWooshImpl"));
+    notificationService =
+        new NotificationService(new NotificationProviderPushWooshImpl(new PushWooshClient(new PushWooshConfiguration("appId",
+                                                                                                                     "apiKey"))));
   }
 
   @AfterClass
@@ -36,6 +39,7 @@ public class PushWooshTest
   @Test
   public void testSendMessage()
   {
-    notificationService.notify(ImmutableSet.of("APA91bGcxjphD0JKlayw5Yxe4vdUzgjVZW6SmVqSJ5ifiWPixeysbFEDPRb_EtO40Tf2Y4JLtxpOY0_QvDz4n2GW0WLQiuNpOX5LnbgvPEUaNIRX46HG8dNO1RWCQuJsGfrHFL6t08XZafxLVNbLsjTcE3AdFrbbMA"), GenericWObject.builder().data("message", "hello world").build());
+    notificationService.notify(ImmutableSet.of("APA91bGcxjphD0JKlayw5Yxe4vdUzgjVZW6SmVqSJ5ifiWPixeysbFEDPRb_EtO40Tf2Y4JLtxpOY0_QvDz4n2GW0WLQiuNpOX5LnbgvPEUaNIRX46HG8dNO1RWCQuJsGfrHFL6t08XZafxLVNbLsjTcE3AdFrbbMA"),
+                               GenericWObject.builder().data("message", "hello world").build());
   }
 }

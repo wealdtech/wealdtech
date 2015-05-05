@@ -13,7 +13,7 @@ package com.wealdtech.authentication;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableCollection;
 import com.wealdtech.WObject;
-import com.wealdtech.utils.Crypt;
+import com.wealdtech.utils.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class PasswordAuthenticator implements Authenticator
         if (Objects.equal(method.getType(), PasswordAuthenticationMethod.PASSWORD_AUTHENTICATION))
         {
           final PasswordAuthenticationMethod passwordMethod = WObject.recast(method, PasswordAuthenticationMethod.class);
-          if (Crypt.matches(passwordCredentials.getPassword(), passwordMethod.getPassword()))
+          if (Hash.matches(passwordCredentials.getPassword(), passwordMethod.getPassword()))
           {
             scope = method.getScope();
             break;

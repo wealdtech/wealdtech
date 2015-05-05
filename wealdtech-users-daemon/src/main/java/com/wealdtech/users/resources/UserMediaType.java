@@ -8,9 +8,12 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.datastore.repositories;
+package com.wealdtech.users.resources;
 
 /**
  */
-public interface UserRepository
-{}
+public class UserMediaType
+{
+  public final static String V1_JSON = "application/vnd.user.v1+json";
+  public final static String V2_JSON = "application/vnd.user.v2+json";
+}

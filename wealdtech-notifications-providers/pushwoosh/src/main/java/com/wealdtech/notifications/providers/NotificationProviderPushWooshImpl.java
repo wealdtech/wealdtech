@@ -11,6 +11,7 @@
 package com.wealdtech.notifications.providers;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.Inject;
 import com.wealdtech.WObject;
 import com.wealdtech.services.pushwoosh.PushWooshClient;
 
@@ -18,9 +19,18 @@ import com.wealdtech.services.pushwoosh.PushWooshClient;
  */
 public class NotificationProviderPushWooshImpl implements NotificationProvider
 {
+  private PushWooshClient client;
+
+  @Inject
+  public NotificationProviderPushWooshImpl(final PushWooshClient client)
+  {
+    this.client = client;
+  }
+
+
   @Override
   public void notify(final ImmutableSet<String> recipients, final WObject<?> msg)
   {
-    PushWooshClient.getInstance().sendMessage(recipients, msg);
+    client.sendMessage(recipients, msg);
   }
 }

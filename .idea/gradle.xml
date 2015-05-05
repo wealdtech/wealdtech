@@ -9,6 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/wealdtech-application" />
+            <option value="$PROJECT_DIR$/wealdtech-application-datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-application-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-authentication" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
@@ -41,6 +44,7 @@
             <option value="$PROJECT_DIR$/wealdtech-users" />
             <option value="$PROJECT_DIR$/wealdtech-users-daemon" />
             <option value="$PROJECT_DIR$/wealdtech-users-datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-users-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
             <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />

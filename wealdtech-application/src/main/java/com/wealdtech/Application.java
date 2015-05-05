@@ -12,7 +12,6 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,7 @@ import java.util.Map;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
- * An application.  The application defines an ultimate owner for all of the topics and messages
+ * An application.  The application defines a logical separation of elements
  */
 public class Application extends WObject<Application> implements Comparable<Application>
 {
@@ -55,11 +54,10 @@ public class Application extends WObject<Application> implements Comparable<Appl
     return get(NAME, String.class).get();
   }
 
-  private static final TypeReference<WID<User>> OWNER_ID_TYPE_REF = new TypeReference<WID<User>>(){};
   @JsonIgnore
-  public WID<User> getOwnerId()
+  public String getOwnerId()
   {
-    return get(OWNER_ID, OWNER_ID_TYPE_REF).get();
+    return get(OWNER_ID, String.class).get();
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Application, P>
@@ -80,7 +78,7 @@ public class Application extends WObject<Application> implements Comparable<Appl
       return self();
     }
 
-    public P ownerId(final WID<User> ownerId)
+    public P ownerId(final String ownerId)
     {
       data(OWNER_ID, ownerId);
       return self();

@@ -10,17 +10,7 @@
 
 package com.wealdtech.datastore.repositories;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-
 /**
  */
-public class UserRepositoryPostgreSqlImpl extends PostgreSqlRepository implements UserRepository
-{
-  @Inject
-  public UserRepositoryPostgreSqlImpl(@Named("userrepositoryconfiguration") final PostgreSqlConfiguration configuration)
-  {
-    super(configuration);
-  }
-}
+public interface ApplicationRepository
+{}

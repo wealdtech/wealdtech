@@ -11,8 +11,10 @@
 package com.wealdtech.services.pushwoosh;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.Inject;
 import com.wealdtech.WObject;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.services.config.PushWooshConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit.RestAdapter;
@@ -27,27 +29,14 @@ public class PushWooshClient
 
   private static final String ENDPOINT = "https://cp.pushwoosh.com/json/1.3/";
 
-  private static volatile PushWooshClient instance = null;
+  private final PushWooshConfiguration configuration;
 
   public final PushWooshService service;
 
-  public static PushWooshClient getInstance()
+  @Inject
+  public PushWooshClient(final PushWooshConfiguration configuration)
   {
-    if (instance == null)
-    {
-      synchronized (PushWooshClient.class)
-      {
-        if (instance == null)
-        {
-          instance = new PushWooshClient();
-        }
-      }
-    }
-    return instance;
-  }
-
-  private PushWooshClient()
-  {
+    this.configuration = configuration;
     final Converter converter = new JacksonRetrofitConverter();
     final RestAdapter adapter =
         new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).setLogLevel(RestAdapter.LogLevel.FULL).build();
@@ -62,8 +51,8 @@ public class PushWooshClient
     final PushWooshBody body;
     body = PushWooshBody.builder()
                         .request(PushWooshRequest.builder()
-                                                 .application("096F1-E38E8")
-                                                 .auth("8q8iYJNp9p6ejUCOuLu8S2LXBSQ5JZm2TZlAiyaXPdIjqShZWUFcICOFgoYeqrcKKHlueR7e13RaC9Gv2lWO")
+                                                 .application(configuration.getAppId())
+                                                 .auth(configuration.getApiKey())
                                                  .notifications(ImmutableSet.of(PushWooshNotification.builder()
                                                                                                      .sendDate("now")
                                                                                                      .ignoreUserTimezone(true)

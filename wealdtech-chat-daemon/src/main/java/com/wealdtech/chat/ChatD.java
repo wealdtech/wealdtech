@@ -15,7 +15,7 @@ import com.google.inject.Injector;
 import com.wealdtech.chat.config.ApplicationModule;
 import com.wealdtech.chat.listeners.MessageListener;
 import com.wealdtech.config.WealdInstrumentationModule;
-import com.wealdtech.guice.EventBusModule;
+import com.wealdtech.guice.EventBusAsynchronousModule;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
 
@@ -33,7 +33,7 @@ public class ChatD
   {
     final Injector injector = Guice.createInjector(new ApplicationModule("chatd-config.json"),
                                                    new WealdInstrumentationModule(),
-                                                   new EventBusModule(),
+                                                   new EventBusAsynchronousModule(),
                                                    new JerseyServletModule("com.wealdtech.chat.resources"));
     final JettyServer server = injector.getInstance(JettyServer.class);
 

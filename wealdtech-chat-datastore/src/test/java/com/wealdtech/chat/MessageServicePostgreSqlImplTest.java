@@ -19,7 +19,7 @@ import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.datastore.repositories.PostgreSqlRepository;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;

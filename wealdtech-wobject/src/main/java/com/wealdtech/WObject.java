@@ -811,33 +811,42 @@ public class WObject<T extends WObject> implements Comparable<T>
       return null;
     }
 
-    // When recasting an object we keep all data, including scratch data
-    final P recastObj;
+    // Try a simple recasting first
     try
     {
-      recastObj = klazz.getConstructor(Map.class).newInstance(obj.getAllData());
-      recastObj.setScratch(obj.getScratch());
-      return recastObj;
+      return klazz.cast(obj);
     }
-    catch (final InstantiationException e)
+    catch (final ClassCastException cce)
     {
-      LOG.error("Failed to instantiate class: ", e);
-      throw new ServerError(e);
-    }
-    catch (final IllegalAccessException e)
-    {
-      LOG.error("Failed to access class: ", e);
-      throw new ServerError(e);
-    }
-    catch (final InvocationTargetException e)
-    {
-      LOG.error("Failed to invoke class: ", e);
-      throw new ServerError(e);
-    }
-    catch (final NoSuchMethodException e)
-    {
-      LOG.error("Failed to find suitable method: ", e);
-      throw new ServerError(e);
+      // Object is not  a direct cast: recast by recreating the object
+      final P recastObj;
+      try
+      {
+        // When recasting an object we keep all data, including scratch data
+        recastObj = klazz.getConstructor(Map.class).newInstance(obj.getAllData());
+        recastObj.setScratch(obj.getScratch());
+        return recastObj;
+      }
+      catch (final InstantiationException e)
+      {
+        LOG.error("Failed to instantiate class: ", e);
+        throw new ServerError(e);
+      }
+      catch (final IllegalAccessException e)
+      {
+        LOG.error("Failed to access class: ", e);
+        throw new ServerError(e);
+      }
+      catch (final InvocationTargetException e)
+      {
+        LOG.error("Failed to invoke class: ", e);
+        throw new ServerError(e);
+      }
+      catch (final NoSuchMethodException e)
+      {
+        LOG.error("Failed to find suitable method: ", e);
+        throw new ServerError(e);
+      }
     }
   }
 

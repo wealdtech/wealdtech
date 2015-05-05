@@ -13,6 +13,7 @@ dependencies
     compile project(':wealdtech-wobject')
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-configuration-logging')
+    compile project(':wealdtech-application')
     compile project(':wealdtech-authentication')
     testCompile project(':wealdtech-authentication:password')
     testCompile project(':wealdtech-authentication:token')

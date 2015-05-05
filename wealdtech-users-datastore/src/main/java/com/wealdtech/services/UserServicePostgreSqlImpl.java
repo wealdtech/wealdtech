@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.*;
 import com.wealdtech.authentication.*;
-import com.wealdtech.datastore.repositories.UserRepositoryPostgreSqlImpl;
+import com.wealdtech.repositories.UserRepositoryPostgreSqlImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

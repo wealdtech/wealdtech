@@ -75,7 +75,7 @@ public class UserAuthorisation extends WObject<UserAuthorisation> implements Com
       return self();
     }
 
-    public P scope(final String scope)
+    public P scope(final AuthorisationScope scope)
     {
       data(SCOPE, scope);
       return self();

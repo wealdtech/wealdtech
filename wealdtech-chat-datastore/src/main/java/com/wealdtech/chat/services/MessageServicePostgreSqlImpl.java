@@ -21,7 +21,7 @@ import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
-import com.wealdtech.datastore.repositories.PostgreSqlRepository;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;
