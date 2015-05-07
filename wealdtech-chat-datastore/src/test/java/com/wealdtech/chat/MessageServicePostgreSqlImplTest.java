@@ -15,12 +15,15 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.Application;
+import com.wealdtech.Email;
 import com.wealdtech.User;
 import com.wealdtech.WID;
+import com.wealdtech.authentication.AuthorisationScope;
+import com.wealdtech.authentication.PasswordAuthenticationMethod;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.utils.StringUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -36,12 +39,14 @@ import static org.testng.Assert.*;
 public class MessageServicePostgreSqlImplTest
 {
   MessageServicePostgreSqlImpl messageService;
-  PostgreSqlRepository repo;
+
+  User user1, user2, user3 = null;
+  Topic topic1, topic2 = null;
 
   private static final Application app = Application.builder()
                                                     .id(WID.<Application>generate())
                                                     .name("MessageServicePostgreSqlImplTest_" + StringUtils.generateRandomString(6))
-                                             .ownerId("owner")
+                                                    .ownerId("owner")
                                                     .build();
 
   @BeforeClass
@@ -54,6 +59,46 @@ public class MessageServicePostgreSqlImplTest
                                                                              .copy()
                                                                              .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     messageService.createDatastore();
+
+    user1 = User.builder()
+                .id(WID.<User>generate())
+                .name("Message Service Test User 1")
+                .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
+                                                                                   .password("test")
+                                                                                   .scope(AuthorisationScope.FULL)
+                                                                                   .build()))
+                .emails(ImmutableSet.of(Email.builder().address("test1@test.com").primary(true).verified(true).build()))
+                .build();
+    user2 = User.builder()
+                .id(WID.<User>generate())
+                .name("Message Service Test User 2")
+                .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
+                                                                                   .password("test")
+                                                                                   .scope(AuthorisationScope.FULL)
+                                                                                   .build()))
+                .emails(ImmutableSet.of(Email.builder().address("test2@test.com").primary(true).verified(true).build()))
+                .build();
+    user3 = User.builder()
+                .id(WID.<User>generate())
+                .name("Message Service Test User 3")
+                .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
+                                                                                   .password("test")
+                                                                                   .scope(AuthorisationScope.FULL)
+                                                                                   .build()))
+                .emails(ImmutableSet.of(Email.builder().address("test3@test.com").primary(true).verified(true).build()))
+                .build();
+    topic1 = Topic.builder()
+                  .id(WID.<Topic>generate())
+                  .name("Message Service Test Topic 1")
+                  .ownerIds(ImmutableSet.of(user1.getId()))
+                  .participantIds(ImmutableSet.of(user1.getId()))
+                  .build();
+    topic2 = Topic.builder()
+                  .id(WID.<Topic>generate())
+                  .name("Message Service Test Topic 2")
+                  .ownerIds(ImmutableSet.of(user1.getId()))
+                  .participantIds(ImmutableSet.of(user1.getId()))
+                  .build();
   }
 
   @AfterClass
@@ -68,18 +113,16 @@ public class MessageServicePostgreSqlImplTest
   @Test
   public void testCreate()
   {
-    final WID<Topic> topicId = WID.<Topic>generate();
-
     final Message testMessage = Message.builder()
                                        .id(WID.<Message>generate())
                                        .from(WID.<User>generate())
                                        .scope(MessageScope.EVERYONE)
                                        .text("Test message")
                                        .build();
-    messageService.create(app, topicId, testMessage);
+    messageService.create(app, user1, topic1, testMessage);
 
-    final Message message = messageService.obtain(app, topicId, testMessage.getId());
-    assertEquals(Message.serialize(Message.builder(testMessage).data("appid", app.getId()).data("topicid", topicId).build()),
+    final Message message = messageService.obtain(app, user1, topic1, testMessage.getId());
+    assertEquals(Message.serialize(Message.builder(testMessage).data("appid", app.getId()).data("topicid", topic1.getId()).build()),
                  Message.serialize(message));
   }
 
@@ -92,49 +135,45 @@ public class MessageServicePostgreSqlImplTest
   @Test
   public void testTopicGet()
   {
-    final WID<Topic> topicId1 = WID.generate();
-    final WID<Topic> topicId2 = WID.generate();
-
     final Message testMessage1 = Message.builder()
                                         .id(WID.<Message>generate())
-                                        .from(WID.<User>generate())
+                                        .from(user1.getId())
                                         .scope(MessageScope.EVERYONE)
                                         .text("Test message 1")
                                         .build();
-    messageService.create(app, topicId1, testMessage1);
+    messageService.create(app, user1, topic1, testMessage1);
     final Message testMessage2 = Message.builder()
                                         .id(WID.<Message>generate())
-                                        .from(WID.<User>generate())
+                                        .from(user1.getId())
                                         .scope(MessageScope.EVERYONE)
                                         .text("Test message 2")
                                         .build();
-    messageService.create(app, topicId2, testMessage2);
+    messageService.create(app, user1, topic2, testMessage2);
 
-    final ImmutableList<Message> messages = messageService.obtain(app, topicId1);
-    assertMessagesContain(messages, Message.builder(testMessage1).data("appid", app.getId()).data("topicid", topicId1).build());
-    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topicId1).build());
-    assertMessagesDoNotContain(messages, Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topicId2).build());
+    final ImmutableList<Message> messages = messageService.obtain(app, user1, topic1);
+    assertMessagesContain(messages,
+                          Message.builder(testMessage1).data("appid", app.getId()).data("topicid", topic1.getId()).build());
+    assertMessagesDoNotContain(messages,
+                               Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topic1.getId()).build());
+    assertMessagesDoNotContain(messages,
+                               Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topic2.getId()).build());
   }
 
   @Test
   public void testGroupChat()
   {
-    final WID<Topic> topicId = WID.generate();
-    final WID<User> testId1 = WID.generate();
-    final WID<User> testId2 = WID.generate();
-    final WID<User> testId3 = WID.generate();
-
     final Message testMessage = Message.builder()
                                        .id(WID.<Message>generate())
-                                       .from(testId1)
+                                       .from(user1.getId())
                                        .scope(MessageScope.GROUP)
-                                       .to(ImmutableSet.of(testId2, testId3))
+                                       .to(ImmutableSet.of(user2.getId(), user3.getId()))
                                        .text("Test message")
                                        .build();
-    messageService.create(app, topicId, testMessage);
+    messageService.create(app, user1, topic1, testMessage);
 
-    final ImmutableList<Message> messages = messageService.obtainTo(app, topicId, testId2);
-    assertMessagesContain(messages, Message.builder(testMessage).data("appid", app.getId()).data("topicid", topicId).build());
+    final ImmutableList<Message> messages = messageService.obtainTo(app, user2, topic1, null);
+    assertMessagesContain(messages,
+                          Message.builder(testMessage).data("appid", app.getId()).data("topicid", topic1.getId()).build());
   }
 
   private static void assertMessagesContain(@Nullable final ImmutableList<Message> messages, final Message expectedMessage)

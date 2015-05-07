@@ -10,10 +10,13 @@
 
 package com.wealdtech.chat.services;
 
-import com.wealdtech.WID;
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.Application;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
+import org.joda.time.DateTime;
 
 /**
  * The public face of the Chat service.
@@ -22,11 +25,12 @@ import com.wealdtech.chat.Topic;
  */
 public interface ChatService
 {
-  void createTopic(Application app, Topic topic);
-  void updateTopic(Application app, Topic topic);
-  Topic obtainTopic(Application app, WID<Topic> topicId);
-  void removeTopic(Application app, Topic topic);
+  void createTopic(Application app, User user, Topic topic);
+  void updateTopic(Application app, User user, Topic topic);
+  Topic obtainTopic(Application app, User user, WID<Topic> topicId);
+  void removeTopic(Application app, User user, Topic topic);
 
-  void createMessage(Application app, WID<Topic> topicId, Message message);
-  Message obtainMessage(Application app, WID<Topic> topicId, WID<Message> messageId);
+  void createMessage(Application app, User user, WID<Topic> topicId, Message message);
+  Message obtainMessage(Application app, User user, WID<Topic> topicId, WID<Message> messageId);
+  ImmutableList<Message> obtainMessagesSince(Application app, User user, WID<Topic> topicId, DateTime since);
 }

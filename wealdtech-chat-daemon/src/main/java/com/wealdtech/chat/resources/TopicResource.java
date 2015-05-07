@@ -13,6 +13,7 @@ package com.wealdtech.chat.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.wealdtech.Application;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.chat.services.ChatService;
@@ -46,8 +47,10 @@ public class TopicResource
   @Timed
   @DELETE
   @Path("{topicid: [A-Za-z0-9]+}")
-  public void removeTopic(@Context final Application app, @PathParam("topicid") final WID<Topic> topicId)
+  public void removeTopic(@Context final Application app,
+                          @Context final User user,
+                          @PathParam("topicid") final WID<Topic> topicId)
   {
-    chatService.removeTopic(app, chatService.obtainTopic(app, topicId));
+    chatService.removeTopic(app, user, chatService.obtainTopic(app, user, topicId));
   }
 }
