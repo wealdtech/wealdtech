@@ -45,7 +45,14 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime>
 
       try
       {
-        return formatter.parseDateTime(node.textValue()).withZone(DateTimeZone.UTC).toLocalDateTime();
+        final String txt = node.textValue();
+        final int year = Integer.parseInt(txt.substring(0, 4));
+        final int monthOfYear = Integer.parseInt(txt.substring(5, 7));
+        final int dayOfMonth = Integer.parseInt(txt.substring(8, 10));
+        final int hourOfDay = Integer.parseInt(txt.substring(11, 13));
+        final int minuteOfHour = Integer.parseInt(txt.substring(14, 16));
+        final int secondOfMinute = Integer.parseInt(txt.substring(17, 19));
+        return new LocalDateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute);
       }
       catch (IllegalArgumentException iae)
       {

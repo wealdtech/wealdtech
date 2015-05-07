@@ -13,14 +13,15 @@ package com.wealdtech.chat.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.wealdtech.Application;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
-import com.wealdtech.chat.User;
-import com.wealdtech.datastore.repositories.PostgreSqlRepository;
-import com.wealdtech.notifications.service.NotificationService;
+import com.wealdtech.chat.Topic;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;
@@ -36,47 +37,107 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageServicePostgreSqlImpl.class);
 
-  private static final TypeReference<Message> CHAT_TYPE_REFERENCE = new TypeReference<Message>(){};
-
-  private final NotificationService<Message> notificationService;
+  private static final TypeReference<Message> MESSAGE_TYPE_REFERENCE = new TypeReference<Message>() {};
 
   @Inject
-  public MessageServicePostgreSqlImpl(final PostgreSqlRepository repository,
-                                      @Named("dbmapper") final ObjectMapper mapper,
-                                      final NotificationService<Message> notificationService)
+  public MessageServicePostgreSqlImpl(final PostgreSqlRepository repository, @Named("dbmapper") final ObjectMapper mapper)
   {
     super(repository, mapper, "message");
-    this.notificationService = notificationService;
   }
 
   @Override
-  public void create(final Message message)
+  public void create(final Application app, final WID<Topic> topicId, final Message message)
   {
-    super.add(message);
-    final ImmutableSet.Builder<String> toB = ImmutableSet.builder();
-    for (final WID<User> userId : message.getTo())
-    {
-      toB.add(userId.toString());
-    }
-    notificationService.notify(toB.build(), message);
+    // Add the application Id and topic ID to the message before creating it
+    final Message messageToCreate =
+        Message.builder(message).data(ChatDatastoreConstants.APP_ID, app.getId()).data(ChatDatastoreConstants.TOPIC_ID, topicId).build();
+    super.add(messageToCreate);
   }
 
   @Override
-  public ImmutableList<Message> obtain(@Nullable final String topic, final String from)
+  public ImmutableList<Message> obtain(final Application app, final WID<Topic> topicId)
   {
-    return obtain(CHAT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    return obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override
       public String getConditions()
       {
-        return topic == null ? null : "d @> ?";
+        return "d @> ? AND d @> ?";
       }
 
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"topic\":\"" + topic + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
+      }
+    });
+  }
+
+  @Override
+  @Nullable
+  public Message obtain(final Application app, final WID<Topic> topicId, final WID<Message> messageId)
+  {
+    return Iterables.getFirst(obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ? AND d @> ? AND d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
+        setJson(stmt, index++, "{\"_id\":\"" + messageId.toString() + "\"}");
+      }
+    }), null);
+  }
+
+  @Override
+  public ImmutableList<Message> obtainFrom(final Application app, final WID<Topic> topicId, final WID<User> userId)
+  {
+    return obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ? AND d @> ? AND d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"appid\":\"" + app.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"topicid\":\"" + topicId.toString() + "\"}");
+        setJson(stmt, index++, "{\"from\":\"" + userId.toString() + "\"}");
+      }
+    });
+  }
+
+  @Override
+  public ImmutableList<Message> obtainTo(final Application app, final WID<Topic> topicId, final WID<User> userId)
+  {
+    return obtain(MESSAGE_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ? AND d @> ? AND (d @> '{\"scope\":\"Everyone\"}' OR d @> ?)";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"appid\":\"" + app.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"topicid\":\"" + topicId.toString() + "\"}");
+        setJson(stmt, index++, "{\"to\":[\"" + userId.toString() + "\"]}");
       }
     });
   }

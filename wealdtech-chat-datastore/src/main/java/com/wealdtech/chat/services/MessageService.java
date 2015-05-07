@@ -11,9 +11,11 @@
 package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.Application;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
-
-import javax.annotation.Nullable;
+import com.wealdtech.chat.Topic;
 
 /**
  * Interface defining message service methods
@@ -23,10 +25,26 @@ public interface MessageService
   /**
    * Create a message
    */
-  public void create(Message chat);
+  void create(Application app, WID<Topic> topicId, Message message);
 
   /**
-   * Obtain messages
+   * Obtain messages for a given topic
    */
-  public ImmutableList<Message> obtain(String from, @Nullable String topic);
+  ImmutableList<Message> obtain(Application app, WID<Topic> topicId);
+
+  /**
+   * Obtain a message given its ID
+   */
+  Message obtain(Application app, WID<Topic> topicId, WID<Message> messageId);
+
+  /**
+   * Obtain messages for a topic from a given user
+   */
+  ImmutableList<Message> obtainFrom(Application app, WID<Topic> topicId, WID<User> userId);
+
+  /**
+   * Obtain messages for a topic to a given user, either explicitly when they are named as a recipient or implicitly when the
+   * message is sent to everyone
+   */
+  ImmutableList<Message> obtainTo(Application app, WID<Topic> topicId, WID<User> userId);
 }

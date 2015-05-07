@@ -40,14 +40,13 @@ import java.util.*;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
- * The Weald Technology object
- * A generic immutable object which allows for arbitrary storage of data, serialization and deserialization through
- * Jackson, and object validation.
- * A WObject contains three different types of data: external, internal and scratch  External data is the meat of the data, defining
- * the information held within the WObject.  External data is used for comparisons.  Internal data is metadata, such as ID, version
- * or last modified date.  Internal data is stored with external data when serialising the WObject, but is not used when comparing
- * objects for equality.  Scratch data is neither persisted nor used for comparison purposes, and is used to augment existing
- * objects with additional information rather than use secondary data structures
+ * The Weald Technology object A generic immutable object which allows for arbitrary storage of data, serialization and
+ * deserialization through Jackson, and object validation. A WObject contains three different types of data: external, internal and
+ * scratch  External data is the meat of the data, defining the information held within the WObject.  External data is used for
+ * comparisons.  Internal data is metadata, such as ID, version or last modified date.  Internal data is stored with external data
+ * when serialising the WObject, but is not used when comparing objects for equality.  Scratch data is neither persisted nor used
+ * for comparison purposes, and is used to augment existing objects with additional information rather than use secondary data
+ * structures
  */
 public class WObject<T extends WObject> implements Comparable<T>
 {
@@ -57,9 +56,10 @@ public class WObject<T extends WObject> implements Comparable<T>
   private static final String SCRATCH = "__scratch";
 
   // Mapper used to read and write data
-  static final SimpleModule module = new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class,
-                                                                                                                      TreeMap.class);
+  static final SimpleModule module =
+      new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class, TreeMap.class);
   private static final ObjectMapper MAPPER;
+
   static
   {
     MAPPER = WealdMapper.getMapper()
@@ -71,12 +71,12 @@ public class WObject<T extends WObject> implements Comparable<T>
                         .configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false)
                         .configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
                         .configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true)
-                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
-    ;
+                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
   }
 
   /** A simple predicate to find scratch entries */
-  private static final Predicate<String> SCRATCH_PREDICATE = new Predicate<String>(){
+  private static final Predicate<String> SCRATCH_PREDICATE = new Predicate<String>()
+  {
     @Override
     public boolean apply(@Nullable final String input)
     {
@@ -85,7 +85,8 @@ public class WObject<T extends WObject> implements Comparable<T>
   };
 
   /** A simple predicate to find not scratch entries */
-  private static final Predicate<String> NOT_SCRATCH_PREDICATE = new Predicate<String>(){
+  private static final Predicate<String> NOT_SCRATCH_PREDICATE = new Predicate<String>()
+  {
     @Override
     public boolean apply(@Nullable final String input)
     {
@@ -94,17 +95,18 @@ public class WObject<T extends WObject> implements Comparable<T>
   };
 
   /**
-   * Obtain the Object Mapper used in WObject Jackson operations.
-   * This is actually a copy of the object mapper, so changes made it it will not affect WObject serialization
+   * Obtain the Object Mapper used in WObject Jackson operations. This is actually a copy of the object mapper, so changes made it
+   * it will not affect WObject serialization
+   *
    * @return a copy of the Object Mapper used in WObject Jackson operations
    */
-  public static ObjectMapper getObjectMapper() { return MAPPER.copy(); }
+  public static ObjectMapper getObjectMapper(){ return MAPPER.copy(); }
 
   // Internal fields
   @JsonIgnore
   protected static final String ID = "_id";
   @JsonIgnore
-  private static final TypeReference<WID<?>> ID_TYPE_REF = new TypeReference<WID<?>>(){};
+  private static final TypeReference<WID<?>> ID_TYPE_REF = new TypeReference<WID<?>>() {};
 
   // We store data as a sorted map to aid legibility
   @JsonIgnore
@@ -115,7 +117,8 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected final Map<String, Object> scratchData;
 
   @JsonAnyGetter
-  private Map<String, Object> any() {
+  private Map<String, Object> any()
+  {
     return data;
   }
 
@@ -152,26 +155,26 @@ public class WObject<T extends WObject> implements Comparable<T>
   }
 
   // We aren't re-ordering the list but if it has objects inside it we need to order them
-  private List<Object> order(final List<Object> list)
+  private ImmutableList<Object> order(final List<Object> list)
   {
-    final List<Object> result = Lists.newArrayList();
+    final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
     for (final Object value : list)
     {
       // Don't need to handle WObjects here as they will already be ordered
       if (value instanceof Map)
       {
-        result.add(order((Map<String, Object>)value));
+        resultB.add(order((Map<String, Object>)value));
       }
       else if (value instanceof List)
       {
-        result.add(order((List)value));
+        resultB.add(order((List)value));
       }
       else
       {
-        result.add(value);
+        resultB.add(value);
       }
     }
-    return result;
+    return resultB.build();
   }
 
   // Recursively strip internal data
@@ -247,6 +250,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
     return resultB.build();
   }
+
   private ImmutableList<Object> strip(final List<Object> list)
   {
     final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
@@ -279,6 +283,7 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
     return resultB.build();
   }
+
   private ImmutableSet<Object> strip(final Set<Object> set)
   {
     final ImmutableSet.Builder<Object> resultB = ImmutableSet.builder();
@@ -312,91 +317,95 @@ public class WObject<T extends WObject> implements Comparable<T>
     return resultB.build();
   }
 
-//  // Recursively deep-immutify data
-//  private ImmutableSortedMap<String, Object> immutify(final Map<String, Object> map)
-//  {
-//    final ImmutableSortedMap.Builder<String, Object> result = ImmutableSortedMap.naturalOrder();
-//    for (final Map.Entry<String, Object> entry : map.entrySet())
-//    {
-//      if (entry.getValue() instanceof Map)
-//      {
-//        result.put(entry.getKey(), immutify((Map<String, Object>)entry.getValue()));
-//      }
-//      else if (entry.getValue() instanceof List)
-//      {
-//        result.put(entry.getKey(), immutify((List)entry.getValue()));
-//      }
-//      else
-//      {
-//        result.put(entry);
-//      }
-//    }
-//    return result.build();
-//  }
-//
-//  private ImmutableList<Object> immutify(final List<Object> list)
-//  {
-//    final ImmutableList.Builder<Object> result = ImmutableList.builder();
-//    for (final Object value : list)
-//    {
-//      if (value instanceof Map)
-//      {
-//        result.add(immutify((Map<String, Object>)value));
-//      }
-//      else if (value instanceof List)
-//      {
-//        result.add(immutify((List)value));
-//      }
-//      else
-//      {
-//        result.add(value);
-//      }
-//    }
-//    return result.build();
-//  }
+  //  // Recursively deep-immutify data
+  //  private ImmutableSortedMap<String, Object> immutify(final Map<String, Object> map)
+  //  {
+  //    final ImmutableSortedMap.Builder<String, Object> result = ImmutableSortedMap.naturalOrder();
+  //    for (final Map.Entry<String, Object> entry : map.entrySet())
+  //    {
+  //      if (entry.getValue() instanceof Map)
+  //      {
+  //        result.put(entry.getKey(), immutify((Map<String, Object>)entry.getValue()));
+  //      }
+  //      else if (entry.getValue() instanceof List)
+  //      {
+  //        result.put(entry.getKey(), immutify((List)entry.getValue()));
+  //      }
+  //      else
+  //      {
+  //        result.put(entry);
+  //      }
+  //    }
+  //    return result.build();
+  //  }
+  //
+  //  private ImmutableList<Object> immutify(final List<Object> list)
+  //  {
+  //    final ImmutableList.Builder<Object> result = ImmutableList.builder();
+  //    for (final Object value : list)
+  //    {
+  //      if (value instanceof Map)
+  //      {
+  //        result.add(immutify((Map<String, Object>)value));
+  //      }
+  //      else if (value instanceof List)
+  //      {
+  //        result.add(immutify((List)value));
+  //      }
+  //      else
+  //      {
+  //        result.add(value);
+  //      }
+  //    }
+  //    return result.build();
+  //  }
 
   /**
-   * Carry out any operations required to manage the object prior to creation.  For example, this could add a
-   * timestamp or a version number.
+   * Carry out any operations required to manage the object prior to creation.  For example, this could add a timestamp or a version
+   * number.
    *
    * @param data the data supplied
+   *
    * @return the data to be used in creation of the object
    */
-  protected Map<String, Object> preCreate(final Map<String, Object> data) { return data; }
+  protected Map<String, Object> preCreate(final Map<String, Object> data){ return data; }
 
   /**
-   * Validate the data in the object to ensure that it conforms to whatever requirements it has.
-   * This should throw a DataError if validation is not successful
+   * Validate the data in the object to ensure that it conforms to whatever requirements it has. This should throw a DataError if
+   * validation is not successful
    */
-  protected void validate() {}
+  protected void validate(){}
 
 
   /**
    * Obtain the raw data for this object.  Note that this does not provide the internal data.  Also note that there are no
-   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the contents of
-   * the map will change from one call to the next.
-   * @see #getAllData
+   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the contents of the
+   * map will change from one call to the next.
+   *
    * @return a map of keyed data objects
+   * @see #getAllData
    */
   @JsonIgnore
-  public ImmutableMap<String, Object> getData() { return externalData(); }
+  public ImmutableMap<String, Object> getData(){ return externalData(); }
 
   /**
-   * Obtain the raw data for this object.  Note that this does provide the internal data.  Also note that there are no
-   * guarantees about the types of the objects returned as values in the map; specifically, it is possible that the values will
-   * change between invocations (although the values returned from a single invocation will not).
-   * @see #getData
+   * Obtain the raw data for this object.  Note that this does provide the internal data.  Also note that there are no guarantees
+   * about the types of the objects returned as values in the map; specifically, it is possible that the values will change between
+   * invocations (although the values returned from a single invocation will not).
+   *
    * @return a map of keyed data objects
+   * @see #getData
    */
   @JsonIgnore
-  public ImmutableMap<String, Object> getAllData() { return ImmutableMap.copyOf(data); }
+  public ImmutableMap<String, Object> getAllData(){ return ImmutableMap.copyOf(data); }
 
   @SuppressWarnings("unchecked")
   @JsonIgnore
   @Nullable
-  public WID<T> getId() { return (WID<T>)get(ID, ID_TYPE_REF).orNull();}
+  public WID<T> getId(){ return (WID<T>)get(ID, ID_TYPE_REF).orNull();}
 
-  private static final TypeReference<WObject> GENERIC_TYPE_REF = new TypeReference<WObject>(){};
+  private static final TypeReference<WObject> GENERIC_TYPE_REF = new TypeReference<WObject>() {};
+
   @SuppressWarnings("unchecked")
   @JsonIgnore
   public <U extends WObject> Optional<U> get(final String key)
@@ -420,28 +429,34 @@ public class WObject<T extends WObject> implements Comparable<T>
   protected <U> Optional<U> getValue(final String key, final Object val, final TypeReference<U> typeRef)
   {
     // Obtain the type we are after through reflection to find out if it is a collection.
-    final Class requiredClass;
-    final Class wrappedClass;
+    final Type requiredType;
+    final Class<?> requiredClass;
+    final Type wrappedType;
+    final Class<?> wrappedClass;
     if (typeRef.getType() instanceof ParameterizedType)
     {
       // This is a parameterized type, it might be wrapped in an Optional or TriVal in which case we need the inner class for
       // determining if it is a collection
-      ParameterizedType type = (ParameterizedType)typeRef.getType();
-      requiredClass = (Class)type.getRawType();
+      requiredType = typeRef.getType();
+      requiredClass = (Class)((ParameterizedType)requiredType).getRawType();
       if (Objects.equal(requiredClass, Optional.class) || (Objects.equal(requiredClass, TriVal.class)))
       {
-        final Type subType = type.getActualTypeArguments()[0];
-        wrappedClass = (Class)(subType instanceof ParameterizedType ? ((ParameterizedType)subType).getRawType() : subType);
+        wrappedType = ((ParameterizedType)requiredType).getActualTypeArguments()[0];
+        wrappedClass =
+            (Class)(wrappedType instanceof ParameterizedType ? ((ParameterizedType)wrappedType).getRawType() : wrappedType);
       }
       else
       {
+        wrappedType = requiredType;
         wrappedClass = requiredClass;
       }
     }
     else
     {
       // This is a simple class
+      requiredType = typeRef.getType();
       requiredClass = (Class)typeRef.getType();
+      wrappedType = requiredType;
       wrappedClass = requiredClass;
     }
     final boolean isCollection = Collection.class.isAssignableFrom(wrappedClass);
@@ -450,9 +465,44 @@ public class WObject<T extends WObject> implements Comparable<T>
       return Optional.absent();
     }
 
-    if (Objects.equal(requiredClass, val.getClass()))
+    if (requiredClass.isAssignableFrom(val.getClass()))
     {
-      return Optional.of((U)val);
+      if (isCollection)
+      {
+        // Check that the element objects' class is correct as well
+        final Type elementType = ((ParameterizedType)wrappedType).getActualTypeArguments()[0];
+        final Class<?> elementClass =
+            (Class)(elementType instanceof ParameterizedType ? ((ParameterizedType)elementType).getRawType() : elementType);
+        // FIXME does not handle Optional<Collection<?>> or TriVal<Collection<?>> style
+        if (Objects.equal(requiredClass, wrappedClass) &&
+            (((Collection)val).isEmpty() || Objects.equal(((Collection)val).iterator().next().getClass(), elementClass)))
+        {
+          return Optional.of((U)val);
+        }
+        else
+        {
+          final String valStr = stringify(val, isCollection);
+          try
+          {
+            final U result = MAPPER.readValue(valStr, typeRef);
+            // It is possible that data has not been initialised yet.  This is because we can call this method from preCreate()
+            if (data != null)
+            {
+              data.put(key, result);
+            }
+            return Optional.of(result);
+          }
+          catch (final IOException ioe)
+          {
+            LOG.error("Failed to parse value: ", ioe);
+            return Optional.absent();
+          }
+        }
+      }
+      else
+      {
+        return Optional.of((U)val);
+      }
     }
     final String valStr = stringify(val, isCollection);
     try
@@ -591,6 +641,7 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   /**
    * State if this object is empty or not.  Internal fields are not taken in to account when deciding this.
+   *
    * @return {@code true} if this object does not contain any useful data; otherwise {@code false}.
    */
   @JsonIgnore
@@ -665,7 +716,7 @@ public class WObject<T extends WObject> implements Comparable<T>
   @SuppressWarnings("unchecked")
   public boolean equals(final Object that)
   {
-    return that instanceof WObject && this.hashCode() == that.hashCode() && this.compareTo((T) that) == 0;
+    return that instanceof WObject && this.hashCode() == that.hashCode() && this.compareTo((T)that) == 0;
   }
 
   private ImmutableMap<String, Object> externalData()
@@ -746,8 +797,10 @@ public class WObject<T extends WObject> implements Comparable<T>
   /**
    * Recast a WObject.  This is useful when we have abstract classes or interfaces defined in a WObject and need to recast to a
    * concrete class
+   *
    * @param obj the object to recast
    * @param klazz the class to which to recast
+   *
    * @return the recasted object
    */
   @Nullable
@@ -758,33 +811,50 @@ public class WObject<T extends WObject> implements Comparable<T>
       return null;
     }
 
-    // When recasting an object we keep all data, including scratch data
-    final P recastObj;
+    // Try a simple recasting first
     try
     {
-      recastObj = klazz.getConstructor(Map.class).newInstance(obj.getAllData());
-      recastObj.setScratch(obj.getScratch());
-      return recastObj;
+      return klazz.cast(obj);
     }
-    catch (final InstantiationException e)
+    catch (final ClassCastException cce)
     {
-      LOG.error("Failed to instantiate class: ", e);
-      throw new ServerError(e);
-    }
-    catch (final IllegalAccessException e)
-    {
-      LOG.error("Failed to access class: ", e);
-      throw new ServerError(e);
-    }
-    catch (final InvocationTargetException e)
-    {
-      LOG.error("Failed to invoke class: ", e);
-      throw new ServerError(e);
-    }
-    catch (final NoSuchMethodException e)
-    {
-      LOG.error("Failed to find suitable method: ", e);
-      throw new ServerError(e);
+      // Object is not  a direct cast: recast by recreating the object
+      final P recastObj;
+      try
+      {
+        // When recasting an object we keep all data, including scratch data
+        recastObj = klazz.getConstructor(Map.class).newInstance(obj.getAllData());
+        recastObj.setScratch(obj.getScratch());
+        return recastObj;
+      }
+      catch (final InstantiationException e)
+      {
+        LOG.error("Failed to instantiate class: ", e);
+        throw new ServerError(e);
+      }
+      catch (final IllegalAccessException e)
+      {
+        LOG.error("Failed to access class: ", e);
+        throw new ServerError(e);
+      }
+      catch (final InvocationTargetException e)
+      {
+        LOG.error("Failed to invoke class: ", e);
+        throw new ServerError(e);
+      }
+      catch (final NoSuchMethodException e)
+      {
+        LOG.error("Failed to find suitable method: ", e);
+        throw new ServerError(e);
+      }
     }
   }
+
+  /**
+   * Called prior to an object being stored.  This is useful in situations where, for example, a structured type is stored
+   * differently in the datastore than its string representation might suggest.  The obvious example of this is datetimes, which
+   * are often shown in (for example) the format 'YYYY-MM-DD HH:MM:SS' but might want to be stored in the database as longs.
+   * In this situation this method can ensure that the relevant field is a datetime rather than a string prior to serialization
+   */
+  public void onPriorToStore(){}
 }

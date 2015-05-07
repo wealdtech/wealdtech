@@ -9,6 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/wealdtech-application" />
+            <option value="$PROJECT_DIR$/wealdtech-application-datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-application-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-authentication" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
@@ -20,6 +23,7 @@
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
+            <option value="$PROJECT_DIR$/wealdtech-events" />
             <option value="$PROJECT_DIR$/wealdtech-gcm" />
             <option value="$PROJECT_DIR$/wealdtech-hash-cache" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
@@ -27,15 +31,20 @@
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
             <option value="$PROJECT_DIR$/wealdtech-notifications" />
+            <option value="$PROJECT_DIR$/wealdtech-notifications-providers" />
+            <option value="$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh" />
             <option value="$PROJECT_DIR$/wealdtech-rationale" />
             <option value="$PROJECT_DIR$/wealdtech-retrofit" />
             <option value="$PROJECT_DIR$/wealdtech-roberto" />
             <option value="$PROJECT_DIR$/wealdtech-services" />
             <option value="$PROJECT_DIR$/wealdtech-services/askgeo" />
+            <option value="$PROJECT_DIR$/wealdtech-services/chat" />
             <option value="$PROJECT_DIR$/wealdtech-services/google" />
+            <option value="$PROJECT_DIR$/wealdtech-services/pushwoosh2" />
             <option value="$PROJECT_DIR$/wealdtech-users" />
             <option value="$PROJECT_DIR$/wealdtech-users-daemon" />
             <option value="$PROJECT_DIR$/wealdtech-users-datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-users-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
             <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />

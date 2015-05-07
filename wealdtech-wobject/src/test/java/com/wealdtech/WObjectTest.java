@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.testng.Assert.*;
 
@@ -94,7 +95,7 @@ public class WObjectTest
                                             .build();
     final String testObj1Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj1);
     assertEquals(testObj1Ser1,
-                 "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\"}");
+                 "{\"_id\":\"10338638b3a5\",\"test date\":\"1973-11-29T21:33:09.000+00:00 UTC\",\"test string\":\"test value\"}");
     final String testObj1Ser2 =
         WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj1);
     assertEquals(testObj1Ser2,
@@ -128,7 +129,7 @@ public class WObjectTest
                                             .build();
     final String testObj2Ser = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser,
-                 "{\"_id\":\"24cb016eb\",\"test date\":\"1977-06-07T21:44:50+00:00 UTC\",\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\",\"test string 3\":\"test value 3\"}}");
+                 "{\"_id\":\"24cb016eb\",\"test date\":\"1977-06-07T21:44:50.000+00:00 UTC\",\"test obj\":{\"_id\":\"24cb016ea\",\"test date\":\"1973-11-29T21:33:09.000+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\",\"test string 3\":\"test value 3\"}}");
   }
 
   @Test
@@ -217,7 +218,7 @@ public class WObjectTest
 
     final String testObj2Ser1 = WealdMapper.getServerMapper().writeValueAsString(testObj2);
     assertEquals(testObj2Ser1,
-                 "{\"_id\":\"499602d2\",\"test date\":\"1973-11-29T21:33:09+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
+                 "{\"_id\":\"499602d2\",\"test date\":\"1973-11-29T21:33:09.000+00:00 UTC\",\"test string\":\"test value\",\"test string 2\":\"test value 2\"}");
     final String testObj2Ser2 =
         WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).writeValueAsString(testObj2);
     assertEquals(testObj2Ser2,
@@ -409,7 +410,7 @@ public class WObjectTest
     final String testObj1Ser = "{\"one\":\"\"}";
     final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
     assertNotNull(testObj1Deser);
-    assertEquals(testObj1Deser.get("one", new TypeReference<String>(){}).get(), "");
+    assertEquals(testObj1Deser.get("one", new TypeReference<String>() {}).get(), "");
   }
 
   @Test
@@ -419,38 +420,118 @@ public class WObjectTest
     final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
     assertNotNull(testObj1Deser);
 
-    assertEquals(testObj1Deser.get("one", new TypeReference<TriVal<String>>(){}).get(), TriVal.of("test"));
-  }
-
-  @Test
-  public void testTriValList() throws IOException
-  {
-    final TestWObject testObj1 = TestWObject.builder()
-                                            .data("one", TriVal.of(ImmutableList.of("One", "One1")))
-                                            .data("two", TriVal.clear())
-                                            .data("three", TriVal.absent())
-                                            .build();
-
-    final String testObj1Ser = TestWObject.serialize(testObj1);
-    final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
-    assertNotNull(testObj1Deser);
-
-    assertEquals(testObj1Deser.get("one", new TypeReference<TriVal<ImmutableList<String>>>(){}).get(), TriVal.of(ImmutableList.of("One",
-                                                                                                                                  "One1")));
+    assertEquals(testObj1Deser.get("one", new TypeReference<TriVal<String>>() {}).get(), TriVal.of("test"));
   }
 
   @Test
   public void testTriValClear() throws IOException
   {
-    final TestWObject testObj1 = TestWObject.builder()
-                                            .data("clear", TriVal.clear())
-                                            .build();
+    final TestWObject testObj1 = TestWObject.builder().data("clear", TriVal.clear()).build();
 
     final String testObj1Ser = TestWObject.serialize(testObj1);
     assertEquals(testObj1Ser, "{\"clear\":\"__\"}");
     final TestWObject testObj1Deser = TestWObject.deserialize(testObj1Ser, TestWObject.class);
     assertNotNull(testObj1Deser);
 
-    assertEquals(testObj1Deser.get("clear", new TypeReference<TriVal<ImmutableList<DateTime>>>(){}).get(), TriVal.clear());
+    assertEquals(testObj1Deser.get("clear", new TypeReference<TriVal<ImmutableList<DateTime>>>() {}).get(), TriVal.clear());
+  }
+
+  @Test
+  public void testList() throws IOException
+  {
+    final ImmutableList<DateTime> list =
+        ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                         new DateTime(3456789000000L, DateTimeZone.UTC));
+    final GenericWObject testObj1 = GenericWObject.builder().data("list", list).build();
+    assertEquals(((List)testObj1.getAllData().get("list")).get(0).getClass(), DateTime.class);
+  }
+
+  @Test
+  public void testListRoundtrip() throws IOException
+  {
+    final TypeReference<List<DateTime>> listTypeRef = new TypeReference<List<DateTime>>(){};
+
+    final ImmutableList<DateTime> list =
+        ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                         new DateTime(3456789000000L, DateTimeZone.UTC));
+    GenericWObject testObj1 = GenericWObject.builder().data("list", list).build();
+    final List<DateTime> res = testObj1.get("list", listTypeRef).get();
+    assertTrue(ImmutableList.class.isAssignableFrom(res.getClass()));
+    assertEquals(res.get(0).getClass(), DateTime.class);
+
+    final GenericWObject testObj2 = GenericWObject.builder(testObj1).build();
+    final List<DateTime> res2 = testObj2.get("list", listTypeRef).get();
+    assertTrue(ImmutableList.class.isAssignableFrom(res2.getClass()));
+    assertEquals(res2.get(0).getClass(), DateTime.class);
+
+    testObj1 = GenericWObject.deserialize(GenericWObject.serialize(testObj1), GenericWObject.class);
+    final List<DateTime> res3 = testObj1.get("list", listTypeRef).get();
+    assertEquals(res3.get(0).getClass(), DateTime.class);
+  }
+
+  @Test
+  public void testSetRoundtrip() throws IOException
+  {
+    final TypeReference<Set<DateTime>> setTypeRef = new TypeReference<Set<DateTime>>(){};
+
+    final ImmutableSet<DateTime> set =
+        ImmutableSet.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                         new DateTime(3456789000000L, DateTimeZone.UTC));
+    GenericWObject testObj1 = GenericWObject.builder().data("set", set).build();
+    final Set<DateTime> res = testObj1.get("set", setTypeRef).get();
+    assertTrue(ImmutableSet.class.isAssignableFrom(res.getClass()));
+    assertEquals(res.iterator().next().getClass(), DateTime.class);
+
+    final GenericWObject testObj2 = GenericWObject.builder(testObj1).build();
+    final Set<DateTime> res2 = testObj2.get("set", setTypeRef).get();
+    assertTrue(ImmutableSet.class.isAssignableFrom(res2.getClass()));
+    assertEquals(res2.iterator().next().getClass(), DateTime.class);
+
+    testObj1 = GenericWObject.deserialize(GenericWObject.serialize(testObj1), GenericWObject.class);
+    final Set<DateTime> res3 = testObj1.get("set", setTypeRef).get();
+    assertEquals(res3.iterator().next().getClass(), DateTime.class);
+  }
+
+  @Test
+  public void testTriValList() throws IOException
+  {
+    final TriVal<ImmutableList<DateTime>> list =
+        TriVal.of(ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                         new DateTime(3456789000000L, DateTimeZone.UTC)));
+    GenericWObject testObj1 = GenericWObject.builder().data("list", list).build();
+    final TypeReference<TriVal<List<DateTime>>> listTypeRef = new TypeReference<TriVal<List<DateTime>>>(){};
+    final TriVal<List<DateTime>> res = testObj1.get("list", listTypeRef).get();
+    assertEquals(res.get().get(0).getClass(), DateTime.class);
+  }
+
+  @Test
+  public void testTriValListRoundtrip() throws IOException
+  {
+    final TriVal<ImmutableList<DateTime>> list =
+        TriVal.of(ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                                   new DateTime(3456789000000L, DateTimeZone.UTC)));
+    GenericWObject testObj1 = GenericWObject.builder().data("list", list).build();
+    testObj1 = GenericWObject.deserialize(GenericWObject.serialize(testObj1), GenericWObject.class);
+    final TypeReference<TriVal<List<DateTime>>> listTypeRef = new TypeReference<TriVal<List<DateTime>>>(){};
+    final TriVal<List<DateTime>> res = testObj1.get("list", listTypeRef).get();
+    assertEquals(res.get().get(0).getClass(), DateTime.class);
+  }
+
+  @Test
+  public void testListOrdering() throws IOException
+  {
+    final ImmutableList<DateTime> list1 =
+        ImmutableList.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                         new DateTime(3456789000000L, DateTimeZone.UTC));
+    final GenericWObject testObj1 = GenericWObject.builder().data("list", list1).build();
+    assertEquals(testObj1.get("list", new TypeReference<ImmutableList<DateTime>>() {}).get().get(0),
+                 new DateTime(123456789000L, DateTimeZone.UTC));
+
+    final ImmutableList<DateTime> list2 =
+        ImmutableList.of(new DateTime(3456789000000L, DateTimeZone.UTC), new DateTime(123456789000L, DateTimeZone.UTC),
+                         new DateTime(234567890000L, DateTimeZone.UTC));
+    final GenericWObject testObj2 = GenericWObject.builder().data("list", list2).build();
+    assertEquals(testObj2.get("list", new TypeReference<ImmutableList<DateTime>>() {}).get().get(0),
+                 new DateTime(3456789000000L, DateTimeZone.UTC));
   }
 }

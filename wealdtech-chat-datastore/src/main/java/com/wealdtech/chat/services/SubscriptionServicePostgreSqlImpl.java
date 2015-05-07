@@ -13,13 +13,15 @@ package com.wealdtech.chat.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.WID;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Subscription;
-import com.wealdtech.chat.User;
-import com.wealdtech.datastore.repositories.PostgreSqlRepository;
+import com.wealdtech.chat.Topic;
+import com.wealdtech.User;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.slf4j.Logger;
@@ -44,41 +46,43 @@ public class SubscriptionServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   }
 
   @Override
-  public ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<WID<User>> userIds)
+  public ImmutableSet<Subscription> obtain(final WID<Application> appId, final WID<Topic> topicId)
   {
-    return obtain(SUBSCRIPTION_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    return ImmutableSet.copyOf(obtain(SUBSCRIPTION_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override
       public String getConditions()
       {
-        return "d @> ? AND jsonb_exists_any(d->'user', ?)";
+        return "d @> ? AND d @> ?";
       }
 
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
-        setJson(stmt, 1, "{\"topic\":\"" + topic + "\"}");
-        setWIDArray(stmt, 2, userIds);
+        setJson(stmt, 1, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, 2, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
       }
-    });
+    }));
   }
 
   @Override
-  public ImmutableList<Subscription> obtainForTopic(final String topic)
+  public ImmutableSet<Subscription> obtain(final WID<Application> appId, final WID<Topic> topicId, final ImmutableCollection<WID<User>> userIds)
   {
-    return obtain(SUBSCRIPTION_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    return ImmutableSet.copyOf(obtain(SUBSCRIPTION_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override
       public String getConditions()
       {
-        return "d @> ?";
+        return "d @> ? AND d @> ? AND jsonb_exists_any(d->'user', ?)";
       }
 
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
-        setJson(stmt, 1, "{\"topic\":\"" + topic + "\"}");
+        setJson(stmt, 1, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + appId.toString() + "\"}");
+        setJson(stmt, 2, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topicId.toString() + "\"}");
+        setWIDArray(stmt, 3, userIds);
       }
-    });
+    }));
   }
 }

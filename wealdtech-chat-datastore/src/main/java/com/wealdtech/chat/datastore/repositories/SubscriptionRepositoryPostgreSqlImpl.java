@@ -13,7 +13,7 @@ package com.wealdtech.chat.datastore.repositories;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.datastore.repositories.PostgreSqlRepository;
+import com.wealdtech.repositories.PostgreSqlRepository;
 
 /**
  */

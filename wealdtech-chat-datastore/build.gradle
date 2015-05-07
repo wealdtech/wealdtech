@@ -12,6 +12,9 @@ dependencies
 {
     compile project(':wealdtech-chat')
     compile project(':wealdtech-wobject-datastore')
+    compile project(':wealdtech-application-datastore')
+    compile project(':wealdtech-users-datastore')
+    compile project(':wealdtech-events')
 }
 
 uploadArchives {

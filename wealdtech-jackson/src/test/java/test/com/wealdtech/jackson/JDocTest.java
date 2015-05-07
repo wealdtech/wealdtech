@@ -60,7 +60,7 @@ public class JDocTest
       final String docStr = WealdMapper.getServerMapper().writeValueAsString(doc);
 
       assertEquals(docStr,
-                   "{\"val1\":\"2014-09-16T23:00:00+00:00 UTC\",\"val2\":{\"sub1\":true,\"sub2\":5,\"sub3\":\"1.2.3.4:80\"}}");
+                   "{\"val1\":\"2014-09-16T23:00:00.000+00:00 UTC\",\"val2\":{\"sub1\":true,\"sub2\":5,\"sub3\":\"1.2.3.4:80\"}}");
     }
     catch (JsonProcessingException e)
     {
@@ -207,7 +207,7 @@ public class JDocTest
       final JDoc doc = new JDoc(map);
       final String docStr = WealdMapper.getServerMapper().writeValueAsString(doc);
       assertEquals(docStr,
-                   "{\"val1\":\"2014-09-16T23:00:00+00:00 UTC\",\"val2\":{\"sub1\":true,\"sub2\":5,\"sub3\":[\"one\",\"two\",\"three\"]}}");
+                   "{\"val1\":\"2014-09-16T23:00:00.000+00:00 UTC\",\"val2\":{\"sub1\":true,\"sub2\":5,\"sub3\":[\"one\",\"two\",\"three\"]}}");
     }
     catch (JsonProcessingException e)
     {

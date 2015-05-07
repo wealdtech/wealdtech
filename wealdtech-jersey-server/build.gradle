@@ -24,6 +24,7 @@ dependencies
     compile 'com.sun.jersey.contribs:jersey-guice:1.18'
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'javax.ws.rs:jsr311-api:1.1.1'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.0'
 
     // Jetty
     compile 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'

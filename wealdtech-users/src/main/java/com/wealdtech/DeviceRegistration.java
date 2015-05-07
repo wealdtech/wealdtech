@@ -12,6 +12,7 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Optional;
 
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import java.util.Map;
 public class DeviceRegistration extends WObject<DeviceRegistration> implements Comparable<DeviceRegistration>
 {
   private static final String TYPE = "type";
+  private static final String NAME = "name";
   private static final String DEVICE_ID = "deviceid";
 
   @JsonCreator
@@ -49,6 +51,9 @@ public class DeviceRegistration extends WObject<DeviceRegistration> implements C
   }
 
   @JsonIgnore
+  public Optional<String> getName() { return get(NAME, String.class); }
+
+  @JsonIgnore
   public String getDeviceId(){ return get(DEVICE_ID, String.class).get(); }
 
   // Builder boilerplate
@@ -67,6 +72,12 @@ public class DeviceRegistration extends WObject<DeviceRegistration> implements C
     public P type(final DeviceType type)
     {
       data(TYPE, type);
+      return self();
+    }
+
+    public P name(final String name)
+    {
+      data(NAME, name);
       return self();
     }
 

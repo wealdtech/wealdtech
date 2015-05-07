@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.inject.Inject;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.datastore.repositories.PostgreSqlRepository;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.services.WObjectService;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;

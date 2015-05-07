@@ -11,12 +11,15 @@
 package com.wealdtech.chat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wealdtech.DataError;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * Elements which exist in every chat object
@@ -25,8 +28,6 @@ public abstract class ChatObject<T extends ChatObject<T>> extends WObject<T> imp
 {
   private static final Logger LOG = LoggerFactory.getLogger(ChatObject.class);
 
-  private static final String APP_ID = "_appid";
-
   public ChatObject(final Map<String, Object> data)
   {
     super(data);
@@ -34,17 +35,13 @@ public abstract class ChatObject<T extends ChatObject<T>> extends WObject<T> imp
 
   protected void validate()
   {
-    if (!exists(APP_ID))
-    {
-      throw new DataError.Missing("Application ID is required");
-    }
+    checkState(exists(ID), "Item ID is required");
   }
 
+  @Override
   @JsonIgnore
-  public String getAppId()
-  {
-    return get(APP_ID, String.class).get();
-  }
+  @Nonnull
+  public WID<T> getId() { return super.getId(); }
 
   public static class Builder<T extends ChatObject<T>, P extends Builder<T, P>> extends WObject.Builder<T, P>
   {
@@ -56,12 +53,6 @@ public abstract class ChatObject<T extends ChatObject<T>> extends WObject<T> imp
     public Builder(final T prior)
     {
       super(prior);
-    }
-
-    public P appId(final String appId)
-    {
-      data(APP_ID, appId);
-      return self();
     }
   }
 }

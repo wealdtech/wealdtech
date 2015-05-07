@@ -12,9 +12,8 @@ dependencies
 {
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
-    compile 'com.squareup.retrofit:retrofit:1.7.1'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
-    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
 }
 
 uploadArchives {

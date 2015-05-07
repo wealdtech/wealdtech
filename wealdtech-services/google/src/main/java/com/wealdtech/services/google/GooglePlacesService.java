@@ -1,12 +1,11 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.WObject;
-import com.wealdtech.jackson.JDoc;
 import retrofit.http.GET;
 import retrofit.http.Query;
 
 /**
- * Interact with the Google PLAces API
+ * Interact with the Google Places API
  */
 public interface GooglePlacesService
 {

@@ -29,6 +29,7 @@ public class TokenAuthenticationMethod extends AuthenticationMethod
   public static final String TOKEN_AUTHENTICATION = "Token";
 
   private static final String TOKEN = "token";
+  private static final String SINGLE_USE = "singleuse";
 
   @JsonCreator
   public TokenAuthenticationMethod(final Map<String, Object> data)
@@ -49,6 +50,12 @@ public class TokenAuthenticationMethod extends AuthenticationMethod
   @JsonIgnore
   public String getToken(){return get(TOKEN, String.class).get();}
 
+  /**
+   * Tokens are reusable unless explicitly set to be single-use
+   */
+  @JsonIgnore
+  public boolean isSingleUse() { return get(SINGLE_USE, Boolean.class).or(false); }
+
   // Builder boilerplate
   public static class Builder<P extends Builder<P>> extends AuthenticationMethod.Builder<P>
   {
@@ -67,6 +74,12 @@ public class TokenAuthenticationMethod extends AuthenticationMethod
     public P token(final String token)
     {
       data(TOKEN, token);
+      return self();
+    }
+
+    public P singleUse(final Boolean singleUse)
+    {
+      data(SINGLE_USE, singleUse);
       return self();
     }
 

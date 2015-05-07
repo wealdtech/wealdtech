@@ -26,18 +26,20 @@ public class MandrillConfiguration implements Configuration
 
   private MailActor sender;
 
+  private boolean active = true;
+
   @Inject
-  public MandrillConfiguration()
-  {
-  }
+  public MandrillConfiguration(){}
 
   @JsonCreator
   private MandrillConfiguration(@JsonProperty("key") final String key,
                                 @JsonProperty("sender name") final String senderName,
-                                @JsonProperty("sender address") final String senderAddress)
+                                @JsonProperty("sender address") final String senderAddress,
+                                @JsonProperty("active") final Boolean active)
   {
     this.key = key;
     this.sender = new MailActor(senderName, senderAddress);
+    this.active = MoreObjects.firstNonNull(active, true);
   }
 
   public String getKey()
@@ -49,4 +51,6 @@ public class MandrillConfiguration implements Configuration
   {
     return sender;
   }
+
+  public boolean isActive() { return active; }
 }

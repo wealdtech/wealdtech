@@ -1,4 +1,0 @@
-JettyServer
-  - Create with full JAX-RS configuration
-    - Tidy up servlet setup, move to configuration
-  - Add SPDY connector

@@ -49,7 +49,8 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
         if ("timestamp".equals(fieldName))
         {
           timestamp = jp.getLongValue();
-        } else if ("timezone".equals(fieldName))
+        }
+        else if ("timezone".equals(fieldName))
         {
           timezone = jp.getText();
         }
@@ -80,31 +81,75 @@ public class DateTimeDeserializer extends JsonDeserializer<DateTime>
       final Long dt = Long.valueOf(txt);
       return new DateTime(dt, DateTimeZone.UTC);
     }
-    catch (final NumberFormatException nfe)
+    catch (final NumberFormatException ignored) {}
+
+    // If we have reached here then it isn't a long so should be a number
+
+    int offset = 0;
+
+    // Manually parse out the pieces to build a datetime
+    final int year = Integer.parseInt(txt.substring(offset, 4 + offset));
+    final int monthOfYear = Integer.parseInt(txt.substring(5 + offset, 7 + offset));
+    final int dayOfMonth = Integer.parseInt(txt.substring(8 + offset, 10 + offset));
+    final int hourOfDay = Integer.parseInt(txt.substring(11 + offset, 13 + offset));
+    final int minuteOfHour = Integer.parseInt(txt.substring(14 + offset, 16 + offset));
+    final int secondOfMinute = Integer.parseInt(txt.substring(17 + offset, 19 + offset));
+    int millisOfSecond = 0;
+
+    // There are three possibilities for how the datetime ends.  It might just stop at this point, in which case it is UTC,
+    // it might be in ISO8601 format, or it might have a full timezone appended after a space separator
+
+    int additionalHours = 0;
+    int additionalMinutes = 0;
+
+    if (txt.length() == 19 + offset)
     {
-      // Isn't a long, just keep going
+      // No more information
+      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond, DateTimeZone.UTC);
     }
 
-    DateTime result;
-    if (txt.indexOf(' ') == -1)
+    if (txt.charAt(19 + offset) == '.')
     {
-      // No timezone
-      if (txt.indexOf('.') == -1)
-      {
-        // Use the Wealdtech format and set timezone to UTC
-        result = DATE_TIME_FORMATTER_NO_TZ.parseDateTime(txt).withZone(DateTimeZone.UTC);
-      }
-      else
-      {
-        // ISO8601 format and set timezone to UTC
-        result = DATE_TIME_FORMATTER_ISO.parseDateTime(txt).withZone(DateTimeZone.UTC);
-      }
+      // Milliseconds have been added in the form .sss
+      millisOfSecond = Integer.parseInt(txt.substring(20 + offset, 23 + offset));
+      offset += 4;
     }
-    else
+
+    if (txt.charAt(19 + offset) == '+')
     {
-      // Timezone supplied
-      result = DATE_TIME_FORMATTER.parseDateTime(txt);
+      additionalHours = -Integer.parseInt(txt.substring(20 + offset, 22 + offset));
+      if (txt.charAt(22 + offset) == ':')
+      {
+        offset++;
+      }
+      additionalMinutes = -Integer.parseInt(txt.substring(22 + offset, 24 + offset));
+      offset += 4;
     }
-    return result;
+    else if (txt.charAt(19 + offset) == '-')
+    {
+      additionalHours = Integer.parseInt(txt.substring(20 + offset, 22 + offset));
+      if (txt.charAt(22 + offset) == ':')
+      {
+        offset++;
+      }
+      additionalMinutes = Integer.parseInt(txt.substring(22 + offset, 24 + offset));
+      offset += 3;
+    }
+    else if (txt.charAt(19 + offset) == 'Z')
+    {
+      // Just skip the UTC zone information as it doesn't do anything
+      offset += 1;
+    }
+
+    if (txt.indexOf(' ') > 19)
+    {
+      return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond,
+                          DateTimeZone.UTC).plusMinutes(additionalMinutes)
+                                           .plusHours(additionalHours)
+                                           .withZone(DateTimeZone.forID(txt.substring(txt.indexOf(' ') + 1)));
+    }
+
+    return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond,
+                        DateTimeZone.UTC).plusMinutes(additionalMinutes).plusHours(additionalHours);
   }
 }

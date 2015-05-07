@@ -124,40 +124,46 @@ public class RangeFormatter
       lowerDetails.showYear = true;
     }
     sb.append(doFormat(lower, lowerDetails));
-    if (!isSameMinute(lower, upper))
+    if (!lowerDetails.unbound && upperDetails.unbound && style == Style.TIME_AND_DURATION)
     {
-      if (style == Style.TIME_AND_DURATION)
+      sb.append("\n...");
+    }
+    else
+    {
+      if (!isSameMinute(lower, upper))
       {
-        sb.append("\n");
-        final int minutes = Minutes.minutesBetween(lower, upper).getMinutes();
-        if (minutes / 60 > 0)
+        if (style == Style.TIME_AND_DURATION)
         {
-          sb.append(String.valueOf(minutes / 60));
-          sb.append("hr");
-        }
-        if (minutes % 60 != 0)
-        {
-          sb.append(String.valueOf(minutes % 60));
-          sb.append("m");
-        }
-      }
-      else
-      {
-        sb.append(" - ");
-        upperDetails.showTime = true;
-        if (!isSameDay(lower, upper))
-        {
-          upperDetails.showDayOfWeek = true;
-          upperDetails.showDayOfMonth = true;
-          upperDetails.showMonthOfYear = true;
-          if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
+          sb.append("\n");
+          final int minutes = lower == null ? upper.getMinuteOfDay() : Minutes.minutesBetween(lower, upper).getMinutes();
+          if (minutes / 60 > 0)
           {
-            upperDetails.showYear = true;
+            sb.append(String.valueOf(minutes / 60));
+            sb.append("hr");
+          }
+          if (minutes % 60 != 0)
+          {
+            sb.append(String.valueOf(minutes % 60));
+            sb.append("m");
           }
         }
-        sb.append(doFormat(upper, upperDetails));
+        else
+        {
+          sb.append(" - ");
+          upperDetails.showTime = true;
+          if (!isSameDay(lower, upper))
+          {
+            upperDetails.showDayOfWeek = true;
+            upperDetails.showDayOfMonth = true;
+            upperDetails.showMonthOfYear = true;
+            if ((!isSameYear(lower, upper)) || (!isSameYear(upper, curDateTime)))
+            {
+              upperDetails.showYear = true;
+            }
+          }
+          sb.append(doFormat(upper, upperDetails));
+        }
       }
-
     }
     return sb.toString();
   }
@@ -278,7 +284,9 @@ public class RangeFormatter
   @Nullable
   public String formatDate(@Nullable final DateTime dateTime)
   {
-    return dateTime == null || style == Style.TIME_ONLY || style == Style.TIME_AND_DURATION ? null : formatDateAndTime(dateTime, true, false);
+    return dateTime == null || style == Style.TIME_ONLY || style == Style.TIME_AND_DURATION ?
+           null :
+           formatDateAndTime(dateTime, true, false);
   }
 
   /**
@@ -448,8 +456,7 @@ public class RangeFormatter
 
   private boolean isSameYear(@Nullable final DateTime lower, @Nullable final DateTime upper)
   {
-    return !(lower == null || upper == null) &&
-           (lower.getYear() == upper.getYear());
+    return !(lower == null || upper == null) && (lower.getYear() == upper.getYear());
   }
 
   private static class Details

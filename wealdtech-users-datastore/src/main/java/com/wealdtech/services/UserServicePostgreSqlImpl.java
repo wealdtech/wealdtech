@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.*;
 import com.wealdtech.authentication.*;
-import com.wealdtech.datastore.repositories.UserRepositoryPostgreSqlImpl;
+import com.wealdtech.repositories.UserRepositoryPostgreSqlImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,9 +195,29 @@ public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User
   }
 
   @Override
+  public ImmutableSet<User> obtain(final ImmutableCollection<WID<User>> ids)
+  {
+    return ImmutableSet.copyOf(obtain(USER_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d ->>'_id' = ANY(?)";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setWIDArray(stmt, index++, ids);
+      }
+    }));
+  }
+
+  @Override
   public User obtain(final String emailAddress)
   {
-    // PERF this is very inefficient as it pulls the entire user table.  Could fix this with a materialised view
+    // PERF this is very inefficient as it pulls the entire user table.  Fix the CTE?
     return Iterables.getFirst(query(USER_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override
@@ -229,7 +249,7 @@ public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User
     final User dbUser = obtain(user.getId());
 
     // Ensure that we are deleting what we think we are deleting
-    if (!Objects.equal(user, dbUser))
+    if (!Objects.equal(User.serialize(user), User.serialize(dbUser)))
     {
       throw new ServerError("Must provide matching user for deletion");
     }

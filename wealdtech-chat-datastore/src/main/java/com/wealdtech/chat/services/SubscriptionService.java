@@ -11,10 +11,12 @@
 package com.wealdtech.chat.services;
 
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
+import com.wealdtech.Application;
 import com.wealdtech.chat.Subscription;
-import com.wealdtech.chat.User;
+import com.wealdtech.chat.Topic;
+import com.wealdtech.User;
 
 /**
  * Interface defining subscription service methods
@@ -31,7 +33,13 @@ public interface SubscriptionService
    */
   void remove(WID<Subscription> subscriptionId);
 
-  ImmutableList<Subscription> obtainForTopicAndUsers(final String topic, final ImmutableCollection<WID<User>> userIds);
+  /**
+   * Obtain all subscriptions to a particular topic
+   */
+  ImmutableSet<Subscription> obtain(final WID<Application> appId, WID<Topic> topicId);
 
-  ImmutableList<Subscription> obtainForTopic(final String topic);
+  /**
+   * Obtain all subscriptions to a particular topic and set of users
+   */
+  ImmutableSet<Subscription> obtain(final WID<Application> appId, WID<Topic> topicId, ImmutableCollection<WID<User>> userIds);
 }
