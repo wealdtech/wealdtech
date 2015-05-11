@@ -24,7 +24,7 @@ public class PushWooshConfiguration implements Configuration
 
   public PushWooshConfiguration()
   {
-    throw new ServerError("Not allowed to create ask geo services configuration without information");
+    throw new ServerError("Not allowed to create PushWoosh services configuration without information");
   }
 
   @JsonCreator
