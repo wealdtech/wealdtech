@@ -14,7 +14,7 @@ dependencies
     compile project(':wealdtech-configuration')
 
     // Database connection and pooling
-    compile 'org.postgresql:postgresql:9.4-1200-jdbc41'
+    compile 'org.postgresql:postgresql:9.4-1201-jdbc41'
     compile 'org.apache.tomcat:tomcat-jdbc:7.0.57'
 }
 
