@@ -10,16 +10,15 @@
 
 package com.wealdtech.jetty.config;
 
-import java.net.URL;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+import com.wealdtech.configuration.Configuration;
+import com.wealdtech.utils.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wealdtech.configuration.Configuration;
-import com.wealdtech.utils.ResourceLoader;
+import java.net.URL;
 
 /**
  * Configuration for Jetty SSL.
@@ -66,11 +65,16 @@ public final class JettySslConfiguration implements Configuration
     String result = input;
     if (!input.startsWith("/"))
     {
-      // This is a relative path so look for the file in our resources are
+      // This is a relative path so look for the file in our resources
       final URL resourceUrl = ResourceLoader.getResource(input);
       if (resourceUrl != null)
       {
         result = resourceUrl.getPath();
+      }
+      else
+      {
+        // Try a simple path
+        result = System.getProperty("user.home") + "/" + input;
       }
     }
     LOGGER.debug("Resolved path from \"{}\" to \"{}\"", input, result);
