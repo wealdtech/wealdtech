@@ -16,6 +16,9 @@ import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
+import org.joda.time.DateTime;
+
+import javax.annotation.Nullable;
 
 /**
  * Interface defining message service methods
@@ -25,26 +28,26 @@ public interface MessageService
   /**
    * Create a message
    */
-  void create(Application app, WID<Topic> topicId, Message message);
+  void create(Application app, User user, Topic topic, Message message);
 
   /**
    * Obtain messages for a given topic
    */
-  ImmutableList<Message> obtain(Application app, WID<Topic> topicId);
+  ImmutableList<Message> obtain(Application app, User user, Topic topic);
 
   /**
    * Obtain a message given its ID
    */
-  Message obtain(Application app, WID<Topic> topicId, WID<Message> messageId);
+  Message obtain(Application app, User user, Topic topic, WID<Message> messageId);
 
   /**
    * Obtain messages for a topic from a given user
    */
-  ImmutableList<Message> obtainFrom(Application app, WID<Topic> topicId, WID<User> userId);
+  ImmutableList<Message> obtainFrom(Application app, User user, Topic topic, @Nullable DateTime since);
 
   /**
    * Obtain messages for a topic to a given user, either explicitly when they are named as a recipient or implicitly when the
    * message is sent to everyone
    */
-  ImmutableList<Message> obtainTo(Application app, WID<Topic> topicId, WID<User> userId);
+  ImmutableList<Message> obtainTo(Application app, User user,  Topic topic, @Nullable DateTime since);
 }

@@ -10,19 +10,24 @@
 
 package com.wealdtech.chat.services;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.wealdtech.Application;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
 import com.wealdtech.chat.events.MessageEvent;
 import com.wealdtech.services.WIDService;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * An implementation of the chat service which handles notifications asynchronously
@@ -52,38 +57,57 @@ public class ChatServiceAsynchronousImpl implements ChatService
   }
 
   @Override
-  public void createTopic(final Application app, final Topic topic)
+  public void createTopic(final Application app, final User user, final Topic topic)
   {
     topicService.create(app, topic);
   }
 
   @Override
-  public void updateTopic(final Application app, final Topic topic)
+  public void updateTopic(final Application app, final User user, final Topic topic)
   {
     topicService.update(app, topic);
   }
 
   @Override
   @Nullable
-  public Topic obtainTopic(final Application app, final WID<Topic> topicId)
+  public Topic obtainTopic(final Application app, final User user, final WID<Topic> topicId)
   {
     return topicService.obtain(app, topicId);
   }
 
   @Override
-  public void removeTopic(final Application app, final Topic topic)
+  public void removeTopic(final Application app, final User user, final Topic topic)
   {
     topicService.remove(app, topic);
   }
 
   @Override
-  public Message obtainMessage(final Application app, final WID<Topic> topicId, final WID<Message> messageId)
+  public Message obtainMessage(final Application app, final User user, final WID<Topic> topicId, final WID<Message> messageId)
   {
-    return messageService.obtain(app, topicId, messageId);
+    // Obtain the topic
+    final Topic topic = topicService.obtain(app, topicId);
+    checkState(topic != null, "Unknown topic");
+    checkState(topic.getParticipantIds().contains(user.getId()), "User is not subscribed to that topic");
+
+    return messageService.obtain(app, user, topic, messageId);
   }
 
   @Override
-  public void createMessage(final Application app, final WID<Topic> topicId, final Message message)
+  public ImmutableList<Message> obtainMessagesSince(final Application app,
+                                                    final User user,
+                                                    final WID<Topic> topicId,
+                                                    @Nullable final DateTime since)
+  {
+    // Obtain the topic
+    final Topic topic = topicService.obtain(app, topicId);
+    checkState(topic != null, "Unknown topic");
+    checkState(topic.getParticipantIds().contains(user.getId()), "User is not subscribed to that topic");
+
+    return messageService.obtainTo(app, user, topic, since);
+  }
+
+  @Override
+  public void createMessage(final Application app, final User user, final WID<Topic> topicId, final Message message)
   {
     // Obtain the topic
     Topic topic = topicService.obtain(app, topicId);
@@ -98,7 +122,11 @@ public class ChatServiceAsynchronousImpl implements ChatService
                    .build();
       topicService.create(app, topic);
     }
-    messageService.create(app, topicId, message);
+    else
+    {
+      checkState(topic.getParticipantIds().contains(user.getId()), "User is not subscribed to that topic");
+    }
+    messageService.create(app, user, topic, message);
     eventBus.post(new MessageEvent(MessageEvent.Type.CREATED, app.getId(), topicId, message));
   }
 }
