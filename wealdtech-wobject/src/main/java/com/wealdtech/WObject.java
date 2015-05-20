@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -59,6 +60,11 @@ public class WObject<T extends WObject> implements Comparable<T>
   static final SimpleModule module =
       new SimpleModule("orderedmaps", Version.unknownVersion()).addAbstractTypeMapping(Map.class, TreeMap.class);
   private static final ObjectMapper MAPPER;
+
+  protected static void registerModule(final Module module)
+  {
+    MAPPER.registerModule(module);
+  }
 
   static
   {
@@ -852,9 +858,9 @@ public class WObject<T extends WObject> implements Comparable<T>
 
   /**
    * Called prior to an object being stored.  This is useful in situations where, for example, a structured type is stored
-   * differently in the datastore than its string representation might suggest.  The obvious example of this is datetimes, which
-   * are often shown in (for example) the format 'YYYY-MM-DD HH:MM:SS' but might want to be stored in the database as longs.
-   * In this situation this method can ensure that the relevant field is a datetime rather than a string prior to serialization
+   * differently in the datastore than its string representation might suggest.  The obvious example of this is datetimes, which are
+   * often shown in (for example) the format 'YYYY-MM-DD HH:MM:SS' but might want to be stored in the database as longs. In this
+   * situation this method can ensure that the relevant field is a datetime rather than a string prior to serialization
    */
   public void onPriorToStore(){}
 }

@@ -35,7 +35,6 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" filepath="$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" filepath="$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/wealdtech-services.iml" filepath="$PROJECT_DIR$/wealdtech-services/wealdtech-services.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/pushwoosh/wealdtech-services-pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-services/pushwoosh/wealdtech-services-pushwoosh.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-users/wealdtech-users.iml" filepath="$PROJECT_DIR$/wealdtech-users/wealdtech-users.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-users-daemon/wealdtech-users-daemon.iml" filepath="$PROJECT_DIR$/wealdtech-users-daemon/wealdtech-users-daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-users-datastore/wealdtech-users-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-users-datastore/wealdtech-users-datastore.iml" />
