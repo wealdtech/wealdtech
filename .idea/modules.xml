@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" filepath="$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/chat/chat.iml" filepath="$PROJECT_DIR$/wealdtech-services/chat/chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/google/google.iml" filepath="$PROJECT_DIR$/wealdtech-services/google/google.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/null/null.iml" filepath="$PROJECT_DIR$/wealdtech-mail/null/null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh/pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh/pushwoosh.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/pushwoosh2/pushwoosh2.iml" filepath="$PROJECT_DIR$/wealdtech-services/pushwoosh2/pushwoosh2.iml" />
@@ -27,6 +29,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-hash-cache/wealdtech-hash-cache.iml" filepath="$PROJECT_DIR$/wealdtech-hash-cache/wealdtech-hash-cache.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" filepath="$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" filepath="$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/wealdtech-mail.iml" filepath="$PROJECT_DIR$/wealdtech-mail/wealdtech-mail.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" filepath="$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" />
