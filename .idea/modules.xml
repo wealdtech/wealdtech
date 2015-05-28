@@ -10,7 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/providers/providers.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/providers/providers.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/providers/null/providers-null.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/providers/null/providers-null.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh/pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh/pushwoosh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/providers/pushwoosh/pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/providers/pushwoosh/pushwoosh.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/pushwoosh2/pushwoosh2.iml" filepath="$PROJECT_DIR$/wealdtech-services/pushwoosh2/pushwoosh2.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/token/token.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/token/token.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
