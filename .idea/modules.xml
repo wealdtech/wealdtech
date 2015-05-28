@@ -8,6 +8,8 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/null/null.iml" filepath="$PROJECT_DIR$/wealdtech-mail/null/null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/providers/providers.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/providers/providers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/providers/null/providers-null.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/providers/null/providers-null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh/pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-notifications-providers/pushwoosh/pushwoosh.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/pushwoosh2/pushwoosh2.iml" filepath="$PROJECT_DIR$/wealdtech-services/pushwoosh2/pushwoosh2.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/token/token.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/token/token.iml" />
@@ -33,7 +35,6 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" filepath="$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications-providers/wealdtech-notifications-providers.iml" filepath="$PROJECT_DIR$/wealdtech-notifications-providers/wealdtech-notifications-providers.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-rationale/wealdtech-rationale.iml" filepath="$PROJECT_DIR$/wealdtech-rationale/wealdtech-rationale.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" filepath="$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" filepath="$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" />
