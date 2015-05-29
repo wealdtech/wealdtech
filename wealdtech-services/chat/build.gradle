@@ -2,7 +2,7 @@ archivesBaseName = 'chat'
 
 dependencies {
   compile project(':wealdtech-configuration')
-  compile project(':wealdtech-chat')
+  compile project(':wealdtech-chat:model')
   compile project(':wealdtech-retrofit')
 
   testCompile 'commons-io:commons-io:2.1'

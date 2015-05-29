@@ -19,7 +19,7 @@ dependencies
     compile project(':wealdtech-notifications')
     compile project(':wealdtech-notifications:pushwoosh')
     compile project(':wealdtech-users-jersey')
-    compile project(':wealdtech-application-jersey')
+    compile project(':wealdtech-application:jersey')
 }
 
 uploadArchives {

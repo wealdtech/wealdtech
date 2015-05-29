@@ -8,8 +8,13 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-dependencies
-{
+archivesBaseName = 'application'
+group = 'com.wealdtech.application'
+subprojects {
+  group = 'com.wealdtech.application'
+}
+
+dependencies {
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
@@ -20,7 +25,7 @@ dependencies
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-application'
+            pom.artifactId = 'application'
             pom.project {
                 name 'Wealdtech Application'
                 description 'Weald Technology application classes'
