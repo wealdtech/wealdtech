@@ -1,4 +1,4 @@
-archivesBaseName = 'wealdtech-notifications-providers-null'
+archivesBaseName = 'providers-null'
 
 dependencies {
   compile project(':wealdtech-notifications')
@@ -8,7 +8,7 @@ dependencies {
   uploadArchives {
       repositories {
           mavenDeployer {
-              pom.artifactId = 'wealdtech-notifications-providers-null'
+              pom.artifactId = 'providers-null'
               pom.project {
                   name 'Wealdtech NULL Notifications'
                   description 'Wealdtech notifications to /dev/null'
