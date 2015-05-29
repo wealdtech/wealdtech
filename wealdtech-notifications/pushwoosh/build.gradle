@@ -1,15 +1,15 @@
-archivesBaseName = 'providers-pushwoosh'
+archivesBaseName = 'pushwoosh'
 
 dependencies {
   compile project(':wealdtech-notifications')
-  compile project(':wealdtech-services:pushwoosh2')
+  compile project(':wealdtech-services:pushwoosh')
 
   testCompile 'commons-io:commons-io:2.1'
 
   uploadArchives {
       repositories {
           mavenDeployer {
-              pom.artifactId = 'providers-pushwoosh'
+              pom.artifactId = 'pushwoosh'
               pom.project {
                   name 'Wealdtech Pushwoosh Notifications'
                   description 'Wealdtech notifications via Pushwoosh'

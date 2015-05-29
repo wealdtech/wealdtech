@@ -1,4 +1,4 @@
-archivesBaseName = 'wealdtech-services-pushwoosh2'
+archivesBaseName = 'pushwoosh'
 
 dependencies {
   compile project(':wealdtech-configuration')
@@ -10,7 +10,7 @@ dependencies {
   uploadArchives {
       repositories {
           mavenDeployer {
-              pom.artifactId = 'wealdtech-services-pushwoosh2'
+              pom.artifactId = 'pushwoosh'
               pom.project {
                   name 'Wealdtech Pushwoosh Service'
                   description 'Access to Pushwoosh services'

@@ -1,4 +1,4 @@
-archivesBaseName = 'wealdtech-services-askgeo'
+archivesBaseName = 'askgeo'
 
 dependencies {
   compile project(':wealdtech-configuration')
@@ -10,7 +10,7 @@ dependencies {
   uploadArchives {
       repositories {
           mavenDeployer {
-              pom.artifactId = 'wealdtech-services-askgeo'
+              pom.artifactId = 'askgeo'
               pom.project {
                   name 'Wealdtech Ask Geo Service'
                   description 'Access to the askgeo service'

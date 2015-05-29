@@ -8,14 +8,13 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-group 'com.wealdtech.mail'
-subprojects
-{
-  group 'com.wealdtech.mail'
+archivesBaseName = 'mail'
+group = 'com.wealdtech.mail'
+subprojects {
+    group = 'com.wealdtech.mail'
 }
 
-dependencies
-{
+dependencies {
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-configuration')
@@ -25,7 +24,7 @@ dependencies
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-mail'
+            pom.artifactId = 'mail'
             pom.project {
                 name 'Wealdtech Mail'
                 description 'Weald Technology mail API definition'

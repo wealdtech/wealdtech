@@ -1,4 +1,4 @@
-archivesBaseName = 'wealdtech-services-google'
+archivesBaseName = 'google'
 
 dependencies {
   compile project(':wealdtech-configuration')
@@ -10,7 +10,7 @@ dependencies {
   uploadArchives {
       repositories {
           mavenDeployer {
-              pom.artifactId = 'wealdtech-services-google'
+              pom.artifactId = 'google'
               pom.project {
                   name 'Wealdtech Google Service'
                   description 'Access to google services'

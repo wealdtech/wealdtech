@@ -10,21 +10,33 @@
 
 package com.wealdtech.notifications.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.inject.Inject;
+import com.google.common.base.Optional;
 import com.wealdtech.configuration.Configuration;
 
 /**
+ * Configuration for a notification system
  */
 public class NotificationConfiguration implements Configuration
 {
-  private final String provider;
+  final String accountId;
+  final String applicationId;
+  final String secret;
 
-  @Inject
-  public NotificationConfiguration(@JsonProperty("provider") final String provider)
+  @JsonCreator
+  private NotificationConfiguration(@JsonProperty("accountid") final String accountId,
+                            @JsonProperty("applicationid") final String applicationId,
+                            @JsonProperty("secret") final String secret)
   {
-    this.provider = provider;
+    this.accountId = accountId;
+    this.applicationId = applicationId;
+    this.secret = secret;
   }
 
-  public String getProvider() { return this.provider; }
+  public Optional<String> getAccountId(){return Optional.fromNullable(accountId);}
+
+  public Optional<String> getApplicationId(){return Optional.fromNullable(applicationId);}
+
+  public Optional<String> getSecret(){return Optional.fromNullable(secret);}
 }
