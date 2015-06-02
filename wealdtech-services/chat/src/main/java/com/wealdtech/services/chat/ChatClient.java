@@ -59,7 +59,6 @@ public class ChatClient
     };
     final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
                                                          .setConverter(converter)
-                                                         .setLogLevel(RestAdapter.LogLevel.FULL)
                                                          .setRequestInterceptor(authenticationInterceptor)
                                                          .build();
     this.service = adapter.create(ChatService.class);
