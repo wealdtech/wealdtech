@@ -71,7 +71,6 @@ public class AskGeoClient
     final Converter converter = new JacksonRetrofitConverter();
     final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
                                                          .setConverter(converter)
-                                                         .setLogLevel(RestAdapter.LogLevel.FULL)
                                                          .build();
     this.service = adapter.create(AskGeoService.class);
   }

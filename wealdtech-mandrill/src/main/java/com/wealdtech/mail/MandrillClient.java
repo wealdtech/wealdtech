@@ -42,7 +42,7 @@ public class MandrillClient
 
     final Converter converter = new JacksonRetrofitConverter();
     final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).setLogLevel(RestAdapter.LogLevel.FULL).build();
+        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).build();
     this.service = adapter.create(MandrillService.class);
   }
 
