@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2015 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -8,22 +8,24 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-dependencies
-{
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.0'
-    compile 'joda-time:joda-time:2.4'
-    compile 'org.slf4j:jul-to-slf4j:1.7.12'
-}
+package com.wealdtech.test.resources;
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.artifactId = 'wealdtech-core'
-            pom.project {
-                name 'Wealdtech Core'
-                description 'Weald Technology core libraries and utilities'
-            }
-        }
-    }
+import com.wealdtech.GenericWObject;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+/**
+ */
+@Path("dummy")
+public class DummyResource
+{
+  @GET
+  @Produces({MediaType.APPLICATION_JSON})
+  public GenericWObject dummy()
+  {
+    return GenericWObject.builder().data("foo", 1).data("bar", 2).build();
+  }
 }

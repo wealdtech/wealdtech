@@ -4,17 +4,27 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" filepath="$PROJECT_DIR$/wealdtech-services/askgeo/askgeo.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/chat/chat.iml" filepath="$PROJECT_DIR$/wealdtech-services/chat/chat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/control.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/control.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/datastore/control-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/datastore/control-datastore.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/daemon/daemon.iml" filepath="$PROJECT_DIR$/wealdtech-chat/daemon/daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/datastore/datastore.iml" filepath="$PROJECT_DIR$/wealdtech-application/datastore/datastore.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/weather/forecastio/forecastio.iml" filepath="$PROJECT_DIR$/wealdtech-services/weather/forecastio/forecastio.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/google/google.iml" filepath="$PROJECT_DIR$/wealdtech-services/google/google.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/jersey/jersey.iml" filepath="$PROJECT_DIR$/wealdtech-application/jersey/jersey.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/limiter.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/limiter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/jersey/limiter-jersey.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/jersey/limiter-jersey.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/log/log.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/log/log.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/logger.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/logger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/jersey/logger-jersey.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/jersey/logger-jersey.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/logger-service.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/logger-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/model/model.iml" filepath="$PROJECT_DIR$/wealdtech-chat/model/model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/null/null.iml" filepath="$PROJECT_DIR$/wealdtech-mail/null/null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/pushwoosh/pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/pushwoosh/pushwoosh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/service.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/token/token.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/token/token.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/wealdtech-application.iml" filepath="$PROJECT_DIR$/wealdtech-application/wealdtech-application.iml" />
@@ -30,6 +40,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-gcm/wealdtech-gcm.iml" filepath="$PROJECT_DIR$/wealdtech-gcm/wealdtech-gcm.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-hash-cache/wealdtech-hash-cache.iml" filepath="$PROJECT_DIR$/wealdtech-hash-cache/wealdtech-hash-cache.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" filepath="$PROJECT_DIR$/wealdtech-jackson/wealdtech-jackson.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/wealdtech-jersey.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/wealdtech-jersey.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" filepath="$PROJECT_DIR$/wealdtech-jersey-server/wealdtech-jersey-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/wealdtech-mail.iml" filepath="$PROJECT_DIR$/wealdtech-mail/wealdtech-mail.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />

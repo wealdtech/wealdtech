@@ -1,0 +1,24 @@
+group = 'com.wealdtech.services.weather'
+archivesBaseName = 'forecastio'
+
+dependencies {
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-wobject')
+  compile project(':wealdtech-retrofit')
+  compile project(':wealdtech-services:weather')
+  compile 'com.google.inject:guice:3.0'
+
+  testCompile 'commons-io:commons-io:2.1'
+
+  uploadArchives {
+      repositories {
+          mavenDeployer {
+              pom.artifactId = 'forecastio'
+              pom.project {
+                  name 'Wealdtech ForecastIO Weather Service'
+                  description 'Access to weather services using ForecastIO'
+              } 
+          }
+      }
+  }
+}

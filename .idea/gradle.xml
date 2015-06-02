@@ -28,7 +28,16 @@
             <option value="$PROJECT_DIR$/wealdtech-gcm" />
             <option value="$PROJECT_DIR$/wealdtech-hash-cache" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-jersey-server" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/limiter" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/limiter/jersey" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/limiter/service" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/limiter/service/static" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/logger" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/logger/jersey" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/logger/service" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/logger/service/log" />
             <option value="$PROJECT_DIR$/wealdtech-mail" />
             <option value="$PROJECT_DIR$/wealdtech-mail/mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-mail/null" />
