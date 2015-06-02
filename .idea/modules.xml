@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/chat/chat.iml" filepath="$PROJECT_DIR$/wealdtech-services/chat/chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/daemon/daemon.iml" filepath="$PROJECT_DIR$/wealdtech-chat/daemon/daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/datastore/datastore.iml" filepath="$PROJECT_DIR$/wealdtech-application/datastore/datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/weather/forecastio/forecastio.iml" filepath="$PROJECT_DIR$/wealdtech-services/weather/forecastio/forecastio.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/google/google.iml" filepath="$PROJECT_DIR$/wealdtech-services/google/google.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/jersey/jersey.iml" filepath="$PROJECT_DIR$/wealdtech-application/jersey/jersey.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/log/log.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/log/log.iml" />
@@ -47,6 +48,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" filepath="$PROJECT_DIR$/wealdtech-wid-service/wealdtech-wid-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject/wealdtech-wobject.iml" filepath="$PROJECT_DIR$/wealdtech-wobject/wealdtech-wobject.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject-datastore/wealdtech-wobject-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-wobject-datastore/wealdtech-wobject-datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-services/weather/weather.iml" filepath="$PROJECT_DIR$/wealdtech-services/weather/weather.iml" />
     </modules>
   </component>
 </project>
