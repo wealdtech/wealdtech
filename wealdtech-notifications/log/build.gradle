@@ -1,19 +1,18 @@
-archivesBaseName = 'log'
+archivesBaseName = 'wealdtech-notifications-log'
 
 dependencies {
-  compile project(':wealdtech-notifications')
+  compile project(':wealdtech-notifications:model')
 
   testCompile 'commons-io:commons-io:2.1'
+}
 
-  uploadArchives {
-      repositories {
-          mavenDeployer {
-              pom.artifactId = 'log'
-              pom.project {
-                  name 'Wealdtech Log Notifications'
-                  description 'Wealdtech notifications to log'
-              } 
-          }
-      }
-  }
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Log Notifications'
+                description 'Wealdtech notifications to log'
+            } 
+        }
+    }
 }

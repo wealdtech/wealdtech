@@ -1,4 +1,4 @@
-archivesBaseName = 'askgeo'
+archivesBaseName = 'wealdtech-services-askgeo'
 
 dependencies {
   compile project(':wealdtech-configuration')
@@ -6,16 +6,15 @@ dependencies {
   compile project(':wealdtech-retrofit')
 
   testCompile 'commons-io:commons-io:2.1'
+}
 
-  uploadArchives {
-      repositories {
-          mavenDeployer {
-              pom.artifactId = 'askgeo'
-              pom.project {
-                  name 'Wealdtech Ask Geo Service'
-                  description 'Access to the askgeo service'
-              }
-          }
-      }
-  }
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Ask Geo Service'
+                description 'Access to the askgeo service'
+            }
+        }
+    }
 }

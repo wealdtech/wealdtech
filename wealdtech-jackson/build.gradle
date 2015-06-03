@@ -8,6 +8,8 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
+archivesBaseName = 'wealdtech-jackson'
+
 dependencies
 {
     compile project(':wealdtech-core')
@@ -20,7 +22,6 @@ dependencies
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-jackson'
             pom.project {
                 name 'Wealdtech Jackson'
                 description 'Weald Technology Jackson libraries and utilities'
