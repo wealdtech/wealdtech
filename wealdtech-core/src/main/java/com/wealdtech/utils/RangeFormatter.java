@@ -10,6 +10,7 @@
 
 package com.wealdtech.utils;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Range;
 import com.wealdtech.DataError;
 import org.joda.time.DateTime;
@@ -186,7 +187,6 @@ public class RangeFormatter
     final DateTime curDateTime = DateTime.now();
     final StringBuilder sb = new StringBuilder(64);
 
-
     // Lower date
     final Details lowerDetails = new Details();
     final DateTime lower;
@@ -202,7 +202,7 @@ public class RangeFormatter
     }
 
     final Details upperDetails = new Details();
-    final DateTime upper;
+    DateTime upper;
     if (!range.hasUpperBound())
     {
       upperDetails.unbound = true;
@@ -211,9 +211,7 @@ public class RangeFormatter
     else
     {
       upperDetails.unbound = false;
-      // Note that because we are working with dates and dates are closed/open we need to take a day away from the upper
-      // date to make the format look right
-      upper = range.upperEndpoint().minusDays(1);
+      upper = range.upperEndpoint();
     }
 
     // Special case for both unbound
@@ -222,9 +220,16 @@ public class RangeFormatter
       return "...";
     }
 
-    if (upper != null && lower != null && upper.isBefore(lower))
+    if (upper != null && lower != null && Objects.equal(lower, upper))
     {
-      throw new DataError.Bad("Upper part of range must be after lower part of range");
+      // Range is 0-duration so format it as a single date instead
+      return formatDate(lower);
+    }
+
+    // Because we are working with closed/open ranges we need to take away a day from the upper date to make it look right
+    if (upper != null)
+    {
+      upper = upper.minusDays(1);
     }
 
     final boolean singleDay = isSameDay(lower, upper);
