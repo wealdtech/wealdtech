@@ -46,7 +46,7 @@ public class ChatDTest
     // Create an application and users for testing
     ChatD.main(null);
 
-    final Injector injector = Guice.createInjector(new ApplicationModule("chatd-config.json"), new EventBusAsynchronousModule());
+    final Injector injector = Guice.createInjector(new ApplicationModule("config/test-config.json"), new EventBusAsynchronousModule());
 
     salt = "_" + StringUtils.generateRandomString(6);
 

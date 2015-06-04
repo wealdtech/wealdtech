@@ -40,18 +40,16 @@ public class UserServiceTest
     salt = "_" + StringUtils.generateRandomString(6);
     applicationService =
         new ApplicationServicePostgreSqlImpl(new ApplicationRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432,
-                                                                                                                 "user",
-                                                                                                                 "user",
-                                                                                                                 "user",
-                                                                                                                 null, 1, 1L)),
+                                                                                                                 "user", "test",
+                                                                                                                 "test", null, 1,
+                                                                                                                 1L)),
                                              WObject.getObjectMapper());
 
     application = Application.builder().id(WID.<Application>generate()).name("User Service Test").ownerId("1").build();
     applicationService.create(application);
     userService =
         new UserServicePostgreSqlImpl(new UserRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432, "user",
-                                                                                                   "user", "user",
-                                                                                                   null, 1, 1L)),
+                                                                                                   "test", "test", null, 1, 1L)),
                                       WObject.getObjectMapper());
   }
 
@@ -74,7 +72,11 @@ public class UserServiceTest
       user = User.builder()
                  .id(WID.<User>generate())
                  .name(testName)
-                 .emails(ImmutableSet.of(Email.builder().address("test"+salt+"@test.wealdtech.com").primary(true).verified(true).build()))
+                 .emails(ImmutableSet.of(Email.builder()
+                                              .address("test" + salt + "@test.wealdtech.com")
+                                              .primary(true)
+                                              .verified(true)
+                                              .build()))
                  .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
                                                                                     .scope(AuthorisationScope.FULL)
                                                                                     .password("test")

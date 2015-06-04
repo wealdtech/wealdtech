@@ -39,4 +39,15 @@ public class NotificationConfiguration implements Configuration
   public Optional<String> getApplicationId(){return Optional.fromNullable(applicationId);}
 
   public Optional<String> getSecret(){return Optional.fromNullable(secret);}
+
+  /**
+   * Obtain a configuration from the environment
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static NotificationConfiguration fromEnv(final String base)
+  {
+    return new NotificationConfiguration(System.getenv(base + "_accountid"),
+                                         System.getenv(base + "_applicationid"),
+                                         System.getenv(base + "_secret"));
+  }
 }

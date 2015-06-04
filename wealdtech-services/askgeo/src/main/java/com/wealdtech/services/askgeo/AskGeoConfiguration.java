@@ -18,8 +18,7 @@ public class AskGeoConfiguration implements Configuration
   }
 
   @JsonCreator
-  public AskGeoConfiguration(@JsonProperty("accountid") final String accountId,
-                             @JsonProperty("apikey") final String apiKey)
+  public AskGeoConfiguration(@JsonProperty("accountid") final String accountId, @JsonProperty("apikey") final String apiKey)
   {
     this.accountId = accountId;
     this.apiKey = apiKey;
@@ -33,5 +32,15 @@ public class AskGeoConfiguration implements Configuration
   public String getApiKey()
   {
     return this.apiKey;
+  }
+
+  /**
+   * Obtain a configuration from the environment
+   *
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static AskGeoConfiguration fromEnv(final String base)
+  {
+    return new AskGeoConfiguration(System.getenv(base + "_accountid"), System.getenv(base + "_apikey"));
   }
 }

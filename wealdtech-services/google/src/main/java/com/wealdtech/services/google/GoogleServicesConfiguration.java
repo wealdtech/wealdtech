@@ -26,4 +26,14 @@ public class GoogleServicesConfiguration implements Configuration
   {
     return this.placesApiKey;
   }
+
+  /**
+   * Obtain a configuration from the environment
+   *
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static GoogleServicesConfiguration fromEnv(final String base)
+  {
+    return new GoogleServicesConfiguration(System.getenv(base + "_placesapikey"));
+  }
 }

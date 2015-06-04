@@ -45,4 +45,13 @@ public class PushWooshConfiguration implements Configuration
     return this.apiKey;
   }
 
+  /**
+   * Obtain a configuration from the environment
+   *
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static PushWooshConfiguration fromEnv(final String base)
+  {
+    return new PushWooshConfiguration(System.getenv(base + "_appid"), System.getenv(base + "_apikey"));
+  }
 }
