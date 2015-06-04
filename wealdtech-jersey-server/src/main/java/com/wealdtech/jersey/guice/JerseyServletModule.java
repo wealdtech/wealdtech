@@ -10,23 +10,26 @@
 
 package com.wealdtech.jersey.guice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.ObjectArrays;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
-import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import com.wealdtech.jersey.filters.CORSFilter;
-import com.wealdtech.jersey.filters.RequestHintFilter;
-import com.wealdtech.jersey.filters.RequestLoggingFilter;
-import com.wealdtech.jersey.filters.ServerHeaderFilter;
+import com.sun.jersey.spi.container.ContainerRequestFilter;
+import com.sun.jersey.spi.container.ContainerResponseFilter;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -34,7 +37,9 @@ import java.util.logging.Logger;
 
 public class JerseyServletModule extends ServletModule
 {
-  private String packages;
+  private Collection<String> packages;
+  private Collection<Class<? extends ContainerRequestFilter>> requestFilters;
+  private Collection<Class<? extends ContainerResponseFilter>> responseFilters;
 
   static
   {
@@ -45,58 +50,57 @@ public class JerseyServletModule extends ServletModule
   }
 
   /**
-   * Create a Jersey servlet module with a list of packages to
-   * check for resources and the like.
-   * @param packages a list of packages
+   * Create a Jersey servlet module.
+   *
+   * @param requestFilters a set of class names for request filters
+   * @param responseFilters a set of class names for response filters
+   * @param packages a collection of names of packages in which to look for resources
    */
-  public JerseyServletModule(final String... packages)
+  public JerseyServletModule(final Collection<Class<? extends ContainerRequestFilter>> requestFilters,
+                             final Collection<Class<? extends ContainerResponseFilter>> responseFilters,
+                             final Collection<String> packages)
   {
     super();
-    setPackages(packages);
+    this.requestFilters = requestFilters;
+    this.responseFilters = responseFilters;
+    this.packages = packages;
   }
 
   @Override
   protected void configureServlets()
   {
     final Map<String, String> params = new HashMap<String, String>();
-    params.put(PackagesResourceConfig.PROPERTY_PACKAGES, this.packages);
-    params.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE.toString());
+    params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
+               Joiner.on(",").join(Iterables.concat(ImmutableList.of("com.wealdtech.jersey"), packages)));
+    params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, Joiner.on(",").join(requestFilters));
+    params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, Joiner.on(",").join(responseFilters));
 
-    final String requestFilters = joinClassNames(RequestLoggingFilter.class, RequestHintFilter.class, GZIPContentEncodingFilter.class);
-    final String responseFilters = joinClassNames(RequestLoggingFilter.class, ServerHeaderFilter.class, CORSFilter.class, GZIPContentEncodingFilter.class);
-
-    params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, requestFilters);
-    params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, responseFilters);
+    params.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
 
     serve("/*").with(GuiceContainer.class, params);
   }
 
   /**
-   * Set the list of packages that we will search for providers and the like
-   * @param additionalPackages The packages above and beyond our standard list
+   * Convert a collection of classes in to a comma-separated string of class names
    */
-  private void setPackages(final String... additionalPackages)
+  private String joinClassNames(final Collection<Class<?>> klazzes)
   {
-    String[] packagesList = ObjectArrays.concat("com.wealdtech.jersey", additionalPackages);
-    packagesList = ObjectArrays.concat("com.codahale.metrics", packagesList);
-    this.packages = Joiner.on(',').skipNulls().join(packagesList);
-  }
-
-  /**
-   * Convert a varargs of clases in to a comma-separated string of class names
-   */
-  private String joinClassNames(final Class<?>... clazz)
-  {
-    Function<Class<?>, String> classToName = new Function<Class<?>, String>()
+    final Collection<String> names = Collections2.transform(Sets.newHashSet(klazzes), new Function<Class<?>, String>()
     {
       @Override
       public String apply(Class<?> klazz)
       {
         return klazz.getName();
       }
-    };
-    List<String> names = Lists.transform(Lists.newArrayList(clazz), classToName);
+    });
 
     return Joiner.on(',').skipNulls().join(names);
+  }
+
+  @Provides
+  @Singleton
+  JacksonJsonProvider jacksonJsonProvider(final ObjectMapper mapper)
+  {
+    return new JacksonJsonProvider(mapper);
   }
 }

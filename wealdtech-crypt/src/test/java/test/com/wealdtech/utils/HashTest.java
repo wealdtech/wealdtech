@@ -10,13 +10,9 @@
 
 package test.com.wealdtech.utils;
 
-import org.testng.annotations.Test;
-
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.wealdtech.DataError;
-import com.wealdtech.utils.Hash;
-import com.wealdtech.utils.WealdMetrics;
+import com.wealdtech.utils.Crypt;
+import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
 
@@ -25,9 +21,9 @@ public class HashTest
   @Test
   public void testHash() throws Exception
   {
-    final String hashed = Hash.hash("Test");
+    final String hashed = Crypt.hash("Test");
     assertNotNull(hashed);
-    assertTrue(Hash.matches("Test", hashed));
+    assertTrue(Crypt.matches("Test", hashed));
   }
 
   @Test
@@ -35,7 +31,7 @@ public class HashTest
   {
     try
     {
-      Hash.hash(null);
+      Crypt.hash(null);
       fail("Hashed NULL");
     }
     catch (DataError.Missing de)
@@ -48,12 +44,12 @@ public class HashTest
   @Test
   public void testIsHashed() throws Exception
   {
-    final String hashed = Hash.hash("Test");
-    assertTrue(Hash.isHashed(hashed));
-    assertFalse(Hash.isHashed("Test"));
+    final String hashed = Crypt.hash("Test");
+    assertTrue(Crypt.isHashed(hashed));
+    assertFalse(Crypt.isHashed("Test"));
     try
     {
-      Hash.isHashed(null);
+      Crypt.isHashed(null);
       fail("Considered NULL for hashed");
     }
     catch (DataError.Missing de)
@@ -65,8 +61,8 @@ public class HashTest
   @Test
   public void testNullMatch() throws Exception
   {
-    final String hashed = Hash.hash("Test");
-    assertFalse(Hash.matches(null, hashed));
+    final String hashed = Crypt.hash("Test");
+    assertFalse(Crypt.matches(null, hashed));
   }
 
   @Test
@@ -74,33 +70,12 @@ public class HashTest
   {
     try
     {
-      assertFalse(Hash.matches("Test", null));
+      assertFalse(Crypt.matches("Test", null));
       fail("Attempted to match against NULL hashed value");
     }
     catch (DataError.Missing de)
     {
       // Good
     }
-  }
-
-  @Test
-  public void testCache() throws Exception
-  {
-    // Ensure that the cache is operational
-    final String fredHash = Hash.hash("Fred");
-    final MetricRegistry registry = WealdMetrics.getMetricRegistry();
-    final Meter lookups = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "lookups"));
-    long initialLookupCount = lookups.getCount();
-    final Meter misses = registry.getMeters().get(com.codahale.metrics.MetricRegistry.name(Hash.class, "misses"));
-    long initialMissCount = misses.getCount();
-    Hash.matches("Fred", fredHash);
-    assertEquals(lookups.getCount() - initialLookupCount, 1);
-    assertEquals(misses.getCount() - initialMissCount, 1);
-    Hash.matches("Fred", fredHash);
-    assertEquals(lookups.getCount() - initialLookupCount, 2);
-    assertEquals(misses.getCount() - initialMissCount, 1);
-    Hash.matches("Joe", fredHash);
-    assertEquals(lookups.getCount() - initialLookupCount, 3);
-    assertEquals(misses.getCount() - initialMissCount, 2);
   }
 }

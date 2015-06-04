@@ -26,6 +26,7 @@ import com.wealdtech.jetty.config.MetricsServletContextListener;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -45,7 +46,7 @@ import java.util.List;
  */
 public class JettyServer
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
 
   private transient Server server;
 
@@ -119,7 +120,8 @@ public class JettyServer
     final List<Connector> connectors = Lists.newArrayList();
     for (final JettyConnectorConfiguration connectorConfiguration : configuration.getConnectorConfigurations())
     {
-      LOGGER.debug("Creating connector {}:{} for instance \"{}\"", connectorConfiguration.getBindHost(), connectorConfiguration.getPort(), configuration.getName());
+      LOG.debug("Creating connector {}:{} for instance \"{}\"", connectorConfiguration.getBindHost(),
+                   connectorConfiguration.getPort(), configuration.getName());
       JettyConnectorFactory factory;
       try
       {
@@ -151,6 +153,8 @@ public class JettyServer
     admin.addServlet(AdminServlet.class, "/*");
     handlers.addHandler(admin);
 
+    handlers.addHandler(new ShutdownHandler(configuration.getShutdownToken()));
+
     final ServletContextHandler root = new ServletContextHandler();
     root.addEventListener(new GuiceServletContextListener()
     {
@@ -162,11 +166,21 @@ public class JettyServer
     });
     if (configuration.getDetailedThreadName())
     {
+      LOG.info("Adding thread name filter");
       root.addFilter(ThreadNameFilter.class, "/*", null);
+    }
+    else
+    {
+      LOG.info("Not adding thread name filter");
     }
     if (configuration.getBodyPrefetch())
     {
+      LOG.info("Adding body prefetch filter");
       root.addFilter(BodyPrefetchFilter.class, "/*", null);
+    }
+    else
+    {
+      LOG.info("Not adding body prefetch filter");
     }
     root.addFilter(GuiceFilter.class, "/*", null);
     root.addServlet(DefaultServlet.class, "/");
@@ -174,7 +188,6 @@ public class JettyServer
 
     return handlers;
   }
-
 
   public void registerHandler(final String path, final Class<? extends Servlet> klazz)
   {

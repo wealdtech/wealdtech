@@ -1,0 +1,20 @@
+archivesBaseName = 'wealdtech-services-chat'
+
+dependencies {
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-chat:model')
+  compile project(':wealdtech-retrofit')
+
+  testCompile 'commons-io:commons-io:2.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Chat Service'
+                description 'Access to Wealdtech chat services'
+            } 
+        }
+    }
+}

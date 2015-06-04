@@ -1,0 +1,18 @@
+archivesBaseName = 'wealdtech-notifications-null'
+
+dependencies {
+  compile project(':wealdtech-notifications:model')
+
+  testCompile 'commons-io:commons-io:2.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech NULL Notifications'
+                description 'Wealdtech notifications to /dev/null'
+            } 
+        }
+    }
+}

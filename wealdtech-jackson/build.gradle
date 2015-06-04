@@ -8,18 +8,20 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
+archivesBaseName = 'wealdtech-jackson'
+
 dependencies
 {
     compile project(':wealdtech-core')
-    compile 'com.fasterxml.jackson.core:jackson-core:2.4.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.0'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.4.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.5.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.5.0'
+    testCompile 'org.slf4j:slf4j-simple:1.7.12'
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-jackson'
             pom.project {
                 name 'Wealdtech Jackson'
                 description 'Weald Technology Jackson libraries and utilities'

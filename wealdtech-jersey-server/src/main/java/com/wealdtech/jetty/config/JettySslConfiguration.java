@@ -10,16 +10,15 @@
 
 package com.wealdtech.jetty.config;
 
-import java.net.URL;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
+import com.wealdtech.configuration.Configuration;
+import com.wealdtech.utils.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Objects;
-import com.wealdtech.configuration.Configuration;
-import com.wealdtech.utils.ResourceLoader;
+import java.net.URL;
 
 /**
  * Configuration for Jetty SSL.
@@ -52,13 +51,13 @@ public final class JettySslConfiguration implements Configuration
                                 @JsonProperty("sessioncachesize") final Integer sessionCacheSize,
                                 @JsonProperty("sessiontimeout") final Integer sessionTimeout)
   {
-    this.keyStorePath = resolvePath(Objects.firstNonNull(keyStorePath, this.keyStorePath));
-    this.keyStorePasswd = Objects.firstNonNull(keyStorePasswd, this.keyStorePasswd);
-    this.keyManagerPasswd = Objects.firstNonNull(keyManagerPasswd, this.keyManagerPasswd);
-    this.renegotiationAllowed = Objects.firstNonNull(renegotiationAllowed, this.renegotiationAllowed);
-    this.sessionCachingEnabled = Objects.firstNonNull(sessionCachingEnabled, this.sessionCachingEnabled);
-    this.sessionCacheSize = Objects.firstNonNull(sessionCacheSize, this.sessionCacheSize);
-    this.sessionTimeout = Objects.firstNonNull(sessionTimeout, this.sessionTimeout);
+    this.keyStorePath = resolvePath(MoreObjects.firstNonNull(keyStorePath, this.keyStorePath));
+    this.keyStorePasswd = MoreObjects.firstNonNull(keyStorePasswd, this.keyStorePasswd);
+    this.keyManagerPasswd = MoreObjects.firstNonNull(keyManagerPasswd, this.keyManagerPasswd);
+    this.renegotiationAllowed = MoreObjects.firstNonNull(renegotiationAllowed, this.renegotiationAllowed);
+    this.sessionCachingEnabled = MoreObjects.firstNonNull(sessionCachingEnabled, this.sessionCachingEnabled);
+    this.sessionCacheSize = MoreObjects.firstNonNull(sessionCacheSize, this.sessionCacheSize);
+    this.sessionTimeout = MoreObjects.firstNonNull(sessionTimeout, this.sessionTimeout);
   }
 
   private String resolvePath(final String input)
@@ -66,11 +65,16 @@ public final class JettySslConfiguration implements Configuration
     String result = input;
     if (!input.startsWith("/"))
     {
-      // This is a relative path so look for the file in our resources are
+      // This is a relative path so look for the file in our resources
       final URL resourceUrl = ResourceLoader.getResource(input);
       if (resourceUrl != null)
       {
         result = resourceUrl.getPath();
+      }
+      else
+      {
+        // Try a simple path
+        result = System.getProperty("user.home") + "/" + input;
       }
     }
     LOGGER.debug("Resolved path from \"{}\" to \"{}\"", input, result);

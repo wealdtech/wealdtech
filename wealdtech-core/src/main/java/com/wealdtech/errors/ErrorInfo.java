@@ -12,6 +12,7 @@ package com.wealdtech.errors;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +126,7 @@ public class ErrorInfo implements Comparable<ErrorInfo>
   @Override
   public String toString()
   {
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
                   .add("errorCode", this.errorCode)
                   .add("userMessage", this.userMessage)
                   .add("developerMessage", this.developerMessage)

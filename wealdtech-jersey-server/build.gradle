@@ -8,6 +8,8 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
+archivesBaseName = 'wealdtech-jersey-server'
+
 dependencies
 {
     // Utilities
@@ -22,30 +24,31 @@ dependencies
     compile 'com.sun.jersey:jersey-servlet:1.18'
     compile 'com.sun.jersey:jersey-json:1.18'
     compile 'com.sun.jersey.contribs:jersey-guice:1.18'
-    compile 'javax.servlet:javax.servlet-api:3.0.1'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'javax.ws.rs:jsr311-api:1.1.1'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.0'
 
     // Jetty
-    compile 'org.eclipse.jetty:jetty-server:9.1.2.v20140210'
-    compile 'org.eclipse.jetty:jetty-servlet:9.1.2.v20140210'
-    compile 'org.eclipse.jetty.websocket:websocket-common:9.1.2.v20140210'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.1.2.v20140210'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.1.2.v20140210'
+    compile 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'
+    compile 'org.eclipse.jetty:jetty-servlet:9.2.2.v20140723'
+    compile 'org.eclipse.jetty.websocket:websocket-common:9.2.2.v20140723'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.2.2.v20140723'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.2.2.v20140723'
 
     // Instrumentation
     compile 'com.codahale.metrics:metrics-servlets:3.0.2'
     compile 'com.codahale.metrics:metrics-jersey:3.0.2'
     compile 'com.codahale.metrics:metrics-jetty9:3.0.2'
+    compile 'com.palominolabs.metrics:metrics-guice:3.1.0'
 
     // Testing
     testCompile 'com.sun.jersey:jersey-grizzly2:1.18'
-    // testCompile 'org.eclipse.jetty.websocket:websocket-client:9.1.2.v20430410'
+    // testCompile 'org.eclipse.jetty.websocket:websocket-client:9.2.2.v20140723'
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-jersey-server'
             pom.project {
                 name 'Wealdtech Jersey server'
                 description 'Jersey server-side filters and features'

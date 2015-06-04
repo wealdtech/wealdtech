@@ -10,9 +10,12 @@
 
 package test.com.wealdtech.jersey;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.sun.jersey.spi.container.ContainerRequestFilter;
+import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
 import org.testng.annotations.AfterClass;
@@ -79,7 +82,9 @@ public class JerseyTest
     this.validuri1 = new URI("http://localhost:8080/helloworld");
 
     // Create an injector with our basic configuration
-    final Injector injector = Guice.createInjector(new JerseyServletModule("test.com.wealdtech.jersey.resources"));
+    final Injector injector = Guice.createInjector(new JerseyServletModule(ImmutableList.<Class<? extends ContainerRequestFilter>>of(),
+                                                                           ImmutableList.<Class<? extends ContainerResponseFilter>>of(),
+                                                                           ImmutableList.of("test.com.wealdtech.jersey.resources")));
     this.webserver = injector.getInstance(JettyServer.class);
     this.webserver.start();
   }

@@ -10,6 +10,7 @@
 
 package com.wealdtech.utils;
 
+import javax.annotation.Nullable;
 import java.security.SecureRandom;
 
 public enum StringUtils
@@ -54,8 +55,13 @@ public enum StringUtils
    * @param str the string to capitalize
    * @return The capitalized string
    */
-  public static String capitalize(final String str)
+  @Nullable
+  public static String capitalize(@Nullable final String str)
   {
+    if (str == null)
+    {
+      return null;
+    }
     final StringBuilder sb = new StringBuilder(str);
     sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
     return sb.toString();
@@ -66,11 +72,47 @@ public enum StringUtils
    * @param str a variable name in camelcase
    * @return The name of the getter
    */
-  public static String nameToGetter(final String str)
+  @Nullable
+  public static String nameToGetter(@Nullable final String str)
   {
+    if (str == null)
+    {
+      return null;
+    }
     final StringBuilder sb = new StringBuilder(GET);
     sb.append(str);
     sb.setCharAt(GETLEN, Character.toUpperCase(sb.charAt(GETLEN)));
     return sb.toString();
+  }
+
+  /**
+   * Return the substring from the start of the string up to, but not including, the provided separator
+   * @param str the string
+   * @param sep the separator
+   * @return the substring
+   */
+  @Nullable
+  public static String substringBefore(@Nullable final String str, @Nullable final String sep)
+  {
+    if (str == null)
+    {
+      return null;
+    }
+    if (sep == null)
+    {
+      return str;
+    }
+    final int index = str.indexOf(sep);
+    if (index == -1)
+    {
+      return str;
+    }
+    return str.substring(0, index);
+  }
+
+  @Nullable
+  public static String emptyToNull(@Nullable final String input)
+  {
+    return (input == null || input.trim().length() == 0 ? null : input.trim());
   }
 }

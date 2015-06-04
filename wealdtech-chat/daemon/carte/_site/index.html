@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<head>
+  <title>Carte</title>
+  <meta charset='utf-8'/>
+  <meta name='description' content='Documentation website'/>
+  <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'/>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='assets.css' rel='stylesheet' type='text/css'>
+</head>
+<body>  
+  <nav id='sidebar'>
+	<h1>Carte</h1>
+<ul id='links'>
+  
+    
+  
+    
+  
+    
+  
+    
+    <li><a href='#/response-status-codes'>Response status codes</a></li>
+    
+  
+    
+    <li><a href='#/authentication'>Authenticate</a></li>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+    <li><a href='#/data-types'>Data Types</a></li>
+    
+  
+    
+    <li><a href='#/message-structure'>Message Structure</a></li>
+    
+  
+  
+  <li><h2>stuff</h2>
+    <ul>
+    
+              
+        <li class=''><a href='#'></a></li>
+      
+    
+              
+        <li class='GET'><a href='#/get-stuff'>Get stuff</a></li>
+              
+        <li class='POST'><a href='#/post-a-thing'>Post a thing</a></li>
+              
+        <li class='PUT'><a href='#/put-a-thing'>Update a thing</a></li>
+              
+        <li class='DELETE'><a href='#/delete-a-thing'>Delete a thing</a></li>
+      
+    
+    </ul>
+  </li>
+
+  <li><h2>subscriptions</h2>
+    <ul>
+    
+              
+        <li class=''><a href='#'></a></li>
+      
+    
+              
+        <li class='POST'><a href='#/subscribe-to-a-topic'>Subscribe to a topic</a></li>
+              
+        <li class='DELETE'><a href='#/unsubscribe-from-a-topic'>Unsubscribe from a topic</a></li>
+      
+    
+    </ul>
+  </li>
+
+  <li><h2>messages</h2>
+    <ul>
+    
+              
+        <li class=''><a href='#'></a></li>
+      
+    
+              
+        <li class='POST'><a href='#/send-a-message'>Send a message</a></li>
+      
+    
+    </ul>
+  </li>
+
+</ul>
+</nav>
+
+<section id='content'>
+
+  <article class='POST'>
+    <a name='/send-a-message' href='#/send-a-message'><h2><code><b>POST</b> /messages/</code> Send a message</h2></a>
+    <section class='body'>
+      <p>Send a message.</p>
+
+<h3 id="request-parameters">Request Parameters</h3>
+<p>None.</p>
+
+<h2 id="path-parameters">Path Parameters</h2>
+<p>None.</p>
+
+<h2 id="body">Body</h2>
+<ul>
+  <li><a href="#/message-structure">A message</a></li>
+</ul>
+
+<h3 id="response">Response</h3>
+
+<p><strong>If succeeds</strong>, returns status code 201.</p>
+
+<p><code>Status: 201 Created</code></p>
+
+<p>For error responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class='POST'>
+    <a name='/subscribe-to-a-topic' href='#/subscribe-to-a-topic'><h2><code><b>POST</b> /subscriptions/:topicid</code> Subscribe to a topic</h2></a>
+    <section class='body'>
+      <p>Subscribe to receive messages from a particular topic.</p>
+
+<h3 id="request-parameters">Request Parameters</h3>
+<p>None.</p>
+
+<h2 id="path-parameters">Path Parameters</h2>
+<ul>
+  <li><code>:topicid</code> the ID of the topic to which to subscribe</li>
+</ul>
+
+<h2 id="body">Body</h2>
+<p>None.</p>
+
+<h3 id="response">Response</h3>
+
+<p><strong>If succeeds</strong>, returns status code 201.</p>
+
+<p><code>Status: 201 Created</code></p>
+
+<p>For error responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class='DELETE'>
+    <a name='/unsubscribe-from-a-topic' href='#/unsubscribe-from-a-topic'><h2><code><b>DELETE</b> /subscriptions/:topicid</code> Unsubscribe from a topic</h2></a>
+    <section class='body'>
+      <p>Unsubscribe to no longer receive messages from a particular topic.</p>
+
+<h3 id="request-parameters">Request Parameters</h3>
+<p>None.</p>
+
+<h2 id="path-parameters">Path Parameters</h2>
+<ul>
+  <li><code>:topicid</code> the ID of the topic from which to unsubscribe</li>
+</ul>
+
+<h2 id="body">Body</h2>
+<p>None.</p>
+
+<h3 id="response">Response</h3>
+
+<p><strong>If succeeds</strong>, returns status code 200.</p>
+
+<p><code>Status: 200 Deleted</code></p>
+
+<p>For error responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class=''>
+    <a name='/response-status-codes' href='#/response-status-codes'><h2>Response status codes</h2></a>
+    <section class='body'>
+      <h3 id="success">Success</h3>
+
+<p>Successes differ from errors in that their body may not be a simple response object with a code and a message. The headers however are consistent across all calls:</p>
+
+<ul>
+  <li><code>GET</code>, <code>PUT</code>, <code>DELETE</code> returns <code>200 OK</code> on success,</li>
+  <li><code>POST </code> returns 201 on success,</li>
+</ul>
+
+<p>When <a href="#get-stuff">retrieving stuff</a> for example:</p>
+
+<p><code>Status: 200 OK</code>
+<code>{
+    {
+        id: thing_1,
+        name: 'My first thing'
+    },
+    {
+        id: thing_2,
+        name: 'My second thing'
+    }
+}</code></p>
+
+<h3 id="error">Error</h3>
+
+<p>Error responses are simply returning <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">standard HTTP error codes</a> along with some additional information:</p>
+
+<ul>
+  <li>The error code is sent back as a status header,</li>
+  <li>The body includes an object describing both the code and message (for debugging and/or display purposes),</li>
+</ul>
+
+<p>For a call with an invalid authentication token for example:</p>
+
+<p><code>Status: 401 Access denied</code>
+<code>{
+    code: 401,
+    message: 'Access denied: invalid authentication token.'
+}</code></p>
+
+    </section>
+  </article>
+
+  <article class=''>
+    <a name='/authentication' href='#/authentication'><h2>Authenticate</h2></a>
+    <section class='body'>
+      <p>This method allows users to retrieve stuff.</p>
+
+<h3 id="response">Response</h3>
+
+<p>Sends back a collection of things.</p>
+
+<p><code>Authentication: bearer TOKEN</code>
+<code>{
+    id: thing_2,
+    name: 'My second thing'
+}</code></p>
+
+<p>For errors responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class='GET'>
+    <a name='/get-stuff' href='#/get-stuff'><h2><code><b>GET</b> /stuff</code> Get stuff</h2></a>
+    <section class='body'>
+      <p>This method allows users to retrieve stuff.</p>
+
+<h3 id="request">Request</h3>
+
+<ul>
+  <li>The headers must include a <strong>valid authentication token</strong>.</li>
+</ul>
+
+<h3 id="response">Response</h3>
+
+<p>Sends back a collection of things.</p>
+
+<p><code>Status: 200 OK</code>
+<code>{
+    {
+        id: thing_1,
+        name: 'My first thing'
+    },
+    {
+        id: thing_2,
+        name: 'My second thing'
+    }
+}</code></p>
+
+<p>For errors responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class='POST'>
+    <a name='/post-a-thing' href='#/post-a-thing'><h2><code><b>POST</b> /stuff</code> Post a thing</h2></a>
+    <section class='body'>
+      <p>This method allows users to create a new thing.</p>
+
+<h3 id="request">Request</h3>
+
+<ul>
+  <li>The headers must include a <strong>valid authentication token</strong>.</li>
+  <li><strong>The body can’t be empty</strong> and must include at least the name attribute, a <code>string</code> that will be used as the name of the thing.</li>
+</ul>
+
+<p><code>Authentication: bearer TOKEN</code>
+<code>{
+    name: 'My new thing'
+}</code></p>
+
+<h3 id="response">Response</h3>
+
+<p><strong>If succeeds</strong>, returns the created thing.</p>
+
+<p><code>Status: 201 Created</code>
+<code>{
+    id: new_thing,
+    name: 'My new thing'
+}</code></p>
+
+<p>For errors responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class='PUT'>
+    <a name='/put-a-thing' href='#/put-a-thing'><h2><code><b>PUT</b> /stuff/:id</code> Update a thing</h2></a>
+    <section class='body'>
+      <p>This method allows the user to retrieve his stuff.</p>
+
+<h3 id="request">Request</h3>
+
+<ul>
+  <li><strong><code>:id</code></strong> is the id the thing to update.</li>
+  <li>The headers must include a <strong>valid authentication token</strong>.</li>
+  <li><strong>The body can’t be empty</strong> and must include at least the name attribute, a <code>string</code> that will be used as the name of the thing.</li>
+</ul>
+
+<p><code>Authentication: bearer f862f658-ad89-4fcb-995b-7a4c50554ff6</code>
+<code>{
+    name: 'My new thing'
+}</code></p>
+
+<h3 id="response">Response</h3>
+
+<p>Sends back a collection of things.</p>
+
+<p><code>Status: 200 OK</code>
+<code>{
+    {
+        id: thing_1,
+        name: 'My first thing'
+    },
+    {
+        id: thing_2,
+        name: 'My second thing'
+    }
+}</code></p>
+
+<p>For errors responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class='DELETE'>
+    <a name='/delete-a-thing' href='#/delete-a-thing'><h2><code><b>DELETE</b> /stuff/:id</code> Delete a thing</h2></a>
+    <section class='body'>
+      <p>This method allows the user to post a new thing to his stuff.</p>
+
+<h3 id="request">Request</h3>
+
+<ul>
+  <li><strong><code>:id</code></strong> is the id the thing to delete.</li>
+  <li>The headers must include a <strong>valid authentication token</strong>.</li>
+  <li><strong>The body is omitted</strong>.</li>
+</ul>
+
+<h3 id="response">Response</h3>
+
+<p>Sends back a collection of things.</p>
+
+<p><code>Status: 200 Deleted</code>
+<code>{
+    code: 200,
+    message: 'Your thing (id: 736) was deleted'
+}</code></p>
+
+<p>For errors responses, see the <a href="#response-status-codes">response status codes documentation</a>.</p>
+
+    </section>
+  </article>
+
+  <article class=''>
+    <a name='/data-types' href='#/data-types'><h2>Data Types</h2></a>
+    <section class='body'>
+      <h3 id="text">Text</h3>
+<p>Text entries using UTF-8 encoding.</p>
+
+<h3 id="timestamp">Timestamp</h3>
+<p>Timestamps are provided as number of milliseconds since the Unix epoch.</p>
+
+
+    </section>
+  </article>
+
+  <article class=''>
+    <a name='/message-structure' href='#/message-structure'><h2>Message Structure</h2></a>
+    <section class='body'>
+      <h3 id="message">Message</h3>
+
+<p>A message contains the following elements:</p>
+
+<ul>
+  <li><a href="#/data-types#text"><code>topic</code></a> the topic to which to post the message</li>
+  <li><a href="#/data-types#"><code>scope</code></a> the scope of the message.  This can be one of three options:
+    <ul>
+      <li><code>Everyone</code> the message will be made available to everyone</li>
+      <li><code>Friends</code> the message will be made available to your friends</li>
+      <li><code>Individual</code> the message will be made available to a single other person</li>
+    </ul>
+  </li>
+  <li><a href="#/data-types#text"><code>to</code></a> the recipient of the message.  This is required if <code>scope</code> was set to <code>Individual</code>, otherwise this is not required and will be ignored if provided</li>
+  <li><a href="#/data-types#text"><code>text</code></a> the text of the message.</li>
+</ul>
+
+<p>In addition, when receiving a message the following additional elements will be present:</p>
+
+<ul>
+  <li><a href="#/data-types#text"><code>from</code></a> the name of the user who created the message</li>
+  <li><a href="#/data-types#timestamp"><code>timestamp</code></a> the time when the message was receieved by the chat server</li>
+</ul>
+
+<h3 id="examples">Examples</h3>
+<p><code>{
+    "topic": "myTopic",
+    "scope": "Everyone",
+    "text": "Hello world",
+}</code></p>
+
+<p><code>{
+    "topic": "myTopic",
+    "scope": "Individual",
+    "to": "a0b124fd23",
+    "text": "Hello Fred",
+}</code></p>
+
+    </section>
+  </article>
+
+</section>
+
+  
+  <!--[if lt IE 9]><script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script><![endif]-->
+  <script src='assets.js' type='text/javascript'></script>
+  <script>require('boot');</script>
+</body>
+</html>

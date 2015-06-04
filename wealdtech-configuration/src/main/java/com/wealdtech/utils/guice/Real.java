@@ -11,18 +11,18 @@
 package com.wealdtech.utils.guice;
 
 
+import com.google.inject.BindingAnnotation;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import com.google.inject.BindingAnnotation;
-
 import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * A simple Guice binding annotation to separate out real instances
  * from overlaid instances.
- * <p/>For example, if the <code>ExampleService</code> was bound to
+ * For example, if the <code>ExampleService</code> was bound to
  * a caching implementation then this annotation can be attached to the
  * underlying implementation to differentiate them.
  */
