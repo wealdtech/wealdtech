@@ -21,7 +21,7 @@ import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 /**
  * Filter to log requests and how long it takes for them to be processed. Also
- * creates a request ID that is returned to the requestor and can be used to
+ * creates a request ID that is returned to the requestor and can be used to identifiy individual requests
  * track the request.
  */
 public class RequestLoggingFilter implements ContainerRequestFilter, ContainerResponseFilter

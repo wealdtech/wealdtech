@@ -66,7 +66,7 @@ public interface DataProvider<T>
   void stopProviding();
 
   /**
-   * Obtain the name of this data provider
+   * @return the name of this data provider
    */
   String getName();
 }

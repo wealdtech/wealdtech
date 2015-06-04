@@ -1,0 +1,21 @@
+archivesBaseName = 'wealdtech-services-weather-model'
+
+dependencies {
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-wobject')
+  compile project(':wealdtech-retrofit')
+  compile 'com.google.inject:guice:3.0'
+
+  testCompile 'commons-io:commons-io:2.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Weather Service'
+                description 'Access to weather services'
+            } 
+        }
+    }
+}

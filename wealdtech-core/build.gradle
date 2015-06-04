@@ -8,18 +8,19 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
+archivesBaseName = 'wealdtech-core'
+
 dependencies
 {
     compile 'com.google.guava:guava:18.0'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.0'
     compile 'joda-time:joda-time:2.4'
-    compile 'org.slf4j:jul-to-slf4j:1.7.6'
+    compile 'org.slf4j:jul-to-slf4j:1.7.12'
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.artifactId = 'wealdtech-core'
             pom.project {
                 name 'Wealdtech Core'
                 description 'Weald Technology core libraries and utilities'

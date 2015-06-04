@@ -25,7 +25,6 @@ import com.wealdtech.services.UserService;
 import com.wealdtech.utils.RequestHint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.http.Body;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -60,7 +59,7 @@ public class DeviceResource
                              @Context final UserAuthorisation authorisation,
                              @Context final User user,
                              @Context final RequestHint hint,
-                             @Body final DeviceRegistration registration)
+                             final DeviceRegistration registration)
   {
     // Ensure that the user is allowed to register the device
     checkPermission(AuthorisationScope.canWrite(authorisation.getScope()), "Not allowed to register a device for that user");

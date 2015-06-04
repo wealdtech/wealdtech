@@ -17,7 +17,7 @@ import com.wealdtech.config.WIDConfiguration;
 /**
  * Service to provide locally generated WIDs
  */
-class WIDServiceLocalImpl implements WIDService
+public class WIDServiceLocalImpl implements WIDService
 {
   private final WIDConfiguration configuration;
 
@@ -31,7 +31,7 @@ class WIDServiceLocalImpl implements WIDService
   private int thisMsFirstId;
 
   @Inject
-  WIDServiceLocalImpl(final WIDConfiguration configuration)
+  public WIDServiceLocalImpl(final WIDConfiguration configuration)
   {
     this.configuration = configuration;
 
