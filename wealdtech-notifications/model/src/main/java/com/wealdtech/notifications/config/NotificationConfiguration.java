@@ -26,8 +26,8 @@ public class NotificationConfiguration implements Configuration
 
   @JsonCreator
   private NotificationConfiguration(@JsonProperty("accountid") final String accountId,
-                            @JsonProperty("applicationid") final String applicationId,
-                            @JsonProperty("secret") final String secret)
+                                    @JsonProperty("applicationid") final String applicationId,
+                                    @JsonProperty("secret") final String secret)
   {
     this.accountId = accountId;
     this.applicationId = applicationId;
@@ -42,12 +42,12 @@ public class NotificationConfiguration implements Configuration
 
   /**
    * Obtain a configuration from the environment
+   *
    * @param base the base string to use as the prefix for obtaining environmental variables
    */
   public static NotificationConfiguration fromEnv(final String base)
   {
-    return new NotificationConfiguration(System.getenv(base + "_accountid"),
-                                         System.getenv(base + "_applicationid"),
+    return new NotificationConfiguration(System.getenv(base + "_accountid"), System.getenv(base + "_applicationid"),
                                          System.getenv(base + "_secret"));
   }
 }

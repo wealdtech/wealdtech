@@ -49,6 +49,7 @@
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
             <option value="$PROJECT_DIR$/wealdtech-notifications" />
+            <option value="$PROJECT_DIR$/wealdtech-notifications/gcm" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/log" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/model" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/null" />
@@ -59,6 +60,7 @@
             <option value="$PROJECT_DIR$/wealdtech-services" />
             <option value="$PROJECT_DIR$/wealdtech-services/askgeo" />
             <option value="$PROJECT_DIR$/wealdtech-services/chat" />
+            <option value="$PROJECT_DIR$/wealdtech-services/gcm" />
             <option value="$PROJECT_DIR$/wealdtech-services/google" />
             <option value="$PROJECT_DIR$/wealdtech-services/pushwoosh" />
             <option value="$PROJECT_DIR$/wealdtech-services/weather" />

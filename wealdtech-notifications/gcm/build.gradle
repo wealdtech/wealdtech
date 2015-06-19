@@ -1,0 +1,19 @@
+archivesBaseName = 'wealdtech-notifications-gcm'
+
+dependencies {
+  compile project(':wealdtech-notifications:model')
+  compile project(':wealdtech-services:gcm')
+
+  testCompile 'commons-io:commons-io:2.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech GCM Notifications'
+                description 'Wealdtech notifications via Google Cloud Messaging'
+            } 
+        }
+    }
+}
