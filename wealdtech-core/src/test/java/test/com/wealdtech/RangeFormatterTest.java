@@ -437,6 +437,15 @@ public class RangeFormatterTest
   }
 
   @Test
+  public void testTimeAndDurationRangeDateTimeMidnight()
+  {
+    final RangeFormatter formatter = new RangeFormatter(RangeFormatter.Style.TIME_AND_DURATION);
+    final Range<DateTime> range = Range.closedOpen(new DateTime(2015, 6, 21, 23, 0, 0), new DateTime(2015, 6, 22, 0, 0, 0));
+
+    assertEquals(formatter.formatDateTime(range), "23:00\n1hr");
+  }
+
+  @Test
   public void test0DurationRanges()
   {
     final DateTime dt = new DateTime(2013, 6, 4, 9, 0);
