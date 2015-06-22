@@ -39,22 +39,22 @@ public class WeatherServiceForecastIoImpl implements WeatherService
     try
     {
       final int hours = Hours.hoursBetween(timeframe.lowerEndpoint(), timeframe.upperEndpoint()).getHours();
-      if (hours <= 1)
+      if (hours < 1)
       {
         // Obtain point-in-time weather at start
         return client.getPointInTimeReport(lat, lng, timeframe.lowerEndpoint().getMillis() / 1000);
       }
       else if (hours <= 24)
       {
-        // Obtain hourly weather over timeframe
-        return client.getHourlyReport(lat, lng, timeframe.lowerEndpoint().getMillis() / 1000,
-                                      timeframe.upperEndpoint().getMillis() / 1000);
+        // Obtain hourly weather over timeframe; move start back to the beginning of the hour and end to the nearest half-hour
+        return client.getHourlyReport(lat, lng, timeframe.lowerEndpoint().withMinuteOfHour(0).getMillis() / 1000,
+                                      timeframe.upperEndpoint().plusMinutes(30).withMinuteOfHour(0).getMillis() / 1000);
       }
       else
       {
-        // Obtain daily weather over timeframe.
-        return client.getDailyReport(lat, lng, timeframe.lowerEndpoint().getMillis() / 1000,
-                                     timeframe.upperEndpoint().getMillis() / 1000);
+        // Obtain daily weather over timeframe; reset to start-of-day boundaries
+        return client.getDailyReport(lat, lng, timeframe.lowerEndpoint().withTimeAtStartOfDay().getMillis() / 1000,
+                                     timeframe.upperEndpoint().withTimeAtStartOfDay().getMillis() / 1000);
       }
     }
     catch (final RetrofitError re)
