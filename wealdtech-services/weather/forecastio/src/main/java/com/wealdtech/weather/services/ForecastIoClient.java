@@ -17,6 +17,7 @@ import com.wealdtech.weather.WeatherPoint;
 import com.wealdtech.weather.WeatherPointType;
 import com.wealdtech.weather.WeatherReport;
 import com.wealdtech.weather.config.WeatherConfiguration;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit.RestAdapter;
@@ -41,7 +42,7 @@ public class ForecastIoClient
 
     final Converter converter = new JacksonRetrofitConverter();
     final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).build();
+        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).setLogLevel(RestAdapter.LogLevel.FULL).build();
 
     this.service = adapter.create(ForecastIoService.class);
   }
@@ -71,11 +72,60 @@ public class ForecastIoClient
       {
         continue;
       }
-      if (timestamp >= end)
+      // Note that usually this would be a >=, but in this case we do want the weather report at the end time as well
+      if (timestamp > end)
       {
         break;
       }
       pointsB.add(buildPoint(report));
+    }
+    builder.points(pointsB.build());
+    return builder.build();
+  }
+
+  public WeatherReport getDailyReport(final float lat, final float lng, final Long start, final Long end)
+  {
+    final WeatherReport.Builder<?> builder = WeatherReport.builder().type(WeatherPointType.DAY);
+    final ImmutableList.Builder<WeatherPoint> pointsB = ImmutableList.builder();
+
+    // Forecast.io returns daily information one day at a time unless for the current date in which case it will attempt to return
+    // seven days.
+    final long now = new DateTime().getMillis() / 1000;
+    final long oneWeeksTime = new DateTime().plusWeeks(1).getMillis() / 1000;
+    if (start > now && start < oneWeeksTime && end > now && end < oneWeeksTime)
+    {
+      // We can use the current report
+      final ForecastIoResponse response = service.forecastNow(configuration.getApiKey(), lat, lng);
+      final ImmutableList<ForecastIoReport> reports = response.getDailies().or(ImmutableList.<ForecastIoReport>of());
+      for (final ForecastIoReport report : reports)
+      {
+        final Long timestamp = report.getTimestamp().or(0l);
+        if (timestamp < start)
+        {
+          continue;
+        }
+        if (timestamp >= end)
+        {
+          break;
+        }
+        pointsB.add(buildPoint(report));
+      }
+    }
+    else
+    {
+      // Need to obtain info for each individual day (up to a maximum of 7)
+      DateTime cur = new DateTime(start * 1000);
+      int obtained = 0;
+      while (cur.getMillis() / 1000 < end && obtained++ < 7)
+      {
+        final ForecastIoResponse response = service.forecastDaily(configuration.getApiKey(), lat, lng, cur.getMillis() / 1000);
+        final ImmutableList<ForecastIoReport> reports = response.getDailies().or(ImmutableList.<ForecastIoReport>of());
+        if (!reports.isEmpty())
+        {
+          pointsB.add(buildPoint(reports.get(0)));
+        }
+        cur = cur.plusDays(1);
+      }
     }
     builder.points(pointsB.build());
     return builder.build();
@@ -88,6 +138,21 @@ public class ForecastIoClient
     if (report.getTimestamp().isPresent())
     {
       builder.timestamp(report.getTimestamp().get() * 1000l);
+    }
+
+    if (report.getMinTemperature().isPresent())
+    {
+      builder.minTemperature(report.getMinTemperature().get());
+    }
+
+    if (report.getMaxTemperature().isPresent())
+    {
+      builder.maxTemperature(report.getMaxTemperature().get());
+    }
+
+    if (report.getTemperature().isPresent())
+    {
+      builder.temperature(report.getTemperature().get());
     }
 
     if (report.getTemperature().isPresent())

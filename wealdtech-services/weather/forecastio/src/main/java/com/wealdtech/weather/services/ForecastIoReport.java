@@ -23,6 +23,8 @@ public class ForecastIoReport extends WObject<ForecastIoReport>
 {
   private static final String TIMESTAMP = "time";
   private static final String TEMPERATURE = "temperature";
+  private static final String MAX_TEMPERATURE = "temperatureMax";
+  private static final String MIN_TEMPERATURE = "temperatureMin";
   private static final String APPARENT_TEMPERATURE = "apparentTemperature";
   private static final String ICON = "icon";
 
@@ -34,6 +36,12 @@ public class ForecastIoReport extends WObject<ForecastIoReport>
 
   @JsonIgnore
   public Optional<Long> getTimestamp() { return get(TIMESTAMP, Long.class); }
+
+  @JsonIgnore
+  public Optional<Float> getMaxTemperature() { return get(MAX_TEMPERATURE, Float.class); }
+
+  @JsonIgnore
+  public Optional<Float> getMinTemperature() { return get(MIN_TEMPERATURE, Float.class); }
 
   @JsonIgnore
   public Optional<Float> getTemperature() { return get(TEMPERATURE, Float.class); }

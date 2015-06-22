@@ -25,8 +25,8 @@ import static com.wealdtech.Preconditions.checkState;
 public class WeatherPoint extends WObject<WeatherPoint>
 {
   private static final String TIMESTAMP = "timestamp";
-  private static final String MIN_TEMP = "mintemp";
-  private static final String MAX_TEMP = "maxtemp";
+  private static final String MIN_TEMPERATURE = "mintemperature";
+  private static final String MAX_TEMPERATURE = "maxtemperature";
   private static final String TEMPERATURE = "temperature";
   private static final String ICON = "icon";
 
@@ -47,10 +47,10 @@ public class WeatherPoint extends WObject<WeatherPoint>
   public Long getTimestamp() { return get(TIMESTAMP, Long.class).get(); }
 
   @JsonIgnore
-  public Optional<Float> getMinTemp() { return get(MIN_TEMP, Float.class); }
+  public Optional<Float> getMinTemp() { return get(MIN_TEMPERATURE, Float.class); }
 
   @JsonIgnore
-  public Optional<Float> getMaxTemp() { return get(MAX_TEMP, Float.class); }
+  public Optional<Float> getMaxTemp() { return get(MAX_TEMPERATURE, Float.class); }
 
   @JsonIgnore
   public Optional<Float> getTemperature() { return get(TEMPERATURE, Float.class); }
@@ -74,15 +74,15 @@ public class WeatherPoint extends WObject<WeatherPoint>
       return self();
     }
 
-    public P minTemp(final Float minTemp)
+    public P minTemperature(final Float minTemperature)
     {
-      data(MIN_TEMP, minTemp);
+      data(MIN_TEMPERATURE, minTemperature);
       return self();
     }
 
-    public P maxTemp(final Float maxTemp)
+    public P maxTemperature(final Float maxTemperature)
     {
-      data(MAX_TEMP, maxTemp);
+      data(MAX_TEMPERATURE, maxTemperature);
       return self();
     }
 

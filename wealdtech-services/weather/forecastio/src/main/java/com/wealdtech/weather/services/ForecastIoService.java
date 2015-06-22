@@ -38,7 +38,7 @@ public interface ForecastIoService
    *
    * @param lat a latitude
    * @param lng a longitude
-   * @param timestamp the timestamp in <b> seconds</b> since the epoch
+   * @param timestamp the timestamp in <b>seconds</b> since the epoch
    *
    * @return the forecast data
    */
@@ -54,7 +54,7 @@ public interface ForecastIoService
    *
    * @param lat a latitude
    * @param lng a longitude
-   * @param timestamp the timestamp in <b> seconds</b> since the epoch
+   * @param timestamp the timestamp in <b>seconds</b> since the epoch
    *
    * @return the forecast data
    */
@@ -63,4 +63,32 @@ public interface ForecastIoService
                                     @Path("lat") final float lat,
                                     @Path("lng") final float lng,
                                     @Path("timestamp") final long timestamp);
+
+  /**
+   * Obtain a forecast for a particular location at a particular time
+   *
+   * @param lat a latitude
+   * @param lng a longitude
+   * @param timestamp the timestamp in <b>seconds</b> since the epoch
+   *
+   * @return the forecast data
+   */
+  @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=si&exclude=currently,minutely,hourly,alerts,flags")
+  ForecastIoResponse forecastDaily(@Path("key") final String key,
+                                   @Path("lat") final float lat,
+                                   @Path("lng") final float lng,
+                                   @Path("timestamp") final long timestamp);
+
+  /**
+   * Obtain a forecast for a particular location now
+   *
+   * @param lat a latitude
+   * @param lng a longitude
+   *
+   * @return the forecast data
+   */
+  @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=si&exclude=currently,minutely,alerts,flags")
+  ForecastIoResponse forecastNow(@Path("key") final String key,
+                                   @Path("lat") final float lat,
+                                   @Path("lng") final float lng);
 }

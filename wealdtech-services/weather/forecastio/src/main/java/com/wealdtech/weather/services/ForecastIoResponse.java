@@ -30,6 +30,7 @@ public class ForecastIoResponse extends WObject<ForecastIoResponse>
   private static final String TIMEZONE = "timezone";
   private static final String CURRENTLY = "currently";
   private static final String HOURLY = "hourly";
+  private static final String DAILY = "daily";
 
   @JsonCreator
   public ForecastIoResponse(final Map<String, Object> data)
@@ -60,6 +61,24 @@ public class ForecastIoResponse extends WObject<ForecastIoResponse>
     if (obj.isPresent())
     {
       return obj.get().get("data", HOURLIES_TYPEREF);
+    }
+    else
+    {
+      return Optional.absent();
+    }
+  }
+
+  @JsonIgnore
+  private static final TypeReference<ImmutableList<ForecastIoReport>> DAILIES_TYPEREF =
+      new TypeReference<ImmutableList<ForecastIoReport>>() {};
+
+  @JsonIgnore
+  public Optional<ImmutableList<ForecastIoReport>> getDailies()
+  {
+    final Optional<GenericWObject> obj = get(DAILY, GenericWObject.class);
+    if (obj.isPresent())
+    {
+      return obj.get().get("data", DAILIES_TYPEREF);
     }
     else
     {

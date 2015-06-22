@@ -52,8 +52,9 @@ public class WeatherServiceForecastIoImpl implements WeatherService
       }
       else
       {
-        // Obtain daily weather over timeframe (max 7 days)
-        throw new ServerError("Not implemented");
+        // Obtain daily weather over timeframe.
+        return client.getDailyReport(lat, lng, timeframe.lowerEndpoint().getMillis() / 1000,
+                                     timeframe.upperEndpoint().getMillis() / 1000);
       }
     }
     catch (final RetrofitError re)
