@@ -41,6 +41,7 @@ public class WeatherServiceForecastIoImplTest
     assertFalse(points.isEmpty(), "Failed to obtain weather point");
     assertEquals(points.size(), 1, "Failed to obtain correct number of weather points");
     final WeatherPoint point = points.get(0);
+    assertEquals((long)point.getTimestamp(), new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC).getMillis(), "Incorrect timestamp");
     assertEquals(point.getTemperature().or(0f), 4.1f, 0.01f, "Incorrect temperature");
     assertEquals(point.getIcon().orNull(), "clear-night", "Incorrect icon");
   }

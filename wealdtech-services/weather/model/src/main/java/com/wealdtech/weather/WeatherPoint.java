@@ -24,6 +24,7 @@ import static com.wealdtech.Preconditions.checkState;
  */
 public class WeatherPoint extends WObject<WeatherPoint>
 {
+  private static final String TIMESTAMP = "timestamp";
   private static final String MIN_TEMP = "mintemp";
   private static final String MAX_TEMP = "maxtemp";
   private static final String TEMPERATURE = "temperature";
@@ -38,8 +39,12 @@ public class WeatherPoint extends WObject<WeatherPoint>
   @Override
   protected void validate()
   {
+    checkState(exists(TIMESTAMP), "Weather point failed validation: timestamp required");
     checkState(exists(ICON), "Weather point failed validation: icon required");
   }
+
+  @JsonIgnore
+  public Long getTimestamp() { return get(TIMESTAMP, Long.class).get(); }
 
   @JsonIgnore
   public Optional<Float> getMinTemp() { return get(MIN_TEMP, Float.class); }
@@ -61,6 +66,12 @@ public class WeatherPoint extends WObject<WeatherPoint>
     public Builder(final WeatherPoint prior)
     {
       super(prior);
+    }
+
+    public P timestamp(final Long timestamp)
+    {
+      data(TIMESTAMP, timestamp);
+      return self();
     }
 
     public P minTemp(final Float minTemp)

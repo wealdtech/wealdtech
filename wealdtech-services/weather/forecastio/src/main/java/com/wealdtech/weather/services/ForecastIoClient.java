@@ -85,6 +85,11 @@ public class ForecastIoClient
   {
     final WeatherPoint.Builder<?> builder = WeatherPoint.builder();
 
+    if (report.getTimestamp().isPresent())
+    {
+      builder.timestamp(report.getTimestamp().get() * 1000l);
+    }
+
     if (report.getTemperature().isPresent())
     {
       builder.temperature(report.getTemperature().get());
