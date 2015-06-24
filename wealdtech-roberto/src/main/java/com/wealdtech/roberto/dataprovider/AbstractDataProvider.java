@@ -203,8 +203,8 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
   }
 
   /**
-   * Get the current data held by the provider. Although this is immediate there is no guarantee about the freshness of the data.
-   * In general the data should be obtained by listening to changes with the {@link com.wealdtech.roberto.OnDataProviderDataChangedListener}
+   * Get the current data held by the provider. Although this is immediate there is no guarantee about the freshness of the data. In
+   * general the data should be obtained by listening to changes with the {@link com.wealdtech.roberto.OnDataProviderDataChangedListener}
    * interface
    *
    * @return the current data
@@ -259,16 +259,28 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
    *
    * @param data the new data; can be {@code null}
    */
-  protected void setData(final @Nullable T data)
+  protected final void setData(final @Nullable T data)
   {
     dataObtained = true;
-    if (!Objects.equal(data, this.data))
+    if (!Objects.equal(data, this.data.orNull()))
     {
       this.data = Optional.fromNullable(data);
       for (final OnDataProviderDataChangedListener<T> listener : dataProviderDataChangedListeners)
       {
         listener.onDataProviderDataChanged(data);
       }
+    }
+  }
+
+  /**
+   * Notify listeners that data has failed to be obtained
+   * @param failure the failure code
+   */
+  protected final void notifyFailure(final DataProviderFailure failure)
+  {
+    for (final OnDataProviderDataChangedListener<T> listener : dataProviderDataChangedListeners)
+    {
+      listener.onDataProviderFailed(failure);
     }
   }
 

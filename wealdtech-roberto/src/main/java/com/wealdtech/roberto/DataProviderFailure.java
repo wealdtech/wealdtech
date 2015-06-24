@@ -10,13 +10,29 @@
 
 package com.wealdtech.roberto;
 
-import javax.annotation.Nullable;
-
 /**
+ * Information on the failure of a data provider
  */
-public interface OnDataProviderDataChangedListener<T>
+public enum DataProviderFailure
 {
-  void onDataProviderDataChanged(@Nullable T data);
-
-  void onDataProviderFailed(DataProviderFailure failure);
+  /**
+   * The transport is unavailable, for example if the network is unavailable
+   */
+  TRANSPORT,
+  /**
+   * The service is unavailable, for example if the target webserver is down
+   */
+  SERVICE,
+  /**
+   * The access is unauthorised, for example if an API key is invalid
+   */
+  UNAUTHORISED,
+  /**
+   * The parameters are invalid, for example if a mandatory parameter is missing
+   */
+  PARAMETERS,
+  /**
+   * Generic failure
+   */
+  FAILED;
 }
