@@ -163,6 +163,11 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
     }
   }
 
+  public boolean isProviding()
+  {
+    return providerState == DataProviderState.PROVIDING;
+  }
+
   private void startPolling()
   {
     final Runnable runnable = new Runnable()
@@ -265,9 +270,12 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
     if (!Objects.equal(data, this.data.orNull()))
     {
       this.data = Optional.fromNullable(data);
-      for (final OnDataProviderDataChangedListener<T> listener : dataProviderDataChangedListeners)
+      if (isProviding())
       {
-        listener.onDataProviderDataChanged(data);
+        for (final OnDataProviderDataChangedListener<T> listener : dataProviderDataChangedListeners)
+        {
+          listener.onDataProviderDataChanged(data);
+        }
       }
     }
   }
