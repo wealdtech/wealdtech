@@ -158,7 +158,7 @@ public abstract class AbstractDataProvider<T> implements DataProvider<T>
         providerState == DataProviderState.DEGRADED ||
         providerState == DataProviderState.FAILED)
     {
-      pollingThread.interrupt();
+      stopPolling();
       providerState = DataProviderState.NOT_PROVIDING;
     }
   }
