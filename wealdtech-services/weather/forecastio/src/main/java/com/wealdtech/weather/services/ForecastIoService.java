@@ -87,8 +87,8 @@ public interface ForecastIoService
    *
    * @return the forecast data
    */
-  @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=si&exclude=currently,minutely,alerts,flags")
+  @GET("/forecast/{key}/{lat},{lng}?units=si&exclude=currently,minutely,alerts,flags")
   ForecastIoResponse forecastNow(@Path("key") final String key,
-                                   @Path("lat") final float lat,
-                                   @Path("lng") final float lng);
+                                 @Path("lat") final float lat,
+                                 @Path("lng") final float lng);
 }
