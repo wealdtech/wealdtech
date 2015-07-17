@@ -10,14 +10,16 @@
 
 package com.wealdtech.jersey.filters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 /**
  * Filter to log requests and how long it takes for them to be processed. Also
@@ -32,6 +34,9 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
   private static final String REQUEST_ID = "REQUEST_ID";
   private static final String REQUEST_START_TIME = "RSTARTTIME";
 
+  @Context
+  private HttpServletRequest servletRequest;
+
   @Override
   public ContainerRequest filter(final ContainerRequest request)
   {
@@ -40,7 +45,7 @@ public class RequestLoggingFilter implements ContainerRequestFilter, ContainerRe
     MDC.put(REQUEST_START_TIME, String.valueOf(System.currentTimeMillis()));
     if (LOG.isInfoEnabled())
     {
-      LOG.info("Started: {} {} ({})", request.getMethod(), request.getRequestUri(), requestId);
+      LOG.info("Started: {} {} from {} ({})", request.getMethod(), request.getRequestUri(), servletRequest.getRemoteAddr(), requestId);
     }
 
     return request;
