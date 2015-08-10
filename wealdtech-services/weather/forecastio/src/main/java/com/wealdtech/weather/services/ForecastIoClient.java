@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import retrofit.RestAdapter;
 import retrofit.converter.Converter;
 
+import javax.annotation.Nullable;
+
 /**
  */
 public class ForecastIoClient
@@ -47,9 +49,19 @@ public class ForecastIoClient
     this.service = adapter.create(ForecastIoService.class);
   }
 
+  @Nullable
   public WeatherReport getPointInTimeReport(final float lat, final float lng, final Long timestamp)
   {
-    final ForecastIoResponse response = service.forecastPoint(configuration.getApiKey(), lat, lng, timestamp);
+    final ForecastIoResponse response;
+    try
+    {
+      response = service.forecastPoint(configuration.getApiKey(), lat, lng, timestamp);
+    }
+    catch (final Exception e)
+    {
+      LOG.error("Failed to obtain point in time report: ", e);
+      return null;
+    }
     final WeatherReport.Builder<?> resultsB = WeatherReport.builder().type(WeatherPointType.HOUR);
     if (response.getCurrently().isPresent())
     {
@@ -59,10 +71,20 @@ public class ForecastIoClient
     return resultsB.build();
   }
 
+  @Nullable
   public WeatherReport getHourlyReport(final float lat, final float lng, final Long start, final Long end)
   {
     final WeatherReport.Builder<?> builder = WeatherReport.builder().type(WeatherPointType.HOUR);
-    final ForecastIoResponse response = service.forecastHourly(configuration.getApiKey(), lat, lng, start);
+    final ForecastIoResponse response;
+    try
+    {
+      response = service.forecastHourly(configuration.getApiKey(), lat, lng, start);
+    }
+    catch (final Exception e)
+    {
+      LOG.error("Failed to obtain hourly report: ", e);
+      return null;
+    }
     final ImmutableList<ForecastIoReport> reports = response.getHourlies().or(ImmutableList.<ForecastIoReport>of());
     final ImmutableList.Builder<WeatherPoint> pointsB = ImmutableList.builder();
     for (final ForecastIoReport report : reports)
@@ -83,6 +105,7 @@ public class ForecastIoClient
     return builder.build();
   }
 
+  @Nullable
   public WeatherReport getDailyReport(final float lat, final float lng, final Long start, final Long end)
   {
     final WeatherReport.Builder<?> builder = WeatherReport.builder().type(WeatherPointType.DAY);
@@ -95,7 +118,16 @@ public class ForecastIoClient
     if (start > now && start < oneWeeksTime && end > now && end < oneWeeksTime)
     {
       // We can use the current report
-      final ForecastIoResponse response = service.forecastNow(configuration.getApiKey(), lat, lng);
+      final ForecastIoResponse response;
+      try
+      {
+        response = service.forecastNow(configuration.getApiKey(), lat, lng);
+      }
+      catch (final Exception e)
+      {
+        LOG.error("Failed to obtain immediate report: ", e);
+        return null;
+      }
       final ImmutableList<ForecastIoReport> reports = response.getDailies().or(ImmutableList.<ForecastIoReport>of());
       for (final ForecastIoReport report : reports)
       {
@@ -118,7 +150,17 @@ public class ForecastIoClient
       int obtained = 0;
       while (cur.getMillis() / 1000 < end && obtained++ < 7)
       {
-        final ForecastIoResponse response = service.forecastDaily(configuration.getApiKey(), lat, lng, cur.getMillis() / 1000);
+        final ForecastIoResponse response;
+        try
+        {
+          response = service.forecastDaily(configuration.getApiKey(), lat, lng, cur.getMillis() / 1000);
+        }
+        catch (final Exception e)
+        {
+          LOG.error("Failed to obtain daily report: ", e);
+          return null;
+        }
+
         final ImmutableList<ForecastIoReport> reports = response.getDailies().or(ImmutableList.<ForecastIoReport>of());
         if (!reports.isEmpty())
         {

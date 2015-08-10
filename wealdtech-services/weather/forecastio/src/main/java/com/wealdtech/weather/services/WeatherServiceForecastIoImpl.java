@@ -21,6 +21,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import retrofit.RetrofitError;
 
+import javax.annotation.Nullable;
+
 /**
  */
 public class WeatherServiceForecastIoImpl implements WeatherService
@@ -34,6 +36,7 @@ public class WeatherServiceForecastIoImpl implements WeatherService
   }
 
   @Override
+  @Nullable
   public WeatherReport getReport(final Float lat, final Float lng, final Range<DateTime> timeframe)
   {
     try

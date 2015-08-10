@@ -14,10 +14,12 @@ import com.google.common.collect.Range;
 import com.wealdtech.weather.WeatherReport;
 import org.joda.time.DateTime;
 
+import javax.annotation.Nullable;
+
 /**
  * A service that provides reports on the weather
  */
 public interface WeatherService
 {
-  WeatherReport getReport(Float lat, Float lng, Range<DateTime> timeframe);
+  @Nullable WeatherReport getReport(Float lat, Float lng, Range<DateTime> timeframe);
 }
