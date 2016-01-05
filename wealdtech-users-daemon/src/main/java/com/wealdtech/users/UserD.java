@@ -34,6 +34,7 @@ public class UserD
                                                    new EventBusAsynchronousModule(),
                                                    new JerseyServletModule(ImmutableList.of(RequestLoggingFilter.class,
                                                                                             RequestHintFilter.class,
+                                                                                            DeviceIdFilter.class,
                                                                                             GZIPContentEncodingFilter.class,
                                                                                             ApplicationFilter.class,
                                                                                             WealdAuthenticationFilter.class),
