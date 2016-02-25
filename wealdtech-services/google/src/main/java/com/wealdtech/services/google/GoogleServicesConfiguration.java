@@ -11,6 +11,7 @@ public class GoogleServicesConfiguration implements Configuration
 {
   private final String placesApiKey;
   private final String directionsApiKey;
+  private final String timezonesApiKey;
 
   public GoogleServicesConfiguration()
   {
@@ -19,10 +20,12 @@ public class GoogleServicesConfiguration implements Configuration
 
   @JsonCreator
   public GoogleServicesConfiguration(@JsonProperty("placesapikey") final String placesApiKey,
-                                     @JsonProperty("directionsapikey") final String directionsApiKey)
+                                     @JsonProperty("directionsapikey") final String directionsApiKey,
+                                     @JsonProperty("timezonesapikey") final String timezonesApiKey)
   {
     this.placesApiKey = placesApiKey;
     this.directionsApiKey = directionsApiKey;
+    this.timezonesApiKey = timezonesApiKey;
   }
 
   public String getPlacesApiKey()
@@ -35,6 +38,11 @@ public class GoogleServicesConfiguration implements Configuration
     return this.directionsApiKey;
   }
 
+  public String getTimezonesApiKey()
+  {
+    return this.timezonesApiKey;
+  }
+
   /**
    * Obtain a configuration from the environment
    *
@@ -42,6 +50,8 @@ public class GoogleServicesConfiguration implements Configuration
    */
   public static GoogleServicesConfiguration fromEnv(final String base)
   {
-    return new GoogleServicesConfiguration(System.getenv(base + "_placesapikey"), System.getenv(base + "_directionsapikey"));
+    return new GoogleServicesConfiguration(System.getenv(base + "_placesapikey"),
+                                           System.getenv(base + "_directionsapikey"),
+                                           System.getenv(base + "_timezonesapikey"));
   }
 }
