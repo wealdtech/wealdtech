@@ -1,5 +1,5 @@
 {
-  "secret": "88ec50497521ae9ea67958c3ba07d38d81e7a94d",
+  "secret": "secret",
   "sender": {
     "name": "Test sender",
     "email": "test@mailgateway.dev.cogn.is"
