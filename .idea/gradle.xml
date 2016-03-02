@@ -46,6 +46,7 @@
             <option value="$PROJECT_DIR$/wealdtech-mail/mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-mail/model" />
             <option value="$PROJECT_DIR$/wealdtech-mail/null" />
+            <option value="$PROJECT_DIR$/wealdtech-mail/sparkpost" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
             <option value="$PROJECT_DIR$/wealdtech-notifications" />
@@ -115,6 +116,7 @@
             <option value="$PROJECT_DIR$/wealdtech-mail/mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-mail/model" />
             <option value="$PROJECT_DIR$/wealdtech-mail/null" />
+            <option value="$PROJECT_DIR$/wealdtech-mail/sparkpost" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
             <option value="$PROJECT_DIR$/wealdtech-notifications" />

@@ -24,7 +24,20 @@ public class MailServiceNullImpl implements MailService
   public MailServiceNullImpl(){}
 
   @Override
+  public MailResponse sendEmail(final ImmutableList<MailActor> recipients, final String subject, final String textBody, final String htmlBody)
+  {
+    // Send a generic response for each recipient
+    final ImmutableList.Builder<MailRecipientResponse> recipientResponsesB = ImmutableList.builder();
+    for (final MailActor recipient : recipients)
+    {
+      recipientResponsesB.add(new MailRecipientResponse(recipient.getEmail(), "Success"));
+    }
+    return new MailResponse("Success", recipientResponsesB.build());
+  }
+
+  @Override
   public MailResponse sendTemplate(final String template,
+                                   final String subject,
                                    final ImmutableList<ImmutableMap<String, String>> merge,
                                    final ImmutableList<MailActor> recipients)
   {

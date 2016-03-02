@@ -10,7 +10,15 @@
 
 package com.wealdtech.utils;
 
+import com.wealdtech.DataError;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * The ResourceLoader attempts to obtain a resource from
@@ -55,5 +63,49 @@ public enum ResourceLoader
     }
 
     return url;
+  }
+
+  public static String readResource(final String resource)
+  {
+    final StringBuilder content = new StringBuilder();
+    final String linefeed = System.getProperty("line.separator");
+    try (BufferedReader reader = getReader(resource))
+    {
+      if (reader == null)
+      {
+        throw new DataError("Failed to find resource \"" + resource + "\"");
+      }
+      String line;
+      while ((line = reader.readLine()) != null)
+      {
+        content.append(line).append(linefeed);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new DataError("Failed to read file: " + e.getLocalizedMessage(), e);
+    }
+    return content.toString();
+  }
+
+  private static BufferedReader getReader(final String filename)
+  {
+    final URL fileurl = ResourceLoader.getResource(filename);
+    if (fileurl == null)
+    {
+      return null;
+    }
+    try
+    {
+      return Files.newBufferedReader(Paths.get(fileurl.toURI()), Charset.defaultCharset());
+    }
+    catch (IOException ioe)
+    {
+      throw new DataError("Failed to access configuration file \"" + filename + "\"", ioe);
+    }
+    catch (URISyntaxException use)
+    {
+      throw new DataError("Failed to access configuration file \"" + filename + "\"", use);
+    }
   }
 }

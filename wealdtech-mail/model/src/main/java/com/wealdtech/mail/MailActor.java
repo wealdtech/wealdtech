@@ -10,6 +10,9 @@
 
 package com.wealdtech.mail;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * An actor in a mail process - either sender or recipient
  */
@@ -18,7 +21,9 @@ public class MailActor
   private String name;
   private String email;
 
-  public MailActor(final String name, final String email)
+  @JsonCreator
+  public MailActor(@JsonProperty("name") final String name,
+                   @JsonProperty("email") final String email)
   {
     this.name = name;
     this.email = email;

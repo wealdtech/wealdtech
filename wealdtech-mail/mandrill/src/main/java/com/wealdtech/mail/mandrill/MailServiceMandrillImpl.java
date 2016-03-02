@@ -13,6 +13,7 @@ package com.wealdtech.mail.mandrill;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
+import com.wealdtech.ServerError;
 import com.wealdtech.mail.MailActor;
 import com.wealdtech.mail.MailRecipientResponse;
 import com.wealdtech.mail.MailResponse;
@@ -56,7 +57,14 @@ public class MailServiceMandrillImpl implements MailService
   }
 
   @Override
+  public MailResponse sendEmail(final ImmutableList<MailActor> recipients, final String subject, final String textBody, final String htmlBody)
+  {
+    throw new ServerError("Not implemented");
+  }
+
+  @Override
   public MailResponse sendTemplate(final String template,
+                                   final String subject,
                                    final ImmutableList<ImmutableMap<String, String>> merge,
                                    final ImmutableList<MailActor> recipients)
   {

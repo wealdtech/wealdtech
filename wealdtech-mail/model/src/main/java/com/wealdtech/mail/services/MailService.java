@@ -20,7 +20,11 @@ import com.wealdtech.mail.MailResponse;
  */
 public interface MailService
 {
+  MailResponse sendEmail(final ImmutableList<MailActor> recipients, final String subject, final String textBody,
+                         final String htmlBody);
+
   MailResponse sendTemplate(final String template,
+                            final String subject,
                             final ImmutableList<ImmutableMap<String, String>> merge,
                             final ImmutableList<MailActor> recipients);
 }
