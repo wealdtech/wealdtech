@@ -493,6 +493,29 @@ public class WObjectTest
   }
 
   @Test
+  public void testExtendedSetRoundtrip() throws IOException
+  {
+    final TypeReference<Set<? extends DateTime>> setTypeRef = new TypeReference<Set<? extends DateTime>>(){};
+
+    final ImmutableSet<? extends DateTime> set =
+        ImmutableSet.of(new DateTime(123456789000L, DateTimeZone.UTC), new DateTime(234567890000L, DateTimeZone.UTC),
+                        new DateTime(3456789000000L, DateTimeZone.UTC));
+    GenericWObject testObj1 = GenericWObject.builder().data("set", set).build();
+    final Set<? extends DateTime> res = testObj1.get("set", setTypeRef).get();
+    assertTrue(ImmutableSet.class.isAssignableFrom(res.getClass()));
+    assertEquals(res.iterator().next().getClass(), DateTime.class);
+
+    final GenericWObject testObj2 = GenericWObject.builder(testObj1).build();
+    final Set<? extends DateTime> res2 = testObj2.get("set", setTypeRef).get();
+    assertTrue(ImmutableSet.class.isAssignableFrom(res2.getClass()));
+    assertEquals(res2.iterator().next().getClass(), DateTime.class);
+
+    testObj1 = GenericWObject.deserialize(GenericWObject.serialize(testObj1), GenericWObject.class);
+    final Set<? extends DateTime> res3 = testObj1.get("set", setTypeRef).get();
+    assertEquals(res3.iterator().next().getClass(), DateTime.class);
+  }
+
+  @Test
   public void testTriValList() throws IOException
   {
     final TriVal<ImmutableList<DateTime>> list =

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.*;
 
 import static com.wealdtech.Preconditions.checkState;
@@ -477,8 +478,21 @@ public class WObject<T extends WObject> implements Comparable<T>
       {
         // Check that the element objects' class is correct as well
         final Type elementType = ((ParameterizedType)wrappedType).getActualTypeArguments()[0];
-        final Class<?> elementClass =
-            (Class)(elementType instanceof ParameterizedType ? ((ParameterizedType)elementType).getRawType() : elementType);
+        final Class<?> elementClass;
+        if (elementType instanceof ParameterizedType)
+        {
+          elementClass = (Class)((ParameterizedType)elementType).getRawType();
+        }
+        else if (elementType instanceof WildcardType)
+        {
+          elementClass = (Class)((WildcardType)elementType).getUpperBounds()[0];
+        }
+        else
+        {
+          elementClass = (Class)elementType;
+        }
+//        final Class<?> elementClass =
+//            (Class)(elementType instanceof ParameterizedType ? ((ParameterizedType)elementType).getRawType() : elementType);
         // FIXME does not handle Optional<Collection<?>> or TriVal<Collection<?>> style
         if (Objects.equal(requiredClass, wrappedClass) &&
             (((Collection)val).isEmpty() || Objects.equal(((Collection)val).iterator().next().getClass(), elementClass)))
