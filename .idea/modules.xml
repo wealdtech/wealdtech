@@ -42,6 +42,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" filepath="$PROJECT_DIR$/wealdtech-conditions/wealdtech-conditions.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" filepath="$PROJECT_DIR$/wealdtech-configuration/wealdtech-configuration.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration-logging/wealdtech-configuration-logging.iml" filepath="$PROJECT_DIR$/wealdtech-configuration-logging/wealdtech-configuration-logging.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-configuration/oauth2/wealdtech-configuration-oauth2.iml" filepath="$PROJECT_DIR$/wealdtech-configuration/oauth2/wealdtech-configuration-oauth2.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" filepath="$PROJECT_DIR$/wealdtech-core/wealdtech-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" filepath="$PROJECT_DIR$/wealdtech-crypt/wealdtech-crypt.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-events/wealdtech-events.iml" filepath="$PROJECT_DIR$/wealdtech-events/wealdtech-events.iml" />

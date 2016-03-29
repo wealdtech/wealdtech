@@ -16,7 +16,7 @@ import com.google.inject.Inject;
 import com.wealdtech.ClientError;
 import com.wealdtech.DataError;
 import com.wealdtech.GenericWObject;
-import com.wealdtech.OAuth2Credentials;
+import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.configuration.OAuth2Configuration;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;
 import org.joda.time.DateTime;
@@ -58,7 +58,7 @@ public class GoogleAccountsClient
    * @param uri the full URI that was called to trigger this authorisation
    * @return An OAuth2 credential
    */
-  public OAuth2Credentials auth(final URI uri)
+  public OAuth2Credentials auth(final String name, final URI uri)
   {
     final ImmutableMultimap<String, String> params = splitQuery(uri);
     if (!params.containsKey("code"))
@@ -97,6 +97,7 @@ public class GoogleAccountsClient
     }
 
     return OAuth2Credentials.builder()
+                            .name(name)
                             .accessToken(accessToken.get())
                             .expires(DateTime.now().plusSeconds(ttl.get()))
                             .refreshToken(refreshToken.get())
@@ -110,9 +111,9 @@ public class GoogleAccountsClient
    */
   public OAuth2Credentials reauth(final OAuth2Credentials credentials)
   {
-    if (credentials == null || !credentials.getRefreshToken().isPresent()) { return null; }
+    if (credentials == null) { return null; }
 
-    final GenericWObject response = service.refreshToken("refresh_token", configuration.getClientId(), configuration.getSecret(), credentials.getRefreshToken().get());
+    final GenericWObject response = service.refreshToken("refresh_token", configuration.getClientId(), configuration.getSecret(), credentials.getRefreshToken());
 
     LOG.debug("Response is {}", response);
 

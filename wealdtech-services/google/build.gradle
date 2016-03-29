@@ -1,6 +1,7 @@
 archivesBaseName = 'wealdtech-services-google'
 
 dependencies {
+  compile project(':wealdtech-authentication:oauth2')
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')
   compile project(':wealdtech-retrofit')

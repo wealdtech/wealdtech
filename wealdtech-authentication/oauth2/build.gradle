@@ -8,27 +8,19 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-calendar-model'
+archivesBaseName = 'wealdtech-authentication-oauth2'
 
-dependencies {
-    compile project(':wealdtech-authentication:oauth2')
-    compile project(':wealdtech-configuration')
-    compile project(':wealdtech-configuration-logging')
-    compile project(':wealdtech-configuration:oauth2')
-    compile project(':wealdtech-core')
-    compile project(':wealdtech-jackson')
-    compile project(':wealdtech-notifications:model')
-    compile project(':wealdtech-wid-service')
-    compile project(':wealdtech-wobject')
-    compile project(':wealdtech-wobject-datastore')
+dependencies
+{
+    compile project(':wealdtech-authentication:model')
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name 'Wealdtech Calendar'
-                description 'Weald Technology calendar model'
+                name 'Wealdtech OAuth2 Authentication'
+                description 'Weald Technology Authentication via oauth2'
             }
         }
     }

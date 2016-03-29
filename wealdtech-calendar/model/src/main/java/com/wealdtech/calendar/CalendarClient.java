@@ -11,7 +11,7 @@
 package com.wealdtech.calendar;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.OAuth2Credentials;
+import com.wealdtech.authentication.OAuth2Credentials;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

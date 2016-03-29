@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/wealdtech-application/model" />
             <option value="$PROJECT_DIR$/wealdtech-authentication" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/model" />
+            <option value="$PROJECT_DIR$/wealdtech-authentication/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
             <option value="$PROJECT_DIR$/wealdtech-calendar" />
@@ -93,6 +94,7 @@
             <option value="$PROJECT_DIR$/wealdtech-application/model" />
             <option value="$PROJECT_DIR$/wealdtech-authentication" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/model" />
+            <option value="$PROJECT_DIR$/wealdtech-authentication/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
             <option value="$PROJECT_DIR$/wealdtech-calendar" />

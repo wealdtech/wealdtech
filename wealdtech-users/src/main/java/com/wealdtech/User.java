@@ -40,7 +40,7 @@ public class User extends WObject<User> implements Comparable<User>
   private static final String AUTHENTICATION_METHODS = "authenticationmethods";
   private static final String DEVICE_REGISTRATIONS = "deviceregistrations";
   private static final String IDENTITIES = "identities";
-  private static final String REMOTES = "remotes";
+  private static final String CREDENTIALS = "credentials";
 
   @JsonCreator
   public User(final Map<String, Object> data)
@@ -110,6 +110,16 @@ public class User extends WObject<User> implements Comparable<User>
 
   @JsonIgnore
   public ImmutableSet<Identity> getIdentities(){ return get(IDENTITIES, IDENTITIES_TYPEREF).or(ImmutableSet.<Identity>of()); }
+
+  @JsonIgnore
+  private static final TypeReference<ImmutableSet<? extends Credentials>> CREDENTIALS_TYPEREF =
+      new TypeReference<ImmutableSet<? extends Credentials>>() {};
+
+  @JsonIgnore
+  public ImmutableSet<? extends Credentials> getCredentials()
+  {
+    return get(CREDENTIALS, CREDENTIALS_TYPEREF).or(ImmutableSet.<Credentials>of());
+  }
 
   @JsonIgnore
   @Nullable
@@ -506,6 +516,13 @@ public class User extends WObject<User> implements Comparable<User>
       data(IDENTITIES, identities);
       return self();
     }
+
+    public P credentials(final ImmutableSet<? extends Credentials> credentials)
+    {
+      data(CREDENTIALS, credentials);
+      return self();
+    }
+
 
     public User build(){ return new User(data); }
   }

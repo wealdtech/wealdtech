@@ -23,8 +23,8 @@ import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.OAuth2Credentials;
 import com.wealdtech.ServerError;
+import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -129,21 +129,20 @@ public class CalendarClientGoogleImpl implements CalendarClient
                                                                                 .setClientAuthentication(new OAuthParameters())
                                                                                 .setTokenServerUrl(new GenericUrl("https://accounts.google.com/o/oauth2/token"))
                                                                                 .build()
-                                                                                .setAccessToken(credentials.getAccessToken().orNull())
-                                                                                .setRefreshToken(credentials.getRefreshToken().orNull());
+                                                                                .setAccessToken(credentials.getAccessToken())
+                                                                                .setRefreshToken(credentials.getRefreshToken());
   }
 
   @Override
   public ImmutableList<Calendar> obtainCalendars(final OAuth2Credentials credentials) throws IOException
   {
     checkState(credentials != null, "Missing required credentials");
-    checkState(credentials.getAccessToken().isPresent(), "Missing credentials access token");
 
     final Credential credential = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod()).setTransport(httpTransport)
                                                                                                        .setJsonFactory(JSON_FACTORY)
                                                                                                        .setTokenServerUrl(new GenericUrl("https://accounts.google.com/o/oauth2/token"))
                                                                                                        .build()
-                                                                                                       .setAccessToken(credentials.getAccessToken().get());
+                                                                                                       .setAccessToken(credentials.getAccessToken());
 
     final com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(httpTransport, JSON_FACTORY, credential).setApplicationName(configuration.getProductId()).build();
 
