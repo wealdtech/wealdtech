@@ -17,6 +17,9 @@
             <option value="$PROJECT_DIR$/wealdtech-authentication/model" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
+            <option value="$PROJECT_DIR$/wealdtech-calendar" />
+            <option value="$PROJECT_DIR$/wealdtech-calendar/google" />
+            <option value="$PROJECT_DIR$/wealdtech-calendar/model" />
             <option value="$PROJECT_DIR$/wealdtech-chat" />
             <option value="$PROJECT_DIR$/wealdtech-chat/daemon" />
             <option value="$PROJECT_DIR$/wealdtech-chat/datastore" />
@@ -24,9 +27,13 @@
             <option value="$PROJECT_DIR$/wealdtech-conditions" />
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
+            <option value="$PROJECT_DIR$/wealdtech-configuration/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-events" />
+            <option value="$PROJECT_DIR$/wealdtech-flow" />
+            <option value="$PROJECT_DIR$/wealdtech-flow/github" />
+            <option value="$PROJECT_DIR$/wealdtech-flow/model" />
             <option value="$PROJECT_DIR$/wealdtech-gcm" />
             <option value="$PROJECT_DIR$/wealdtech-hash-cache" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
@@ -42,6 +49,7 @@
             <option value="$PROJECT_DIR$/wealdtech-jersey/logger/model" />
             <option value="$PROJECT_DIR$/wealdtech-jersey/logger/service" />
             <option value="$PROJECT_DIR$/wealdtech-jersey/logger/service/log" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-mail" />
             <option value="$PROJECT_DIR$/wealdtech-mail/mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-mail/model" />
@@ -87,6 +95,9 @@
             <option value="$PROJECT_DIR$/wealdtech-authentication/model" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/password" />
             <option value="$PROJECT_DIR$/wealdtech-authentication/token" />
+            <option value="$PROJECT_DIR$/wealdtech-calendar" />
+            <option value="$PROJECT_DIR$/wealdtech-calendar/google" />
+            <option value="$PROJECT_DIR$/wealdtech-calendar/model" />
             <option value="$PROJECT_DIR$/wealdtech-chat" />
             <option value="$PROJECT_DIR$/wealdtech-chat/daemon" />
             <option value="$PROJECT_DIR$/wealdtech-chat/datastore" />
@@ -94,9 +105,13 @@
             <option value="$PROJECT_DIR$/wealdtech-conditions" />
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
+            <option value="$PROJECT_DIR$/wealdtech-configuration/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-events" />
+            <option value="$PROJECT_DIR$/wealdtech-flow" />
+            <option value="$PROJECT_DIR$/wealdtech-flow/github" />
+            <option value="$PROJECT_DIR$/wealdtech-flow/model" />
             <option value="$PROJECT_DIR$/wealdtech-gcm" />
             <option value="$PROJECT_DIR$/wealdtech-hash-cache" />
             <option value="$PROJECT_DIR$/wealdtech-jackson" />
@@ -112,6 +127,7 @@
             <option value="$PROJECT_DIR$/wealdtech-jersey/logger/model" />
             <option value="$PROJECT_DIR$/wealdtech-jersey/logger/service" />
             <option value="$PROJECT_DIR$/wealdtech-jersey/logger/service/log" />
+            <option value="$PROJECT_DIR$/wealdtech-jersey/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-mail" />
             <option value="$PROJECT_DIR$/wealdtech-mail/mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-mail/model" />

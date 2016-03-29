@@ -40,6 +40,7 @@ public class User extends WObject<User> implements Comparable<User>
   private static final String AUTHENTICATION_METHODS = "authenticationmethods";
   private static final String DEVICE_REGISTRATIONS = "deviceregistrations";
   private static final String IDENTITIES = "identities";
+  private static final String REMOTES = "remotes";
 
   @JsonCreator
   public User(final Map<String, Object> data)

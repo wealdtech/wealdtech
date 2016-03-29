@@ -48,6 +48,6 @@ public interface GoogleCalendarService
    * Create an event in a given calendar
    */
   @POST("/{calendarid}/events")
-  Response createMessage(@Path("calendarid") final String calendarId,
-                         @Body final GoogleCalendarEvent event);
+  Response createEvent(@Path("calendarid") final String calendarId,
+                       @Body final GoogleCalendarEvent event);
 }

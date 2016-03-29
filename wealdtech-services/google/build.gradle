@@ -4,6 +4,8 @@ dependencies {
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')
   compile project(':wealdtech-retrofit')
+  compile project(':wealdtech-configuration:oauth2')
+  compile 'com.google.apis:google-api-services-calendar:v3-rev173-1.21.0'
 
   testCompile 'commons-io:commons-io:2.1'
 }
