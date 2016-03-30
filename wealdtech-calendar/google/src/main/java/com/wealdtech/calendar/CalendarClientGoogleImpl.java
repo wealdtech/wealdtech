@@ -18,14 +18,16 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.Events;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 import com.wealdtech.ServerError;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -108,6 +110,40 @@ public class CalendarClientGoogleImpl implements CalendarClient
   }
 
   @Override
+  public final ImmutableList<Event> obtainEvents(final OAuth2Credentials credentials, final Range<DateTime> timeframe)
+  {
+    return obtainEvents(credentials, "primary", timeframe);
+  }
+
+  @Override
+  public final ImmutableList<Event> obtainEvents(final OAuth2Credentials credentials, final String calendarId, final Range<DateTime> timeframe)
+  {
+    final Credential credential = generateCredential(credentials);
+
+    final com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(httpTransport, JSON_FACTORY, credential).setApplicationName(configuration.getProductId()).build();
+
+    final ImmutableList.Builder<Event> resultsB = ImmutableList.builder();
+    try
+    {
+      final Events events = client.events()
+                                  .list(calendarId)
+                                  .setTimeMin(new com.google.api.client.util.DateTime(timeframe.lowerEndpoint().toDate()))
+                                  .setTimeMax(new com.google.api.client.util.DateTime(timeframe.upperEndpoint().toDate()))
+                                  .execute();
+      for (com.google.api.services.calendar.model.Event event : events.getItems())
+      {
+        resultsB.add(googleEventToEvent(event));
+      }
+    }
+    catch (final IOException ioe)
+    {
+      LOG.error("Exception when obtaining events: ", ioe);
+    }
+
+    return resultsB.build();
+  }
+
+  @Override
   public void deleteEvent(final OAuth2Credentials credentials, final String eventId) throws IOException
   {
     deleteEvent(credentials, PRIMARY_CALENDAR_ID, eventId);
@@ -168,13 +204,13 @@ public class CalendarClientGoogleImpl implements CalendarClient
     {
       googleEvent.setId(event.getRemoteId().get());
     }
+    else if (event.getIcalId().isPresent())
+    {
+      googleEvent.setICalUID(event.getIcalId().get());
+    }
     else if (event.getId() != null)
     {
       googleEvent.setId(event.getId().toString());
-    }
-    if (event.getIcalId().isPresent())
-    {
-      googleEvent.setICalUID(event.getIcalId().get());
     }
     googleEvent.setSummary(event.getSummary());
     if (event.getDescription().isPresent())
@@ -183,7 +219,7 @@ public class CalendarClientGoogleImpl implements CalendarClient
     }
     if (event.getStartDate().isPresent())
     {
-      googleEvent.setStart(new EventDateTime().setDate(new DateTime(event.getStartDate().get().toDate())));
+      googleEvent.setStart(new EventDateTime().setDate(new com.google.api.client.util.DateTime(event.getStartDate().get().toDate())));
     }
     else
     {
@@ -193,7 +229,7 @@ public class CalendarClientGoogleImpl implements CalendarClient
     }
     if (event.getEndDate().isPresent())
     {
-      googleEvent.setEnd(new EventDateTime().setDate(new DateTime(event.getEndDate().get().toDate())));
+      googleEvent.setEnd(new EventDateTime().setDate(new com.google.api.client.util.DateTime(event.getEndDate().get().toDate())));
     }
     else
     {
@@ -212,6 +248,7 @@ public class CalendarClientGoogleImpl implements CalendarClient
    */
   private Event googleEventToEvent(final com.google.api.services.calendar.model.Event event)
   {
+    System.err.println("Google event is " + event.toString());
     final Event.Builder<?> builder = Event.builder();
     if (event.getId() != null)
     {
@@ -221,6 +258,7 @@ public class CalendarClientGoogleImpl implements CalendarClient
     {
       builder.icalId(event.getICalUID());
     }
+    builder.sequence(event.getSequence());
     builder.summary(event.getSummary());
     if (event.getDescription() != null)
     {

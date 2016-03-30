@@ -11,7 +11,9 @@
 package com.wealdtech.calendar;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 import com.wealdtech.authentication.OAuth2Credentials;
+import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -40,6 +42,25 @@ public interface CalendarClient
    * @return the obtained event, or {@code null} if no such event
    */
   Event obtainEvent(OAuth2Credentials credentials, String calendarId, String eventId);
+
+  /**
+   * Obtain all events in the primary calendar for a given timeframe
+   *
+   * @param credentials credentials for the request
+   * @param timeframe the timeframe over which to obtain the events
+   * @return the obtained events
+   */
+  ImmutableList<Event> obtainEvents(OAuth2Credentials credentials, Range<DateTime> timeframe);
+
+  /**
+   * Obtain all events in a specific calendar for a given timeframe
+   *
+   * @param credentials credentials for the request
+   * @param calendarId the ID of the calendar in which to obtain the event
+   * @param timeframe the timeframe over which to obtain the events
+   * @return the obtained events
+   */
+  ImmutableList<Event> obtainEvents(OAuth2Credentials credentials, String calendarId, Range<DateTime> timeframe);
 
   /**
    * Create an event in the primary calendar

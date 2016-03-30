@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.wealdtech.DataError;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -27,6 +28,7 @@ public class Event extends WObject<Event> implements Comparable<Event>
 {
   private static final String REMOTE_ID = "remoteid";
   private static final String ICAL_ID = "icalid";
+  private static final String SEQUENCE = "sequence";
   private static final String SUMMARY = "summary";
   private static final String DESCRIPTION = "description";
   private static final String START_DATE= "startdate";
@@ -70,10 +72,29 @@ public class Event extends WObject<Event> implements Comparable<Event>
   @JsonIgnore
   public Optional<DateTime> getEndDateTime() { return get(END_DATETIME, DateTime.class); }
 
+  @JsonIgnore
+  public Integer getSequence() { return get(SEQUENCE, Integer.class).get(); }
+
+  @Override
+  protected Map<String, Object> preCreate(Map<String, Object> data)
+  {
+    data = super.preCreate(data);
+
+    // If we have a IcalID that ends in "@ellie.ai" we need to use the main text as our identifier
+    final String icalId = (String)data.get(ICAL_ID);
+    if (icalId != null && icalId.endsWith("@ellie.ai"))
+    {
+      data.put(ID, WID.<Event>fromString(icalId.replace("@ellie.ai", "")));
+    }
+
+    return data;
+  }
+
   @Override
   protected void validate()
   {
     super.validate();
+    if (!exists(SEQUENCE)) { throw new DataError.Missing("Event needs 'sequence' information"); }
     if (!exists(SUMMARY)) { throw new DataError.Missing("Event needs 'summary' information"); }
     if (!exists(START_DATE) && !exists(START_DATETIME)) { throw new DataError.Missing("Event needs 'start date' or 'start datetime' information"); }
     // TODO more validation when we add recurrence
@@ -100,6 +121,12 @@ public class Event extends WObject<Event> implements Comparable<Event>
     public P icalId(final String icalId)
     {
       data(ICAL_ID, icalId);
+      return self();
+    }
+
+    public P sequence(final Integer sequence)
+    {
+      data(SEQUENCE, sequence);
       return self();
     }
 
