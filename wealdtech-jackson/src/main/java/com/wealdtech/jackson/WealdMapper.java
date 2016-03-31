@@ -13,6 +13,7 @@ package com.wealdtech.jackson;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -37,7 +38,7 @@ public enum WealdMapper
                                              .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
                                              .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                                              .disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
-                                             .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
+                                             .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
 
     ObjectMapperConfiguration serverConfiguration = new ObjectMapperConfiguration();
     serverConfiguration.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
@@ -45,7 +46,7 @@ public enum WealdMapper
                                              .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
                                              .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                                              .disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
-                                             .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
+                                             .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
   }
 
   /**

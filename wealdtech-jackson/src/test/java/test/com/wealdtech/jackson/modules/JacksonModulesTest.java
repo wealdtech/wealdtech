@@ -145,6 +145,15 @@ public class JacksonModulesTest
   }
 
   @Test
+  public void testDeserLocalDateTime2() throws Exception
+  {
+    // Complete serialization
+    final LocalDateTime ldt1 = this.mapper.readValue("1328241906000", LocalDateTime.class);
+    final LocalDateTime baseldt1 = LocalDateTime.parse("2012-02-03T04:05:06");
+    assertEquals(ldt1, baseldt1);
+  }
+
+  @Test
   public void testDeserLocalDate() throws IOException
   {
     final LocalDate ld1 = this.mapper.readValue("\"2012-02-03\"", LocalDate.class);
@@ -411,18 +420,20 @@ public class JacksonModulesTest
   @Test
   public void testSerLocalDateTimeAsString() throws Exception
   {
-    final LocalDateTime ldt1 = LocalDateTime.parse("2012-02-03T04:05:06");
+    final LocalDateTime ldt1 = LocalDateTime.parse("2012-02-05T04:05:06");
     final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(ldt1);
-    assertEquals(value, "\"2012-02-03T04:05:06\"");
+    // LocalDateTime is stored in UTC so need to translate it to a datetime in the local zone then to UTC prior to the string representation
+    assertEquals(value, ldt1.toDateTime(DateTimeZone.getDefault()).withZone(DateTimeZone.UTC).toString("\"yyyy-MM-dd'T'HH:mm:ss\""));
   }
 
   @Test
   public void testSerLocalDateTime2AsString() throws Exception
   {
-    final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.forID("Europe/London"));
+    final DateTime dt1 = new DateTime(2012, 5, 6, 10, 2, 3, DateTimeZone.getDefault());
     final LocalDateTime ldt1 = dt1.toLocalDateTime();
     final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(ldt1);
-    assertEquals(value, "\"2012-05-06T09:02:03\"");
+    // LocalDateTime is stored in UTC so need to translate it to UTC prior to the string representation
+    assertEquals(value, dt1.withZone(DateTimeZone.UTC).toString("\"yyyy-MM-dd'T'HH:mm:ss\""));
   }
 
   @Test

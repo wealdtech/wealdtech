@@ -1,0 +1,48 @@
+/*
+ * Copyright 2012 - 2016 Weald Technology Trading Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
+ */
+
+package com.wealdtech.contacts;
+
+import com.google.common.collect.ImmutableSet;
+import com.wealdtech.WID;
+import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+
+/**
+ * Test of the contact model
+ */
+public class ContactTest
+{
+  @Test
+  public void testRelationship()
+  {
+    final Contact alice = Contact.builder().id(WID.<Contact>generate()).name("Alice").build();
+    final Contact bob = Contact.builder().id(WID.<Contact>generate()).name("Bob").build();
+
+    final Relationship aliceToBob = Relationship.builder()
+                                                .from(alice.getId())
+                                                .to(bob.getId())
+                                                .contexts(ImmutableSet.of(Context.builder()
+                                                                                 .type(ContextType.PROFESSIONAL)
+                                                                                 .knownAs(ImmutableSet.of("Mr. Jones", "Bob Jones"))
+                                                                                 .familiarity(30)
+                                                                                 .formality(50)
+                                                                                 .build(), Context.builder()
+                                                                                                  .type(ContextType.FAMILIAL)
+                                                                                                  .knownAs(ImmutableSet.of("Dad"))
+                                                                                                  .familiarity(100)
+                                                                                                  .formality(0)
+                                                                                                  .build())).build();
+
+    assertEquals(aliceToBob.getFrom(), alice.getId());
+    assertEquals(aliceToBob.getTo(), bob.getId());
+  }
+}
