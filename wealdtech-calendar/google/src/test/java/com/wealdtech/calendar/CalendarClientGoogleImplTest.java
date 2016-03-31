@@ -14,13 +14,11 @@ import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
-import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.services.google.GoogleAccountsClient;
 import org.joda.time.DateTime;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 
@@ -31,27 +29,22 @@ import static org.testng.Assert.assertEquals;
  */
 public class CalendarClientGoogleImplTest
 {
-  @Test
-  public void testOauthStep1() throws MalformedURLException
-  {
-    final CalendarConfiguration configuration =
-        new ConfigurationSource<CalendarConfiguration>().getConfiguration("test-calendar.json", CalendarConfiguration.class);
-    assertEquals(configuration.getOauth2Configuration().generateAuthorizationUrl().toString(), "https://accounts.google.com/o/oauth2/auth?client_id=1046543602732-d2ffn8iiq1na401k2830kud9ebdelj7j.apps.googleusercontent.com&response_type=code&scope=openid%20profile%20email%20https://www.googleapis.com/auth/calendar&redirect_uri=http://api.ellie.ai/oauth2/googlecalendar/callback&state=auth&access_type=offline");
-  }
+  private static final ImmutableList<String> CALENDAR_SCOPES =
+      ImmutableList.of("openid", "profile", "mail", "https://www.googleapis.com/auth/calendar");
+
+  private static final String REFRESH_TOKEN = System.getenv("calendar_test_user_refresh_token");
 
   @Test
   public void testObtainCalendars() throws IOException, GeneralSecurityException
   {
-    final CalendarConfiguration configuration =
-        new ConfigurationSource<CalendarConfiguration>().getConfiguration("test-calendar.json", CalendarConfiguration.class);
+    final CalendarConfiguration configuration = CalendarConfiguration.fromEnv("calendar_test");
 
     final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
     final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                                                  .name("Google calendar")
                                                                                  .accessToken("irrelevant")
                                                                                  .expires(DateTime.now().minusDays(1))
-                                                                                 .refreshToken(
-                                                                                     "1/hiV8axfKcuAlB9ZUgF6NaokllYp8PYSJSgMwWNIidWMMEudVrK5jSpoR30zcRFq6")
+                                                                                 .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
     final CalendarClient client = new CalendarClientGoogleImpl(configuration);
     ImmutableList<Calendar> calendars = client.obtainCalendars(credentials);
@@ -63,16 +56,14 @@ public class CalendarClientGoogleImplTest
   {
     final String testName = new Object() {}.getClass().getEnclosingMethod().getName();
 
-    final CalendarConfiguration configuration =
-        new ConfigurationSource<CalendarConfiguration>().getConfiguration("test-calendar.json", CalendarConfiguration.class);
+    final CalendarConfiguration configuration = CalendarConfiguration.fromEnv("calendar_test");
 
     final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
     final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                                                  .name("Google calendar")
                                                                                  .accessToken("irrelevant")
                                                                                  .expires(DateTime.now().minusDays(1))
-                                                                                 .refreshToken(
-                                                                                     "1/hiV8axfKcuAlB9ZUgF6NaokllYp8PYSJSgMwWNIidWMMEudVrK5jSpoR30zcRFq6")
+                                                                                 .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
 
     final CalendarClient client = new CalendarClientGoogleImpl(configuration);

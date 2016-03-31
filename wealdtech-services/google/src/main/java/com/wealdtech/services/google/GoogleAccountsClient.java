@@ -48,14 +48,17 @@ public class GoogleAccountsClient
     this.configuration = configuration;
 
     final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT).setLogLevel(RestAdapter.LogLevel.FULL).setConverter(converter).build();
+    final RestAdapter adapter =
+        new RestAdapter.Builder().setEndpoint(ENDPOINT).setLogLevel(RestAdapter.LogLevel.FULL).setConverter(converter).build();
 
     this.service = adapter.create(GoogleAccountsService.class);
   }
 
   /**
    * Carry out initial authorisation of OAuth2 response and obtain an access token
+   *
    * @param uri the full URI that was called to trigger this authorisation
+   *
    * @return An OAuth2 credential
    */
   public OAuth2Credentials auth(final String name, final URI uri)
@@ -72,7 +75,9 @@ public class GoogleAccountsClient
     }
     final String state = params.get("state").iterator().next();
 
-    final GenericWObject response = service.obtainToken("authorization_code", configuration.getClientId(), configuration.getSecret(), configuration.getCallbackUrl().toString(), code);
+    final GenericWObject response =
+        service.obtainToken("authorization_code", configuration.getClientId(), configuration.getSecret(),
+                            configuration.getCallbackUrl().toString(), code);
 
     LOG.debug("Response is {}", response);
 
@@ -106,14 +111,17 @@ public class GoogleAccountsClient
 
   /**
    * Carry out re-authorisation of OAuth2 with
+   *
    * @param credentials the current OAuth2 credentials
+   *
    * @return A refreshed OAuth2 credential
    */
   public OAuth2Credentials reauth(final OAuth2Credentials credentials)
   {
     if (credentials == null) { return null; }
 
-    final GenericWObject response = service.refreshToken("refresh_token", configuration.getClientId(), configuration.getSecret(), credentials.getRefreshToken());
+    final GenericWObject response = service.refreshToken("refresh_token", configuration.getClientId(), configuration.getSecret(),
+                                                         credentials.getRefreshToken());
 
     LOG.debug("Response is {}", response);
 

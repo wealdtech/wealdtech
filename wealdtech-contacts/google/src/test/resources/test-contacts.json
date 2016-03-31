@@ -1,0 +1,9 @@
+{
+ "productid": "Ellie/0.1.0",
+  "oauth2":
+  {
+    "clientid": "1046543602732-d2ffn8iiq1na401k2830kud9ebdelj7j.apps.googleusercontent.com",
+    "secret": "GnkjHVBIkC63uXSrJ2No-BJc",
+    "callbackurl": "http://api.ellie.ai/oauth2/googlecalendar/callback"
+  }
+}

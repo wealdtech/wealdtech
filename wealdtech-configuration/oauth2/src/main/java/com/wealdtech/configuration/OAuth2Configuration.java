@@ -12,6 +12,9 @@ package com.wealdtech.configuration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.wealdtech.DataError;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,18 +38,37 @@ public class OAuth2Configuration implements Configuration
     this.callbackUrl = callbackUrl;
   }
 
+  /**
+   * Obtain a configuration from the environment
+   *
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static OAuth2Configuration fromEnv(final String base)
+  {
+    final URL callbackUrl;
+    try
+    {
+      callbackUrl = System.getenv(base + "_callbackurl") == null ? null : new URL(System.getenv(base + "_callbackurl"));
+    }
+    catch (final MalformedURLException mue)
+    {
+      throw new DataError.Bad("Bad or environment variable " + base + "_callbackurl");
+    }
+    return new OAuth2Configuration(System.getenv(base + "_clientid"), System.getenv(base + "_secret"), callbackUrl);
+  }
+
   public String getClientId() { return clientId; }
 
   public String getSecret() { return secret; }
 
   public URL getCallbackUrl() { return callbackUrl; }
 
-  public URL generateAuthorizationUrl() throws MalformedURLException
+  public URL generateAuthorizationUrl(ImmutableList<String> scopes) throws MalformedURLException
   {
     return new URL("https://accounts.google.com/o/oauth2/auth?" +
                    "client_id=" + getClientId() +
                    "&response_type=code" +
-                   "&scope=openid%20profile%20email%20https://www.googleapis.com/auth/calendar" +
+                   "&scope=" + Joiner.on("%20").join(scopes) +
                    "&redirect_uri=" + getCallbackUrl() +
                    "&state=auth" +
                    "&access_type=offline");

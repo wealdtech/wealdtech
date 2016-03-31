@@ -8,7 +8,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.calendar.config;
+package com.wealdtech.contacts.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,13 +18,13 @@ import com.wealdtech.configuration.OAuth2Configuration;
 /**
  *
  */
-public class CalendarConfiguration implements Configuration
+public class ContactsConfiguration implements Configuration
 {
   private final String productId;
   private final OAuth2Configuration oauth2;
 
   @JsonCreator
-  public CalendarConfiguration(@JsonProperty("productid") final String productId,
+  public ContactsConfiguration(@JsonProperty("productid") final String productId,
                                @JsonProperty("oauth2") final OAuth2Configuration oauth2)
   {
     this.productId = productId;
@@ -36,9 +36,9 @@ public class CalendarConfiguration implements Configuration
    *
    * @param base the base string to use as the prefix for obtaining environmental variables
    */
-  public static CalendarConfiguration fromEnv(final String base)
+  public static ContactsConfiguration fromEnv(final String base)
   {
-      return new CalendarConfiguration(System.getenv(base + "_productid"), OAuth2Configuration.fromEnv(base + "_oauth2"));
+    return new ContactsConfiguration(System.getenv(base + "_productid"), OAuth2Configuration.fromEnv(base + "_oauth2"));
   }
 
   public String getProductId() { return productId; }

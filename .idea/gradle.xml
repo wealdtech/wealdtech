@@ -29,6 +29,9 @@
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
             <option value="$PROJECT_DIR$/wealdtech-configuration/oauth2" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/google" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/model" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-events" />
@@ -76,6 +79,10 @@
             <option value="$PROJECT_DIR$/wealdtech-services/weather" />
             <option value="$PROJECT_DIR$/wealdtech-services/weather/forecastio" />
             <option value="$PROJECT_DIR$/wealdtech-services/weather/model" />
+            <option value="$PROJECT_DIR$/wealdtech-traces" />
+            <option value="$PROJECT_DIR$/wealdtech-traces/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-traces/datastore/postgresql" />
+            <option value="$PROJECT_DIR$/wealdtech-traces/model" />
             <option value="$PROJECT_DIR$/wealdtech-users" />
             <option value="$PROJECT_DIR$/wealdtech-users-daemon" />
             <option value="$PROJECT_DIR$/wealdtech-users-datastore" />
@@ -108,6 +115,9 @@
             <option value="$PROJECT_DIR$/wealdtech-configuration" />
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
             <option value="$PROJECT_DIR$/wealdtech-configuration/oauth2" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/google" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/model" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-events" />
@@ -155,6 +165,10 @@
             <option value="$PROJECT_DIR$/wealdtech-services/weather" />
             <option value="$PROJECT_DIR$/wealdtech-services/weather/forecastio" />
             <option value="$PROJECT_DIR$/wealdtech-services/weather/model" />
+            <option value="$PROJECT_DIR$/wealdtech-traces" />
+            <option value="$PROJECT_DIR$/wealdtech-traces/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-traces/datastore/postgresql" />
+            <option value="$PROJECT_DIR$/wealdtech-traces/model" />
             <option value="$PROJECT_DIR$/wealdtech-users" />
             <option value="$PROJECT_DIR$/wealdtech-users-daemon" />
             <option value="$PROJECT_DIR$/wealdtech-users-datastore" />

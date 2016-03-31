@@ -41,6 +41,7 @@ public interface CalendarClient
    * @param eventId the ID of the event to obtain
    * @return the obtained event, or {@code null} if no such event
    */
+  @Nullable
   Event obtainEvent(OAuth2Credentials credentials, String calendarId, String eventId);
 
   /**
