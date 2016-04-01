@@ -12,6 +12,8 @@ package com.wealdtech.contacts;
 
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
+import com.wealdtech.contacts.handles.NameHandle;
+import org.joda.time.LocalDateTime;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -24,8 +26,10 @@ public class ContactTest
   @Test
   public void testRelationship()
   {
-    final Contact alice = Contact.builder().id(WID.<Contact>generate()).name("Alice").build();
-    final Contact bob = Contact.builder().id(WID.<Contact>generate()).name("Bob").build();
+    final Contact alice = Contact.builder().id(WID.<Contact>generate()).handles(ImmutableSet.of(NameHandle.builder().validFrom(
+        LocalDateTime.parse("1970-01-01")).name("Alice").build())).build();
+    final Contact bob = Contact.builder().id(WID.<Contact>generate()).handles(ImmutableSet.of(NameHandle.builder().validFrom(
+        LocalDateTime.parse("1970-01-01")).name("Bob").build())).build();
 
     final Relationship aliceToBob = Relationship.builder()
                                                 .from(alice.getId())

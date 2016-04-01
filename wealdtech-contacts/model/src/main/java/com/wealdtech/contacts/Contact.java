@@ -13,7 +13,6 @@ package com.wealdtech.contacts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.wealdtech.WObject;
 import com.wealdtech.contacts.events.Event;
@@ -27,7 +26,6 @@ import java.util.Set;
  */
 public class Contact extends WObject<Contact> implements Comparable<Contact>
 {
-  private static final String NAME = "name";
   private static final String EVENTS = "events";
   private static final String HANDLES = "handles";
 
@@ -36,9 +34,6 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
   {
     super(data);
   }
-
-  @JsonIgnore
-  public Optional<String> getName() { return get(NAME, String.class); }
 
   private static final TypeReference<Set<? extends Event>> EVENTS_TYPE_REF = new TypeReference<Set<? extends Event>>(){};
   @JsonIgnore
@@ -64,12 +59,6 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     public Builder(final Contact prior)
     {
       super(prior);
-    }
-
-    public P name(final String name)
-    {
-      data(NAME, name);
-      return self();
     }
 
     public P events(final Set<? extends Event> events)

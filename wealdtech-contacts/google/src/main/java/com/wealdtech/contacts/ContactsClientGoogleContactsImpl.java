@@ -37,6 +37,7 @@ import com.wealdtech.contacts.events.BirthEvent;
 import com.wealdtech.contacts.events.Event;
 import com.wealdtech.contacts.handles.EmailHandle;
 import com.wealdtech.contacts.handles.Handle;
+import com.wealdtech.contacts.handles.NameHandle;
 import com.wealdtech.contacts.handles.TelephoneHandle;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -64,6 +65,8 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
   private final ContactsService contactsService;
+
+  private static final LocalDateTime EPOCH = LocalDateTime.parse("1970-01-01");
 
   public ContactsClientGoogleContactsImpl(final ContactsConfiguration configuration) throws GeneralSecurityException, IOException
   {
@@ -136,12 +139,16 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
   {
     googleContact.addUserDefinedField(new UserDefinedField("My test field", "My test value"));
     final Contact.Builder<?> builder = Contact.builder();
+
+    final ImmutableSet.Builder<Handle> handlesB = ImmutableSet.builder();
+    boolean addedHandle = false;
+
     if (googleContact.hasName())
     {
       final Name name = googleContact.getName();
       if (name.hasFullName())
       {
-        builder.name(name.getFullName().getValue());
+        handlesB.add(NameHandle.builder().validFrom(EPOCH).name(name.getFullName().getValue()).build());
       }
       else
       {
@@ -157,13 +164,10 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
         }
         if (sb.length() > 0)
         {
-          builder.name(sb.toString());
+          handlesB.add(NameHandle.builder().validFrom(EPOCH).name(sb.toString()).build());
         }
       }
     }
-
-    final ImmutableSet.Builder<Handle> handlesB = ImmutableSet.builder();
-    boolean addedHandle = false;
 
     for (final Email email : googleContact.getEmailAddresses())
     {
