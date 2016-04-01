@@ -12,17 +12,24 @@ package com.wealdtech.contacts;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 import com.wealdtech.WObject;
+import com.wealdtech.contacts.events.Event;
+import com.wealdtech.contacts.handles.Handle;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
- * A contact, including details of their relationship to the acquiring user.
+ * A contact contains details about a person.
  */
 public class Contact extends WObject<Contact> implements Comparable<Contact>
 {
   private static final String NAME = "name";
+  private static final String EVENTS = "events";
+  private static final String HANDLES = "handles";
 
   @JsonCreator
   public Contact(final Map<String, Object> data)
@@ -32,6 +39,14 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
 
   @JsonIgnore
   public Optional<String> getName() { return get(NAME, String.class); }
+
+  private static final TypeReference<Set<? extends Event>> EVENTS_TYPE_REF = new TypeReference<Set<? extends Event>>(){};
+  @JsonIgnore
+  public Set<? extends Event> getEvents() { return get(EVENTS, EVENTS_TYPE_REF).or(Sets.<Event>newHashSet()); }
+
+  private static final TypeReference<Set<? extends Handle>> HANDLES_TYPE_REF = new TypeReference<Set<? extends Handle>>(){};
+  @JsonIgnore
+  public Set<? extends Handle> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).or(Sets.<Handle>newHashSet()); }
 
   @Override
   protected void validate()
@@ -56,6 +71,19 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
       data(NAME, name);
       return self();
     }
+
+    public P events(final Set<? extends Event> events)
+    {
+      data(EVENTS, events);
+      return self();
+    }
+
+    public P handles(final Set<? extends Handle> handles)
+    {
+      data(HANDLES, handles);
+      return self();
+    }
+
     public Contact build()
     {
       return new Contact(data);
@@ -72,4 +100,4 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     return new Builder(prior);
   }
 
-  }
+}

@@ -19,17 +19,27 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.gdata.client.Query;
 import com.google.gdata.client.contacts.ContactsService;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.contacts.UserDefinedField;
+import com.google.gdata.data.extensions.Email;
 import com.google.gdata.data.extensions.Name;
+import com.google.gdata.data.extensions.PhoneNumber;
 import com.google.gdata.util.ServiceException;
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.contacts.config.ContactsConfiguration;
+import com.wealdtech.contacts.events.BirthEvent;
+import com.wealdtech.contacts.events.Event;
+import com.wealdtech.contacts.handles.EmailHandle;
+import com.wealdtech.contacts.handles.Handle;
+import com.wealdtech.contacts.handles.TelephoneHandle;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +48,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 
 /**
  * Implementation of the contacts client using the Google Contacts API
@@ -150,6 +161,76 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
         }
       }
     }
+
+    final ImmutableSet.Builder<Handle> handlesB = ImmutableSet.builder();
+    boolean addedHandle = false;
+
+    for (final Email email : googleContact.getEmailAddresses())
+    {
+      final EmailHandle.Builder<?> handleB = EmailHandle.builder();
+      handleB.validFrom(LocalDateTime.now());
+      if (email.getAddress() != null)
+      {
+        handleB.address(email.getAddress());
+      }
+      if (email.getDisplayName() != null)
+      {
+        handleB.displayName(email.getDisplayName());
+      }
+      if (Objects.equals(email.getRel(), "Home"))
+      {
+        handleB.contextTypes(ImmutableSet.of(ContextType.SOCIAL));
+      }
+      else if (Objects.equals(email.getRel(), "Work"))
+      {
+        handleB.contextTypes(ImmutableSet.of(ContextType.PROFESSIONAL));
+      }
+
+      handlesB.add(handleB.build());
+      addedHandle = true;
+    }
+
+    for (final PhoneNumber number : googleContact.getPhoneNumbers())
+    {
+      final TelephoneHandle.Builder<?> handleB = TelephoneHandle.builder();
+      handleB.validFrom(LocalDateTime.now());
+      if (number.getPhoneNumber() != null)
+      {
+        handleB.number(number.getPhoneNumber());
+      }
+      if (Objects.equals(number.getRel(), "Home"))
+      {
+        handleB.contextTypes(ImmutableSet.of(ContextType.SOCIAL));
+      }
+      else if (Objects.equals(number.getRel(), "Work"))
+      {
+        handleB.contextTypes(ImmutableSet.of(ContextType.PROFESSIONAL));
+      }
+
+      handlesB.add(handleB.build());
+      addedHandle = true;
+    }
+
+    if (addedHandle)
+    {
+      builder.handles(handlesB.build());
+    }
+
+    final ImmutableSet.Builder<Event> eventsB = ImmutableSet.builder();
+    boolean addedEvent = false;
+
+    if (googleContact.getBirthday() != null)
+    {
+      final LocalDate birthday = LocalDate.parse(googleContact.getBirthday().getWhen());
+      eventsB.add(BirthEvent.builder().date(birthday).build());
+      addedEvent = true;
+    }
+
+    if (addedEvent)
+    {
+      builder.events(eventsB.build());
+    }
+
     return builder.build();
   }
 

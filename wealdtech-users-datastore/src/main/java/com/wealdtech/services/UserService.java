@@ -89,11 +89,11 @@ public interface UserService
   void verifyEmail(Credentials credentials);
 
   /**
-   * Obtain emails known by Cognis given a set of emails provided.
+   * Obtain emails known by the system given a set of emails provided.
    * This is used to check for duplicate email addresses, as well as
    * a lookup against mobile clients' address books
    * @param emails the emails to check
-   * @return the subset of the emails passed in which match Cognis users plus the their ID
+   * @return the subset of the emails passed in which match existing users plus the their ID
    */
   ImmutableSet<GenericWObject> obtainKnownEmails(ImmutableCollection<String> emails);
 }

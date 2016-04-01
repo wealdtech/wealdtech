@@ -14,11 +14,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
-import com.wealdtech.DataError;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
 
 import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * A unidirectional relationship from one contact to another.
@@ -52,14 +53,8 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
   protected void validate()
   {
     super.validate();
-    if (!exists(FROM))
-    {
-      throw new DataError.Missing("Relationship needs 'from' information");
-    }
-    if (!exists(TO))
-    {
-      throw new DataError.Missing("Relationship needs 'to' information");
-    }
+    checkState(exists(FROM), "Relationship failed validation: must contain from");
+    checkState(exists(TO), "Relationship failed validation: must contain to");
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Relationship, P>
