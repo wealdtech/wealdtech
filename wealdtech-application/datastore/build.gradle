@@ -12,7 +12,7 @@ archivesBaseName = 'wealdtech-application-datastore'
 
 dependencies {
     compile project(':wealdtech-application:model')
-    compile project(':wealdtech-wobject-datastore')
+    compile project(':wealdtech-wobject:datastore:postgresql')
 }
 
 uploadArchives {

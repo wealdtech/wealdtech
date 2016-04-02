@@ -89,7 +89,9 @@
             <option value="$PROJECT_DIR$/wealdtech-users-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
-            <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject/datastore/neo4j" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject/datastore/postgresql" />
           </set>
         </option>
         <option name="myModules">
@@ -175,7 +177,9 @@
             <option value="$PROJECT_DIR$/wealdtech-users-jersey" />
             <option value="$PROJECT_DIR$/wealdtech-wid-service" />
             <option value="$PROJECT_DIR$/wealdtech-wobject" />
-            <option value="$PROJECT_DIR$/wealdtech-wobject-datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject/datastore/neo4j" />
+            <option value="$PROJECT_DIR$/wealdtech-wobject/datastore/postgresql" />
           </set>
         </option>
       </GradleProjectSettings>

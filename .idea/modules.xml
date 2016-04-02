@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/chat/chat.iml" filepath="$PROJECT_DIR$/wealdtech-services/chat/chat.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/daemon/daemon.iml" filepath="$PROJECT_DIR$/wealdtech-chat/daemon/daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/datastore/datastore.iml" filepath="$PROJECT_DIR$/wealdtech-application/datastore/datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject/datastore/postgresql/datastore-postgresql.iml" filepath="$PROJECT_DIR$/wealdtech-wobject/datastore/postgresql/datastore-postgresql.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/weather/forecastio/forecastio.iml" filepath="$PROJECT_DIR$/wealdtech-services/weather/forecastio/forecastio.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/gcm/gcm.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/gcm/gcm.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-flow/github/github.iml" filepath="$PROJECT_DIR$/wealdtech-flow/github/github.iml" />
@@ -21,6 +22,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/logger-service.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/logger-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/model/model.iml" filepath="$PROJECT_DIR$/wealdtech-chat/model/model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject/datastore/neo4j/neo4j.iml" filepath="$PROJECT_DIR$/wealdtech-wobject/datastore/neo4j/neo4j.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/null/null.iml" filepath="$PROJECT_DIR$/wealdtech-mail/null/null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/oauth2/oauth2.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/oauth2/oauth2.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />

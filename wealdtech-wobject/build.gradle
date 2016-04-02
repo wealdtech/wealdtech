@@ -16,6 +16,10 @@ dependencies
     compile project(':wealdtech-jackson')
 }
 
+subprojects {
+  group = 'com.wealdtech.wobject'
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {

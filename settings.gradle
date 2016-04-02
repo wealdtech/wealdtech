@@ -73,5 +73,7 @@ include 'wealdtech-application:datastore',
         'wealdtech-users-jersey',
         'wealdtech-wid-service',
         'wealdtech-wobject',
-        'wealdtech-wobject-datastore',
+        'wealdtech-wobject:datastore',
+        'wealdtech-wobject:datastore:postgresql',
+        'wealdtech-wobject:datastore:neo4j',
         'wealdtech-application:model'
