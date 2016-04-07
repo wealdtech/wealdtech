@@ -238,52 +238,55 @@ public class CalendarClientGoogleImpl implements CalendarClient
                                                   event.getEndDateTime().get().getZone().toTimeZone())));
     }
 
+    System.err.println("Translated event " + event + " to google event " + googleEvent);
+
     return googleEvent;
   }
 
   /**
    * Helper to turn a Google calendar event in to a Wealdtech calendar event
-   * @param event the Google calendar event
+   * @param googleEvent the Google calendar event
    * @return the Wealdtech calendar event
    */
-  private Event googleEventToEvent(final com.google.api.services.calendar.model.Event event)
+  private Event googleEventToEvent(final com.google.api.services.calendar.model.Event googleEvent)
   {
-    System.err.println("Google event is " + event.toString());
     final Event.Builder<?> builder = Event.builder();
-    if (event.getId() != null)
+    if (googleEvent.getId() != null)
     {
-      builder.remoteId(event.getId());
+      builder.remoteId(googleEvent.getId());
     }
-    if (event.getICalUID() != null)
+    if (googleEvent.getICalUID() != null)
     {
-      builder.icalId(event.getICalUID());
+      builder.icalId(googleEvent.getICalUID());
     }
-    builder.sequence(event.getSequence());
-    builder.summary(event.getSummary());
-    if (event.getDescription() != null)
+    builder.sequence(googleEvent.getSequence());
+    builder.summary(googleEvent.getSummary());
+    if (googleEvent.getDescription() != null)
     {
-      builder.description(event.getDescription());
+      builder.description(googleEvent.getDescription());
     }
-    if (event.getStart().getDate() != null)
+    if (googleEvent.getStart().getDate() != null)
     {
-      builder.startDate(new LocalDate(event.getStart().getDate()));
+      builder.startDate(new LocalDate(googleEvent.getStart().getDate()));
     }
-    if (event.getStart().getDateTime() != null)
+    if (googleEvent.getStart().getDateTime() != null)
     {
-      builder.startDateTime(new org.joda.time.DateTime(event.getStart().getDateTime().getValue(),
-                                                       DateTimeZone.forID(event.getStart().getTimeZone())));
+      builder.startDateTime(new org.joda.time.DateTime(googleEvent.getStart().getDateTime().getValue(),
+                                                       DateTimeZone.forID(googleEvent.getStart().getTimeZone())));
     }
-    if (event.getEnd().getDate() != null)
+    if (googleEvent.getEnd().getDate() != null)
     {
-      builder.endDate(new LocalDate(event.getEnd().getDate()));
+      builder.endDate(new LocalDate(googleEvent.getEnd().getDate()));
     }
-    if (event.getEnd().getDateTime() != null)
+    if (googleEvent.getEnd().getDateTime() != null)
     {
-      builder.endDateTime(new org.joda.time.DateTime(event.getEnd().getDateTime().getValue(),
-                                                       DateTimeZone.forID(event.getEnd().getTimeZone())));
+      builder.endDateTime(new org.joda.time.DateTime(googleEvent.getEnd().getDateTime().getValue(),
+                                                       DateTimeZone.forID(googleEvent.getEnd().getTimeZone())));
     }
 
-    return builder.build();
+    final Event event = builder.build();
+    System.err.println("Translated google event " + googleEvent + " to event " + event);
+    return event;
   }
 
   /**

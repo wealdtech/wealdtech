@@ -10,6 +10,10 @@
 
 archivesBaseName = 'wealdtech-flow-github'
 
+dependencies {
+    compile project(':wealdtech-flow:model')
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {

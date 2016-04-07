@@ -10,6 +10,16 @@
 
 archivesBaseName = 'wealdtech-flow-model'
 
+dependencies
+{
+    compile project(':wealdtech-wobject')
+    compile 'org.camunda.bpm:camunda-bom:7.4.0'
+    compile 'org.camunda.bpm:camunda-engine:7.4.0'
+    compile 'org.camunda.bpm:camunda-engine-plugin-spin:7.4.0'
+    compile 'org.camunda.spin:camunda-spin-core:1.2.2'
+    compile 'org.camunda.spin:camunda-spin-dataformat-json-jackson:1.2.2'
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {

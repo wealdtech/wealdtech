@@ -30,3 +30,8 @@ libraries/
 # TestNG
 #
 test-output
+
+#
+# OSX
+#
+.DS_Store

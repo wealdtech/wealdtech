@@ -10,8 +10,16 @@
 
 subprojects {
   group = 'com.wealdtech.flow'
-  dependencies
-  {
-    compile 'org.camunda.bpm:camunda-bom:7.4.0'
+
+  configurations {
+    compile.exclude group: 'org.testng', module: 'testng'
+  }
+  test {
+    useJUnit()
+  }
+
+  dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'com.h2database:h2:1.3.171'
   }
 }

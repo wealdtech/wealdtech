@@ -86,6 +86,11 @@ public class Event extends WObject<Event> implements Comparable<Event>
     {
       data.put(ID, WID.<Event>fromString(icalId.replace("@ellie.ai", "")));
     }
+    // And if we have a local ID but no iCal ID then create one
+    else if (icalId == null && data.get(ID) != null)
+    {
+      data.put(ICAL_ID, data.get(ID).toString() + "@ellie.ai");
+    }
 
     return data;
   }
