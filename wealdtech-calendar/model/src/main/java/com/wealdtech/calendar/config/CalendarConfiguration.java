@@ -41,7 +41,9 @@ public class CalendarConfiguration implements Configuration
       return new CalendarConfiguration(System.getenv(base + "_productid"), OAuth2Configuration.fromEnv(base + "_oauth2"));
   }
 
+  @JsonProperty("productid")
   public String getProductId() { return productId; }
 
+  @JsonProperty("oauth2")
   public OAuth2Configuration getOauth2Configuration() { return oauth2; }
 }

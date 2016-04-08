@@ -10,7 +10,6 @@
 
 package com.wealdtech.flow;
 
-
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 
