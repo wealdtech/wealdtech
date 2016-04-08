@@ -30,6 +30,8 @@
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
             <option value="$PROJECT_DIR$/wealdtech-configuration/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-contacts" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/datastore/postgresql" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/google" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/model" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
@@ -118,6 +120,8 @@
             <option value="$PROJECT_DIR$/wealdtech-configuration-logging" />
             <option value="$PROJECT_DIR$/wealdtech-configuration/oauth2" />
             <option value="$PROJECT_DIR$/wealdtech-contacts" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/datastore/postgresql" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/google" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/model" />
             <option value="$PROJECT_DIR$/wealdtech-core" />

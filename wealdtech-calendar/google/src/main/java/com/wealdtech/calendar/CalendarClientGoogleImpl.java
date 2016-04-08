@@ -25,8 +25,10 @@ import com.google.api.services.calendar.model.Events;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.wealdtech.ServerError;
+import com.wealdtech.TwoTuple;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
+import com.wealdtech.collect.IntervalMultimap;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -190,6 +192,56 @@ public class CalendarClientGoogleImpl implements CalendarClient
       builder.add(googleCalendarToCalendar(entry));
     }
     return builder.build();
+  }
+
+  @Override
+  public ImmutableList<TwoTuple<Range<DateTime>, Long>> obtainFreeRanges(final OAuth2Credentials credentials,
+                                                                         final Range<DateTime> timeframe,
+                                                                         final Range<DateTime> mask,
+                                                                         final Long duration)
+  {
+    // Build a free/busy bitmap given the timeframe and mask
+    final IntervalMultimap<DateTime, Integer> fbMap = new IntervalMultimap<>();
+
+    // Start off obtaining all events in the given timeframe
+    final ImmutableList<Event> events = obtainEvents(credentials, timeframe);
+    for (final Event event : events)
+    {
+      DateTime start;
+      if (event.getStartDateTime().isPresent())
+      {
+        start = event.getStartDateTime().get();
+      }
+      else if (event.getStartDate().isPresent())
+      {
+        start = event.getStartDate().get().toDateTimeAtStartOfDay();
+      }
+      else
+      {
+        // TODO error
+        continue;
+      }
+      
+      DateTime end;
+      if (event.getEndDateTime().isPresent())
+      {
+        end = event.getEndDateTime().get();
+      }
+      else if (event.getEndDate().isPresent())
+      {
+        end = event.getEndDate().get().toDateTimeAtStartOfDay();
+      }
+      else
+      {
+        // TODO error
+        continue;
+      }
+
+      fbMap.put(Range.closedOpen(start, end), 1);
+    }
+    System.err.println(fbMap.dump());
+
+    return null;
   }
 
   /**

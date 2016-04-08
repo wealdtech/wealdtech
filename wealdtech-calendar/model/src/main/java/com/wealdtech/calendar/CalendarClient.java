@@ -12,6 +12,7 @@ package com.wealdtech.calendar;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
+import com.wealdtech.TwoTuple;
 import com.wealdtech.authentication.OAuth2Credentials;
 import org.joda.time.DateTime;
 
@@ -100,5 +101,18 @@ public interface CalendarClient
   void deleteEvent(OAuth2Credentials credentials, String calendarId, String eventId) throws IOException;
 
   ImmutableList<Calendar> obtainCalendars(OAuth2Credentials credentials) throws IOException;
+
+  /**
+   * Obtain a range of times that are free, along with a level of suitability for each
+
+   * @param credentials credentials for the request
+   * @param timeframe the timeframe over which to obtain free times
+   * @param duration the duration of the required range
+   * @return a list of suitable ranges, ordered by suitability
+   */
+  ImmutableList<TwoTuple<Range<DateTime>, Long>> obtainFreeRanges(OAuth2Credentials credentials,
+                                                                  Range<DateTime> timeframe,
+                                                                  Range<DateTime> mask,
+                                                                  Long duration);
 }
 

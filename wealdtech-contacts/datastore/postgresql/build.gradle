@@ -8,19 +8,19 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-contacts-datastore-neo4j'
+archivesBaseName = 'wealdtech-contacts-datastore-postgresql'
 
 dependencies {
-    compile project(':wealdtech-contacts:model')
-    compile project(':wealdtech-wobject-datastore:neo4j')
+    compile project(':wealdtech-contacts:datastore')
+    compile project(':wealdtech-wobject:datastore:postgresql')
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name 'Wealdtech contacts datastore'
-                description 'Storage for Weald Technology contacts information using neo4j'
+                name 'Wealdtech contacts PostgreSql datastore'
+                description 'Storage for Weald Technology contacts information using PostgreSql'
             }
         }
     }

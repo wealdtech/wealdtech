@@ -11,7 +11,7 @@
 package com.wealdtech.calendar;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.WID;
+import com.google.common.collect.Range;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
 import com.wealdtech.services.google.GoogleAccountsClient;
@@ -21,8 +21,6 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  *
@@ -34,25 +32,75 @@ public class CalendarClientGoogleImplTest
 
   private static final String REFRESH_TOKEN = System.getenv("calendar_test_user_refresh_token");
 
-  @Test
-  public void testObtainCalendars() throws IOException, GeneralSecurityException
-  {
-    final CalendarConfiguration configuration = CalendarConfiguration.fromEnv("calendar_test");
+//  @Test
+//  public void testObtainCalendars() throws IOException, GeneralSecurityException
+//  {
+//    final CalendarConfiguration configuration = CalendarConfiguration.fromEnv("calendar_test");
+//
+//    final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
+//    final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
+//                                                                                 .name("Google calendar")
+//                                                                                 .accessToken("irrelevant")
+//                                                                                 .expires(DateTime.now().minusDays(1))
+//                                                                                 .refreshToken(REFRESH_TOKEN)
+//                                                                                 .build());
+//    final CalendarClient client = new CalendarClientGoogleImpl(configuration);
+//    ImmutableList<Calendar> calendars = client.obtainCalendars(credentials);
+//    // TODO assert calendars
+//  }
+//
+//  @Test
+//  public void testCreateEvent() throws IOException, GeneralSecurityException
+//  {
+//    final String testName = new Object() {}.getClass().getEnclosingMethod().getName();
+//
+//    final CalendarConfiguration configuration = CalendarConfiguration.fromEnv("calendar_test");
+//
+//    final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
+//    final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
+//                                                                                 .name("Google calendar")
+//                                                                                 .accessToken("irrelevant")
+//                                                                                 .expires(DateTime.now().minusDays(1))
+//                                                                                 .refreshToken(REFRESH_TOKEN)
+//                                                                                 .build());
+//
+//    final CalendarClient client = new CalendarClientGoogleImpl(configuration);
+//
+//    Event event = null;
+//    try
+//    {
+//      final DateTime eventStart = DateTime.now().withTimeAtStartOfDay().plusDays(1).withHourOfDay(9);
+//      event = Event.builder()
+//                   .icalId(WID.<Event>generate().toString() + "@ellie.ai")
+//                   .sequence(0)
+//                   .summary(testName)
+//                   .startDateTime(eventStart)
+//                   .endDateTime(eventStart.plusHours(1))
+//                   .build();
+//      event = client.createEvent(credentials, event);
+//
+//      // Attempt to fetch the event
+//      final Event remoteEvent = client.obtainEvent(credentials, event.getRemoteId().orNull());
+//
+//      assertEquals(remoteEvent, event);
+//      System.err.println("Remote event is " + remoteEvent);
+//    }
+//    catch (final Exception e)
+//    {
+//      System.err.println(e);
+//      throw e;
+//    }
+//    finally
+//    {
+//      if (event != null)
+//      {
+//        client.deleteEvent(credentials, event.getRemoteId().orNull());
+//      }
+//    }
+//  }
 
-    final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
-    final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
-                                                                                 .name("Google calendar")
-                                                                                 .accessToken("irrelevant")
-                                                                                 .expires(DateTime.now().minusDays(1))
-                                                                                 .refreshToken(REFRESH_TOKEN)
-                                                                                 .build());
-    final CalendarClient client = new CalendarClientGoogleImpl(configuration);
-    ImmutableList<Calendar> calendars = client.obtainCalendars(credentials);
-    // TODO assert calendars
-  }
-
   @Test
-  public void testCreateEvent() throws IOException, GeneralSecurityException
+  public void testObtainFreeRanges() throws IOException, GeneralSecurityException
   {
     final String testName = new Object() {}.getClass().getEnclosingMethod().getName();
 
@@ -68,38 +116,9 @@ public class CalendarClientGoogleImplTest
 
     final CalendarClient client = new CalendarClientGoogleImpl(configuration);
 
-    Event event = null;
-    try
-    {
-      final DateTime eventStart = DateTime.now().withTimeAtStartOfDay().plusDays(1).withHourOfDay(9);
-      event = Event.builder()
-                   .icalId(WID.<Event>generate().toString() + "@ellie.ai")
-                   .sequence(0)
-                   .summary(testName)
-                   .startDateTime(eventStart)
-                   .endDateTime(eventStart.plusHours(1))
-                   .build();
-      event = client.createEvent(credentials, event);
-
-      // Attempt to fetch the event
-      final Event remoteEvent = client.obtainEvent(credentials, event.getRemoteId().orNull());
-
-      assertEquals(remoteEvent, event);
-      System.err.println("Remote event is " + remoteEvent);
-    }
-    catch (final Exception e)
-    {
-      System.err.println(e);
-      throw e;
-    }
-    finally
-    {
-      if (event != null)
-      {
-//        client.deleteEvent(credentials, event.getRemoteId().orNull());
-      }
-    }
+    client.obtainFreeRanges(credentials, Range.closedOpen(new DateTime(), new DateTime().plusDays(7)), null, 3600L);
   }
+
 
   // Helpers
 

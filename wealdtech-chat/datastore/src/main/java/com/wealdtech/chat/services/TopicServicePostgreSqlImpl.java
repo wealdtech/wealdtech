@@ -52,7 +52,7 @@ public class TopicServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Top
   }
 
   @Override
-  public void update(final Application app, final Topic topic)
+  public void  update(final Application app, final Topic topic)
   {
     throw new ServerError("Not implemented");
   }

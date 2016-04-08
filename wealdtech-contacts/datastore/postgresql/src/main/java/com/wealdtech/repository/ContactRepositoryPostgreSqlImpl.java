@@ -8,20 +8,22 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-contacts-datastore-neo4j'
+package com.wealdtech.repository;
 
-dependencies {
-    compile project(':wealdtech-contacts:model')
-    compile project(':wealdtech-wobject-datastore:neo4j')
-}
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import com.wealdtech.contacts.repository.ContactRepository;
+import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.repositories.PostgreSqlRepository;
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name 'Wealdtech contacts datastore'
-                description 'Storage for Weald Technology contacts information using neo4j'
-            }
-        }
-    }
+/**
+ *
+ */
+public class ContactRepositoryPostgreSqlImpl extends PostgreSqlRepository implements ContactRepository
+{
+  @Inject
+  public ContactRepositoryPostgreSqlImpl(@Named("contactrepositoryconfiguration") final PostgreSqlConfiguration configuration)
+  {
+    super(configuration);
+  }
 }

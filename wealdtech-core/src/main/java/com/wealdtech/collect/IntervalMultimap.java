@@ -19,6 +19,11 @@ import java.util.*;
 
 import static com.wealdtech.Preconditions.checkNotNull;
 
+/**
+ * An IntervalMultimap is a form of
+ * @param <T>
+ * @param <U>
+ */
 public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range<T>, U>
 {
   private TreeMap<T, IntervalMapEvents<U>> entries;

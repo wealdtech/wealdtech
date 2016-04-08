@@ -8,20 +8,10 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-contacts-datastore-neo4j'
+package com.wealdtech.contacts.services;
 
-dependencies {
-    compile project(':wealdtech-contacts:model')
-    compile project(':wealdtech-wobject-datastore:neo4j')
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name 'Wealdtech contacts datastore'
-                description 'Storage for Weald Technology contacts information using neo4j'
-            }
-        }
-    }
-}
+/**
+ *
+ */
+public interface RelationshipService
+{}
