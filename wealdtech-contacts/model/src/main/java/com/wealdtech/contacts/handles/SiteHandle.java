@@ -12,37 +12,43 @@ package com.wealdtech.contacts.handles;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.common.base.Optional;
+import com.wealdtech.DataError;
 
+import java.util.Locale;
 import java.util.Map;
 
-import static com.wealdtech.Preconditions.checkState;
-
 /**
- * A handle that defines a contact's proper name.
+ * SiteHandle contains the handle for a generic site.
  */
-@JsonTypeName("name")
-public class NameHandle extends Handle<NameHandle> implements Comparable<NameHandle>
+public abstract class SiteHandle<T extends SiteHandle<T>> extends Handle<T> implements Comparable<T>
 {
-  private static final String _TYPE = "name";
-
+  private static final String LOCAL_ID = "localid";
   private static final String NAME = "name";
 
   /**
-   * @return The name of the contact
+   * @return the local ID for the contact on the site
    */
   @JsonIgnore
-  public String getName() { return get(NAME, String.class).get(); }
+  public String getLocalId() { return get(LOCAL_ID, String.class).get(); }
+
+  /**
+   * @return the name for the user on the site
+   */
+  @JsonIgnore
+  public Optional<String> getName() { return get(NAME, String.class); }
 
   @JsonCreator
-  public NameHandle(final Map<String, Object> data){ super(data); }
+  public SiteHandle(final Map<String, Object> data){ super(data); }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
     // Set our defining types
-    data.put(TYPE, _TYPE);
-    data.put(KEY, data.get(NAME));
+    if (data.containsKey(LOCAL_ID))
+    {
+      data.put(KEY, ((String)data.get(LOCAL_ID)).toLowerCase(Locale.ENGLISH));
+    }
 
     return super.preCreate(data);
   }
@@ -51,19 +57,29 @@ public class NameHandle extends Handle<NameHandle> implements Comparable<NameHan
   protected void validate()
   {
     super.validate();
-    checkState(exists(NAME), "Name handle failed validation: must contain name");
+
+    if (!exists(LOCAL_ID))
+    {
+      throw new DataError.Missing("Site handle failed validation: missing local id");
+    }
   }
 
-  public static class Builder<P extends Builder<P>> extends Handle.Builder<NameHandle, P>
+  public static class Builder<T extends SiteHandle<T>, P extends Builder<T, P>> extends Handle.Builder<T, P>
   {
     public Builder()
     {
       super();
     }
 
-    public Builder(final NameHandle prior)
+    public Builder(final T prior)
     {
       super(prior);
+    }
+
+    public P localId(final String localId)
+    {
+      data(LOCAL_ID, localId);
+      return self();
     }
 
     public P name(final String name)
@@ -71,21 +87,5 @@ public class NameHandle extends Handle<NameHandle> implements Comparable<NameHan
       data(NAME, name);
       return self();
     }
-
-    public NameHandle build()
-    {
-      return new NameHandle(data);
-    }
   }
-
-  public static Builder<?> builder()
-  {
-    return new Builder();
-  }
-
-  public static Builder<?> builder(final NameHandle prior)
-  {
-    return new Builder(prior);
-  }
-
 }

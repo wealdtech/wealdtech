@@ -11,68 +11,39 @@
 package com.wealdtech.contacts.handles;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.wealdtech.DataError;
 
 import java.util.Map;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
- * A handle related to a website.
+ * A handle related to a generic website.
  */
 @JsonTypeName("website")
 public class WebsiteHandle extends Handle<WebsiteHandle> implements Comparable<WebsiteHandle>
 {
   private static final String _TYPE = "website";
 
-  private static final String PATH = "path";
-  private static final String LOCAL_ID = "localid";
-
-  private static final String NAME = "name";
-
-  @JsonIgnore
-  public String getPath() { return get(PATH, String.class).get(); }
-
-  @JsonIgnore
-  public String getLocalId() { return get(LOCAL_ID, String.class).get(); }
-
-  @JsonIgnore
-  public String getName() { return get(NAME, String.class).get(); }
+  private static final String URL = "url";
 
   @JsonCreator
   public WebsiteHandle(final Map<String, Object> data){ super(data); }
 
   @Override
-  protected Map<String, Object> preCreate(Map<String, Object> data)
+  protected Map<String, Object> preCreate(final Map<String, Object> data)
   {
-    data = super.preCreate(data);
-
-    // Set our defining types
     data.put(TYPE, _TYPE);
-    data.put(KEY, data.get(LOCAL_ID) + "@" + data.get(PATH));
+    data.put(KEY, data.get(URL));
 
-    return data;
+    return super.preCreate(data);
   }
 
   @Override
   protected void validate()
   {
     super.validate();
-
-    if (!exists(PATH))
-    {
-      throw new DataError.Missing("Website handle failed validation: missing PATH");
-    }
-
-    if (!exists(LOCAL_ID))
-    {
-      throw new DataError.Missing("Website handle failed validation: missing local id");
-    }
-
-    if (!exists(NAME))
-    {
-      throw new DataError.Missing("Website handle failed validation: missing name");
-    }
+    checkState(exists(URL), "Website handle failed validation: must contain URL");
   }
 
   public static class Builder<P extends Builder<P>> extends Handle.Builder<WebsiteHandle, P>
@@ -87,21 +58,9 @@ public class WebsiteHandle extends Handle<WebsiteHandle> implements Comparable<W
       super(prior);
     }
 
-    public P path(final String path)
+    public P url(final String url)
     {
-      data(PATH, path);
-      return self();
-    }
-
-    public P localId(final String localId)
-    {
-      data(LOCAL_ID, localId);
-      return self();
-    }
-
-    public P name(final String name)
-    {
-      data(NAME, name);
+      data(URL, url);
       return self();
     }
 

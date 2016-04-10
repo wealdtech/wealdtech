@@ -25,6 +25,7 @@ import com.google.gdata.client.contacts.ContactsService;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
 import com.google.gdata.data.contacts.UserDefinedField;
+import com.google.gdata.data.contacts.Website;
 import com.google.gdata.data.extensions.Email;
 import com.google.gdata.data.extensions.Name;
 import com.google.gdata.data.extensions.PhoneNumber;
@@ -35,12 +36,9 @@ import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.contacts.config.ContactsConfiguration;
 import com.wealdtech.contacts.events.BirthEvent;
 import com.wealdtech.contacts.events.Event;
-import com.wealdtech.contacts.handles.EmailHandle;
-import com.wealdtech.contacts.handles.Handle;
-import com.wealdtech.contacts.handles.NameHandle;
-import com.wealdtech.contacts.handles.TelephoneHandle;
+import com.wealdtech.contacts.events.WeddingEvent;
+import com.wealdtech.contacts.handles.*;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +52,7 @@ import java.util.Objects;
 /**
  * Implementation of the contacts client using the Google Contacts API
  */
-public class ContactsClientGoogleContactsImpl implements ContactsClient
+public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Credentials>
 {
   private static final Logger LOG = LoggerFactory.getLogger(ContactsClientGoogleContactsImpl.class);
 
@@ -65,8 +63,6 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
   private final ContactsService contactsService;
-
-  private static final LocalDateTime EPOCH = LocalDateTime.parse("1970-01-01");
 
   public ContactsClientGoogleContactsImpl(final ContactsConfiguration configuration) throws GeneralSecurityException, IOException
   {
@@ -117,7 +113,6 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
       final Query myQuery = new Query(feedUrl);
       myQuery.setMaxResults(99999);
       ContactFeed resultFeed = contactsService.query(myQuery, ContactFeed.class);
-      System.err.println("Number of entries is " + resultFeed.getEntries().size());
       for (ContactEntry entry : resultFeed.getEntries())
       {
         resultsB.add(googleContactToContact(entry));
@@ -148,7 +143,8 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
       final Name name = googleContact.getName();
       if (name.hasFullName())
       {
-        handlesB.add(NameHandle.builder().validFrom(EPOCH).name(name.getFullName().getValue()).build());
+        handlesB.add(NameHandle.builder().name(name.getFullName().getValue()).build());
+        addedHandle = true;
       }
       else
       {
@@ -164,15 +160,21 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
         }
         if (sb.length() > 0)
         {
-          handlesB.add(NameHandle.builder().validFrom(EPOCH).name(sb.toString()).build());
+          handlesB.add(NameHandle.builder().name(sb.toString()).build());
+          addedHandle = true;
         }
       }
+    }
+
+    if (googleContact.hasNickname())
+    {
+      handlesB.add(NickNameHandle.builder().name(googleContact.getNickname().getValue()).build());
+      addedHandle = true;
     }
 
     for (final Email email : googleContact.getEmailAddresses())
     {
       final EmailHandle.Builder<?> handleB = EmailHandle.builder();
-      handleB.validFrom(LocalDateTime.now());
       if (email.getAddress() != null)
       {
         handleB.address(email.getAddress());
@@ -181,13 +183,13 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
       {
         handleB.displayName(email.getDisplayName());
       }
-      if (Objects.equals(email.getRel(), "Home"))
+      if (Objects.equals(email.getRel(), Email.Rel.HOME))
       {
-        handleB.contextTypes(ImmutableSet.of(ContextType.SOCIAL));
+        handleB.spheres(ImmutableSet.of(Handle.Sphere.PERSONAL));
       }
-      else if (Objects.equals(email.getRel(), "Work"))
+      else if (Objects.equals(email.getRel(), Email.Rel.WORK))
       {
-        handleB.contextTypes(ImmutableSet.of(ContextType.PROFESSIONAL));
+        handleB.spheres(ImmutableSet.of(Handle.Sphere.PROFESSIONAL));
       }
 
       handlesB.add(handleB.build());
@@ -197,22 +199,108 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
     for (final PhoneNumber number : googleContact.getPhoneNumbers())
     {
       final TelephoneHandle.Builder<?> handleB = TelephoneHandle.builder();
-      handleB.validFrom(LocalDateTime.now());
       if (number.getPhoneNumber() != null)
       {
         handleB.number(number.getPhoneNumber());
       }
-      if (Objects.equals(number.getRel(), "Home"))
+      if (Objects.equals(number.getRel(), PhoneNumber.Rel.HOME))
       {
-        handleB.contextTypes(ImmutableSet.of(ContextType.SOCIAL));
+        handleB.spheres(ImmutableSet.of(Handle.Sphere.PERSONAL));
       }
-      else if (Objects.equals(number.getRel(), "Work"))
+      else if (Objects.equals(number.getRel(), PhoneNumber.Rel.WORK))
       {
-        handleB.contextTypes(ImmutableSet.of(ContextType.PROFESSIONAL));
+        handleB.spheres(ImmutableSet.of(Handle.Sphere.PROFESSIONAL));
       }
+      // FIXME add type of number (landline, mobile, etc.)
 
       handlesB.add(handleB.build());
       addedHandle = true;
+    }
+
+    for (final Website website : googleContact.getWebsites())
+    {
+      System.err.println(website);
+      // Work on the HREF rather than the label, as label isn't present for some lesser-known sites
+      if (AboutMeHandle.matchesAccountUrl(website.getHref()))
+      {
+        final AboutMeHandle.Builder<?> handleB =
+            AboutMeHandle.builder().localId(AboutMeHandle.localIdFromAccountUrl(website.getHref()));
+        if (website.getRel() == Website.Rel.HOME)
+        {
+          handleB.spheres(ImmutableSet.of(Handle.Sphere.PERSONAL));
+        }
+        else if (website.getRel() == Website.Rel.WORK)
+        {
+          handleB.spheres(ImmutableSet.of(Handle.Sphere.PROFESSIONAL));
+        }
+        handlesB.add(AboutMeHandle.builder().localId(AboutMeHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (DisqusHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(DisqusHandle.builder().localId(DisqusHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (FacebookHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(FacebookHandle.builder().localId(FacebookHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (FlickrHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(FlickrHandle.builder().localId(FlickrHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (FourSquareHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(FourSquareHandle.builder().localId(FourSquareHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (GoogleHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(GoogleHandle.builder().localId(GoogleHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (GravatarHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(GravatarHandle.builder().localId(GravatarHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (KloutHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(KloutHandle.builder().localId(KloutHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (LinkedInHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(LinkedInHandle.builder().localId(LinkedInHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (TripItHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(TripItHandle.builder().localId(TripItHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (TwitterHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(TwitterHandle.builder().localId(TwitterHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (VimeoHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(VimeoHandle.builder().localId(VimeoHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else if (YouTubeHandle.matchesAccountUrl(website.getHref()))
+      {
+        handlesB.add(YouTubeHandle.builder().localId(YouTubeHandle.localIdFromAccountUrl(website.getHref())).build());
+        addedHandle = true;
+      }
+      else
+      {
+        // Generic website
+        handlesB.add(WebsiteHandle.builder().url(website.getHref()).build());
+      }
     }
 
     if (addedHandle)
@@ -228,6 +316,22 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient
       final LocalDate birthday = LocalDate.parse(googleContact.getBirthday().getWhen());
       eventsB.add(BirthEvent.builder().date(birthday).build());
       addedEvent = true;
+    }
+
+    for (final com.google.gdata.data.contacts.Event event : googleContact.getEvents())
+    {
+      System.err.println(event.getLabel());
+      switch (event.getLabel())
+      {
+        case "Anniversary":
+          final LocalDate date = LocalDate.parse(event.getWhen().getValueString());
+          eventsB.add(WeddingEvent.builder().date(date).build());
+          addedEvent = true;
+          break;
+        default:
+          LOG.info("Unknown event label " + event.getLabel());
+
+      }
     }
 
     if (addedEvent)

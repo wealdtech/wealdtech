@@ -13,9 +13,17 @@ package com.wealdtech.contacts.handles;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Maps;
+import com.wealdtech.DataError;
+import com.wealdtech.utils.StringUtils;
 
+import java.util.Locale;
 import java.util.Map;
 
+import static com.wealdtech.Preconditions.checkNotNull;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
@@ -27,23 +35,31 @@ public class TelephoneHandle extends Handle<TelephoneHandle> implements Comparab
   private static final String _TYPE = "telephone";
 
   private static final String NUMBER = "number";
+  private static final String DEVICE = "device";
 
   @JsonCreator
   public TelephoneHandle(final Map<String, Object> data){ super(data); }
 
+  /**
+   * @return The number of the telephone for the contact
+   */
   @JsonIgnore
   public String getNumber() { return get(NUMBER, String.class).get(); }
+
+  /**
+   * @return the (optional) device of the telephone for the contact
+   */
+  @JsonIgnore
+  public Optional<Device> getDevice() { return get(DEVICE, Device.class); }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
-    data = super.preCreate(data);
-
     // Set our defining types
     data.put(TYPE, _TYPE);
-    data.put(KEY, data.get(NUMBER));
+    data.put(KEY, ((String)data.get(NUMBER)).replaceAll("[^0-9]", ""));
 
-    return data;
+    return super.preCreate(data);
   }
 
   @Override
@@ -71,6 +87,12 @@ public class TelephoneHandle extends Handle<TelephoneHandle> implements Comparab
       return self();
     }
 
+    public P device(final Device device)
+    {
+      data(DEVICE, device);
+      return self();
+    }
+
     public TelephoneHandle build()
     {
       return new TelephoneHandle(data);
@@ -85,6 +107,67 @@ public class TelephoneHandle extends Handle<TelephoneHandle> implements Comparab
   public static Builder<?> builder(final TelephoneHandle prior)
   {
     return new Builder(prior);
+  }
+  
+  public static enum Device
+  {
+    LANDLINE(1)
+    
+    ,MOBILE(2)
+    
+    ,FAX(3)
+    
+    ,PAGER(4)
+    ;
+
+    public final int val;
+
+    private Device(final int val)
+    {
+      this.val = val;
+    }
+
+    private static final ImmutableSortedMap<Integer, Device> _VALMAP;
+    static
+    {
+      final Map<Integer, Device> levelMap = Maps.newHashMap();
+      for (final Device relationshipType : Device.values())
+      {
+        levelMap.put(relationshipType.val, relationshipType);
+      }
+      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+    }
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+    }
+
+    @JsonCreator
+    public static Device fromString(final String val)
+    {
+      try
+      {
+        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A telephone X \"" + val + "\" supplied is invalid");
+      }
+    }
+
+    public static Device fromInt(final Integer val)
+    {
+      checkNotNull(val, "Telephone X not supplied");
+      final Device state = _VALMAP.get(val);
+      checkNotNull(state, "Telephone X is invalid");
+      return state;
+    }
   }
 
 }

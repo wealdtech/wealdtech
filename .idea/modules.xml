@@ -32,6 +32,8 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/sparkpost/sparkpost.iml" filepath="$PROJECT_DIR$/wealdtech-mail/sparkpost/sparkpost.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-contacts/sync/sync.iml" filepath="$PROJECT_DIR$/wealdtech-contacts/sync/sync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-contacts/sync/synchronous/synchronous.iml" filepath="$PROJECT_DIR$/wealdtech-contacts/sync/synchronous/synchronous.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/token/token.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/token/token.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech.iml" filepath="$PROJECT_DIR$/wealdtech.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-application/wealdtech-application.iml" filepath="$PROJECT_DIR$/wealdtech-application/wealdtech-application.iml" />

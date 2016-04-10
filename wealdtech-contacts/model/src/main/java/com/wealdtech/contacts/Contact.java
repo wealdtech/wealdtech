@@ -26,8 +26,8 @@ import java.util.Set;
  */
 public class Contact extends WObject<Contact> implements Comparable<Contact>
 {
-  private static final String EVENTS = "events";
   private static final String HANDLES = "handles";
+  private static final String EVENTS = "events";
 
   @JsonCreator
   public Contact(final Map<String, Object> data)
@@ -35,13 +35,13 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     super(data);
   }
 
-  private static final TypeReference<Set<? extends Event>> EVENTS_TYPE_REF = new TypeReference<Set<? extends Event>>(){};
-  @JsonIgnore
-  public Set<? extends Event> getEvents() { return get(EVENTS, EVENTS_TYPE_REF).or(Sets.<Event>newHashSet()); }
-
   private static final TypeReference<Set<? extends Handle>> HANDLES_TYPE_REF = new TypeReference<Set<? extends Handle>>(){};
   @JsonIgnore
   public Set<? extends Handle> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).or(Sets.<Handle>newHashSet()); }
+
+  private static final TypeReference<Set<? extends Event>> EVENTS_TYPE_REF = new TypeReference<Set<? extends Event>>(){};
+  @JsonIgnore
+  public Set<? extends Event> getEvents() { return get(EVENTS, EVENTS_TYPE_REF).or(Sets.<Event>newHashSet()); }
 
   @Override
   protected void validate()
@@ -61,15 +61,15 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
       super(prior);
     }
 
-    public P events(final Set<? extends Event> events)
-    {
-      data(EVENTS, events);
-      return self();
-    }
-
     public P handles(final Set<? extends Handle> handles)
     {
       data(HANDLES, handles);
+      return self();
+    }
+
+    public P events(final Set<? extends Event> events)
+    {
+      data(EVENTS, events);
       return self();
     }
 

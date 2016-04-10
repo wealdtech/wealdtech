@@ -35,25 +35,33 @@ public class ContactTest
   @Test
   public void testRelationship()
   {
-    final Contact alice = Contact.builder().id(WID.<Contact>generate()).handles(ImmutableSet.of(NameHandle.builder().validFrom(
-        LocalDateTime.parse("1970-01-01")).name("Alice").build())).build();
-    final Contact bob = Contact.builder().id(WID.<Contact>generate()).handles(ImmutableSet.of(NameHandle.builder().validFrom(
-        LocalDateTime.parse("1970-01-01")).name("Bob").build())).build();
+    final Contact alice = Contact.builder()
+                                 .id(WID.<Contact>generate())
+                                 .handles(ImmutableSet.of(
+                                     NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Alice").build()))
+                                 .build();
+    final Contact bob = Contact.builder()
+                               .id(WID.<Contact>generate())
+                               .handles(ImmutableSet.of(
+                                   NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Bob").build()))
+                               .build();
 
     final Relationship aliceToBob = Relationship.builder()
                                                 .from(alice.getId())
                                                 .to(bob.getId())
                                                 .contexts(ImmutableSet.of(Context.builder()
-                                                                                 .type(ContextType.PROFESSIONAL)
+                                                                                 .situation(Context.Situation.PROFESSIONAL)
                                                                                  .knownAs(ImmutableSet.of("Mr. Jones", "Bob Jones"))
                                                                                  .familiarity(30)
                                                                                  .formality(50)
                                                                                  .build(), Context.builder()
-                                                                                                  .type(ContextType.FAMILIAL)
+                                                                                                  .situation(
+                                                                                                      Context.Situation.FAMILIAL)
                                                                                                   .knownAs(ImmutableSet.of("Dad"))
                                                                                                   .familiarity(100)
                                                                                                   .formality(0)
-                                                                                                  .build())).build();
+                                                                                                  .build()))
+                                                .build();
 
     assertEquals(aliceToBob.getFrom(), alice.getId());
     assertEquals(aliceToBob.getTo(), bob.getId());
@@ -62,25 +70,33 @@ public class ContactTest
   @Test
   public void testFindByHandle()
   {
-    final Contact alice = Contact.builder().id(WID.<Contact>generate()).handles(ImmutableSet.of(NameHandle.builder().validFrom(
-        LocalDateTime.parse("1970-01-01")).name("Alice").build())).build();
-    final Contact bob = Contact.builder().id(WID.<Contact>generate()).handles(ImmutableSet.of(NameHandle.builder().validFrom(
-        LocalDateTime.parse("1970-01-01")).name("Bob").build())).build();
+    final Contact alice = Contact.builder()
+                                 .id(WID.<Contact>generate())
+                                 .handles(ImmutableSet.of(
+                                     NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Alice").build()))
+                                 .build();
+    final Contact bob = Contact.builder()
+                               .id(WID.<Contact>generate())
+                               .handles(ImmutableSet.of(
+                                   NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Bob").build()))
+                               .build();
 
     final Relationship aliceToBob = Relationship.builder()
                                                 .from(alice.getId())
                                                 .to(bob.getId())
                                                 .contexts(ImmutableSet.of(Context.builder()
-                                                                                 .type(ContextType.PROFESSIONAL)
+                                                                                 .situation(Context.Situation.PROFESSIONAL)
                                                                                  .knownAs(ImmutableSet.of("Mr. Jones", "Bob Jones"))
                                                                                  .familiarity(30)
                                                                                  .formality(50)
                                                                                  .build(), Context.builder()
-                                                                                                  .type(ContextType.FAMILIAL)
+                                                                                                  .situation(
+                                                                                                      Context.Situation.FAMILIAL)
                                                                                                   .knownAs(ImmutableSet.of("Dad"))
                                                                                                   .familiarity(100)
                                                                                                   .formality(0)
-                                                                                                  .build())).build();
+                                                                                                  .build()))
+                                                .build();
 
   }
 }

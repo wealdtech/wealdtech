@@ -11,14 +11,14 @@
 package com.wealdtech.contacts;
 
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.authentication.OAuth2Credentials;
+import com.wealdtech.authentication.Credentials;
 
 import javax.annotation.Nullable;
 
 /**
  *
  */
-public interface ContactsClient
+public interface ContactsClient<C extends Credentials>
 {
   /**
    * Obtain a contact of the primary user
@@ -28,7 +28,7 @@ public interface ContactsClient
    * @return the obtained contact, or {@code null} if no such contact
    */
   @Nullable
-  Contact obtainContact(OAuth2Credentials credentials, String contactId);
+  Contact obtainContact(C credentials, String contactId);
 
   /**
    * Obtain a contact of a specific user
@@ -39,7 +39,7 @@ public interface ContactsClient
    * @return the obtained contact, or {@code null} if no such contact
    */
   @Nullable
-  Contact obtainContact(OAuth2Credentials credentials, String email, String contactId);
+  Contact obtainContact(C credentials, String email, String contactId);
 
   /**
    * Obtain all contacts of the primary user
@@ -47,7 +47,7 @@ public interface ContactsClient
    * @param credentials credentials for the request
    * @return the obtained contacts
    */
-  ImmutableList<Contact> obtainContacts(OAuth2Credentials credentials);
+  ImmutableList<Contact> obtainContacts(C credentials);
 
   /**
    * Obtain all contacts of a specific user
@@ -56,5 +56,5 @@ public interface ContactsClient
    * @param email the email of the user for which to obtain the contacts
    * @return the obtained contacts
    */
-  ImmutableList<Contact> obtainContacts(OAuth2Credentials credentials, String email);
+  ImmutableList<Contact> obtainContacts(C credentials, String email);
 }

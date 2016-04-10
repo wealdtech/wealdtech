@@ -34,6 +34,8 @@
             <option value="$PROJECT_DIR$/wealdtech-contacts/datastore/postgresql" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/google" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/model" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/sync" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/sync/synchronous" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-events" />
@@ -124,6 +126,8 @@
             <option value="$PROJECT_DIR$/wealdtech-contacts/datastore/postgresql" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/google" />
             <option value="$PROJECT_DIR$/wealdtech-contacts/model" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/sync" />
+            <option value="$PROJECT_DIR$/wealdtech-contacts/sync/synchronous" />
             <option value="$PROJECT_DIR$/wealdtech-core" />
             <option value="$PROJECT_DIR$/wealdtech-crypt" />
             <option value="$PROJECT_DIR$/wealdtech-events" />

@@ -37,13 +37,11 @@ public class NickNameHandle extends Handle<NickNameHandle> implements Comparable
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
-    data = super.preCreate(data);
-
     // Set our defining types
     data.put(TYPE, _TYPE);
     data.put(KEY, data.get(NAME));
 
-    return data;
+    return super.preCreate(data);
   }
 
   @Override

@@ -12,20 +12,27 @@ package com.wealdtech.contacts;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Maps;
 import com.wealdtech.DataError;
 import com.wealdtech.WObject;
+import com.wealdtech.utils.StringUtils;
 
+import java.util.Locale;
 import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * A definition of the context of a relationship.
  */
 public class Context extends WObject<Context> implements Comparable<Context>
 {
-  private static final String TYPE = "type";
-  private static final String KNOWN_AS = "knownas";
+  private static final String SITUATION = "situation";
+  private static final String HANDLES = "handles";
   private static final String FAMILIARITY = "familiarity";
   private static final String FORMALITY = "formality";
 
@@ -36,15 +43,25 @@ public class Context extends WObject<Context> implements Comparable<Context>
   }
 
   @JsonIgnore
-  public ContextType getType() { return get(TYPE, ContextType.class).get(); }
+  public Situation getSituation() { return get(SITUATION, Situation.class).get(); }
 
-  private static final TypeReference<ImmutableSet<String>> KNOWN_AS_TYPE_REF = new TypeReference<ImmutableSet<String>>(){};
+  private static final TypeReference<ImmutableSet<String>> HANDLES_TYPE_REF = new TypeReference<ImmutableSet<String>>(){};
+
+  /**
+   * @return the handles specific to this relationship's context
+   */
   @JsonIgnore
-  public ImmutableSet<String> getKnownAs() { return get(KNOWN_AS, KNOWN_AS_TYPE_REF).or(ImmutableSet.<String>of()); }
+  public ImmutableSet<String> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).or(ImmutableSet.<String>of()); }
 
+  /**
+   * @return the level of familiarity in this relationship's context
+   */
   @JsonIgnore
   public int getFamiliarity() { return get(FAMILIARITY, Integer.class).get(); }
 
+  /**
+   * @return the level of formality in this relationship's context
+   */
   @JsonIgnore
   public int getFormality() { return get(FORMALITY, Integer.class).get(); }
 
@@ -52,9 +69,78 @@ public class Context extends WObject<Context> implements Comparable<Context>
   protected void validate()
   {
     super.validate();
-    if (!exists(TYPE))
+    if (!exists(SITUATION))
     {
       throw new DataError.Missing("Context needs 'type' information");
+    }
+  }
+
+  /**
+   * The situation of a context: professional, social, familial
+   */
+  public static enum Situation
+  {
+    /**
+     * Professional relationship
+     */
+    PROFESSIONAL(1)
+    /**
+     * Social relationship
+     */
+    , SOCIAL(2)
+    /**
+     * Familial relationship
+     */
+    , FAMILIAL(3);
+
+    public final int val;
+
+    private Situation(final int val)
+    {
+      this.val = val;
+    }
+
+    private static final ImmutableSortedMap<Integer, Situation> _VALMAP;
+
+    static
+    {
+      final Map<Integer, Situation> levelMap = Maps.newHashMap();
+      for (final Situation relationshipType : Situation.values())
+      {
+        levelMap.put(relationshipType.val, relationshipType);
+      }
+      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+    }
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+    }
+
+    @JsonCreator
+    public static Situation fromString(final String val)
+    {
+      try
+      {
+        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A situation \"" + val + "\" supplied is invalid");
+      }
+    }
+
+    public static Situation fromInt(final Integer val)
+    {
+      checkNotNull(val, "Situation not supplied");
+      final Situation state = _VALMAP.get(val);
+      checkNotNull(state, "Situation is invalid");
+      return state;
     }
   }
 
@@ -70,15 +156,15 @@ public class Context extends WObject<Context> implements Comparable<Context>
       super(prior);
     }
 
-    public P type(final ContextType type)
+    public P situation(final Situation situation)
     {
-      data(TYPE, type);
+      data(SITUATION, situation);
       return self();
     }
 
     public P knownAs(final ImmutableSet<String> knownAs)
     {
-      data(KNOWN_AS, knownAs);
+      data(HANDLES, knownAs);
       return self();
     }
 

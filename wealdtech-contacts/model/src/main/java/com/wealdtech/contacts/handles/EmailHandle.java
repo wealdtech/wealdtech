@@ -41,13 +41,11 @@ public class EmailHandle extends Handle<EmailHandle> implements Comparable<Email
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
-    data = super.preCreate(data);
-
     // Set our defining types
     data.put(TYPE, _TYPE);
     data.put(KEY, data.get(ADDRESS));
 
-    return data;
+    return super.preCreate(data);
   }
 
   @Override

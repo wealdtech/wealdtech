@@ -45,13 +45,11 @@ public class IrcHandle extends Handle<IrcHandle> implements Comparable<IrcHandle
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
-    data = super.preCreate(data);
-
     // Set our defining types
     data.put(TYPE, _TYPE);
-    data.put(KEY, data.get(SERVER) + "::" + data.get(CHANNEL));
+    data.put(KEY, data.get(NICK) + "@" + data.get(CHANNEL) + "@" + data.get(SERVER));
 
-    return data;
+    return super.preCreate(data);
   }
 
   @Override

@@ -18,10 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static com.wealdtech.Preconditions.checkState;
-
 /**
- * An extended WObject that includes from and (optionally) to specifiers to define the range over which the object is valid
+ * An extended WObject that includes optional "from" and "to" internal specifiers to define the range over which the object is valid
  */
 public abstract class RangedWObject<T extends WObject<T>> extends WObject<T> implements Comparable<T>
 {
@@ -36,16 +34,10 @@ public abstract class RangedWObject<T extends WObject<T>> extends WObject<T> imp
   }
 
   @JsonIgnore
-  public LocalDateTime getValidFrom(){ return get(VALID_FROM, LocalDateTime.class).get();}
+  public Optional<LocalDateTime> getValidFrom(){ return get(VALID_FROM, LocalDateTime.class);}
 
   @JsonIgnore
   public Optional<LocalDateTime> getValidTo(){ return get(VALID_TO, LocalDateTime.class);}
-
-  protected void validate()
-  {
-    super.validate();
-    checkState(exists(VALID_FROM), "Item from is required");
-  }
 
   public static class Builder<T extends RangedWObject<T>, P extends Builder<T, P>> extends WObject.Builder<T, P>
   {
