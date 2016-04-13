@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 
 import static com.wealdtech.Preconditions.checkState;
 
@@ -334,6 +335,21 @@ public class CalendarClientGoogleImpl implements CalendarClient
     {
       builder.endDateTime(new org.joda.time.DateTime(googleEvent.getEnd().getDateTime().getValue(),
                                                        DateTimeZone.forID(googleEvent.getEnd().getTimeZone())));
+    }
+
+    builder.transparency(Objects.equals(googleEvent.getTransparency(), "opaque") ? Event.Transparency.OPAQUE : Event.Transparency.TRANSPARENT);
+
+    switch (googleEvent.getStatus())
+    {
+      case "cancelled":
+        builder.status(Event.Status.CANCELLED);
+        break;
+      case "tentative":
+        builder.status(Event.Status.TENTATIVE);
+        break;
+      default:
+        builder.status(Event.Status.CONFIRMED);
+        break;
     }
 
     final Event event = builder.build();

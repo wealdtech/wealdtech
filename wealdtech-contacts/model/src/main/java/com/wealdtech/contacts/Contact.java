@@ -26,6 +26,8 @@ import java.util.Set;
  */
 public class Contact extends WObject<Contact> implements Comparable<Contact>
 {
+  private static final String REMOTE_IDS = "_remoteids";
+
   private static final String HANDLES = "handles";
   private static final String EVENTS = "events";
 
@@ -34,6 +36,10 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
   {
     super(data);
   }
+
+  private static final TypeReference<Set<String>> REMOTE_IDS_TYPE_REF = new TypeReference<Set<String>>(){};
+  @JsonIgnore
+  public Set<String> getRemoteIds() { return get(REMOTE_IDS, REMOTE_IDS_TYPE_REF).or(Sets.<String>newHashSet()); }
 
   private static final TypeReference<Set<? extends Handle>> HANDLES_TYPE_REF = new TypeReference<Set<? extends Handle>>(){};
   @JsonIgnore
@@ -60,6 +66,13 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     {
       super(prior);
     }
+
+    public P remoteIds(final Set<String> remoteIds)
+    {
+      data(REMOTE_IDS, remoteIds);
+      return self();
+    }
+
 
     public P handles(final Set<? extends Handle> handles)
     {

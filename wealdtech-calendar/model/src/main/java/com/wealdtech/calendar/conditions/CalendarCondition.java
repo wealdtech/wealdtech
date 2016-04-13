@@ -8,27 +8,20 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.services;
+package com.wealdtech.calendar.conditions;
 
-import com.wealdtech.authentication.Credentials;
+import com.wealdtech.calendar.Calendar;
+import com.wealdtech.conditions.LogicalCondition;
 
 /**
- * Service to sync contact information
+ *
  */
-public interface ContactsSyncService<C extends Credentials>
+public abstract class CalendarCondition extends LogicalCondition
 {
-  /**
-   * Import contacts from the given source
-   *
-   */
-  int importContacts(C credentials, boolean removeMissing);
+  protected Calendar calendar;
 
-  /**
-   * Export contacts to the given source
-   * @param removeUnknown carry out a full export by removing any items in the destination that are not in the source
-   * @return the number of contacts exported
-   */
-  int exportContacts(C credentials, boolean removeUnknown);
-
-//  TwoTuple(int, int) syncContacts();
+  public CalendarCondition(final Calendar calendar)
+  {
+    this.calendar = calendar;
+  }
 }

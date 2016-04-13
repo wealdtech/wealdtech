@@ -12,7 +12,9 @@ package com.wealdtech.calendar;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.DataError;
 import com.wealdtech.WObject;
 
@@ -26,6 +28,7 @@ public class Calendar extends WObject<Calendar> implements Comparable<Calendar>
   private static final String REMOTE_ID = "remoteid";
   private static final String SUMMARY = "summary";
   private static final String DESCRIPTION = "description";
+  private static final String EVENTS = "events";
 
   @JsonCreator
   public Calendar(final Map<String, Object> data)
@@ -41,6 +44,10 @@ public class Calendar extends WObject<Calendar> implements Comparable<Calendar>
 
   @JsonIgnore
   public Optional<String> getDescription() { return get(DESCRIPTION, String.class); }
+
+  private static final TypeReference<ImmutableList<Event>> EVENTS_TYPE_REF = new TypeReference<ImmutableList<Event>>(){};
+  @JsonIgnore
+  public ImmutableList<Event> getEvents() { return get(EVENTS, EVENTS_TYPE_REF).or(ImmutableList.<Event>of()); }
 
   @Override
   protected void validate()
@@ -76,6 +83,12 @@ public class Calendar extends WObject<Calendar> implements Comparable<Calendar>
     public P description(final String description)
     {
       data(DESCRIPTION, description);
+      return self();
+    }
+
+    public P events(final ImmutableList<Event> events)
+    {
+      data(EVENTS, events);
       return self();
     }
 

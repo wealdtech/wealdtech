@@ -34,4 +34,9 @@ public class ConditionsTest
     final LogicalCondition logicalCondition = and(FALSE, TRUE);
     assertFalse(logicalCondition.evaluate());
   }
+
+  @Test
+  public void dateBasedTest1()
+  {
+  }
 }

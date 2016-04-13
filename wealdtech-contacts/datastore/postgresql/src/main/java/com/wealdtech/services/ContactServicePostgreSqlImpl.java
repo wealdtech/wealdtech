@@ -12,6 +12,7 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -63,6 +64,12 @@ public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<C
         setJson(stmt, index++, "{\"_id\":\"" + contactId.toString() + "\"}");
       }
     }), null);
+  }
+
+  @Override
+  public ImmutableList<Contact> obtain()
+  {
+    return obtain(CONTACT_TYPE_REFERENCE, null);
   }
 
   @Override

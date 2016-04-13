@@ -24,11 +24,8 @@ import com.google.gdata.client.Query;
 import com.google.gdata.client.contacts.ContactsService;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
-import com.google.gdata.data.contacts.UserDefinedField;
-import com.google.gdata.data.contacts.Website;
-import com.google.gdata.data.extensions.Email;
-import com.google.gdata.data.extensions.Name;
-import com.google.gdata.data.extensions.PhoneNumber;
+import com.google.gdata.data.contacts.*;
+import com.google.gdata.data.extensions.*;
 import com.google.gdata.util.ServiceException;
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
@@ -111,6 +108,7 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
     {
       contactsService.setOAuth2Credentials(generateCredential(credentials));
       final Query myQuery = new Query(feedUrl);
+      myQuery.setFullTextQuery("Karen McDonald");
       myQuery.setMaxResults(99999);
       ContactFeed resultFeed = contactsService.query(myQuery, ContactFeed.class);
       for (ContactEntry entry : resultFeed.getEntries())
@@ -132,8 +130,13 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
 
   private Contact googleContactToContact(final ContactEntry googleContact)
   {
-    googleContact.addUserDefinedField(new UserDefinedField("My test field", "My test value"));
     final Contact.Builder<?> builder = Contact.builder();
+
+    if (googleContact.hasImAddresses()) { System.err.println(googleContact.getImAddresses()); }
+//    System.err.println(googleContact.getName().getFullName());
+//    System.err.println(googleContact.getContactPhotoLink().getHref());
+
+    builder.remoteIds(ImmutableSet.of(googleContact.getId() + "@google"));
 
     final ImmutableSet.Builder<Handle> handlesB = ImmutableSet.builder();
     boolean addedHandle = false;
@@ -164,6 +167,10 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
           addedHandle = true;
         }
       }
+    }
+    else
+    {
+      LOG.warn("Contact " + googleContact.getId() + " has no name");
     }
 
     if (googleContact.hasNickname())
@@ -219,7 +226,6 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
 
     for (final Website website : googleContact.getWebsites())
     {
-      System.err.println(website);
       // Work on the HREF rather than the label, as label isn't present for some lesser-known sites
       if (AboutMeHandle.matchesAccountUrl(website.getHref()))
       {
@@ -338,6 +344,57 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
     {
       builder.events(eventsB.build());
     }
+
+    for (final PostalAddress postalAddress : googleContact.getPostalAddresses())
+    {
+      System.err.println(postalAddress);
+      // TODO or use getStructuredPostalAddresses?
+    }
+
+    for (final ExtendedProperty extendedProperty : googleContact.getExtendedProperties())
+    {
+      // TODO
+//      System.err.println(extendedProperty.getName() + ": " + extendedProperty.getValue());
+    }
+
+    for (final UserDefinedField udf : googleContact.getUserDefinedFields())
+    {
+      System.err.println("udf: " + udf);
+    }
+
+    for (final GroupMembershipInfo info : googleContact.getGroupMembershipInfos())
+    {
+      System.err.println("info: " + info);
+    }
+
+    if (googleContact.hasGender())
+    {
+      final Gender gender = googleContact.getGender();
+      System.err.println("gender: " + gender);
+    }
+
+    for (final Hobby hobby : googleContact.getHobbies())
+    {
+      System.err.println("hobby: " + hobby);
+    }
+
+    for (final Jot jot : googleContact.getJots())
+    {
+      System.err.println("jot: " + jot);
+    }
+
+    if (googleContact.hasOccupation())
+    {
+      final Occupation occupation = googleContact.getOccupation();
+      System.err.println("occupation: " + occupation);
+    }
+
+    for (final Relation relation: googleContact.getRelations())
+    {
+      System.err.println("relation: " + relation);
+    }
+
+    System.err.println("updated: " + googleContact.getUpdated());
 
     return builder.build();
   }

@@ -18,11 +18,11 @@ public class Conditions
 
   public static final False FALSE = new False();
 
-  public static final LogicalCondition not(final Boolean value) { return new NotCondition(value); }
+  public static LogicalCondition not(final Boolean value) { return new NotCondition(value); }
 
-  public static final <T> LogicalCondition and(final LogicalCondition first, final LogicalCondition second) { return new AndCondition(first, second); }
+  public static LogicalCondition and(final LogicalCondition first, final LogicalCondition second) { return new AndCondition(first, second); }
 
-  public static final <T> LogicalCondition or(final LogicalCondition first, final LogicalCondition second) { return new OrCondition(first, second); }
+  public static LogicalCondition or(final LogicalCondition first, final LogicalCondition second) { return new OrCondition(first, second); }
 
-  public static final <T> LogicalCondition equal(final T first, final T second) { return new EqualCondition(first, second); }
+  public static <T> LogicalCondition equal(final T first, final T second) { return new EqualCondition<>(first, second); }
 }

@@ -11,6 +11,7 @@
 package com.wealdtech.services;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.wealdtech.ServerError;
 import com.wealdtech.WID;
 import com.wealdtech.authentication.Credentials;
@@ -19,6 +20,9 @@ import com.wealdtech.contacts.ContactsClient;
 import com.wealdtech.contacts.services.ContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * A contacts sync service for Google Contacts
@@ -39,11 +43,25 @@ public class ContactsSyncServiceSynchronousImpl<C extends Credentials> implement
   }
 
   @Override
-  public int importContacts(final C credentials, final boolean full)
+  public int importContacts(final C credentials, final boolean removeMissing)
   {
+    Map<String, Contact> dbContacts = Maps.newHashMap();
+    for (final Contact dbContact : contactService.obtain())
+    {
+      for (final String remoteId : dbContact.getRemoteIds())
+      {
+        dbContacts.put(remoteId, dbContact);
+      }
+    }
+
     final ImmutableList<Contact> contacts = contactsClient.obtainContacts(credentials);
     for (Contact contact : contacts)
     {
+      final Contact dbContact = matchContact(dbContacts, contact);
+//      if (dbContact != null)
+//      {
+//        LOG.error("Matched contact {} with database contact {}", contact, dbContact);
+//      }
       if (contact.getId() == null)
       {
         contact = Contact.builder(contact).id(WID.<Contact>generate()).build();
@@ -54,8 +72,22 @@ public class ContactsSyncServiceSynchronousImpl<C extends Credentials> implement
     return contacts.size();
   }
 
+  @Nullable
+  private Contact matchContact(final Map<String, Contact> dbContacts, final Contact contact)
+  {
+    for (final String remoteId : contact.getRemoteIds())
+    {
+      if (dbContacts.containsKey(remoteId))
+      {
+        return dbContacts.get(remoteId);
+      }
+    }
+
+    return null;
+  }
+
   @Override
-  public int exportContacts(final C credentials, final boolean full)
+  public int exportContacts(final C credentials, final boolean removeUnknown)
   {
     // TODO implement
     throw new ServerError("Not implemented");

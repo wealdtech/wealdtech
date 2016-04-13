@@ -12,14 +12,23 @@ package com.wealdtech.calendar;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Range;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
+import com.wealdtech.utils.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import java.util.Locale;
 import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * An event in a calendar
@@ -35,6 +44,8 @@ public class Event extends WObject<Event> implements Comparable<Event>
   private static final String START_DATETIME= "startdatetime";
   private static final String END_DATE= "enddate";
   private static final String END_DATETIME= "enddatetime";
+  private static final String STATUS = "status";
+  private static final String TRANSPARENCY = "transparency";
 
   @JsonCreator
   public Event(final Map<String, Object> data)
@@ -75,6 +86,45 @@ public class Event extends WObject<Event> implements Comparable<Event>
   @JsonIgnore
   public Integer getSequence() { return get(SEQUENCE, Integer.class).get(); }
 
+  @JsonIgnore
+  public Transparency getTransparency() { return get(TRANSPARENCY, Transparency.class).get(); }
+
+  @JsonIgnore
+  public Status getStatus() { return get(STATUS, Status.class).get(); }
+
+  /**
+   * Create a list of events from this event over a given timeframe.  Non-recurring events will either return 0 or 1 events and
+   * recurring events will return any number of events.  All events returned will be marked as instantiated.
+   * @return A list of instantiated events
+   */
+  @JsonIgnore
+  public ImmutableList<Event> getInstantiatedEvents(final Range<DateTime> timeframe)
+  {
+    final ImmutableList.Builder<Event> builder = ImmutableList.builder();
+
+    // TODO loop this for recurring events
+
+    DateTime start = exists(START_DATE) ? getStartDate().get().toDateTimeAtStartOfDay() : getStartDateTime().get();
+    DateTime end = exists(END_DATE) ? getEndDate().get().toDateTimeAtStartOfDay() : getEndDateTime().get();
+
+    // We can't use isConnected() as that only works for closed ranges and we use closedopen ranges, so do it manually...
+    if (timeframe.lowerEndpoint().getMillis() < end.getMillis() && timeframe.upperEndpoint().getMillis() > start.getMillis())
+    {
+      builder.add(this);
+      // TODO add instantiated flag
+    }
+
+    return builder.build();
+  }
+
+  @JsonIgnore
+  public Range<DateTime> getTimeframe()
+  {
+    final DateTime start = exists(START_DATE) ? getStartDate().get().toDateTimeAtStartOfDay() : getStartDateTime().get();
+    final DateTime end = exists(END_DATE) ? getEndDate().get().toDateTimeAtStartOfDay() : getEndDateTime().get();
+    return Range.closedOpen(start, end);
+  }
+
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
@@ -92,6 +142,24 @@ public class Event extends WObject<Event> implements Comparable<Event>
       data.put(ICAL_ID, data.get(ID).toString() + "@ellie.ai");
     }
 
+    // Default sequence to 0
+    if (!data.containsKey(SEQUENCE))
+    {
+      data.put(SEQUENCE, 0);
+    }
+
+    // Default transparency to opaque
+    if (!data.containsKey(TRANSPARENCY))
+    {
+      data.put(TRANSPARENCY, Transparency.OPAQUE);
+    }
+
+    // Default status to confirmed
+    if (!data.containsKey(STATUS))
+    {
+      data.put(STATUS, Status.CONFIRMED);
+    }
+
     return data;
   }
 
@@ -102,6 +170,8 @@ public class Event extends WObject<Event> implements Comparable<Event>
     if (!exists(SEQUENCE)) { throw new DataError.Missing("Event needs 'sequence' information"); }
     if (!exists(SUMMARY)) { throw new DataError.Missing("Event needs 'summary' information"); }
     if (!exists(START_DATE) && !exists(START_DATETIME)) { throw new DataError.Missing("Event needs 'start date' or 'start datetime' information"); }
+    if (!exists(TRANSPARENCY)) { throw new DataError.Missing("Event needs 'transparency' information"); }
+    if (!exists(STATUS)) { throw new DataError.Missing("Event needs 'status' information"); }
     // TODO more validation when we add recurrence
   }
 
@@ -171,6 +241,18 @@ public class Event extends WObject<Event> implements Comparable<Event>
       return self();
     }
 
+    public P status(final Status status)
+    {
+      data(STATUS, status);
+      return self();
+    }
+
+    public P transparency(final Transparency transparency)
+    {
+      data(TRANSPARENCY, transparency);
+      return self();
+    }
+
     public Event build()
     {
       return new Event(data);
@@ -187,4 +269,137 @@ public class Event extends WObject<Event> implements Comparable<Event>
     return new Builder(prior);
   }
 
+  /**
+   * The status of an event: cancelled, tentative, confirmed
+   */
+  public static enum Status
+  {
+    /**
+     * Cancelled
+     */
+    CANCELLED(1)
+    /**
+     * Tentative
+     */
+    , TENTATIVE(2)
+    /**
+     * Confirmed
+     */
+    , CONFIRMED(3);
+
+    public final int val;
+
+    private Status(final int val)
+    {
+      this.val = val;
+    }
+
+    private static final ImmutableSortedMap<Integer, Status> _VALMAP;
+
+    static
+    {
+      final Map<Integer, Status> levelMap = Maps.newHashMap();
+      for (final Status status : Status.values())
+      {
+        levelMap.put(status.val, status);
+      }
+      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+    }
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+    }
+
+    @JsonCreator
+    public static Status fromString(final String val)
+    {
+      try
+      {
+        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A status \"" + val + "\" supplied is invalid");
+      }
+    }
+
+    public static Status fromInt(final Integer val)
+    {
+      checkNotNull(val, "Status not supplied");
+      final Status state = _VALMAP.get(val);
+      checkNotNull(state, "Status is invalid");
+      return state;
+    }
   }
+
+  /**
+   * The transparency of an event: transparent, opaque
+   */
+  public static enum Transparency
+  {
+    /**
+     * Transparent
+     */
+    TRANSPARENT(1)
+    /**
+     * Opaque
+     */
+    , OPAQUE(2);
+
+    public final int val;
+
+    private Transparency(final int val)
+    {
+      this.val = val;
+    }
+
+    private static final ImmutableSortedMap<Integer, Transparency> _VALMAP;
+
+    static
+    {
+      final Map<Integer, Transparency> levelMap = Maps.newHashMap();
+      for (final Transparency transparency : Transparency.values())
+      {
+        levelMap.put(transparency.val, transparency);
+      }
+      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+    }
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+    }
+
+    @JsonCreator
+    public static Transparency fromString(final String val)
+    {
+      try
+      {
+        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A transparency \"" + val + "\" supplied is invalid");
+      }
+    }
+
+    public static Transparency fromInt(final Integer val)
+    {
+      checkNotNull(val, "Transparency not supplied");
+      final Transparency state = _VALMAP.get(val);
+      checkNotNull(state, "Transparency is invalid");
+      return state;
+    }
+  }
+}

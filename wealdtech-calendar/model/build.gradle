@@ -12,6 +12,7 @@ archivesBaseName = 'wealdtech-calendar-model'
 
 dependencies {
     compile project(':wealdtech-authentication:oauth2')
+    compile project(':wealdtech-conditions')
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-configuration-logging')
     compile project(':wealdtech-configuration:oauth2')

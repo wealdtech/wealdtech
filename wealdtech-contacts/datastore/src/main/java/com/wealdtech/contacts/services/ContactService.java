@@ -10,6 +10,7 @@
 
 package com.wealdtech.contacts.services;
 
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 
@@ -27,6 +28,11 @@ public interface ContactService
    * Obtain a contact
    */
   Contact obtain(WID<Contact> contactId);
+
+  /**
+   * Obtain all contacts
+   */
+  ImmutableList<Contact> obtain();
 
   /**
    * Update a contact
