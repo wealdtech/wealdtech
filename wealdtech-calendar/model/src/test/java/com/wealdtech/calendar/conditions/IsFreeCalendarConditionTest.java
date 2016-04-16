@@ -48,28 +48,28 @@ public class IsFreeCalendarConditionTest
   public void testIsFree1()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(6), DAY_1.withHourOfDay(7));
-    assertTrue(isFree(testCalendar1, testRange).evaluate());
+    assertTrue(isFree(testCalendar1, testRange));
   }
 
   @Test
   public void testIsFree2()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(9), DAY_1.withHourOfDay(10));
-    assertFalse(isFree(testCalendar1, testRange).evaluate());
+    assertFalse(isFree(testCalendar1, testRange));
   }
 
   @Test
   public void testIsFree3()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(8), DAY_1.withHourOfDay(9));
-    assertTrue(isFree(testCalendar1, testRange).evaluate());
+    assertTrue(isFree(testCalendar1, testRange));
   }
 
   @Test
   public void testIsFree4()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(10), DAY_1.withHourOfDay(11));
-    assertTrue(isFree(testCalendar1, testRange).evaluate());
+    assertTrue(isFree(testCalendar1, testRange));
   }
 
   @Test
@@ -77,6 +77,6 @@ public class IsFreeCalendarConditionTest
   {
     // This is an empty range so expect it to be free
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(9), DAY_1.withHourOfDay(9));
-    assertTrue(isFree(testCalendar1, testRange).evaluate());
+    assertTrue(isFree(testCalendar1, testRange));
   }
 }

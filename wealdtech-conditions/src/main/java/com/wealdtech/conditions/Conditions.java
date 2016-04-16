@@ -18,11 +18,11 @@ public class Conditions
 
   public static final False FALSE = new False();
 
-  public static LogicalCondition not(final Boolean value) { return new NotCondition(value); }
+  public static boolean not(final Boolean value) { return new NotCondition(value).evaluate(); }
 
-  public static LogicalCondition and(final LogicalCondition first, final LogicalCondition second) { return new AndCondition(first, second); }
+  public static boolean and(final LogicalCondition first, final LogicalCondition second) { return new AndCondition(first, second).evaluate(); }
 
-  public static LogicalCondition or(final LogicalCondition first, final LogicalCondition second) { return new OrCondition(first, second); }
+  public static boolean or(final LogicalCondition first, final LogicalCondition second) { return new OrCondition(first, second).evaluate(); }
 
-  public static <T> LogicalCondition equal(final T first, final T second) { return new EqualCondition<>(first, second); }
+  public static <T> boolean equal(final T first, final T second) { return new EqualCondition<>(first, second).evaluate(); }
 }

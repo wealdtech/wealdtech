@@ -12,7 +12,6 @@ package com.wealdtech.calendar.conditions;
 
 import com.google.common.collect.Range;
 import com.wealdtech.calendar.Calendar;
-import com.wealdtech.conditions.LogicalCondition;
 import org.joda.time.DateTime;
 
 /**
@@ -20,6 +19,5 @@ import org.joda.time.DateTime;
  */
 public class CalendarConditions
 {
-  public static LogicalCondition isFree(final Calendar calendar, final Range<DateTime>timeframe) { return new IsFreeCalendarCondition(calendar, timeframe); }
-
+  public static boolean isFree(final Calendar calendar, final Range<DateTime>timeframe) { return new IsFreeCalendarCondition(calendar, timeframe).evaluate(); }
 }

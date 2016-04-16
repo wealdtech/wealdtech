@@ -24,19 +24,12 @@ public class ConditionsTest
   @Test
   public void equalityTest()
   {
-    final LogicalCondition equalsCondition = equal(1, 1);
-    assertTrue(equalsCondition.evaluate());
+    assertTrue(equal(1, 1));
   }
 
   @Test
   public void logicTest1()
   {
-    final LogicalCondition logicalCondition = and(FALSE, TRUE);
-    assertFalse(logicalCondition.evaluate());
-  }
-
-  @Test
-  public void dateBasedTest1()
-  {
+    assertFalse(and(FALSE, TRUE));
   }
 }
