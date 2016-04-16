@@ -16,7 +16,7 @@ import com.wealdtech.calendar.Event;
 import org.joda.time.DateTime;
 
 /**
- *
+ * Condition to check if a timeframe in a calendar is free
  */
 public class IsFreeCalendarCondition extends CalendarCondition
 {
