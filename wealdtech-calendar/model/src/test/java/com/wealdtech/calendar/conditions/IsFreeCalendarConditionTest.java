@@ -20,7 +20,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.wealdtech.calendar.conditions.CalendarConditions.isFree;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 /**
  *
@@ -28,55 +29,98 @@ import static org.testng.Assert.*;
 public class IsFreeCalendarConditionTest
 {
   private Calendar testCalendar1;
+  private Calendar testCalendar2;
 
   private DateTime DAY_1 = new DateTime(2016, 5, 1, 0, 0, DateTimeZone.forID("Europe/London"));
 
   @BeforeClass
   public void setUp()
   {
-
-    // Set up our test calendar
-    final ImmutableList<Event> events = ImmutableList.of(Event.builder()
+    // Set up our test calendars
+    final ImmutableList<Event> events1 = ImmutableList.of(Event.builder()
                                                               .summary("Test event 1")
                                                               .startDateTime(DAY_1.withHourOfDay(9))
                                                               .endDateTime(DAY_1.withHourOfDay(10))
                                                               .build());
-    testCalendar1 = Calendar.builder().summary("Test calendar 1").events(events).build();
+    testCalendar1 = Calendar.builder().summary("Test calendar 1").events(events1).build();
+
+    final ImmutableList<Event> events2 = ImmutableList.of(Event.builder()
+                                                               .summary("Test event 2")
+                                                               .startDate(DAY_1.toLocalDate())
+                                                               .endDate(DAY_1.plusDays(1).toLocalDate())
+                                                               .build());
+    testCalendar2 = Calendar.builder().summary("Test calendar 2").events(events2).build();
   }
 
   @Test
-  public void testIsFree1()
+  public void testIsFreeDateTime1()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(6), DAY_1.withHourOfDay(7));
     assertTrue(isFree(testCalendar1, testRange));
   }
 
   @Test
-  public void testIsFree2()
+  public void testIsFreeDateTime2()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(9), DAY_1.withHourOfDay(10));
     assertFalse(isFree(testCalendar1, testRange));
   }
 
   @Test
-  public void testIsFree3()
+  public void testIsFreeDateTime3()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(8), DAY_1.withHourOfDay(9));
     assertTrue(isFree(testCalendar1, testRange));
   }
 
   @Test
-  public void testIsFree4()
+  public void testIsFreeDateTime4()
   {
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(10), DAY_1.withHourOfDay(11));
     assertTrue(isFree(testCalendar1, testRange));
   }
 
   @Test
-  public void testIsFree5()
+  public void testIsFreeDateTime5()
   {
     // This is an empty range so expect it to be free
     final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(9), DAY_1.withHourOfDay(9));
     assertTrue(isFree(testCalendar1, testRange));
+  }
+
+  @Test
+  public void testIsFreeDate1()
+  {
+    final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(6), DAY_1.withHourOfDay(7));
+    assertFalse(isFree(testCalendar2, testRange));
+  }
+
+  @Test
+  public void testIsFreeDate2()
+  {
+    final Range<DateTime> testRange = Range.closedOpen(DAY_1.minusDays(1).withHourOfDay(9), DAY_1.minusDays(1).withHourOfDay(10));
+    assertTrue(isFree(testCalendar2, testRange));
+  }
+
+  @Test
+  public void testIsFreeDate3()
+  {
+    final Range<DateTime> testRange = Range.closedOpen(DAY_1.minusDays(1).withHourOfDay(23), DAY_1);
+    assertTrue(isFree(testCalendar2, testRange));
+  }
+
+  @Test
+  public void testIsFreeDate4()
+  {
+    final Range<DateTime> testRange = Range.closedOpen(DAY_1.plusDays(1), DAY_1.plusDays(2));
+    assertTrue(isFree(testCalendar2, testRange));
+  }
+
+  @Test
+  public void testIsFreeDate5()
+  {
+    // This is an empty range so expect it to be free
+    final Range<DateTime> testRange = Range.closedOpen(DAY_1.withHourOfDay(9), DAY_1.withHourOfDay(9));
+    assertTrue(isFree(testCalendar2, testRange));
   }
 }

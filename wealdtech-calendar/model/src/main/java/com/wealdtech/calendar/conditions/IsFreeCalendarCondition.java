@@ -31,6 +31,12 @@ public class IsFreeCalendarCondition extends CalendarCondition
   @Override
   public Boolean evaluate()
   {
+    // Short-circuit if the timeframe is empty
+    if (timeframe.lowerEndpoint().getMillis() == timeframe.upperEndpoint().getMillis())
+    {
+      return true;
+    }
+
     for (final Event event : calendar.getEvents())
     {
       // We obtain instantiated events over the supplied timeframe
