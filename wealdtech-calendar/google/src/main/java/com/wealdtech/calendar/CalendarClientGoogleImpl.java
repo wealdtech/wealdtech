@@ -337,19 +337,27 @@ public class CalendarClientGoogleImpl implements CalendarClient
                                                        DateTimeZone.forID(googleEvent.getEnd().getTimeZone())));
     }
 
-    builder.transparency(Objects.equals(googleEvent.getTransparency(), "opaque") ? Event.Transparency.OPAQUE : Event.Transparency.TRANSPARENT);
+    builder.transparency(
+        Objects.equals(googleEvent.getTransparency(), "transparent") ? Event.Transparency.TRANSPARENT : Event.Transparency.OPAQUE);
 
-    switch (googleEvent.getStatus())
+    if (googleEvent.getStatus() == null)
     {
-      case "cancelled":
-        builder.status(Event.Status.CANCELLED);
-        break;
-      case "tentative":
-        builder.status(Event.Status.TENTATIVE);
-        break;
-      default:
-        builder.status(Event.Status.CONFIRMED);
-        break;
+      builder.status(Event.Status.CONFIRMED);
+    }
+    else
+    {
+      switch (googleEvent.getStatus())
+      {
+        case "cancelled":
+          builder.status(Event.Status.CANCELLED);
+          break;
+        case "tentative":
+          builder.status(Event.Status.TENTATIVE);
+          break;
+        default:
+          builder.status(Event.Status.CONFIRMED);
+          break;
+      }
     }
 
     final Event event = builder.build();
