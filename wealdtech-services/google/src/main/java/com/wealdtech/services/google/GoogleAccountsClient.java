@@ -77,7 +77,7 @@ public class GoogleAccountsClient
 
     final GenericWObject response =
         service.obtainToken("authorization_code", configuration.getClientId(), configuration.getSecret(),
-                            configuration.getCallbackUrl().toString(), code);
+                            configuration.getCallbackUri().toString(), code);
 
     LOG.debug("Response is {}", response);
 

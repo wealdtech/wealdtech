@@ -14,10 +14,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.wealdtech.DataError;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 /**
  * Generic configuration for an OAuth2 setup
@@ -26,16 +24,16 @@ public class OAuth2Configuration implements Configuration
 {
   private final String clientId;
   private final String secret;
-  private final URL callbackUrl;
+  private final URI callbackUri;
 
   @JsonCreator
   public OAuth2Configuration(@JsonProperty("clientid") final String clientId,
                              @JsonProperty("secret") final String secret,
-                             @JsonProperty("callbackurl") final URL callbackUrl)
+                             @JsonProperty("callbackuri") final URI callbackUri)
   {
     this.clientId = clientId;
     this.secret = secret;
-    this.callbackUrl = callbackUrl;
+    this.callbackUri = callbackUri;
   }
 
   /**
@@ -45,32 +43,24 @@ public class OAuth2Configuration implements Configuration
    */
   public static OAuth2Configuration fromEnv(final String base)
   {
-    final URL callbackUrl;
-    try
-    {
-      callbackUrl = System.getenv(base + "_callbackurl") == null ? null : new URL(System.getenv(base + "_callbackurl"));
-    }
-    catch (final MalformedURLException mue)
-    {
-      throw new DataError.Bad("Bad or environment variable " + base + "_callbackurl");
-    }
-    return new OAuth2Configuration(System.getenv(base + "_clientid"), System.getenv(base + "_secret"), callbackUrl);
+    final URI callbackUri = System.getenv(base + "_callbackuri") == null ? null : URI.create(System.getenv(base + "_callbackuri"));
+    return new OAuth2Configuration(System.getenv(base + "_clientid"), System.getenv(base + "_secret"), callbackUri);
   }
 
   public String getClientId() { return clientId; }
 
   public String getSecret() { return secret; }
 
-  public URL getCallbackUrl() { return callbackUrl; }
+  public URI getCallbackUri() { return callbackUri; }
 
-  public URL generateAuthorizationUrl(ImmutableList<String> scopes) throws MalformedURLException
+  public URI generateAuthorizationUri(ImmutableList<String> scopes)
   {
-    return new URL("https://accounts.google.com/o/oauth2/auth?" +
-                   "client_id=" + getClientId() +
-                   "&response_type=code" +
-                   "&scope=" + Joiner.on("%20").join(scopes) +
-                   "&redirect_uri=" + getCallbackUrl() +
-                   "&state=auth" +
-                   "&access_type=offline");
+    return URI.create("https://accounts.google.com/o/oauth2/auth?" +
+                      "client_id=" + getClientId() +
+                      "&response_type=code" +
+                      "&scope=" + Joiner.on("%20").join(scopes) +
+                      "&redirect_uri=" + getCallbackUri() +
+                      "&state=auth" +
+                      "&access_type=offline");
   }
 }
