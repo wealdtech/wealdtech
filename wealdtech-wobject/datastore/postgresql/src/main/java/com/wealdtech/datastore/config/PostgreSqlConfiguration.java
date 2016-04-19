@@ -58,6 +58,26 @@ public class PostgreSqlConfiguration
     this.connectionAttemptGap = MoreObjects.firstNonNull(connectionAttemptGap, this.connectionAttemptGap);
   }
 
+  /**
+   * Obtain a configuration from the environment
+   *
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static PostgreSqlConfiguration fromEnv(final String base)
+  {
+    final int port = System.getenv(base + "_port") == null ? 5432 : Integer.parseInt(System.getenv(base + "_port"));
+    final Integer connectionAttempts = System.getenv(base + "_connectionattempts") == null ? null : Integer.parseInt(System.getenv(base + "_connectionattempts"));
+    final Long connectionAttemptGap = System.getenv(base + "_connectionattemptgap") == null ? null : Long.parseLong(System.getenv(base + "_connectionattemptgap"));
+    return new PostgreSqlConfiguration(System.getenv(base + "_host"),
+                                       port,
+                                       System.getenv(base + "_name"),
+                                       System.getenv(base + "_username"),
+                                       System.getenv(base + "_password"),
+                                       System.getenv(base + "_additionalparams"),
+                                       connectionAttempts,
+                                       connectionAttemptGap);
+  }
+
   public String getHost()
   {
     return this.host;

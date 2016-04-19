@@ -54,8 +54,8 @@ public class Worker
                                                                   .setJobExecutorActivate(true);
     processEngineConfiguration.setDefaultSerializationFormat("application/json");
     processEngineConfiguration.setProcessEnginePlugins(ImmutableList.<ProcessEnginePlugin>of(new SpinProcessEnginePlugin()));
-
     engine = processEngineConfiguration.buildProcessEngine();
+
     final DeploymentBuilder builder = engine.getRepositoryService().createDeployment();
     builder.addClasspathResource("MessageProcess.bpmn").enableDuplicateFiltering(true);
     final Deployment deployment = builder.deploy();

@@ -13,6 +13,7 @@ archivesBaseName = 'wealdtech-flow-model'
 dependencies
 {
     compile project(':wealdtech-wobject')
+    compile project(':wealdtech-wobject:datastore')
     compile 'org.camunda.bpm:camunda-bom:7.4.0'
     compile 'org.camunda.bpm:camunda-engine:7.4.0'
     compile 'org.camunda.bpm:camunda-engine-plugin-spin:7.4.0'
