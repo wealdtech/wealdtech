@@ -1,0 +1,23 @@
+archivesBaseName = 'wealdtech-flow-camunda'
+
+dependencies {
+  compile project(':wealdtech-flow:model')
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-wobject')
+  compile project(':wealdtech-retrofit')
+  compile 'com.rabbitmq:amqp-client:3.6.1'
+  compile 'org.postgresql:postgresql:9.4-1201-jdbc41'
+
+  testCompile 'commons-io:commons-io:2.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Camunda Flow'
+                description 'Wealdtech Flow using Camunda'
+            } 
+        }
+    }
+}
