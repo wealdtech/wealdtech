@@ -39,12 +39,13 @@ public class ContactsClientGoogleContactsImplTest
                                                                                  .expires(DateTime.now().minusDays(1))
                                                                                  .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
-    final ContactsClient client = new ContactsClientGoogleContactsImpl(configuration);
-    final ImmutableList<Contact> contacts = client.obtainContacts(credentials);
+    final ContactsClient<OAuth2Credentials> client = new ContactsClientGoogleContactsImpl(configuration);
+    final ImmutableList<Contact> contacts = client.obtainContacts(credentials, "Karen McDonald");
 
     for (final Contact contact : contacts)
     {
       System.err.println(contact);
     }
+    System.err.println("Number of contacts: " + contacts.size());
   }
 }

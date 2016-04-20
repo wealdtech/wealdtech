@@ -50,11 +50,21 @@ public interface ContactsClient<C extends Credentials>
   ImmutableList<Contact> obtainContacts(C credentials);
 
   /**
-   * Obtain all contacts of a specific user
+   * Obtain all contacts of the primary user, with query
+   *
+   * @param credentials credentials for the request
+   * @param query the query string to restrict the results; can be {@code null}
+   * @return the obtained contacts
+   */
+  ImmutableList<Contact> obtainContacts(C credentials, @Nullable String query);
+
+  /**
+   * Obtain all contacts of a specific user specified by their email address, with optional query
    *
    * @param credentials credentials for the request
    * @param email the email of the user for which to obtain the contacts
+   * @param query the query string to restrict the results; can be {@code null}
    * @return the obtained contacts
    */
-  ImmutableList<Contact> obtainContacts(C credentials, String email);
+  ImmutableList<Contact> obtainContactsByEmail(C credentials, String email, @Nullable String query);
 }

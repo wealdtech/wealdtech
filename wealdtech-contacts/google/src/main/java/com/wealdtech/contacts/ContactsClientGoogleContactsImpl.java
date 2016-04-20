@@ -87,11 +87,17 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
   @Override
   public ImmutableList<Contact> obtainContacts(final OAuth2Credentials credentials)
   {
-    return obtainContacts(credentials, "default");
+    return obtainContactsByEmail(credentials, "default", null);
   }
 
   @Override
-  public ImmutableList<Contact> obtainContacts(final OAuth2Credentials credentials, final String email)
+  public ImmutableList<Contact> obtainContacts(final OAuth2Credentials credentials, final String query)
+  {
+    return obtainContactsByEmail(credentials, "default", query);
+  }
+
+  @Override
+  public ImmutableList<Contact> obtainContactsByEmail(final OAuth2Credentials credentials, final String email, final String query)
   {
     final URL feedUrl;
     try
@@ -108,7 +114,10 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
     {
       contactsService.setOAuth2Credentials(generateCredential(credentials));
       final Query myQuery = new Query(feedUrl);
-      myQuery.setFullTextQuery("Karen McDonald");
+      if (query != null)
+      {
+        myQuery.setFullTextQuery(query);
+      }
       myQuery.setMaxResults(99999);
       ContactFeed resultFeed = contactsService.query(myQuery, ContactFeed.class);
       for (ContactEntry entry : resultFeed.getEntries())
