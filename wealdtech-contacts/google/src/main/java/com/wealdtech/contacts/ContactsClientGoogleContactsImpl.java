@@ -117,7 +117,7 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
       if (query != null)
       {
         myQuery.setFullTextQuery(query);
-      }
+
       myQuery.setMaxResults(99999);
       ContactFeed resultFeed = contactsService.query(myQuery, ContactFeed.class);
       for (ContactEntry entry : resultFeed.getEntries())
