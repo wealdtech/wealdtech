@@ -31,11 +31,11 @@ public class MailConfiguration implements Configuration
   final MailActor sender;
 
   @JsonCreator
-  private MailConfiguration(@JsonProperty("accountid") final String accountId,
-                            @JsonProperty("applicationid") final String applicationId,
-                            @JsonProperty("secret") final String secret,
-                            @JsonProperty("sender") final MailActor sender,
-                            @JsonProperty("templates") final Map<String, String> templates)
+  public MailConfiguration(@JsonProperty("accountid") final String accountId,
+                           @JsonProperty("applicationid") final String applicationId,
+                           @JsonProperty("secret") final String secret,
+                           @JsonProperty("sender") final MailActor sender,
+                           @JsonProperty("templates") final Map<String, String> templates)
   {
     this.accountId = accountId;
     this.applicationId = applicationId;

@@ -63,4 +63,6 @@ public class MailActor
       return new MailActor(name, email);
     }
   }
+
+  public static MailActor.Builder builder() { return new MailActor.Builder(); }
 }
