@@ -31,6 +31,7 @@ public class Participant extends WObject<Participant> implements Comparable<Part
   private static final String NAME = "name";
   private static final String FORMALITY = "formality";
   private static final String HANDLES = "handles";
+  private static final String REQUIRED = "required";
 
   @JsonCreator
   public Participant(final Map<String, Object> data)
@@ -57,6 +58,12 @@ public class Participant extends WObject<Participant> implements Comparable<Part
   @JsonIgnore
   public ImmutableList<? extends Handle> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).get(); }
 
+  /**
+   * @return if the participant is required to be present at the event
+   */
+  @JsonIgnore
+  public boolean isRequired() { return get(REQUIRED, Boolean.class).get(); }
+
   @Override
   protected void validate()
   {
@@ -64,6 +71,7 @@ public class Participant extends WObject<Participant> implements Comparable<Part
     checkState(exists(NAME), "Participant failed validation: missing name");
     checkState(exists(FORMALITY), "Participant failed validation: missing formality");
     checkState(exists(HANDLES), "Participant failed validation: missing handles");
+    checkState(exists(REQUIRED), "Participant failed validation: missing required");
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Participant, P>
@@ -93,6 +101,12 @@ public class Participant extends WObject<Participant> implements Comparable<Part
     public P handles(final List<? extends Handle> handles)
     {
       data(HANDLES, handles);
+      return self();
+    }
+
+    public P required(final boolean required)
+    {
+      data(REQUIRED, required);
       return self();
     }
 

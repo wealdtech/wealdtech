@@ -16,6 +16,7 @@ dependencies {
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-configuration-logging')
     compile project(':wealdtech-configuration:oauth2')
+    compile project(':wealdtech-contacts:model')
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-notifications:model')
