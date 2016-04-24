@@ -13,11 +13,13 @@ package com.wealdtech.contacts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import com.wealdtech.contacts.uses.Use;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 import static com.wealdtech.Preconditions.checkState;
@@ -50,7 +52,29 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
   @JsonIgnore
   public ImmutableSet<? extends Use> getUses() { return get(USES, USES_TYPE_REF).or(ImmutableSet.<Use>of()); }
 
-//  @JsonIgnore
+  /**
+   * Obtain the best use of a given type
+   * @param context the context in which the use applies
+   * @return the best use; can be {@code null}
+   */
+  @Nullable
+  public <T extends Use> T obtainBestUse(final Class<? extends Use> klazz, final Context context)
+  {
+    T bestUse = null;
+    for (final Use use : getUses())
+    {
+      if (Objects.equal(context, use.getContext()) && Objects.equal(use.getClass(), klazz))
+      {
+        if (bestUse == null || use.getFamiliarity() > bestUse.getFamiliarity())
+        {
+          bestUse = (T)use;
+        }
+      }
+    }
+    return bestUse;
+  }
+
+  //  @JsonIgnore
 //  @Nullable
 //  public ImmutableList<? extends Use> obtainUses(final Context.Situation situation)
 //  {
