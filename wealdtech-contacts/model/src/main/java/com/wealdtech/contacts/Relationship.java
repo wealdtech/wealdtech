@@ -13,10 +13,12 @@ package com.wealdtech.contacts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 import static com.wealdtech.Preconditions.checkState;
@@ -48,6 +50,20 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
   private static final TypeReference<ImmutableSet<Context>> CONTEXTS_TYPE_REF = new TypeReference<ImmutableSet<Context>>(){};
   @JsonIgnore
   public ImmutableSet<Context> getContexts() { return get(CONTEXTS, CONTEXTS_TYPE_REF).or(ImmutableSet.<Context>of()); }
+
+  @JsonIgnore
+  @Nullable
+  public Context obtainContext(final Context.Situation situation)
+  {
+    for (final Context context : getContexts())
+    {
+      if (Objects.equal(situation, context.getSituation()))
+      {
+        return context;
+      }
+    }
+    return null;
+  }
 
   @Override
   protected void validate()
