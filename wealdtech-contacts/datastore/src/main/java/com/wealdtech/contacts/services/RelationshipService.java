@@ -12,6 +12,7 @@ package com.wealdtech.contacts.services;
 
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
+import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.Context;
 import com.wealdtech.contacts.Relationship;
 
@@ -31,6 +32,11 @@ public interface RelationshipService
    * Obtain a relationship
    */
   @Nullable Relationship obtain(WID<Relationship> relationshipId);
+
+  /**
+   * Obtain a relationship
+   */
+  @Nullable Relationship obtain(WID<Contact> fromId, WID<Contact> toId);
 
   /**
    * Obtain a relationships for a given name and context situation

@@ -71,7 +71,7 @@ public class Context extends WObject<Context> implements Comparable<Context>
     super.validate();
     if (!exists(SITUATION))
     {
-      throw new DataError.Missing("Context needs 'type' information");
+      throw new DataError.Missing("Context failed validation: needs 'situation'");
     }
   }
 

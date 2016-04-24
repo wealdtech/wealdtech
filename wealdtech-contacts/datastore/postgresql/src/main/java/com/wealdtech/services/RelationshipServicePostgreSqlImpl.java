@@ -17,6 +17,7 @@ import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.WID;
+import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.Context;
 import com.wealdtech.contacts.Relationship;
 import com.wealdtech.contacts.services.RelationshipService;
@@ -24,6 +25,7 @@ import com.wealdtech.repositories.PostgreSqlRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
 
 /**
@@ -63,6 +65,28 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       {
         int index = 1;
         setJson(stmt, index++, "{\"_id\":\"" + relationshipId.toString() + "\"}");
+      }
+    }), null);
+  }
+
+  @Nullable
+  @Override
+  public Relationship obtain(final WID<Contact> fromId, final WID<Contact> toId)
+  {
+    return Iterables.getFirst(obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ? AND d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"from\":\"" + fromId.toString() + "\"}");
+        setJson(stmt, index++, "{\"to\":\"" + toId.toString() + "\"}");
       }
     }), null);
   }
