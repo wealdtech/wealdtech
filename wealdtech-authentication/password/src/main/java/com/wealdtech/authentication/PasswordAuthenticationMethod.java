@@ -44,7 +44,7 @@ public class PasswordAuthenticationMethod extends AuthenticationMethod
 
     // Ensure that the password is hashed
     final String password = (String)data.get(PASSWORD);
-    if (!Crypt.isHashed(password))
+    if (password != null && !Crypt.isHashed(password))
     {
       data.put(PASSWORD, Crypt.hash(password));
     }

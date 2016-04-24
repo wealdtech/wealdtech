@@ -10,8 +10,45 @@
 
 package com.wealdtech.contacts.services;
 
+import com.google.common.collect.ImmutableList;
+import com.wealdtech.WID;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.Relationship;
+
+import javax.annotation.Nullable;
+
 /**
  *
  */
 public interface RelationshipService
-{}
+{
+  /**
+   * Create a relationship
+   */
+  void create(Relationship relationship);
+
+  /**
+   * Obtain a relationship
+   */
+  @Nullable Relationship obtain(WID<Relationship> relationshipId);
+
+  /**
+   * Obtain a relationships for a given name and context situation
+   */
+  ImmutableList<Relationship> obtain(String name, @Nullable Context.Situation situation);
+
+  /**
+   * Obtain all relationships
+   */
+  ImmutableList<Relationship> obtain();
+
+  /**
+   * Update a relationship
+   */
+  void update(Relationship relationship);
+
+  /**
+   * Remove a relationship
+   */
+  void remove(Relationship relationship);
+}

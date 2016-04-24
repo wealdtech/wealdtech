@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 
 /**
  */
-public interface UserService
+public interface UserService<T> extends WObjectService<User, T>
 {
   /**
    * Create a user.

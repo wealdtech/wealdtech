@@ -48,7 +48,8 @@ public class ContactsSyncServiceSynchronousImpl<C extends Credentials> implement
     Map<String, Contact> dbContacts = Maps.newHashMap();
     for (final Contact dbContact : contactService.obtain())
     {
-      for (final String remoteId : dbContact.getRemoteIds())
+      final String remoteId = dbContact.obtainRemoteId(contactsClient.getRemoteService());
+      if (remoteId != null)
       {
         dbContacts.put(remoteId, dbContact);
       }
@@ -58,15 +59,19 @@ public class ContactsSyncServiceSynchronousImpl<C extends Credentials> implement
     for (Contact contact : contacts)
     {
       final Contact dbContact = matchContact(dbContacts, contact);
-//      if (dbContact != null)
-//      {
-//        LOG.error("Matched contact {} with database contact {}", contact, dbContact);
-//      }
-      if (contact.getId() == null)
+      if (dbContact != null)
       {
-        contact = Contact.builder(contact).id(WID.<Contact>generate()).build();
+        contact = Contact.builder(contact).id(dbContact.getId()).build();
+        contactService.update(contact);
       }
-      contactService.create(contact);
+      else
+      {
+        if (contact.getId() == null)
+        {
+          contact = Contact.builder(contact).id(WID.<Contact>generate()).build();
+        }
+        contactService.create(contact);
+      }
     }
 
     return contacts.size();
@@ -75,12 +80,10 @@ public class ContactsSyncServiceSynchronousImpl<C extends Credentials> implement
   @Nullable
   private Contact matchContact(final Map<String, Contact> dbContacts, final Contact contact)
   {
-    for (final String remoteId : contact.getRemoteIds())
+    final String remoteId = contact.obtainRemoteId(contactsClient.getRemoteService());
+    if (remoteId != null && dbContacts.containsKey(remoteId))
     {
-      if (dbContacts.containsKey(remoteId))
-      {
-        return dbContacts.get(remoteId);
-      }
+      return dbContacts.get(remoteId);
     }
 
     return null;

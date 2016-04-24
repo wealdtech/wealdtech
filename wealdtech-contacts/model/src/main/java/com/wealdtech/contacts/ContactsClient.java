@@ -67,4 +67,9 @@ public interface ContactsClient<C extends Credentials>
    * @return the obtained contacts
    */
   ImmutableList<Contact> obtainContactsByEmail(C credentials, String email, @Nullable String query);
+
+  /**
+   * @return the service used for remote IDs with this client
+   */
+  String getRemoteService();
 }

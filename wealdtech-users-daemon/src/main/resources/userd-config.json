@@ -49,15 +49,10 @@
   {
     "host": "localhost",
     "port": 5432,
-    "name": "user",
-    "username": "user",
-    "password": "user"
+    "name": "test",
+    "username": "test",
+    "password": "test"
   },
-//  "pushwoosh":
-//  {
-//    "appid": "XXX",
-//    "apikey": "YYY"
-//  },
   "wid":
   {
     "shardid": 1

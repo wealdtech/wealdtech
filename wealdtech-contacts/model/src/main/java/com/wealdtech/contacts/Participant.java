@@ -13,9 +13,11 @@ package com.wealdtech.contacts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.WObject;
 import com.wealdtech.contacts.handles.Handle;
+import org.joda.time.DateTimeZone;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class Participant extends WObject<Participant> implements Comparable<Part
   private static final String NAME = "name";
   private static final String FORMALITY = "formality";
   private static final String HANDLES = "handles";
-  private static final String REQUIRED = "required";
+  private static final String TIMEZONE = "timezone";
 
   @JsonCreator
   public Participant(final Map<String, Object> data)
@@ -59,10 +61,10 @@ public class Participant extends WObject<Participant> implements Comparable<Part
   public ImmutableList<? extends Handle> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).get(); }
 
   /**
-   * @return if the participant is required to be present at the event
+   * @return the timezone in which the participant resides (optional)
    */
   @JsonIgnore
-  public boolean isRequired() { return get(REQUIRED, Boolean.class).get(); }
+  public Optional<DateTimeZone> getTimezone() { return get(TIMEZONE, DateTimeZone.class); }
 
   @Override
   protected void validate()
@@ -71,7 +73,6 @@ public class Participant extends WObject<Participant> implements Comparable<Part
     checkState(exists(NAME), "Participant failed validation: missing name");
     checkState(exists(FORMALITY), "Participant failed validation: missing formality");
     checkState(exists(HANDLES), "Participant failed validation: missing handles");
-    checkState(exists(REQUIRED), "Participant failed validation: missing required");
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Participant, P>
@@ -104,9 +105,9 @@ public class Participant extends WObject<Participant> implements Comparable<Part
       return self();
     }
 
-    public P required(final boolean required)
+    public P timezone(final DateTimeZone timezone)
     {
-      data(REQUIRED, required);
+      data(TIMEZONE, timezone);
       return self();
     }
 

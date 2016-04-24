@@ -133,6 +133,12 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
     return resultsB.build();
   }
 
+  @Override
+  public String getRemoteService()
+  {
+    return "google";
+  }
+
   private Contact googleContactToContact(final ContactEntry googleContact)
   {
     final Contact.Builder<?> builder = Contact.builder();
@@ -141,7 +147,7 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
 //    System.err.println(googleContact.getName().getFullName());
 //    System.err.println(googleContact.getContactPhotoLink().getHref());
 
-    builder.remoteIds(ImmutableSet.of(googleContact.getId() + "@google"));
+    builder.remoteIds(ImmutableSet.of(RemoteId.builder().service(getRemoteService()).remoteId(googleContact.getId()).build()));
 
     final ImmutableSet.Builder<Handle> handlesB = ImmutableSet.builder();
     boolean addedHandle = false;

@@ -12,7 +12,6 @@ package com.wealdtech.users.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
-import com.wealdtech.Application;
 import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.authorisation.UserAuthorisation;
@@ -21,10 +20,7 @@ import com.wealdtech.utils.RequestHint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -51,8 +47,7 @@ public class UserResource
   @GET
   @Path("{userid: [A-Za-z0-9]+}")
   @Produces({MediaType.APPLICATION_JSON, UserMediaType.V1_JSON})
-  public User getUser(@Context final Application application,
-                      @Context final UserAuthorisation authorisation,
+  public User getUser(@Context final UserAuthorisation authorisation,
                       @Context final RequestHint hint,
                       @Context final User user,
                       @PathParam("userid") final WID<User> userId)
@@ -61,20 +56,19 @@ public class UserResource
     return user;
   }
 
-//  /**
-//   * Add a user
-//   *
-//   * @param user the user to add
-//   */
-//  @Timed
-//  @POST
-//  @Consumes({MediaType.APPLICATION_JSON, UserMediaType.V1_JSON})
-//  public void createUser(@PathParam("appid") final WID<Application> appId,
-//                            final User user)
-//  {
-//    // Ensure that the application ID presented is valid
-//
-//    // Create the message
-//    userService.createMessage(appId, topicId, message);
-//  }
+  /**
+   * Add a user
+   *
+   * @param user the user to add
+   */
+  @Timed
+  @POST
+  @Consumes({MediaType.APPLICATION_JSON, UserMediaType.V1_JSON})
+  public void createUser(final User user)
+  {
+    // Ensure that the application ID presented is valid
+
+    // Create the message
+    userService.create(user);
+  }
 }

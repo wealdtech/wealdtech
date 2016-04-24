@@ -111,7 +111,7 @@ public class DeviceResource
     }
     if (!registered)
     {
-      // An attempt to unregister a registered device.  Common problem with clients; silently ignore it
+      // An attempt to unregister an unknown device.  Common problem with clients; silently ignore it
       return;
     }
 

@@ -13,11 +13,13 @@ package com.wealdtech.contacts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import com.wealdtech.WObject;
 import com.wealdtech.contacts.events.Event;
 import com.wealdtech.contacts.handles.Handle;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +28,7 @@ import java.util.Set;
  */
 public class Contact extends WObject<Contact> implements Comparable<Contact>
 {
-  private static final String REMOTE_IDS = "_remoteids";
+  private static final String REMOTE_IDS = "remoteids";
 
   private static final String HANDLES = "handles";
   private static final String EVENTS = "events";
@@ -37,9 +39,22 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     super(data);
   }
 
-  private static final TypeReference<Set<String>> REMOTE_IDS_TYPE_REF = new TypeReference<Set<String>>(){};
+  private static final TypeReference<Set<RemoteId>> REMOTE_IDS_TYPE_REF = new TypeReference<Set<RemoteId>>(){};
   @JsonIgnore
-  public Set<String> getRemoteIds() { return get(REMOTE_IDS, REMOTE_IDS_TYPE_REF).or(Sets.<String>newHashSet()); }
+  public Set<RemoteId> getRemoteIds() { return get(REMOTE_IDS, REMOTE_IDS_TYPE_REF).or(Sets.<RemoteId>newHashSet()); }
+
+  @JsonIgnore
+  @Nullable public String obtainRemoteId(final String remoteService)
+  {
+    for (final RemoteId remoteId : getRemoteIds())
+    {
+      if (Objects.equal(remoteService, remoteId.getService()))
+      {
+        return remoteId.getRemoteId();
+      }
+    }
+    return null;
+  }
 
   private static final TypeReference<Set<? extends Handle>> HANDLES_TYPE_REF = new TypeReference<Set<? extends Handle>>(){};
   @JsonIgnore
@@ -67,7 +82,7 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
       super(prior);
     }
 
-    public P remoteIds(final Set<String> remoteIds)
+    public P remoteIds(final Set<RemoteId> remoteIds)
     {
       data(REMOTE_IDS, remoteIds);
       return self();

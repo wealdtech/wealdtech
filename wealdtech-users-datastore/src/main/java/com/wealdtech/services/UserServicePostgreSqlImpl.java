@@ -36,7 +36,7 @@ import static com.wealdtech.Preconditions.checkState;
 /**
  * Access to users
  */
-public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User> implements UserService
+public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User> implements UserService<PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(UserServicePostgreSqlImpl.class);
 

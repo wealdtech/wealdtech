@@ -14,12 +14,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
-import com.wealdtech.jersey.filters.*;
-import com.wealdtech.users.config.ApplicationModule;
 import com.wealdtech.config.WealdInstrumentationModule;
 import com.wealdtech.guice.EventBusAsynchronousModule;
+import com.wealdtech.jersey.filters.*;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
+import com.wealdtech.services.UserService;
+import com.wealdtech.users.config.ApplicationModule;
 
 /**
  * Daemon for the users API.
@@ -36,7 +37,6 @@ public class UserD
                                                                                             RequestHintFilter.class,
                                                                                             DeviceIdFilter.class,
                                                                                             GZIPContentEncodingFilter.class,
-                                                                                            ApplicationFilter.class,
                                                                                             WealdAuthenticationFilter.class),
                                                                            ImmutableList.of(RequestLoggingFilter.class,
                                                                                             ServerHeaderFilter.class,
@@ -48,6 +48,8 @@ public class UserD
     // Inject our listeners
 //    injector.getInstance(MessageListener.class);
 
+    final UserService userService = injector.getInstance(UserService.class);
+    userService.createDatastore();
     try
     {
       server.start();

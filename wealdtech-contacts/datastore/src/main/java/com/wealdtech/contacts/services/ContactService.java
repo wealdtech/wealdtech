@@ -14,6 +14,8 @@ import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 
+import javax.annotation.Nullable;
+
 /**
  *
  */
@@ -27,7 +29,7 @@ public interface ContactService
   /**
    * Obtain a contact
    */
-  Contact obtain(WID<Contact> contactId);
+  @Nullable Contact obtain(WID<Contact> contactId);
 
   /**
    * Obtain all contacts
