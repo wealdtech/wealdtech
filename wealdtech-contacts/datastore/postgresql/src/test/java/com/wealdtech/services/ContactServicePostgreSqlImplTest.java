@@ -37,7 +37,7 @@ public class ContactServicePostgreSqlImplTest
   public void setUp()
   {
     final PostgreSqlRepository repository =
-        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "contact-test", "contact", "contact", null, null, null));
+        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
 
     service = new ContactServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
                                                                       .copy()

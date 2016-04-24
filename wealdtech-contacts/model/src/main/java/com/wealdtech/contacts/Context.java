@@ -11,14 +11,10 @@
 package com.wealdtech.contacts;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
 import com.wealdtech.DataError;
-import com.wealdtech.WObject;
 import com.wealdtech.utils.StringUtils;
 
 import java.util.Locale;
@@ -27,177 +23,74 @@ import java.util.Map;
 import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
- * A definition of the context of a relationship.
+ * The context of a request: professional, social, familial
  */
-public class Context extends WObject<Context> implements Comparable<Context>
+public enum Context
 {
-  private static final String SITUATION = "situation";
-  private static final String HANDLES = "handles";
-  private static final String FAMILIARITY = "familiarity";
-  private static final String FORMALITY = "formality";
+  /**
+   * Undefined context
+   */
+  UNDEFINED(-1)
+  /**
+   * Professional context
+   */
+  , PROFESSIONAL(1)
+  /**
+   * Social context
+   */
+  , SOCIAL(2)
+  /**
+   * Familial context
+   */
+  , FAMILIAL(3);
 
-  @JsonCreator
-  public Context(final Map<String, Object> data)
+  public final int val;
+
+  private Context(final int val)
   {
-    super(data);
+    this.val = val;
   }
 
-  @JsonIgnore
-  public Situation getSituation() { return get(SITUATION, Situation.class).get(); }
+  private static final ImmutableSortedMap<Integer, Context> _VALMAP;
 
-  private static final TypeReference<ImmutableSet<String>> HANDLES_TYPE_REF = new TypeReference<ImmutableSet<String>>(){};
-
-  /**
-   * @return the handles specific to this relationship's context
-   */
-  @JsonIgnore
-  public ImmutableSet<String> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).or(ImmutableSet.<String>of()); }
-
-  /**
-   * @return the level of familiarity in this relationship's context
-   */
-  @JsonIgnore
-  public int getFamiliarity() { return get(FAMILIARITY, Integer.class).get(); }
-
-  /**
-   * @return the level of formality in this relationship's context
-   */
-  @JsonIgnore
-  public int getFormality() { return get(FORMALITY, Integer.class).get(); }
+  static
+  {
+    final Map<Integer, Context> levelMap = Maps.newHashMap();
+    for (final Context relationshipType : Context.values())
+    {
+      levelMap.put(relationshipType.val, relationshipType);
+    }
+    _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+  }
 
   @Override
-  protected void validate()
+  @JsonValue
+  public String toString()
   {
-    super.validate();
-    if (!exists(SITUATION))
+    return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+  }
+
+  @JsonCreator
+  public static Context fromString(final String val)
+  {
+    try
     {
-      throw new DataError.Missing("Context failed validation: needs 'situation'");
+      return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+    }
+    catch (final IllegalArgumentException iae)
+    {
+      // N.B. we don't pass the iae as the cause of this exception because
+      // this happens during invocation, and in that case the enum handler
+      // will report the root cause exception rather than the one we throw.
+      throw new DataError.Bad("A context \"" + val + "\" supplied is invalid");
     }
   }
 
-  /**
-   * The situation of a context: professional, social, familial
-   */
-  public static enum Situation
+  public static Context fromInt(final Integer val)
   {
-    /**
-     * Undefined relationship
-     */
-    UNDEFINED(-1)
-    /**
-     * Professional relationship
-     */
-   ,PROFESSIONAL(1)
-    /**
-     * Social relationship
-     */
-    , SOCIAL(2)
-    /**
-     * Familial relationship
-     */
-    , FAMILIAL(3);
-
-    public final int val;
-
-    private Situation(final int val)
-    {
-      this.val = val;
-    }
-
-    private static final ImmutableSortedMap<Integer, Situation> _VALMAP;
-
-    static
-    {
-      final Map<Integer, Situation> levelMap = Maps.newHashMap();
-      for (final Situation relationshipType : Situation.values())
-      {
-        levelMap.put(relationshipType.val, relationshipType);
-      }
-      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
-    }
-
-    @Override
-    @JsonValue
-    public String toString()
-    {
-      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
-    }
-
-    @JsonCreator
-    public static Situation fromString(final String val)
-    {
-      try
-      {
-        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
-      }
-      catch (final IllegalArgumentException iae)
-      {
-        // N.B. we don't pass the iae as the cause of this exception because
-        // this happens during invocation, and in that case the enum handler
-        // will report the root cause exception rather than the one we throw.
-        throw new DataError.Bad("A situation \"" + val + "\" supplied is invalid");
-      }
-    }
-
-    public static Situation fromInt(final Integer val)
-    {
-      checkNotNull(val, "Situation not supplied");
-      final Situation state = _VALMAP.get(val);
-      checkNotNull(state, "Situation is invalid");
-      return state;
-    }
+    checkNotNull(val, "Context not supplied");
+    final Context state = _VALMAP.get(val);
+    checkNotNull(state, "Context is invalid");
+    return state;
   }
-
-  public static class Builder<P extends Builder<P>> extends WObject.Builder<Context, P>
-  {
-    public Builder()
-    {
-      super();
-    }
-
-    public Builder(final Context prior)
-    {
-      super(prior);
-    }
-
-    public P situation(final Situation situation)
-    {
-      data(SITUATION, situation);
-      return self();
-    }
-
-    public P knownAs(final ImmutableSet<String> knownAs)
-    {
-      data(HANDLES, knownAs);
-      return self();
-    }
-
-    public P familiarity(final int familiarity)
-    {
-      data(FAMILIARITY, familiarity);
-      return self();
-    }
-
-    public P formality(final int formality)
-    {
-      data(FORMALITY, formality);
-      return self();
-    }
-
-    public Context build()
-    {
-      return new Context(data);
-    }
-  }
-
-  public static Builder<?> builder()
-  {
-    return new Builder();
-  }
-
-  public static Builder<?> builder(final Context prior)
-  {
-    return new Builder(prior);
-  }
-
 }

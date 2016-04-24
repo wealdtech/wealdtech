@@ -14,13 +14,14 @@ import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.handles.Handle;
+import com.wealdtech.services.WObjectService;
 
 import javax.annotation.Nullable;
 
 /**
  *
  */
-public interface ContactService
+public interface ContactService<T> extends WObjectService<Contact, T>
 {
   /**
    * Create a contact

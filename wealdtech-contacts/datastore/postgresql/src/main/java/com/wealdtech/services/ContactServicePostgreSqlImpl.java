@@ -29,7 +29,7 @@ import java.sql.PreparedStatement;
 /**
  *
  */
-public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Contact> implements ContactService
+public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Contact> implements ContactService<PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(ContactServicePostgreSqlImpl.class);
 

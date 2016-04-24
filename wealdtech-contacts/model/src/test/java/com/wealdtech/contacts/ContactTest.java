@@ -13,6 +13,7 @@ package com.wealdtech.contacts;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.handles.NameHandle;
+import com.wealdtech.contacts.uses.NameUse;
 import org.joda.time.LocalDateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -49,18 +50,24 @@ public class ContactTest
     final Relationship aliceToBob = Relationship.builder()
                                                 .from(alice.getId())
                                                 .to(bob.getId())
-                                                .contexts(ImmutableSet.of(Context.builder()
-                                                                                 .situation(Context.Situation.PROFESSIONAL)
-                                                                                 .knownAs(ImmutableSet.of("Mr. Jones", "Bob Jones"))
-                                                                                 .familiarity(30)
-                                                                                 .formality(50)
-                                                                                 .build(), Context.builder()
-                                                                                                  .situation(
-                                                                                                      Context.Situation.FAMILIAL)
-                                                                                                  .knownAs(ImmutableSet.of("Dad"))
-                                                                                                  .familiarity(100)
-                                                                                                  .formality(0)
-                                                                                                  .build()))
+                                                .uses(ImmutableSet.of(NameUse.builder()
+                                                                             .name("Mr. Jones")
+                                                                             .familiarity(50)
+                                                                             .formality(50)
+                                                                             .context(Context.PROFESSIONAL)
+                                                                             .build(),
+                                                                      NameUse.builder()
+                                                                             .name("Bob Jones")
+                                                                             .familiarity(20)
+                                                                             .formality(50)
+                                                                             .context(Context.PROFESSIONAL)
+                                                                             .build(),
+                                                                      NameUse.builder()
+                                                                             .name("Dad")
+                                                                             .familiarity(100)
+                                                                             .formality(0)
+                                                                             .context(Context.FAMILIAL)
+                                                                             .build()))
                                                 .build();
 
     assertEquals(aliceToBob.getFrom(), alice.getId());
@@ -84,19 +91,24 @@ public class ContactTest
     final Relationship aliceToBob = Relationship.builder()
                                                 .from(alice.getId())
                                                 .to(bob.getId())
-                                                .contexts(ImmutableSet.of(Context.builder()
-                                                                                 .situation(Context.Situation.PROFESSIONAL)
-                                                                                 .knownAs(ImmutableSet.of("Mr. Jones", "Bob Jones"))
-                                                                                 .familiarity(30)
-                                                                                 .formality(50)
-                                                                                 .build(), Context.builder()
-                                                                                                  .situation(
-                                                                                                      Context.Situation.FAMILIAL)
-                                                                                                  .knownAs(ImmutableSet.of("Dad"))
-                                                                                                  .familiarity(100)
-                                                                                                  .formality(0)
-                                                                                                  .build()))
-                                                .build();
-
+                                                .uses(ImmutableSet.of(NameUse.builder()
+                                                                             .name("Mr. Jones")
+                                                                             .familiarity(50)
+                                                                             .formality(50)
+                                                                             .context(Context.PROFESSIONAL)
+                                                                             .build(),
+                                                                      NameUse.builder()
+                                                                             .name("Bob Jones")
+                                                                             .familiarity(20)
+                                                                             .formality(50)
+                                                                             .context(Context.PROFESSIONAL)
+                                                                             .build(),
+                                                                      NameUse.builder()
+                                                                             .name("Dad")
+                                                                             .familiarity(100)
+                                                                             .formality(0)
+                                                                             .context(Context.FAMILIAL)
+                                                                             .build()))
+        .build();
   }
 }

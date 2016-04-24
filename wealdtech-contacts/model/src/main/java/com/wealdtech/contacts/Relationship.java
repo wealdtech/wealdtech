@@ -13,12 +13,11 @@ package com.wealdtech.contacts;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
+import com.wealdtech.contacts.uses.Use;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 import static com.wealdtech.Preconditions.checkState;
@@ -31,7 +30,7 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
 {
   private static final String FROM = "from";
   private static final String TO = "to";
-  private static final String CONTEXTS = "contexts";
+  private static final String USES = "uses";
 
   @JsonCreator
   public Relationship(final Map<String, Object> data)
@@ -47,23 +46,23 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
   @JsonIgnore
   public WID<Contact> getTo() { return get(TO, TO_TYPE_REF).get(); }
 
-  private static final TypeReference<ImmutableSet<Context>> CONTEXTS_TYPE_REF = new TypeReference<ImmutableSet<Context>>(){};
+  private static final TypeReference<ImmutableSet<? extends Use>> USES_TYPE_REF = new TypeReference<ImmutableSet<? extends Use>>(){};
   @JsonIgnore
-  public ImmutableSet<Context> getContexts() { return get(CONTEXTS, CONTEXTS_TYPE_REF).or(ImmutableSet.<Context>of()); }
+  public ImmutableSet<? extends Use> getUses() { return get(USES, USES_TYPE_REF).or(ImmutableSet.<Use>of()); }
 
-  @JsonIgnore
-  @Nullable
-  public Context obtainContext(final Context.Situation situation)
-  {
-    for (final Context context : getContexts())
-    {
-      if (Objects.equal(situation, context.getSituation()))
-      {
-        return context;
-      }
-    }
-    return null;
-  }
+//  @JsonIgnore
+//  @Nullable
+//  public ImmutableList<? extends Use> obtainUses(final Context.Situation situation)
+//  {
+//    for (final Use use : getUses())
+//    {
+//      if (Objects.equal(situation, context.getSituation()))
+//      {
+//        return context;
+//      }
+//    }
+//    return null;
+//  }
 
   @Override
   protected void validate()
@@ -97,9 +96,9 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
       return self();
     }
 
-    public P contexts(final ImmutableSet<Context> contexts)
+    public P uses(final ImmutableSet<? extends Use> uses)
     {
-      data(CONTEXTS, contexts);
+      data(USES, uses);
       return self();
     }
 
@@ -118,5 +117,4 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
   {
     return new Builder(prior);
   }
-
-  }
+}

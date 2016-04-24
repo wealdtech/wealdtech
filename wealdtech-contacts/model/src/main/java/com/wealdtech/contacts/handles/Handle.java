@@ -19,7 +19,8 @@ import static com.wealdtech.Preconditions.checkNotNull;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
- * Handle contains the details of a contact's presence.
+ * A Handle contains the details of how to reach a contact.  It might be an email address, a telephone number, or their name or
+ * nickname.  Handles can be restricted to a subset of available spheres.
  * This is the abstract superclass; details of specific handles are available in the subclasses.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -123,7 +124,7 @@ public abstract class Handle<T extends Handle<T>> extends RangedWObject<T> imple
   }
 
   /**
-   * The sphere in which a handle operatres (professional, personal)
+   * The sphere in which a handle operates (professional, personal)
    */
   public static enum Sphere
   {
@@ -134,7 +135,7 @@ public abstract class Handle<T extends Handle<T>> extends RangedWObject<T> imple
     /**
      * Personal sphere
      */
-    , PERSONAL(2);
+    ,PERSONAL(2);
 
     public final int val;
 

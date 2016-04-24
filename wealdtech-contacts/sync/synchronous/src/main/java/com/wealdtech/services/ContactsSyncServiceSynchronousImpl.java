@@ -32,11 +32,11 @@ public class ContactsSyncServiceSynchronousImpl<C extends Credentials> implement
   private static final Logger LOG = LoggerFactory.getLogger(ContactsSyncServiceSynchronousImpl.class);
 
   // Access to our internal contacts service
-  private ContactService contactService;
+  private ContactService<?> contactService;
   // Access to the external contacts service
   private ContactsClient<C> contactsClient;
 
-  public ContactsSyncServiceSynchronousImpl(final ContactService contactService, final ContactsClient<C> contactsClient)
+  public ContactsSyncServiceSynchronousImpl(final ContactService<?> contactService, final ContactsClient<C> contactsClient)
   {
     this.contactService = contactService;
     this.contactsClient = contactsClient;

@@ -11,7 +11,8 @@
 archivesBaseName = 'wealdtech-contacts-datastore'
 
 dependencies {
-    compile project(':wealdtech-contacts:model')
+  compile project(':wealdtech-contacts:model')
+  compile project(':wealdtech-wobject:datastore')
 }
 
 uploadArchives {
