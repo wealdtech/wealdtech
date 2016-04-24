@@ -81,9 +81,13 @@ public class Context extends WObject<Context> implements Comparable<Context>
   public static enum Situation
   {
     /**
+     * Undefined relationship
+     */
+    UNDEFINED(-1)
+    /**
      * Professional relationship
      */
-    PROFESSIONAL(1)
+   ,PROFESSIONAL(1)
     /**
      * Social relationship
      */
