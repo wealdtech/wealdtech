@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
+import com.wealdtech.contacts.handles.Handle;
 import com.wealdtech.contacts.services.ContactService;
 import com.wealdtech.repositories.PostgreSqlRepository;
 import org.slf4j.Logger;
@@ -70,6 +71,26 @@ public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<C
   public ImmutableList<Contact> obtain()
   {
     return obtain(CONTACT_TYPE_REFERENCE, null);
+  }
+
+  @Override
+  public ImmutableList<Contact> obtain(final Handle handle)
+  {
+    return obtain(CONTACT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"handles\":[{\"_key\":\"" + handle.getKey() + "\"}]}");
+      }
+    });
   }
 
   @Override

@@ -13,6 +13,7 @@ package com.wealdtech.contacts.services;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
+import com.wealdtech.contacts.handles.Handle;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +36,11 @@ public interface ContactService
    * Obtain all contacts
    */
   ImmutableList<Contact> obtain();
+
+  /**
+   * Obtain all contacts with a given handle
+   */
+  ImmutableList<Contact> obtain(Handle handle);
 
   /**
    * Update a contact
