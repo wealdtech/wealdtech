@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import com.wealdtech.contacts.events.Event;
 import com.wealdtech.contacts.handles.Handle;
@@ -23,6 +25,8 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
  * A contact contains details about a person.
  */
@@ -30,6 +34,7 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
 {
   private static final String REMOTE_IDS = "remoteids";
 
+  private static final String OWNER_ID = "ownerid";
   private static final String HANDLES = "handles";
   private static final String EVENTS = "events";
 
@@ -56,6 +61,10 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     return null;
   }
 
+  private static final TypeReference<WID<User>> OWNER_ID_TYPE_REF = new TypeReference<WID<User>>(){};
+  @JsonIgnore
+  public WID<User> getOwnerId() { return get(OWNER_ID, OWNER_ID_TYPE_REF).get(); }
+
   private static final TypeReference<Set<? extends Handle>> HANDLES_TYPE_REF = new TypeReference<Set<? extends Handle>>(){};
   @JsonIgnore
   public Set<? extends Handle> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).or(Sets.<Handle>newHashSet()); }
@@ -68,6 +77,7 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
   protected void validate()
   {
     super.validate();
+    checkState(exists(OWNER_ID), "Contact failed validation: missing owner ID");
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Contact, P>
@@ -88,7 +98,6 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
       return self();
     }
 
-
     public P handles(final Set<? extends Handle> handles)
     {
       data(HANDLES, handles);
@@ -98,6 +107,12 @@ public class Contact extends WObject<Contact> implements Comparable<Contact>
     public P events(final Set<? extends Event> events)
     {
       data(EVENTS, events);
+      return self();
+    }
+
+    public P ownerId(final WID<User> ownerId)
+    {
+      data (OWNER_ID, ownerId);
       return self();
     }
 

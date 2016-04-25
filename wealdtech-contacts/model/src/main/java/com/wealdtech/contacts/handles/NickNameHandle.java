@@ -13,6 +13,9 @@ package com.wealdtech.contacts.handles;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.NameUse;
+import com.wealdtech.contacts.uses.Use;
 
 import java.util.Map;
 
@@ -28,11 +31,26 @@ public class NickNameHandle extends Handle<NickNameHandle> implements Comparable
 
   private static final String NAME = "name";
 
-  @JsonIgnore
-  public String getDomain() { return get(NAME, String.class).get(); }
-
   @JsonCreator
   public NickNameHandle(final Map<String, Object> data){ super(data); }
+
+  /**
+   * @return The nick name of the contact
+   */
+  @JsonIgnore
+  public String getName() { return get(NAME, String.class).get(); }
+
+  @Override
+  public boolean hasUse()
+  {
+    return true;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return NameUse.builder().name(getName()).context(context).familiarity(familiarity).formality(formality).build();
+  }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
@@ -50,6 +68,9 @@ public class NickNameHandle extends Handle<NickNameHandle> implements Comparable
     super.validate();
     checkState(exists(NAME), "Nickame handle failed validation: must contain name");
   }
+
+  @JsonIgnore
+  public String getDomain() { return get(NAME, String.class).get(); }
 
   public static class Builder<P extends Builder<P>> extends Handle.Builder<NickNameHandle, P>
   {

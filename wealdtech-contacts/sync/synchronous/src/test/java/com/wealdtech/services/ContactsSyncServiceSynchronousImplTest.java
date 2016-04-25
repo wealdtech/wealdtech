@@ -10,12 +10,16 @@
 
 package com.wealdtech.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.contacts.ContactsClient;
 import com.wealdtech.contacts.ContactsClientGoogleContactsImpl;
 import com.wealdtech.contacts.config.ContactsConfiguration;
 import com.wealdtech.contacts.services.ContactService;
+import com.wealdtech.contacts.services.RelationshipService;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.repositories.PostgreSqlRepository;
@@ -41,26 +45,24 @@ public class ContactsSyncServiceSynchronousImplTest
   public void setUp() throws GeneralSecurityException, IOException
   {
     final PostgreSqlRepository repository =
-        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "contact-test", "contact", "contact", null, null,
-                                                             null));
+        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
 
-    final ContactService contactService = new ContactServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
-                                                                                                  .copy()
-                                                                                                  .enable(
-                                                                                                        SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
-
+    final ObjectMapper mapper = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    final ContactService contactService = new ContactServicePostgreSqlImpl(repository, mapper);
+    final RelationshipService relationshipService = new RelationshipServicePostgreSqlImpl(repository, contactService, mapper);
 
     final ContactsConfiguration configuration = ContactsConfiguration.fromEnv("contacts_test");
 
     accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
     final ContactsClient<OAuth2Credentials> contactClient = new ContactsClientGoogleContactsImpl(configuration);
 
-    service = new ContactsSyncServiceSynchronousImpl<OAuth2Credentials>(contactService, contactClient);
+    service = new ContactsSyncServiceSynchronousImpl<>(contactService, relationshipService, contactClient);
   }
 
   @Test
   public void testImport()
   {
+    final WID<User> userId = WID.fromString("7edadd9464485b9");
     final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                                                  .name("Google contacts")
                                                                                  .accessToken("irrelevant")
@@ -68,6 +70,6 @@ public class ContactsSyncServiceSynchronousImplTest
                                                                                  .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
 
-    service.importContacts(credentials, false);
+    service.importContacts(userId, credentials, false);
   }
 }

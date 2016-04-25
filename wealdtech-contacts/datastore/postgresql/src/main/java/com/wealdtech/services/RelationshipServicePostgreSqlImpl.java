@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.Context;
@@ -63,29 +64,11 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   }
 
   @Override
-  public Relationship obtain(final WID<Relationship> relationshipId)
+  public Relationship obtain(final WID<User> ownerId, final WID<Relationship> relationshipId)
   {
-    return Iterables.getFirst(obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
-    {
-      @Override
-      public String getConditions()
-      {
-        return "d @> ?";
-      }
+    checkState(ownerId != null, "Missing owner ID");
+    checkState(relationshipId != null, "Missing relationship ID");
 
-      @Override
-      public void setConditionValues(final PreparedStatement stmt)
-      {
-        int index = 1;
-        setJson(stmt, index++, "{\"_id\":\"" + relationshipId.toString() + "\"}");
-      }
-    }), null);
-  }
-
-  @Nullable
-  @Override
-  public Relationship obtain(final WID<Contact> fromId, final WID<Contact> toId)
-  {
     return Iterables.getFirst(obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override
@@ -98,18 +81,43 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"from\":\"" + fromId.toString() + "\"}");
-        setJson(stmt, index++, "{\"to\":\"" + toId.toString() + "\"}");
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
+        setJson(stmt, index++, "{\"_id\":\"" + relationshipId.toString() + "\"}");
       }
     }), null);
   }
 
   @Override
-  public ImmutableList<Relationship> obtain(final WID<Contact> fromId,
+  public Relationship obtainForContact(final WID<User> ownerId, final WID<Contact> contactId)
+  {
+    checkState(ownerId != null, "Missing owner ID");
+    checkState(contactId != null, "Missing contact ID");
+
+    return Iterables.getFirst(obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ? AND d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
+        setJson(stmt, index++, "{\"to\":\"" + contactId.toString() + "\"}");
+      }
+    }), null);
+  }
+
+  @Override
+  public ImmutableList<Relationship> obtain(final WID<User> ownerId,
                                             @Nullable final String name,
                                             @Nullable final String email,
                                             final Context context)
   {
+    checkState(ownerId != null, "Missing owner ID");
     checkState(context != null, "Missing context");
 
     final ImmutableList.Builder<Relationship> resultsB = ImmutableList.builder();
@@ -117,7 +125,7 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
     if (email != null)
     {
       // Try to obtain existing relationship
-      final ImmutableList<Relationship> relationships = obtain(fromId, EmailHandle.builder().address(email).build());
+      final ImmutableList<Relationship> relationships = obtain(ownerId, context, EmailHandle.builder().address(email).build());
       if (relationships.size() == 0)
       {
         // No relationships; nothing to do here
@@ -161,7 +169,7 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
     else if (name != null)
     {
       // Try to find given their name
-      final ImmutableList<Relationship> relationships = obtain(fromId, NameHandle.builder().name(name).build());
+      final ImmutableList<Relationship> relationships = obtain(ownerId, context, NameHandle.builder().name(name).build());
       // For each one ensure that the name is suitable for this context
       for (final Relationship relationship : relationships)
       {
@@ -182,12 +190,12 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
 
   @Nullable
   @Override
-  public Relationship match(final WID<Contact> fromId,
+  public Relationship match(final WID<User> ownerId,
                             @Nullable final String name,
                             @Nullable final String email,
                             final Context context)
   {
-    final ImmutableList<Relationship> potentials = obtain(fromId, name, email, context);
+    final ImmutableList<Relationship> potentials = obtain(ownerId, name, email, context);
     Relationship bestMatch = null;
     int bestFamiliarity = 0;
     for (final Relationship potential : potentials)
@@ -212,7 +220,7 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   }
 
   @Override
-  public ImmutableList<Relationship> obtain(final WID<Contact> fromId, final Handle handle)
+  public ImmutableList<Relationship> obtain(final WID<User> ownerId, final Context context, final Handle handle)
   {
     return obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -226,11 +234,10 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"from\":\"" + fromId.toString() + "\"}");
-        setJson(stmt, index++, "{\"uses\":[{\"_key\":\"" + handle.getKey() + "\"}]}");
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
+        setJson(stmt, index++, "{\"uses\":[{\"_key\":\"" + context.toString().toLowerCase() + "::" + handle.getKey() + "\"}]}");
       }
     });
-
   }
   //  @Override
   //  public ImmutableList<Relationship> obtain(final String name, final Context.Situation situation)
@@ -253,9 +260,23 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   //  }
 
   @Override
-  public ImmutableList<Relationship> obtain()
+  public ImmutableList<Relationship> obtain(final WID<User> ownerId)
   {
-    return obtain(RELATIONSHIP_TYPE_REFERENCE, null);
+    return obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
+      }
+    });
   }
 
   @Override

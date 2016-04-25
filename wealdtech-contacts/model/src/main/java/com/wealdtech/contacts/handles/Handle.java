@@ -8,10 +8,13 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
 import com.wealdtech.DataError;
 import com.wealdtech.RangedWObject;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 import com.wealdtech.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
@@ -46,14 +49,14 @@ import static com.wealdtech.Preconditions.checkState;
                @JsonSubTypes.Type(com.wealdtech.contacts.handles.YouTubeHandle.class)})
 public abstract class Handle<T extends Handle<T>> extends RangedWObject<T> implements Comparable<T>
 {
-  private static final Logger LOG = LoggerFactory.getLogger(Handle.class);
-
   // The type is used when deserializing
   protected static final String TYPE = "type";
   // The key uniquely defines the handle
   protected static final String KEY = "_key";
   // The spheres in which the handle operates
   protected static final String SPHERES = "spheres";
+  private static final Logger LOG = LoggerFactory.getLogger(Handle.class);
+  private static final TypeReference<ImmutableSet<Sphere>> SPHERES_TYPE_REF = new TypeReference<ImmutableSet<Sphere>>(){};
 
   @JsonCreator
   public Handle(final Map<String, Object> data){ super(data); }
@@ -70,9 +73,22 @@ public abstract class Handle<T extends Handle<T>> extends RangedWObject<T> imple
   @JsonIgnore
   public String getKey(){ return get(KEY, String.class).get(); }
 
-  private static final TypeReference<ImmutableSet<Sphere>> SPHERES_TYPE_REF = new TypeReference<ImmutableSet<Sphere>>(){};
   @JsonIgnore
   public ImmutableSet<Sphere> getSpheres() { return get(SPHERES, SPHERES_TYPE_REF).or(ImmutableSet.<Sphere>of()); }
+
+  /**
+   * Check if this handle has an equivalent use.
+   * @return {@code true} if it has a use; otherwise {@code false}.
+   */
+  public abstract boolean hasUse();
+
+  /**
+   * Convert a handle to an equivalent Use
+   * @param context the context in which the use will apply
+   * @param familiarity
+   *@param formality @return the equivalent use; will be {@code null} if this handle does not have an equivalent use
+   */
+  @Nullable public abstract Use toUse(Context context, final int familiarity, final int formality);
 
   @Override
   protected Map<String, Object> preCreate(final Map<String, Object> data)
@@ -90,6 +106,71 @@ public abstract class Handle<T extends Handle<T>> extends RangedWObject<T> imple
     checkState(exists(TYPE), "Handle failed validation: must contain type");
     checkState(exists(KEY), "Handle failed validation: must contain key");
     checkState(Objects.equal(getKey(), getKey().toLowerCase()), "Handle failed validation: key must be lower-case");
+  }
+
+  /**
+   * The sphere in which a handle operates (professional, personal)
+   */
+  public static enum Sphere
+  {
+    /**
+     * Professional sphere
+     */
+    PROFESSIONAL(1)
+    /**
+     * Personal sphere
+     */
+    ,PERSONAL(2);
+
+    private static final ImmutableSortedMap<Integer, Sphere> _VALMAP;
+
+    static
+    {
+      final Map<Integer, Sphere> levelMap = Maps.newHashMap();
+      for (final Sphere contextType : Sphere.values())
+      {
+        levelMap.put(contextType.val, contextType);
+      }
+      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+    }
+
+    public final int val;
+
+    private Sphere(final int val)
+    {
+      this.val = val;
+    }
+
+    @JsonCreator
+    public static Sphere fromString(final String val)
+    {
+      try
+      {
+        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A sphere \"" + val + "\" supplied is invalid");
+      }
+    }
+
+    public static Sphere fromInt(final Integer val)
+    {
+      checkNotNull(val, "Sphere not supplied");
+      final Sphere state = _VALMAP.get(val);
+      checkNotNull(state, "Sphere is invalid");
+      return state;
+    }
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+    }
   }
 
   public static class Builder<T extends Handle<T>, P extends Builder<T, P>> extends RangedWObject.Builder<T, P>
@@ -120,71 +201,6 @@ public abstract class Handle<T extends Handle<T>> extends RangedWObject<T> imple
     {
       data(SPHERES, spheres);
       return self();
-    }
-  }
-
-  /**
-   * The sphere in which a handle operates (professional, personal)
-   */
-  public static enum Sphere
-  {
-    /**
-     * Professional sphere
-     */
-    PROFESSIONAL(1)
-    /**
-     * Personal sphere
-     */
-    ,PERSONAL(2);
-
-    public final int val;
-
-    private Sphere(final int val)
-    {
-      this.val = val;
-    }
-
-    private static final ImmutableSortedMap<Integer, Sphere> _VALMAP;
-
-    static
-    {
-      final Map<Integer, Sphere> levelMap = Maps.newHashMap();
-      for (final Sphere contextType : Sphere.values())
-      {
-        levelMap.put(contextType.val, contextType);
-      }
-      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
-    }
-
-    @Override
-    @JsonValue
-    public String toString()
-    {
-      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
-    }
-
-    @JsonCreator
-    public static Sphere fromString(final String val)
-    {
-      try
-      {
-        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
-      }
-      catch (final IllegalArgumentException iae)
-      {
-        // N.B. we don't pass the iae as the cause of this exception because
-        // this happens during invocation, and in that case the enum handler
-        // will report the root cause exception rather than the one we throw.
-        throw new DataError.Bad("A sphere \"" + val + "\" supplied is invalid");
-      }
-    }
-
-    public static Sphere fromInt(final Integer val)
-    {
-      checkNotNull(val, "Sphere not supplied");
-      final Sphere state = _VALMAP.get(val);
-      checkNotNull(state, "Sphere is invalid");
-      return state;
     }
   }
 }

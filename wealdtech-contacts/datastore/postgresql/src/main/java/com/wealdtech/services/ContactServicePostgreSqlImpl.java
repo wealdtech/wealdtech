@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.handles.Handle;
@@ -48,33 +49,28 @@ public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<C
   }
 
   @Override
-  public Contact obtain(final WID<Contact> contactId)
+  public Contact obtain(final WID<User> ownerId, final WID<Contact> contactId)
   {
     return Iterables.getFirst(obtain(CONTACT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
       @Override
       public String getConditions()
       {
-        return "d @> ?";
+        return "d @> ? AND d @> ?";
       }
 
       @Override
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
         setJson(stmt, index++, "{\"_id\":\"" + contactId.toString() + "\"}");
       }
     }), null);
   }
 
   @Override
-  public ImmutableList<Contact> obtain()
-  {
-    return obtain(CONTACT_TYPE_REFERENCE, null);
-  }
-
-  @Override
-  public ImmutableList<Contact> obtain(final Handle handle)
+  public ImmutableList<Contact> obtain(final WID<User> ownerId)
   {
     return obtain(CONTACT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
     {
@@ -88,6 +84,27 @@ public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<C
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
+      }
+    });
+  }
+
+  @Override
+  public ImmutableList<Contact> obtain(final WID<User> ownerId, final Handle handle)
+  {
+    return obtain(CONTACT_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getConditions()
+      {
+        return "d @> ? AND d @> ?";
+      }
+
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setJson(stmt, index++, "{\"ownerid\":\"" + ownerId.toString() + "\"}");
         setJson(stmt, index++, "{\"handles\":[{\"_key\":\"" + handle.getKey() + "\"}]}");
       }
     });

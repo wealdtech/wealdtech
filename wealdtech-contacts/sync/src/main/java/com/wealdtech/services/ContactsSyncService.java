@@ -10,6 +10,8 @@
 
 package com.wealdtech.services;
 
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.authentication.Credentials;
 
 /**
@@ -21,7 +23,7 @@ public interface ContactsSyncService<C extends Credentials>
    * Import contacts from the given source
    *
    */
-  int importContacts(C credentials, boolean removeMissing);
+  int importContacts(final WID<User> userId, C credentials, boolean removeMissing);
 
   /**
    * Export contacts to the given source

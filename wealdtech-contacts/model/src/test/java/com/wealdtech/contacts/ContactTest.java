@@ -11,6 +11,7 @@
 package com.wealdtech.contacts;
 
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.handles.NameHandle;
 import com.wealdtech.contacts.uses.NameUse;
@@ -36,19 +37,23 @@ public class ContactTest
   @Test
   public void testRelationship()
   {
+    final WID<User> aliceId = WID.generate();
+
     final Contact alice = Contact.builder()
+                                 .ownerId(aliceId)
                                  .id(WID.<Contact>generate())
                                  .handles(ImmutableSet.of(
                                      NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Alice").build()))
                                  .build();
     final Contact bob = Contact.builder()
+                               .ownerId(aliceId)
                                .id(WID.<Contact>generate())
                                .handles(ImmutableSet.of(
                                    NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Bob").build()))
                                .build();
 
     final Relationship aliceToBob = Relationship.builder()
-                                                .from(alice.getId())
+                                                .ownerId(aliceId)
                                                 .to(bob.getId())
                                                 .uses(ImmutableSet.of(NameUse.builder()
                                                                              .name("Mr. Jones")
@@ -70,26 +75,30 @@ public class ContactTest
                                                                              .build()))
                                                 .build();
 
-    assertEquals(aliceToBob.getFrom(), alice.getId());
+    assertEquals(aliceToBob.getOwnerId(), aliceId);
     assertEquals(aliceToBob.getTo(), bob.getId());
   }
 
   @Test
   public void testFindByHandle()
   {
+    final WID<User> aliceId = WID.generate();
+
     final Contact alice = Contact.builder()
+                                 .ownerId(aliceId)
                                  .id(WID.<Contact>generate())
                                  .handles(ImmutableSet.of(
                                      NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Alice").build()))
                                  .build();
     final Contact bob = Contact.builder()
+                               .ownerId(aliceId)
                                .id(WID.<Contact>generate())
                                .handles(ImmutableSet.of(
                                    NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Bob").build()))
                                .build();
 
     final Relationship aliceToBob = Relationship.builder()
-                                                .from(alice.getId())
+                                                .ownerId(aliceId)
                                                 .to(bob.getId())
                                                 .uses(ImmutableSet.of(NameUse.builder()
                                                                              .name("Mr. Jones")

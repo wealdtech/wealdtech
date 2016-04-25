@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
 import com.wealdtech.contacts.uses.Use;
@@ -30,7 +31,7 @@ import static com.wealdtech.Preconditions.checkState;
  */
 public class Relationship extends WObject<Relationship> implements Comparable<Relationship>
 {
-  private static final String FROM = "from";
+  private static final String OWNER_ID = "ownerid";
   private static final String TO = "to";
   private static final String USES = "uses";
 
@@ -40,9 +41,9 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
     super(data);
   }
 
-  private static final TypeReference<WID<Contact>> FROM_TYPE_REF = new TypeReference<WID<Contact>>(){};
+  private static final TypeReference<WID<User>> OWNER_ID_TYPE_REF = new TypeReference<WID<User>>(){};
   @JsonIgnore
-  public WID<Contact> getFrom() { return get(FROM, FROM_TYPE_REF).get(); }
+  public WID<User> getOwnerId() { return get(OWNER_ID, OWNER_ID_TYPE_REF).get(); }
 
   private static final TypeReference<WID<Contact>> TO_TYPE_REF = new TypeReference<WID<Contact>>(){};
   @JsonIgnore
@@ -92,7 +93,7 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
   protected void validate()
   {
     super.validate();
-    checkState(exists(FROM), "Relationship failed validation: must contain from");
+    checkState(exists(OWNER_ID), "Relationship failed validation: must contain from");
     checkState(exists(TO), "Relationship failed validation: must contain to");
   }
 
@@ -108,9 +109,9 @@ public class Relationship extends WObject<Relationship> implements Comparable<Re
       super(prior);
     }
 
-    public P from(final WID<Contact> from)
+    public P ownerId(final WID<User> ownerId)
     {
-      data(FROM, from);
+      data(OWNER_ID, ownerId);
       return self();
     }
 

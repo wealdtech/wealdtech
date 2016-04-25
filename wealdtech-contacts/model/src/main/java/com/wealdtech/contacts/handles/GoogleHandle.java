@@ -11,6 +11,8 @@
 package com.wealdtech.contacts.handles;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -31,14 +33,6 @@ public class GoogleHandle extends SiteHandle<GoogleHandle> implements Comparable
   public GoogleHandle(final Map<String, Object> data)
   {
     super(data);
-  }
-
-  @Override
-  protected Map<String, Object> preCreate(final Map<String, Object> data)
-  {
-    data.put(TYPE, _TYPE);
-
-    return super.preCreate(data);
   }
 
   /**
@@ -71,6 +65,26 @@ public class GoogleHandle extends SiteHandle<GoogleHandle> implements Comparable
     }
 
     return null;
+  }
+
+  @Override
+  public boolean hasUse()
+  {
+    return false;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return null;
+  }
+
+  @Override
+  protected Map<String, Object> preCreate(final Map<String, Object> data)
+  {
+    data.put(TYPE, _TYPE);
+
+    return super.preCreate(data);
   }
 
   public static class Builder<P extends Builder<P>> extends SiteHandle.Builder<GoogleHandle, P>

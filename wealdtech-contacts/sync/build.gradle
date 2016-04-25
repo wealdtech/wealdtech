@@ -13,6 +13,7 @@ archivesBaseName = 'wealdtech-contacts-sync'
 dependencies {
     compile project(':wealdtech-contacts:model')
     compile project(':wealdtech-contacts:datastore')
+    compile project(':wealdtech-users')
 }
 
 uploadArchives {

@@ -12,6 +12,7 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.handles.NameHandle;
@@ -47,26 +48,29 @@ public class ContactServicePostgreSqlImplTest
   @Test
   public void testCRUD()
   {
+    WID<User> aliceId = WID.generate();
     Contact alice = null;
     Contact bob = null;
     try
     {
       alice = Contact.builder()
+                     .ownerId(aliceId)
                      .id(WID.<Contact>generate())
                      .handles(
                          ImmutableSet.of(NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Alice Jones").build()))
                      .build();
       service.create(alice);
       bob = Contact.builder()
+                   .ownerId(aliceId)
                    .id(WID.<Contact>generate())
                    .handles(ImmutableSet.of(NameHandle.builder().validFrom(LocalDateTime.parse("1970-01-01")).name("Bob").build()))
                    .build();
       service.create(bob);
 
-      final Contact dbAlice = service.obtain(alice.getId());
+      final Contact dbAlice = service.obtain(aliceId, alice.getId());
       assertEquals(dbAlice, alice);
 
-      final Contact dbBob = service.obtain(bob.getId());
+      final Contact dbBob = service.obtain(aliceId, bob.getId());
       assertEquals(dbBob, bob);
 
       final Contact alice2 = Contact.builder(alice)
@@ -81,7 +85,7 @@ public class ContactServicePostgreSqlImplTest
                                                                                            .build()))
                                     .build();
       service.update(alice2);
-      final Contact dbAlice2 = service.obtain(alice2.getId());
+      final Contact dbAlice2 = service.obtain(aliceId, alice2.getId());
       assertEquals(dbAlice2, alice2);
       assertNotEquals(dbAlice2, alice);
     }

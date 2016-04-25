@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.wealdtech.DataError;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +27,9 @@ public abstract class SiteHandle<T extends SiteHandle<T>> extends Handle<T> impl
 {
   private static final String LOCAL_ID = "localid";
   private static final String NAME = "name";
+
+  @JsonCreator
+  public SiteHandle(final Map<String, Object> data){ super(data); }
 
   /**
    * @return the local ID for the contact on the site
@@ -38,8 +43,17 @@ public abstract class SiteHandle<T extends SiteHandle<T>> extends Handle<T> impl
   @JsonIgnore
   public Optional<String> getName() { return get(NAME, String.class); }
 
-  @JsonCreator
-  public SiteHandle(final Map<String, Object> data){ super(data); }
+  @Override
+  public boolean hasUse()
+  {
+    return false;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return null;
+  }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)

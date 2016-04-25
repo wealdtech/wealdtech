@@ -11,6 +11,8 @@
 package com.wealdtech.contacts.handles;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -24,20 +26,11 @@ import java.util.regex.Pattern;
 public class TwitterHandle extends SiteHandle<TwitterHandle> implements Comparable<TwitterHandle>
 {
   private static final String _TYPE = "twitter";
+  private static final Pattern ACCOUNT_URL = Pattern.compile("^https?://(www\\.)?twitter\\.com/([^/?]+)");
 
   public TwitterHandle(final Map<String, Object> data)
   {
     super(data);
-  }
-
-  private static final Pattern ACCOUNT_URL = Pattern.compile("^https?://(www\\.)?twitter\\.com/([^/?]+)");
-
-  @Override
-  protected Map<String, Object> preCreate(final Map<String, Object> data)
-  {
-    data.put(TYPE, _TYPE);
-
-    return super.preCreate(data);
   }
 
   /**
@@ -59,6 +52,26 @@ public class TwitterHandle extends SiteHandle<TwitterHandle> implements Comparab
     if (url == null) { return null; }
     final Matcher matcher = ACCOUNT_URL.matcher(url);
     return matcher.find() ? matcher.group(2) : null;
+  }
+
+  @Override
+  public boolean hasUse()
+  {
+    return false;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return null;
+  }
+
+  @Override
+  protected Map<String, Object> preCreate(final Map<String, Object> data)
+  {
+    data.put(TYPE, _TYPE);
+
+    return super.preCreate(data);
   }
 
   public static class Builder<P extends Builder<P>> extends SiteHandle.Builder<TwitterHandle, P>

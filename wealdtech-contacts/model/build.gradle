@@ -18,6 +18,7 @@ dependencies {
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile project(':wealdtech-notifications:model')
+    compile project(':wealdtech-users')
     compile project(':wealdtech-wid-service')
     compile project(':wealdtech-wobject')
 }

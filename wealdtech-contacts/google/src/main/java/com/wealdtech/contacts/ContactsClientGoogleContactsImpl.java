@@ -29,6 +29,8 @@ import com.google.gdata.data.extensions.*;
 import com.google.gdata.util.ServiceException;
 import com.wealdtech.DataError;
 import com.wealdtech.ServerError;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.contacts.config.ContactsConfiguration;
 import com.wealdtech.contacts.events.BirthEvent;
@@ -72,32 +74,35 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
 
   @Nullable
   @Override
-  public Contact obtainContact(final OAuth2Credentials credentials, final String contactId)
+  public Contact obtainContact(final WID<User> ownerId, final OAuth2Credentials credentials, final String contactId)
   {
-    return obtainContact(credentials, "default", contactId);
+    return obtainContact(ownerId, credentials, "default", contactId);
   }
 
   @Nullable
   @Override
-  public Contact obtainContact(final OAuth2Credentials credentials, final String email, final String contactId)
+  public Contact obtainContact(final WID<User> ownerId, final OAuth2Credentials credentials, final String email, final String contactId)
   {
     throw new ServerError("Not implemented");
   }
 
   @Override
-  public ImmutableList<Contact> obtainContacts(final OAuth2Credentials credentials)
+  public ImmutableList<Contact> obtainContacts(final WID<User> ownerId, final OAuth2Credentials credentials)
   {
-    return obtainContactsByEmail(credentials, "default", null);
+    return obtainContactsByEmail(ownerId, credentials, "default", null);
   }
 
   @Override
-  public ImmutableList<Contact> obtainContacts(final OAuth2Credentials credentials, final String query)
+  public ImmutableList<Contact> obtainContacts(final WID<User> ownerId, final OAuth2Credentials credentials, final String query)
   {
-    return obtainContactsByEmail(credentials, "default", query);
+    return obtainContactsByEmail(ownerId, credentials, "default", query);
   }
 
   @Override
-  public ImmutableList<Contact> obtainContactsByEmail(final OAuth2Credentials credentials, final String email, final String query)
+  public ImmutableList<Contact> obtainContactsByEmail(final WID<User> ownerId,
+                                                      final OAuth2Credentials credentials,
+                                                      final String email,
+                                                      final String query)
   {
     final URL feedUrl;
     try
@@ -122,7 +127,7 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
       ContactFeed resultFeed = contactsService.query(myQuery, ContactFeed.class);
       for (ContactEntry entry : resultFeed.getEntries())
       {
-        resultsB.add(googleContactToContact(entry));
+        resultsB.add(googleContactToContact(ownerId, entry));
       }
     }
     catch (final IOException | ServiceException ioe)
@@ -139,9 +144,10 @@ public class ContactsClientGoogleContactsImpl implements ContactsClient<OAuth2Cr
     return "google";
   }
 
-  private Contact googleContactToContact(final ContactEntry googleContact)
+  private Contact googleContactToContact(final WID<User> ownerId, final ContactEntry googleContact)
   {
     final Contact.Builder<?> builder = Contact.builder();
+    builder.ownerId(ownerId);
 
     if (googleContact.hasImAddresses()) { System.err.println(googleContact.getImAddresses()); }
 //    System.err.println(googleContact.getName().getFullName());

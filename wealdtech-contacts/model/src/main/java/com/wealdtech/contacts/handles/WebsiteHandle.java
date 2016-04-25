@@ -12,6 +12,8 @@ package com.wealdtech.contacts.handles;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 
 import java.util.Map;
 
@@ -29,6 +31,18 @@ public class WebsiteHandle extends Handle<WebsiteHandle> implements Comparable<W
 
   @JsonCreator
   public WebsiteHandle(final Map<String, Object> data){ super(data); }
+
+  @Override
+  public boolean hasUse()
+  {
+    return false;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return null;
+  }
 
   @Override
   protected Map<String, Object> preCreate(final Map<String, Object> data)

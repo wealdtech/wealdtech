@@ -18,6 +18,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
 import com.wealdtech.DataError;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 import com.wealdtech.utils.StringUtils;
 
 import java.util.Locale;
@@ -53,6 +55,18 @@ public class TelephoneHandle extends Handle<TelephoneHandle> implements Comparab
   public Optional<Device> getDevice() { return get(DEVICE, Device.class); }
 
   @Override
+  public boolean hasUse()
+  {
+    return false;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return null;
+  }
+
+  @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
   {
     // Set our defining types
@@ -67,6 +81,67 @@ public class TelephoneHandle extends Handle<TelephoneHandle> implements Comparab
   {
     super.validate();
     checkState(exists(NUMBER), "Telephone handle failed validation: must contain number");
+  }
+
+  public static enum Device
+  {
+    LANDLINE(1)
+
+    ,MOBILE(2)
+
+    ,FAX(3)
+
+    ,PAGER(4)
+    ;
+
+    private static final ImmutableSortedMap<Integer, Device> _VALMAP;
+
+    static
+    {
+      final Map<Integer, Device> levelMap = Maps.newHashMap();
+      for (final Device relationshipType : Device.values())
+      {
+        levelMap.put(relationshipType.val, relationshipType);
+      }
+      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
+    }
+
+    public final int val;
+    private Device(final int val)
+    {
+      this.val = val;
+    }
+
+    @JsonCreator
+    public static Device fromString(final String val)
+    {
+      try
+      {
+        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
+      }
+      catch (final IllegalArgumentException iae)
+      {
+        // N.B. we don't pass the iae as the cause of this exception because
+        // this happens during invocation, and in that case the enum handler
+        // will report the root cause exception rather than the one we throw.
+        throw new DataError.Bad("A telephone X \"" + val + "\" supplied is invalid");
+      }
+    }
+
+    public static Device fromInt(final Integer val)
+    {
+      checkNotNull(val, "Telephone X not supplied");
+      final Device state = _VALMAP.get(val);
+      checkNotNull(state, "Telephone X is invalid");
+      return state;
+    }
+
+    @Override
+    @JsonValue
+    public String toString()
+    {
+      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
+    }
   }
 
   public static class Builder<P extends Builder<P>> extends Handle.Builder<TelephoneHandle, P>
@@ -103,71 +178,10 @@ public class TelephoneHandle extends Handle<TelephoneHandle> implements Comparab
   {
     return new Builder();
   }
-
+  
   public static Builder<?> builder(final TelephoneHandle prior)
   {
     return new Builder(prior);
-  }
-  
-  public static enum Device
-  {
-    LANDLINE(1)
-    
-    ,MOBILE(2)
-    
-    ,FAX(3)
-    
-    ,PAGER(4)
-    ;
-
-    public final int val;
-
-    private Device(final int val)
-    {
-      this.val = val;
-    }
-
-    private static final ImmutableSortedMap<Integer, Device> _VALMAP;
-    static
-    {
-      final Map<Integer, Device> levelMap = Maps.newHashMap();
-      for (final Device relationshipType : Device.values())
-      {
-        levelMap.put(relationshipType.val, relationshipType);
-      }
-      _VALMAP = ImmutableSortedMap.copyOf(levelMap);
-    }
-
-    @Override
-    @JsonValue
-    public String toString()
-    {
-      return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
-    }
-
-    @JsonCreator
-    public static Device fromString(final String val)
-    {
-      try
-      {
-        return valueOf(val.toUpperCase(Locale.ENGLISH).replaceAll(" ", "_"));
-      }
-      catch (final IllegalArgumentException iae)
-      {
-        // N.B. we don't pass the iae as the cause of this exception because
-        // this happens during invocation, and in that case the enum handler
-        // will report the root cause exception rather than the one we throw.
-        throw new DataError.Bad("A telephone X \"" + val + "\" supplied is invalid");
-      }
-    }
-
-    public static Device fromInt(final Integer val)
-    {
-      checkNotNull(val, "Telephone X not supplied");
-      final Device state = _VALMAP.get(val);
-      checkNotNull(state, "Telephone X is invalid");
-      return state;
-    }
   }
 
 }

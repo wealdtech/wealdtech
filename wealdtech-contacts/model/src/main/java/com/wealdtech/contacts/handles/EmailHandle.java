@@ -15,6 +15,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.base.Optional;
 import com.wealdtech.DataError;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.EmailUse;
+import com.wealdtech.contacts.uses.Use;
 
 import java.util.Map;
 
@@ -29,14 +32,32 @@ public class EmailHandle extends Handle<EmailHandle> implements Comparable<Email
   private static final String ADDRESS = "address";
   private static final String DISPLAY_NAME = "displayname";
 
+  @JsonCreator
+  public EmailHandle(final Map<String, Object> data){ super(data); }
+
   @JsonIgnore
   public String getAddress() { return get(ADDRESS, String.class).get(); }
 
   @JsonIgnore
   public Optional<String> getDisplayName() { return get(DISPLAY_NAME, String.class); }
 
-  @JsonCreator
-  public EmailHandle(final Map<String, Object> data){ super(data); }
+  @Override
+  public boolean hasUse()
+  {
+    return true;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return EmailUse.builder()
+                   .displayName(getDisplayName().orNull())
+                   .address(getAddress())
+                   .context(context)
+                   .familiarity(familiarity)
+                   .formality(formality)
+                   .build();
+  }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)

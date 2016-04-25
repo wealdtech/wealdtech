@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wealdtech.DataError;
+import com.wealdtech.contacts.Context;
+import com.wealdtech.contacts.uses.Use;
 
 import java.util.Map;
 
@@ -30,6 +32,9 @@ public class IrcHandle extends Handle<IrcHandle> implements Comparable<IrcHandle
   private static final String CHANNEL = "channel";
   private static final String NICK = "nick";
 
+  @JsonCreator
+  public IrcHandle(final Map<String, Object> data){ super(data); }
+
   @JsonIgnore
   public String getServer() { return get(SERVER, String.class).get(); }
 
@@ -39,8 +44,17 @@ public class IrcHandle extends Handle<IrcHandle> implements Comparable<IrcHandle
   @JsonIgnore
   public String getNick() { return get(NICK, String.class).get(); }
 
-  @JsonCreator
-  public IrcHandle(final Map<String, Object> data){ super(data); }
+  @Override
+  public boolean hasUse()
+  {
+    return false;
+  }
+
+  @Override
+  public Use toUse(final Context context, final int familiarity, final int formality)
+  {
+    return null;
+  }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)

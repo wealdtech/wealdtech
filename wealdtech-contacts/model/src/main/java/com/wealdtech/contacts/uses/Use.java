@@ -80,8 +80,8 @@ public abstract class Use<T extends Use<T>> extends RangedWObject<T> implements 
   @Override
   protected Map<String, Object> preCreate(final Map<String, Object> data)
   {
-    // Prepend type to the key and ensure it is lower-case
-    data.put(KEY, (data.get(TYPE) + "::" + data.get(KEY)).toLowerCase(Locale.ENGLISH));
+    // Prepend context and type to the key and ensure it is lower-case
+    data.put(KEY, (data.get(CONTEXT) + "::" + data.get(TYPE) + "::" + data.get(KEY)).toLowerCase(Locale.ENGLISH));
 
     return super.preCreate(data);
   }

@@ -11,6 +11,7 @@
 package com.wealdtech.contacts.services;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.Context;
@@ -33,34 +34,34 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
   /**
    * Obtain a relationship
    */
-  @Nullable Relationship obtain(WID<Relationship> relationshipId);
+  @Nullable Relationship obtain(WID<User> ownerId, WID<Relationship> relationshipId);
 
   /**
-   * Obtain a relationship
+   * Obtain a relationship for a contact
    */
-  @Nullable Relationship obtain(WID<Contact> fromId, WID<Contact> toId);
+  @Nullable Relationship obtainForContact(WID<User> ownerId, WID<Contact> contactId);
 
   /**
    * Obtain all matching relationships given some relationship information
    * @return a list of participants.  If this is 0 participants then it means that we could not find a match given the information supplied.  If this is 1 participant then it means that we found an exact match given the information supplied.  If this is more than 1 participant then it means that we found multiple potential matches given the information and need the user to provide us more information to narrow it down.
    */
-  ImmutableList<Relationship> obtain(WID<Contact> fromId, @Nullable String name, @Nullable String email, Context context);
+  ImmutableList<Relationship> obtain(WID<User> ownerId, @Nullable String name, @Nullable String email, Context context);
 
   /**
    * obtain best matching relationship given some relationship information
    * @return the best matching relationship, or {@code null} if there is no relationship
    */
-  @Nullable Relationship match(WID<Contact> fromId, @Nullable String name, @Nullable String email, Context social);
+  @Nullable Relationship match(WID<User> ownerId, @Nullable String name, @Nullable String email, Context social);
 
   /**
    * Obtain all relationships with a given handle
    */
-  ImmutableList<Relationship> obtain(WID<Contact> fromId, Handle handle);
+  ImmutableList<Relationship> obtain(WID<User> ownerId, final Context context, Handle handle);
 
   /**
    * Obtain all relationships
    */
-  ImmutableList<Relationship> obtain();
+  ImmutableList<Relationship> obtain(WID<User> ownerId);
 
   /**
    * Update a relationship

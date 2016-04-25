@@ -11,6 +11,7 @@
 package com.wealdtech.contacts.services;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.handles.Handle;
@@ -31,17 +32,17 @@ public interface ContactService<T> extends WObjectService<Contact, T>
   /**
    * Obtain a contact
    */
-  @Nullable Contact obtain(WID<Contact> contactId);
+  @Nullable Contact obtain(WID<User> ownerId, WID<Contact> contactId);
 
   /**
    * Obtain all contacts
    */
-  ImmutableList<Contact> obtain();
+  ImmutableList<Contact> obtain(WID<User> ownerId);
 
   /**
    * Obtain all contacts with a given handle
    */
-  ImmutableList<Contact> obtain(Handle handle);
+  ImmutableList<Contact> obtain(WID<User> ownerId, Handle handle);
 
   /**
    * Update a contact

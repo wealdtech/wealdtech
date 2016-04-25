@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.Context;
@@ -27,9 +28,7 @@ import com.wealdtech.repositories.PostgreSqlRepository;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.*;
 
 /**
  *
@@ -55,12 +54,14 @@ public class RelationshipServicePostgreSqlImplTest
   @Test
   public void testCRUD()
   {
+    WID<User> aliceId = WID.generate();
+
     Relationship aliceToBob = null;
     try
     {
       aliceToBob = Relationship.builder()
                                .id(WID.<Relationship>generate())
-                               .from(WID.<Contact>generate())
+                               .ownerId(aliceId)
                                .to(WID.<Contact>generate())
                                .uses(ImmutableSet.of(NameUse.builder()
                                                             .name("Mr. Jones")
@@ -81,7 +82,7 @@ public class RelationshipServicePostgreSqlImplTest
                                .build();
       service.create(aliceToBob);
 
-      final Relationship dbAliceToBob = service.obtain(aliceToBob.getId());
+      final Relationship dbAliceToBob = service.obtain(aliceId, aliceToBob.getId());
       assertEquals(dbAliceToBob, aliceToBob);
 
       final Relationship aliceToBob2;
@@ -105,7 +106,7 @@ public class RelationshipServicePostgreSqlImplTest
                                 .build();
 
       service.update(aliceToBob2);
-      final Relationship dbAliceToBob2 = service.obtain(aliceToBob2.getId());
+      final Relationship dbAliceToBob2 = service.obtain(aliceId, aliceToBob2.getId());
       assertEquals(dbAliceToBob2, aliceToBob2);
       assertNotEquals(dbAliceToBob2, aliceToBob);
     }
@@ -121,41 +122,35 @@ public class RelationshipServicePostgreSqlImplTest
   @Test
   public void testMatch()
   {
-    WID<Contact> aliceId = WID.generate();
+    WID<User> aliceId = WID.generate();
     WID<Contact> chrisJonesId = WID.generate();
     WID<Contact> chrisSmithId = WID.generate();
     WID<Contact> chrisThomasId = WID.generate();
 
-    Relationship aliceToChrisJonesProfessional;
-    Relationship aliceToChrisJonesSocial;
+    Relationship aliceToChrisJones;
     Relationship aliceToChrisSmith;
     Relationship aliceToChrisThomas;
 
-    aliceToChrisJonesProfessional = Relationship.builder()
-                                                .id(WID.<Relationship>generate())
-                                                .from(aliceId)
-                                                .to(chrisJonesId)
-                                                .uses(ImmutableSet.of(NameUse.builder()
-                                                                             .name("Chris")
-                                                                             .formality(50)
-                                                                             .familiarity(50)
-                                                                             .context(Context.PROFESSIONAL)
-                                                                             .build()))
+    aliceToChrisJones = Relationship.builder()
+                                    .id(WID.<Relationship>generate())
+                                    .ownerId(aliceId)
+                                    .to(chrisJonesId)
+                                    .uses(ImmutableSet.of(NameUse.builder()
+                                                                 .name("Chris")
+                                                                 .formality(50)
+                                                                 .familiarity(50)
+                                                                 .context(Context.PROFESSIONAL)
+                                                                 .build(),
+                                                          NameUse.builder()
+                                                                 .name("Chris")
+                                                                 .formality(10)
+                                                                 .familiarity(50)
+                                                                 .context(Context.SOCIAL)
+                                                                 .build()))
                                                 .build();
-    aliceToChrisJonesSocial = Relationship.builder()
-                                          .id(WID.<Relationship>generate())
-                                          .from(aliceId)
-                                          .to(chrisJonesId)
-                                          .uses(ImmutableSet.of(NameUse.builder()
-                                                                       .name("Chris")
-                                                                       .formality(10)
-                                                                       .familiarity(50)
-                                                                       .context(Context.SOCIAL)
-                                                                       .build()))
-                                          .build();
     aliceToChrisSmith = Relationship.builder()
                                     .id(WID.<Relationship>generate())
-                                    .from(aliceId)
+                                    .ownerId(aliceId)
                                     .to(chrisSmithId)
                                     .uses(ImmutableSet.of(NameUse.builder()
                                                                  .name("Chris")
@@ -166,7 +161,7 @@ public class RelationshipServicePostgreSqlImplTest
                                     .build();
     aliceToChrisThomas = Relationship.builder()
                                      .id(WID.<Relationship>generate())
-                                     .from(aliceId)
+                                     .ownerId(aliceId)
                                      .to(chrisThomasId)
                                      .uses(ImmutableSet.of(NameUse.builder()
                                                                   .name("Chris")
@@ -177,8 +172,7 @@ public class RelationshipServicePostgreSqlImplTest
                                      .build();
     try
     {
-      service.create(aliceToChrisJonesProfessional);
-      service.create(aliceToChrisJonesSocial);
+      service.create(aliceToChrisJones);
       service.create(aliceToChrisSmith);
       service.create(aliceToChrisThomas);
 
@@ -209,13 +203,9 @@ public class RelationshipServicePostgreSqlImplTest
       {
         service.remove(aliceToChrisSmith);
       }
-      if (aliceToChrisJonesProfessional != null)
+      if (aliceToChrisJones != null)
       {
-        service.remove(aliceToChrisJonesProfessional);
-      }
-      if (aliceToChrisJonesSocial != null)
-      {
-        service.remove(aliceToChrisJonesSocial);
+        service.remove(aliceToChrisJones);
       }
     }
   }

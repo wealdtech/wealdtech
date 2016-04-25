@@ -11,6 +11,8 @@
 package com.wealdtech.contacts;
 
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.contacts.config.ContactsConfiguration;
 import com.wealdtech.services.google.GoogleAccountsClient;
@@ -32,6 +34,9 @@ public class ContactsClientGoogleContactsImplTest
   {
     final ContactsConfiguration configuration = ContactsConfiguration.fromEnv("contacts_test");
 
+    // The WID of the user obtaining the contacts.  We keep this constant to allow for repeat syncs
+    final WID<User> userId = WID.fromString("7edac9cb9cc0bb7");
+
     final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
     final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                                                  .name("Google contacts")
@@ -40,8 +45,8 @@ public class ContactsClientGoogleContactsImplTest
                                                                                  .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
     final ContactsClient<OAuth2Credentials> client = new ContactsClientGoogleContactsImpl(configuration);
-    final ImmutableList<Contact> contacts = client.obtainContacts(credentials, "Karen McDonald");
 
+    final ImmutableList<Contact> contacts = client.obtainContacts(userId, credentials, "Karen McDonald");
     for (final Contact contact : contacts)
     {
       System.err.println(contact);
