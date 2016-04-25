@@ -29,14 +29,14 @@ public class EmailUse extends Use<EmailUse> implements Comparable<EmailUse>
   private static final String ADDRESS = "address";
   private static final String DISPLAY_NAME = "displayname";
 
+  @JsonCreator
+  public EmailUse(final Map<String, Object> data){ super(data); }
+
   @JsonIgnore
   public String getAddress() { return get(ADDRESS, String.class).get(); }
 
   @JsonIgnore
   public Optional<String> getDisplayName() { return get(DISPLAY_NAME, String.class); }
-
-  @JsonCreator
-  public EmailUse(final Map<String, Object> data){ super(data); }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
@@ -57,6 +57,14 @@ public class EmailUse extends Use<EmailUse> implements Comparable<EmailUse>
     {
       throw new DataError.Missing("Email use failed validation: missing address");
     }
+  }
+
+  /**
+   * Increase the familiarity of this use
+   */
+  public EmailUse increaseFamiliarity()
+  {
+    return EmailUse.builder(this).familiarity(getFamiliarity() + 1).build();
   }
 
   public static class Builder<P extends Builder<P>> extends Use.Builder<EmailUse, P>

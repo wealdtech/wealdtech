@@ -42,16 +42,14 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
   @Nullable Relationship obtainForContact(WID<User> ownerId, WID<Contact> contactId);
 
   /**
-   * Obtain all matching relationships given some relationship information
-   * @return a list of participants.  If this is 0 participants then it means that we could not find a match given the information supplied.  If this is 1 participant then it means that we found an exact match given the information supplied.  If this is more than 1 participant then it means that we found multiple potential matches given the information and need the user to provide us more information to narrow it down.
+   * Obtain the best matching relationships given some relationship information.
+   * This will usually return a single relationship, however in the case where there are multiple matching relationships with no
+   * differentiation then multiple relationships will be returned.
+   * @return a list of the best matching relationships; can be empty
    */
-  ImmutableList<Relationship> obtain(WID<User> ownerId, @Nullable String name, @Nullable String email, Context context);
-
-  /**
-   * obtain best matching relationship given some relationship information
-   * @return the best matching relationship, or {@code null} if there is no relationship
-   */
-  @Nullable Relationship match(WID<User> ownerId, @Nullable String name, @Nullable String email, Context social);
+  ImmutableList<Relationship> obtain(WID<User> ownerId,
+                                     Context context, @Nullable WID<Contact> contactId, @Nullable String name,
+                                     @Nullable String email);
 
   /**
    * Obtain all relationships with a given handle

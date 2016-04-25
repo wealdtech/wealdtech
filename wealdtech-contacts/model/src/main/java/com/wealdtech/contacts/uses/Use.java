@@ -86,6 +86,8 @@ public abstract class Use<T extends Use<T>> extends RangedWObject<T> implements 
     return super.preCreate(data);
   }
 
+  public abstract T increaseFamiliarity();
+
   @Override
   protected void validate()
   {

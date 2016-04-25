@@ -2,7 +2,7 @@
 
 Contacts manages contact information.  Contacts consist of the contacts themselves and the relationships between them.
 
-A Contact is the canonical information for a person, place or service.  It details all available methods by which they can be reached, from names to 'phone numbers,
+A Contact is the canonical information for a person, place or service.  It details all available methods by which they can be reached, from names to 'phone numbers to physical addresses, and the spheres to which the methods relate (personal/professional).
 
 ##Contacts
 
@@ -36,3 +36,7 @@ A context is a
 Provides the ability to create and manage contacts, along with the relationships beween them
 
 Contacts have both official and unofficial names.
+
+##Familiarity
+
+Familiarity is a property of a handle that allows selection of contacts with the same handle in a given context.  For example if a user knows a "Chris Smith" and a "Chris Jones" then a request for "Chris" in any given context needs to be resolved to one or the other.  This is resolved by a system of positive feedback, where a mention of "Chris" linked to another handle that matches the contact increases familiarity for that context and further mentions of "Chris" increase the familiarity of the handle.  Familiarity decays over time, resulting in a forgetting of once commonly-used handles when they fall in to disuse.

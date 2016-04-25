@@ -37,7 +37,6 @@ public class RelationshipServicePostgreSqlImplTest
 {
   private RelationshipService<?> service;
 
-
   @BeforeClass
   public void setUp()
   {
@@ -120,7 +119,7 @@ public class RelationshipServicePostgreSqlImplTest
   }
 
   @Test
-  public void testMatch()
+  public void testUnambiguousMatch()
   {
     WID<User> aliceId = WID.generate();
     WID<Contact> chrisJonesId = WID.generate();
@@ -176,22 +175,15 @@ public class RelationshipServicePostgreSqlImplTest
       service.create(aliceToChrisSmith);
       service.create(aliceToChrisThomas);
 
-      final ImmutableList<Relationship> socialChrises = service.obtain(aliceId, "Chris", null, Context.SOCIAL);
-      assertEquals(socialChrises.size(), 2);
-      final ImmutableList<Relationship> professionalChrises = service.obtain(aliceId, "Chris", null, Context.PROFESSIONAL);
+      final ImmutableList<Relationship> socialChrises = service.obtain(aliceId, Context.SOCIAL, null, "Chris", null);
+      assertEquals(socialChrises.size(), 1);
+      assertEquals(socialChrises.iterator().next().getTo(), chrisJonesId);
+      final ImmutableList<Relationship> professionalChrises = service.obtain(aliceId, Context.PROFESSIONAL, null, "Chris", null);
       assertEquals(professionalChrises.size(), 1);
-      final ImmutableList<Relationship> familialChrises = service.obtain(aliceId, "Chris", null, Context.PROFESSIONAL);
+      assertEquals(professionalChrises.iterator().next().getTo(), chrisJonesId);
+      final ImmutableList<Relationship> familialChrises = service.obtain(aliceId, Context.FAMILIAL, null, "Chris", null);
       assertEquals(familialChrises.size(), 1);
-
-      final Relationship socialChris = service.match(aliceId, "Chris", null, Context.SOCIAL);
-      assertNotNull(socialChris);
-      assertEquals(socialChris.getTo(), chrisJonesId);
-      final Relationship professionalChris = service.match(aliceId, "Chris", null, Context.PROFESSIONAL);
-      assertNotNull(professionalChris);
-      assertEquals(professionalChris.getTo(), chrisJonesId);
-      final Relationship familialChris = service.match(aliceId, "Chris", null, Context.FAMILIAL);
-      assertNotNull(familialChris);
-      assertEquals(familialChris.getTo(), chrisThomasId);
+      assertEquals(familialChrises.iterator().next().getTo(), chrisThomasId);
     }
     finally
     {
@@ -199,6 +191,71 @@ public class RelationshipServicePostgreSqlImplTest
       {
         service.remove(aliceToChrisThomas);
       }
+      if (aliceToChrisSmith != null)
+      {
+        service.remove(aliceToChrisSmith);
+      }
+      if (aliceToChrisJones != null)
+      {
+        service.remove(aliceToChrisJones);
+      }
+    }
+  }
+
+  @Test
+  public void testAmbiguousMatch()
+  {
+    WID<User> aliceId = WID.generate();
+    WID<Contact> chrisJonesId = WID.generate();
+    WID<Contact> chrisSmithId = WID.generate();
+
+    Relationship aliceToChrisJones;
+    Relationship aliceToChrisSmith;
+
+    aliceToChrisJones = Relationship.builder()
+                                    .id(WID.<Relationship>generate())
+                                    .ownerId(aliceId)
+                                    .to(chrisJonesId)
+                                    .uses(ImmutableSet.of(NameUse.builder()
+                                                                 .name("Chris")
+                                                                 .formality(50)
+                                                                 .familiarity(1)
+                                                                 .context(Context.PROFESSIONAL)
+                                                                 .build(),
+                                                          NameUse.builder()
+                                                                 .name("Chris")
+                                                                 .formality(50)
+                                                                 .familiarity(1)
+                                                                 .context(Context.SOCIAL)
+                                                                 .build()))
+                                                .build();
+    aliceToChrisSmith = Relationship.builder()
+                                    .id(WID.<Relationship>generate())
+                                    .ownerId(aliceId)
+                                    .to(chrisSmithId)
+                                    .uses(ImmutableSet.of(NameUse.builder()
+                                                                 .name("Chris")
+                                                                 .formality(50)
+                                                                 .familiarity(1)
+                                                                 .context(Context.SOCIAL)
+                                                                 .build()))
+                                    .build();
+
+    try
+    {
+      service.create(aliceToChrisJones);
+      service.create(aliceToChrisSmith);
+
+      final ImmutableList<Relationship> socialChrises = service.obtain(aliceId, Context.SOCIAL, null, "Chris", null);
+      assertEquals(socialChrises.size(), 2);
+      final ImmutableList<Relationship> professionalChrises = service.obtain(aliceId, Context.PROFESSIONAL, null, "Chris", null);
+      assertEquals(professionalChrises.size(), 1);
+      assertEquals(professionalChrises.iterator().next().getTo(), chrisJonesId);
+      final ImmutableList<Relationship> familialChrises = service.obtain(aliceId, Context.FAMILIAL, null, "Chris", null);
+      assertEquals(familialChrises.size(), 0);
+    }
+    finally
+    {
       if (aliceToChrisSmith != null)
       {
         service.remove(aliceToChrisSmith);

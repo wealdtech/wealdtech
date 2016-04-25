@@ -28,14 +28,14 @@ public class NameUse extends Use<NameUse> implements Comparable<NameUse>
 
   private static final String NAME = "name";
 
+  @JsonCreator
+  public NameUse(final Map<String, Object> data){ super(data); }
+
   /**
    * @return The name of the contact
    */
   @JsonIgnore
   public String getName() { return get(NAME, String.class).get(); }
-
-  @JsonCreator
-  public NameUse(final Map<String, Object> data){ super(data); }
 
   @Override
   protected Map<String, Object> preCreate(Map<String, Object> data)
@@ -52,6 +52,14 @@ public class NameUse extends Use<NameUse> implements Comparable<NameUse>
   {
     super.validate();
     checkState(exists(NAME), "Name use failed validation: must contain name");
+  }
+
+  /**
+   * Increase the familiarity of this use
+   */
+  public NameUse increaseFamiliarity()
+  {
+    return NameUse.builder(this).familiarity(getFamiliarity() + 1).build();
   }
 
   public static class Builder<P extends Builder<P>> extends Use.Builder<NameUse, P>

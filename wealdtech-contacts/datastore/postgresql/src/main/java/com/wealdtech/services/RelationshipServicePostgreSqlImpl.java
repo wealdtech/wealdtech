@@ -12,7 +12,9 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -26,6 +28,7 @@ import com.wealdtech.contacts.handles.Handle;
 import com.wealdtech.contacts.handles.NameHandle;
 import com.wealdtech.contacts.services.ContactService;
 import com.wealdtech.contacts.services.RelationshipService;
+import com.wealdtech.contacts.uses.EmailUse;
 import com.wealdtech.contacts.uses.NameUse;
 import com.wealdtech.contacts.uses.Use;
 import com.wealdtech.repositories.PostgreSqlRepository;
@@ -113,111 +116,261 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
 
   @Override
   public ImmutableList<Relationship> obtain(final WID<User> ownerId,
+                                            final Context context,
+                                            @Nullable final WID<Contact> contactId,
                                             @Nullable final String name,
-                                            @Nullable final String email,
-                                            final Context context)
+                                            @Nullable final String email)
   {
     checkState(ownerId != null, "Missing owner ID");
     checkState(context != null, "Missing context");
 
-    final ImmutableList.Builder<Relationship> resultsB = ImmutableList.builder();
+    ImmutableList<Relationship> relationships = ImmutableList.of();
 
+    // Start by building the handles and corresponding uses if we have been supplied with an email and/or name
+    Handle emailHandle = null;
+    EmailUse emailUse = null;
     if (email != null)
     {
-      // Try to obtain existing relationship
-      final ImmutableList<Relationship> relationships = obtain(ownerId, context, EmailHandle.builder().address(email).build());
-      if (relationships.size() == 0)
-      {
-        // No relationships; nothing to do here
-      }
-      else if (relationships.size() == 1)
-      {
-        // Exactly one relationship so it's good
-        final Relationship relationship = relationships.iterator().next();
+      emailHandle = EmailHandle.builder().address(email).build();
+      emailUse = (EmailUse)emailHandle.toUse(context, 1, 50);
+    }
 
-//        Relationship relationship = obtain(fromId, contact.getId());
-//        if (relationship == null)
-//        {
-//          // We don't have a relationship with this contact to date; set one up
-//          relationship = Relationship.builder()
-//                                     .from(fromId)
-//                                     .to(contact.getId())
-//                                     .contexts(ImmutableSet.of(
-//                                         Context.builder().situation(situation).familiarity(50).formality(50).build()))
-//                                     .build();
-//          create(relationship);
-//        }
-//        Context context = relationship.obtainContext(context);
-//        if (context == null)
-//        {
-//          // We don't have a relationship with this contact in this context; set one up
-//          context = Context.builder().situation(situation).familiarity(50).formality(50).build();
-//          relationship = Relationship.builder(relationship)
-//                                     .contexts(
-//                                         ImmutableSet.<Context>builder().addAll(relationship.getContexts()).add(context).build())
-//                                     .build();
-//          update(relationship);
-//        }
-//
-        resultsB.add(relationship);
-      }
-      else // >1 contacts
+    Handle nameHandle = null;
+    NameUse nameUse = null;
+    if (name != null)
+    {
+      nameHandle = NameHandle.builder().name(name).build();
+      nameUse = (NameUse)nameHandle.toUse(context, 1, 50);
+    }
+
+    // If we have been given the contact ID then we either find the contact or we don't
+    if (contactId != null)
+    {
+      final Relationship relationship = obtainForContact(ownerId, contactId);
+      if (relationship != null)
       {
-        // Multiple matches; try to trim them down based on name
+        relationships = ImmutableList.of(relationship);
       }
     }
-    else if (name != null)
+    else
     {
-      // Try to find given their name
-      final ImmutableList<Relationship> relationships = obtain(ownerId, context, NameHandle.builder().name(name).build());
-      // For each one ensure that the name is suitable for this context
-      for (final Relationship relationship : relationships)
+      if (emailHandle != null)
       {
-        for (final Use use : relationship.getUses())
+        // Email is best handle
+        relationships = obtain(ownerId, context, emailHandle);
+      }
+      else if (nameHandle != null)
+      {
+        // Name handle is next try
+        relationships = obtain(ownerId, context, nameHandle);
+      }
+    }
+
+    if (relationships.size() == 0)
+    {
+      // Nothing found
+      return relationships;
+    }
+    else if (relationships.size() == 1)
+    {
+      // We obtained a single specific relationship.  If we have handles that we used to obtain it then increase familiarity, and if
+      // not then we create them
+      boolean foundEmailUse = false;
+      boolean foundNameUse = false;
+
+      final ImmutableSet.Builder<Use> updatedUsesB = ImmutableSet.builder();
+      for (final Use use : relationships.iterator().next().getUses())
+      {
+        if (emailUse != null && Objects.equal(use.getKey(), emailUse.getKey()))
         {
-          if (use instanceof NameUse)
-          {
-            if (((NameUse)use).getName().equalsIgnoreCase(name) && use.getContext() == context)
-            {
-              resultsB.add(relationship);
-            }
-          }
+          updatedUsesB.add(use.increaseFamiliarity());
+          foundEmailUse = true;
+        }
+        else if (nameUse != null && Objects.equal(use.getKey(), nameUse.getKey()))
+        {
+          updatedUsesB.add(use.increaseFamiliarity());
+          foundNameUse = true;
+        }
+        else
+        {
+          updatedUsesB.add(use);
         }
       }
+      if (!foundEmailUse && emailUse != null)
+      {
+        // Email use is new
+        updatedUsesB.add(emailUse);
+      }
+      if (!foundNameUse && nameUse != null)
+      {
+        // Name use is new
+        updatedUsesB.add(nameUse);
+      }
+      final Relationship updatedRelationship = Relationship.builder(relationships.iterator().next()).uses(updatedUsesB.build()).build();
+
+      if (!Objects.equal(updatedRelationship, relationships.iterator().next())) { update(updatedRelationship); }
+
+      return ImmutableList.of(updatedRelationship);
     }
-    return resultsB.build();
+    else
+    {
+      // We have multiple relationships.  Try to trim them down based on the familiarity of use for each handle
+      if (nameHandle != null)
+      {
+        relationships = trimRelationshipsByHandle(relationships, nameUse);
+      }
+      if (emailHandle != null)
+      {
+        relationships = trimRelationshipsByHandle(relationships, emailUse);
+      }
+      return relationships;
+    }
   }
 
-  @Nullable
-  @Override
-  public Relationship match(final WID<User> ownerId,
-                            @Nullable final String name,
-                            @Nullable final String email,
-                            final Context context)
+  private ImmutableList<Relationship> trimRelationshipsByHandle(ImmutableList<Relationship> relationships, Use use)
   {
-    final ImmutableList<Relationship> potentials = obtain(ownerId, name, email, context);
-    Relationship bestMatch = null;
-    int bestFamiliarity = 0;
-    for (final Relationship potential : potentials)
-    {
-      for (final Use use : potential.getUses())
+      ImmutableList.Builder<Relationship> bestMatchesB = ImmutableList.builder();
+      int bestFamiliarity = 0;
+      for (final Relationship potential : relationships)
       {
-        if (use instanceof NameUse)
+        for (final Use potentialUse : potential.getUses())
         {
-          if (((NameUse)use).getName().equalsIgnoreCase(name) && use.getContext() == context)
+          if (Objects.equal(potentialUse.getKey(), use.getKey()))
           {
-            int thisFamiliarity = use.getFamiliarity();
-            if (thisFamiliarity > bestFamiliarity)
-            {
-              bestFamiliarity = thisFamiliarity;
-              bestMatch = potential;
-            }
+              int thisFamiliarity = potentialUse.getFamiliarity();
+              if (thisFamiliarity > bestFamiliarity)
+              {
+                bestFamiliarity = thisFamiliarity;
+                bestMatchesB = ImmutableList.builder();
+                bestMatchesB.add(potential);
+                break;
+              }
+              else if (thisFamiliarity == bestFamiliarity)
+              {
+                bestMatchesB.add(potential);
+              }
           }
         }
       }
+      return bestMatchesB.build();
     }
-    return bestMatch;
-  }
+//    // Now we have the potential relationships we need to work through the relevant uses
+//    for (final Relationship relationship : relationships)
+//    {
+//      resultsB.add(relationship.streamlineUses(context));
+//    }
+
+//    if (relationships.size() == 0)
+//    {
+//      // Nothing found; need to widen the search
+//    }
+//    else if (relationships.size() == 1)
+//    {
+//      // Exact match found
+//    }
+//
+//    if (email != null)
+//    {
+//      // Try to find by email
+//      final Handle handle =
+//      final ImmutableList<Relationship> relationships = obtain(ownerId, context, handle);
+//      if (relationships.size() == 0)
+//      {
+//        // No relationships; nothing to do here
+//      }
+//      else if (relationships.size() == 1)
+//      {
+//        // Exactly one relationship so it's good
+//        final Relationship relationship = relationships.iterator().next();
+//
+//        // As we only have one relationship this is a definite match; increase familiarity and update
+//
+////        Relationship relationship = obtain(fromId, contact.getId());
+////        if (relationship == null)
+////        {
+////          // We don't have a relationship with this contact to date; set one up
+////          relationship = Relationship.builder()
+////                                     .from(fromId)
+////                                     .to(contact.getId())
+////                                     .contexts(ImmutableSet.of(
+////                                         Context.builder().situation(situation).familiarity(50).formality(50).build()))
+////                                     .build();
+////          create(relationship);
+////        }
+////        Context context = relationship.obtainContext(context);
+////        if (context == null)
+////        {
+////          // We don't have a relationship with this contact in this context; set one up
+////          context = Context.builder().situation(situation).familiarity(50).formality(50).build();
+////          relationship = Relationship.builder(relationship)
+////                                     .contexts(
+////                                         ImmutableSet.<Context>builder().addAll(relationship.getContexts()).add(context).build())
+////                                     .build();
+////          update(relationship);
+////        }
+////
+//        resultsB.add(relationship);
+//      }
+//      else // >1 contacts
+//      {
+//        // Multiple matches; try to trim them down based on name
+//      }
+//    }
+//    else if (name != null)
+//    {
+//      // Try to find given their name
+//      final ImmutableList<Relationship> relationships = obtain(ownerId, context, NameHandle.builder().name(name).build());
+//      // For each one ensure that the name is suitable for this context
+//      for (final Relationship relationship : relationships)
+//      {
+//        for (final Use use : relationship.getUses())
+//        {
+//          if (use instanceof NameUse)
+//          {
+//            if (((NameUse)use).getName().equalsIgnoreCase(name) && use.getContext() == context)
+//            {
+//              resultsB.add(relationship);
+//            }
+//          }
+//        }
+//      }
+//    }
+//    return resultsB.build();
+
+//  private Relationship match(final WID<User> ownerId,
+//                             @Nullable final String name,
+//                             @Nullable final String email,
+//                             final Context context)
+//  {
+//    final ImmutableList<Relationship> potentials = obtain(ownerId, context, null, name, email);
+//    Relationship bestMatch = null;
+//    int bestFamiliarity = 0;
+//    boolean multipleMatches = false;
+//    for (final Relationship potential : potentials)
+//    {
+//      for (final Use use : potential.getUses())
+//      {
+//        if (use instanceof NameUse)
+//        {
+//          if (((NameUse)use).getName().equalsIgnoreCase(name) && use.getContext() == context)
+//          {
+//            int thisFamiliarity = use.getFamiliarity();
+//            if (thisFamiliarity > bestFamiliarity)
+//            {
+//              bestFamiliarity = thisFamiliarity;
+//              bestMatch = potential;
+//              multipleMatches = false;
+//            }
+//            else if (thisFamiliarity == bestFamiliarity)
+//            {
+//              multipleMatches = true;
+//            }
+//          }
+//        }
+//      }
+//    }
+//    return multipleMatches ? null : bestMatch;
+//  }
 
   @Override
   public ImmutableList<Relationship> obtain(final WID<User> ownerId, final Context context, final Handle handle)

@@ -14,12 +14,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
-import com.wealdtech.contacts.handles.Handle;
+import com.wealdtech.contacts.uses.Use;
 import org.joda.time.DateTimeZone;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.wealdtech.Preconditions.checkState;
@@ -30,9 +30,8 @@ import static com.wealdtech.Preconditions.checkState;
  */
 public class Participant extends WObject<Participant> implements Comparable<Participant>
 {
-  private static final String NAME = "name";
-  private static final String FORMALITY = "formality";
-  private static final String HANDLES = "handles";
+  private static final String RELATIONSHIP_ID = "relationshipid";
+  private static final String USES = "uses";
   private static final String TIMEZONE = "timezone";
 
   @JsonCreator
@@ -41,24 +40,19 @@ public class Participant extends WObject<Participant> implements Comparable<Part
     super(data);
   }
 
+  private static final TypeReference<WID<Relationship>> RELATIONSHIP_ID_TYPE_REF = new TypeReference<WID<Relationship>>(){};
   /**
-   * @return the name that should be used for the participant
+   * @return the ID of the relationship from which this participant came
    */
   @JsonIgnore
-  public String getName() { return get(NAME, String.class).get(); }
+  public WID<Relationship> getRelationshipId() { return get(RELATIONSHIP_ID, RELATIONSHIP_ID_TYPE_REF).get(); }
 
+  private static final TypeReference<ImmutableSet<? extends Use>> USES_TYPE_REF = new TypeReference<ImmutableSet<? extends Use>>(){};
   /**
-   * @return the formality that should be used for the participant, in the range 0 - 100
+   * @return the handles that can be used to contact the participant
    */
   @JsonIgnore
-  public int getFormality() { return get(FORMALITY, Integer.class).get(); }
-
-  private static final TypeReference<ImmutableList<? extends Handle>> HANDLES_TYPE_REF = new TypeReference<ImmutableList<? extends Handle>>(){};
-  /**
-   * @return the handles that can be used to contact the participant, in order of preference
-   */
-  @JsonIgnore
-  public ImmutableList<? extends Handle> getHandles() { return get(HANDLES, HANDLES_TYPE_REF).get(); }
+  public ImmutableSet<? extends Use> getUses() { return get(USES, USES_TYPE_REF).get(); }
 
   /**
    * @return the timezone in which the participant resides (optional)
@@ -70,9 +64,8 @@ public class Participant extends WObject<Participant> implements Comparable<Part
   protected void validate()
   {
     super.validate();
-    checkState(exists(NAME), "Participant failed validation: missing name");
-    checkState(exists(FORMALITY), "Participant failed validation: missing formality");
-    checkState(exists(HANDLES), "Participant failed validation: missing handles");
+    checkState(exists(RELATIONSHIP_ID), "Participant failed validation: missing relationship ID");
+    checkState(exists(USES), "Participant failed validation: missing uses");
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Participant, P>
@@ -87,21 +80,15 @@ public class Participant extends WObject<Participant> implements Comparable<Part
       super(prior);
     }
 
-    public P name(final String name)
+    public P relationshipId(final WID<Relationship> relationshipId)
     {
-      data(NAME, name);
+      data(RELATIONSHIP_ID, relationshipId);
       return self();
     }
 
-    public P formality(final int formality)
+    public P uses(final ImmutableSet<? extends Use> uses)
     {
-      data(FORMALITY, formality);
-      return self();
-    }
-
-    public P handles(final List<? extends Handle> handles)
-    {
-      data(HANDLES, handles);
+      data(USES, uses);
       return self();
     }
 
