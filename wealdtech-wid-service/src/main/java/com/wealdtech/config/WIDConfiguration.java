@@ -35,6 +35,17 @@ public class WIDConfiguration implements Configuration
   }
 
   /**
+   * Obtain a configuration from the environment
+   *
+   * @param base the base string to use as the prefix for obtaining environmental variables
+   */
+  public static WIDConfiguration fromEnv(final String base)
+  {
+    final long shardId = System.getenv(base + "_shardid") == null ? 1 : Long.parseLong(System.getenv(base + "_shardid"));
+    return new WIDConfiguration(shardId);
+  }
+
+  /**
    * @return the shard ID for generated WIDs
    */
   public Long getShardId()

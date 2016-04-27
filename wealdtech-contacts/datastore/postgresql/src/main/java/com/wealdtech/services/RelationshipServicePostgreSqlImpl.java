@@ -31,7 +31,7 @@ import com.wealdtech.contacts.services.RelationshipService;
 import com.wealdtech.contacts.uses.EmailUse;
 import com.wealdtech.contacts.uses.NameUse;
 import com.wealdtech.contacts.uses.Use;
-import com.wealdtech.repositories.PostgreSqlRepository;
+import com.wealdtech.repository.RelationshipRepositoryPostgreSqlImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
   private final ContactService<?> contactService;
 
   @Inject
-  public RelationshipServicePostgreSqlImpl(final PostgreSqlRepository repository,
+  public RelationshipServicePostgreSqlImpl(final RelationshipRepositoryPostgreSqlImpl repository,
                                            final ContactService contactService,
                                            @Named("dbmapper") final ObjectMapper mapper)
   {

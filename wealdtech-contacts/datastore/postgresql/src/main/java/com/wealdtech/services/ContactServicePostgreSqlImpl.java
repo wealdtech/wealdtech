@@ -21,7 +21,7 @@ import com.wealdtech.WID;
 import com.wealdtech.contacts.Contact;
 import com.wealdtech.contacts.handles.Handle;
 import com.wealdtech.contacts.services.ContactService;
-import com.wealdtech.repositories.PostgreSqlRepository;
+import com.wealdtech.repository.ContactRepositoryPostgreSqlImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,8 @@ public class ContactServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<C
   private static final TypeReference<Contact> CONTACT_TYPE_REFERENCE = new TypeReference<Contact>() {};
 
   @Inject
-  public ContactServicePostgreSqlImpl(final PostgreSqlRepository repository, @Named("dbmapper") final ObjectMapper mapper)
+  public ContactServicePostgreSqlImpl(final ContactRepositoryPostgreSqlImpl repository,
+                                      @Named("dbmapper") final ObjectMapper mapper)
   {
     super(repository, mapper, "contact");
   }

@@ -1,0 +1,10 @@
+{
+  "flowrepository": {
+      "host": "localhost",
+      "port": 5432,
+      "name": "camunda",
+      "username": "camunda",
+      "password": "camunda"
+  },
+  "name": "Worker"
+}
