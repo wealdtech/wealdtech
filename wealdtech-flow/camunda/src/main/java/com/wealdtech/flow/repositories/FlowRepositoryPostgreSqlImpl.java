@@ -12,8 +12,10 @@ package com.wealdtech.flow.repositories;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.flow.WealdtechExpressionManager;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -25,6 +27,9 @@ import org.camunda.spin.plugin.impl.SpinProcessEnginePlugin;
  */
 public class FlowRepositoryPostgreSqlImpl implements FlowRepository
 {
+  @Inject
+  private Injector injector;
+
   private final PostgreSqlConfiguration configuration;
 
   @Inject
@@ -47,6 +52,7 @@ public class FlowRepositoryPostgreSqlImpl implements FlowRepository
                                                                       ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
                                                                   .setHistory(ProcessEngineConfiguration.HISTORY_FULL)
                                                                   .setJobExecutorActivate(true);
+    processEngineConfiguration.setExpressionManager(new WealdtechExpressionManager(injector));
     processEngineConfiguration.setDefaultSerializationFormat("application/json");
     processEngineConfiguration.setProcessEnginePlugins(ImmutableList.<ProcessEnginePlugin>of(new SpinProcessEnginePlugin()));
     return processEngineConfiguration.buildProcessEngine();

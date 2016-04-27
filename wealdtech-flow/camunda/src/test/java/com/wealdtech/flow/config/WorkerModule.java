@@ -12,8 +12,14 @@ package com.wealdtech.flow.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+import com.wealdtech.configuration.ConfigurationSource;
+import com.wealdtech.datastore.config.PostgreSqlConfiguration;
+import com.wealdtech.flow.repositories.FlowRepository;
+import com.wealdtech.flow.repositories.FlowRepositoryPostgreSqlImpl;
 import com.wealdtech.flow.tasks.SendMessageTask;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 
@@ -22,9 +28,21 @@ import javax.inject.Singleton;
  */
 public class WorkerModule extends AbstractModule
 {
+  private static final Logger LOG = LoggerFactory.getLogger(WorkerModule.class);
+
   @Override
   protected void configure()
   {
+    // Bind configuration information
+    final WorkerConfiguration configuration =
+        new ConfigurationSource<WorkerConfiguration>().getConfiguration("worker-config.json", WorkerConfiguration.class);
+    bind(WorkerConfiguration.class).toInstance(configuration);
+
+
+    bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("flowrepositoryconfiguration"))
+                                       .toInstance(configuration.getFlowRepositoryConfiguration());
+    bind(FlowRepository.class).to(FlowRepositoryPostgreSqlImpl.class).in(Singleton.class);
+
     bind(JavaDelegate.class).annotatedWith(Names.named("SendMessageTask")).to(SendMessageTask.class).in(Singleton.class);
   }
 }

@@ -11,23 +11,19 @@
 package com.wealdtech.flow;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.rabbitmq.client.*;
 import com.wealdtech.flow.config.WorkerModule;
+import com.wealdtech.flow.repositories.FlowRepository;
 import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
-import org.camunda.spin.plugin.impl.SpinProcessEnginePlugin;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -45,21 +41,8 @@ public class Worker
   public Worker()
   {
     final Injector injector = Guice.createInjector(new WorkerModule());
-    final ProcessEngineConfigurationImpl processEngineConfiguration;
-    processEngineConfiguration =
-        (ProcessEngineConfigurationImpl)ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration()
-                                                                  .setJdbcDriver("org.postgresql.Driver")
-                                                                  .setJdbcUrl("jdbc:postgresql://localhost/camunda")
-                                                                  .setJdbcUsername("camunda")
-                                                                  .setJdbcPassword("camunda")
-                                                                  .setDatabaseSchemaUpdate(
-                                                                      ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
-                                                                  .setHistory(ProcessEngineConfiguration.HISTORY_FULL)
-                                                                  .setJobExecutorActivate(true);
-    processEngineConfiguration.setExpressionManager(new WealdtechExpressionManager(injector));
-    processEngineConfiguration.setDefaultSerializationFormat("application/json");
-    processEngineConfiguration.setProcessEnginePlugins(ImmutableList.<ProcessEnginePlugin>of(new SpinProcessEnginePlugin()));
-    engine = processEngineConfiguration.buildProcessEngine();
+
+    engine = injector.getInstance(FlowRepository.class).getConnection();
 
     final DeploymentBuilder builder = engine.getRepositoryService().createDeployment();
     builder.addClasspathResource("MessageProcess.bpmn").enableDuplicateFiltering(true);
