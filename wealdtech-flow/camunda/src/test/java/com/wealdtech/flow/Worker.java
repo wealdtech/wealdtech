@@ -12,7 +12,10 @@ package com.wealdtech.flow;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.rabbitmq.client.*;
+import com.wealdtech.flow.config.WorkerModule;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.RuntimeService;
@@ -41,6 +44,7 @@ public class Worker
 
   public Worker()
   {
+    final Injector injector = Guice.createInjector(new WorkerModule());
     final ProcessEngineConfigurationImpl processEngineConfiguration;
     processEngineConfiguration =
         (ProcessEngineConfigurationImpl)ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration()
@@ -52,6 +56,7 @@ public class Worker
                                                                       ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
                                                                   .setHistory(ProcessEngineConfiguration.HISTORY_FULL)
                                                                   .setJobExecutorActivate(true);
+    processEngineConfiguration.setExpressionManager(new WealdtechExpressionManager(injector));
     processEngineConfiguration.setDefaultSerializationFormat("application/json");
     processEngineConfiguration.setProcessEnginePlugins(ImmutableList.<ProcessEnginePlugin>of(new SpinProcessEnginePlugin()));
     engine = processEngineConfiguration.buildProcessEngine();

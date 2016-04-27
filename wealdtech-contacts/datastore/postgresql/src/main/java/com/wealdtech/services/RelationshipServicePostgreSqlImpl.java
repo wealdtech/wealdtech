@@ -43,7 +43,8 @@ import static com.wealdtech.Preconditions.checkState;
 /**
  *
  */
-public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Relationship> implements RelationshipService<PreparedStatement>
+public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Relationship> implements
+    RelationshipService<PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(RelationshipServicePostgreSqlImpl.class);
 
@@ -206,7 +207,8 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
         // Name use is new
         updatedUsesB.add(nameUse);
       }
-      final Relationship updatedRelationship = Relationship.builder(relationships.iterator().next()).uses(updatedUsesB.build()).build();
+      final Relationship updatedRelationship =
+          Relationship.builder(relationships.iterator().next()).uses(updatedUsesB.build()).build();
 
       if (!Objects.equal(updatedRelationship, relationships.iterator().next())) { update(updatedRelationship); }
 
@@ -229,148 +231,31 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
 
   private ImmutableList<Relationship> trimRelationshipsByHandle(ImmutableList<Relationship> relationships, Use use)
   {
-      ImmutableList.Builder<Relationship> bestMatchesB = ImmutableList.builder();
-      int bestFamiliarity = 0;
-      for (final Relationship potential : relationships)
+    ImmutableList.Builder<Relationship> bestMatchesB = ImmutableList.builder();
+    int bestFamiliarity = 0;
+    for (final Relationship potential : relationships)
+    {
+      for (final Use potentialUse : potential.getUses())
       {
-        for (final Use potentialUse : potential.getUses())
+        if (Objects.equal(potentialUse.getKey(), use.getKey()))
         {
-          if (Objects.equal(potentialUse.getKey(), use.getKey()))
+          int thisFamiliarity = potentialUse.getFamiliarity();
+          if (thisFamiliarity > bestFamiliarity)
           {
-              int thisFamiliarity = potentialUse.getFamiliarity();
-              if (thisFamiliarity > bestFamiliarity)
-              {
-                bestFamiliarity = thisFamiliarity;
-                bestMatchesB = ImmutableList.builder();
-                bestMatchesB.add(potential);
-                break;
-              }
-              else if (thisFamiliarity == bestFamiliarity)
-              {
-                bestMatchesB.add(potential);
-              }
+            bestFamiliarity = thisFamiliarity;
+            bestMatchesB = ImmutableList.builder();
+            bestMatchesB.add(potential);
+            break;
+          }
+          else if (thisFamiliarity == bestFamiliarity)
+          {
+            bestMatchesB.add(potential);
           }
         }
       }
-      return bestMatchesB.build();
     }
-//    // Now we have the potential relationships we need to work through the relevant uses
-//    for (final Relationship relationship : relationships)
-//    {
-//      resultsB.add(relationship.streamlineUses(context));
-//    }
-
-//    if (relationships.size() == 0)
-//    {
-//      // Nothing found; need to widen the search
-//    }
-//    else if (relationships.size() == 1)
-//    {
-//      // Exact match found
-//    }
-//
-//    if (email != null)
-//    {
-//      // Try to find by email
-//      final Handle handle =
-//      final ImmutableList<Relationship> relationships = obtain(ownerId, context, handle);
-//      if (relationships.size() == 0)
-//      {
-//        // No relationships; nothing to do here
-//      }
-//      else if (relationships.size() == 1)
-//      {
-//        // Exactly one relationship so it's good
-//        final Relationship relationship = relationships.iterator().next();
-//
-//        // As we only have one relationship this is a definite match; increase familiarity and update
-//
-////        Relationship relationship = obtain(fromId, contact.getId());
-////        if (relationship == null)
-////        {
-////          // We don't have a relationship with this contact to date; set one up
-////          relationship = Relationship.builder()
-////                                     .from(fromId)
-////                                     .to(contact.getId())
-////                                     .contexts(ImmutableSet.of(
-////                                         Context.builder().situation(situation).familiarity(50).formality(50).build()))
-////                                     .build();
-////          create(relationship);
-////        }
-////        Context context = relationship.obtainContext(context);
-////        if (context == null)
-////        {
-////          // We don't have a relationship with this contact in this context; set one up
-////          context = Context.builder().situation(situation).familiarity(50).formality(50).build();
-////          relationship = Relationship.builder(relationship)
-////                                     .contexts(
-////                                         ImmutableSet.<Context>builder().addAll(relationship.getContexts()).add(context).build())
-////                                     .build();
-////          update(relationship);
-////        }
-////
-//        resultsB.add(relationship);
-//      }
-//      else // >1 contacts
-//      {
-//        // Multiple matches; try to trim them down based on name
-//      }
-//    }
-//    else if (name != null)
-//    {
-//      // Try to find given their name
-//      final ImmutableList<Relationship> relationships = obtain(ownerId, context, NameHandle.builder().name(name).build());
-//      // For each one ensure that the name is suitable for this context
-//      for (final Relationship relationship : relationships)
-//      {
-//        for (final Use use : relationship.getUses())
-//        {
-//          if (use instanceof NameUse)
-//          {
-//            if (((NameUse)use).getName().equalsIgnoreCase(name) && use.getContext() == context)
-//            {
-//              resultsB.add(relationship);
-//            }
-//          }
-//        }
-//      }
-//    }
-//    return resultsB.build();
-
-//  private Relationship match(final WID<User> ownerId,
-//                             @Nullable final String name,
-//                             @Nullable final String email,
-//                             final Context context)
-//  {
-//    final ImmutableList<Relationship> potentials = obtain(ownerId, context, null, name, email);
-//    Relationship bestMatch = null;
-//    int bestFamiliarity = 0;
-//    boolean multipleMatches = false;
-//    for (final Relationship potential : potentials)
-//    {
-//      for (final Use use : potential.getUses())
-//      {
-//        if (use instanceof NameUse)
-//        {
-//          if (((NameUse)use).getName().equalsIgnoreCase(name) && use.getContext() == context)
-//          {
-//            int thisFamiliarity = use.getFamiliarity();
-//            if (thisFamiliarity > bestFamiliarity)
-//            {
-//              bestFamiliarity = thisFamiliarity;
-//              bestMatch = potential;
-//              multipleMatches = false;
-//            }
-//            else if (thisFamiliarity == bestFamiliarity)
-//            {
-//              multipleMatches = true;
-//            }
-//          }
-//        }
-//      }
-//    }
-//    return multipleMatches ? null : bestMatch;
-//  }
+    return bestMatchesB.build();
+  }
 
   @Override
   public ImmutableList<Relationship> obtain(final WID<User> ownerId, final Context context, final Handle handle)
@@ -392,25 +277,6 @@ public class RelationshipServicePostgreSqlImpl extends WObjectServicePostgreSqlI
       }
     });
   }
-  //  @Override
-  //  public ImmutableList<Relationship> obtain(final String name, final Context.Situation situation)
-  //  {
-  //    return obtain(RELATIONSHIP_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
-  //    {
-  //      @Override
-  //      public String getConditions()
-  //      {
-  //        return "d @> ?";
-  //      }
-  //
-  //      @Override
-  //      public void setConditionValues(final PreparedStatement stmt)
-  //      {
-  //        int index = 1;
-  //        setJson(stmt, index++, "{\"contexts\":[{\"handles\":[\"" + name + "\"]}]}");
-  //      }
-  //    });
-  //  }
 
   @Override
   public ImmutableList<Relationship> obtain(final WID<User> ownerId)

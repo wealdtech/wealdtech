@@ -5,7 +5,7 @@
       <bpmn:outgoing>SequenceFlow_011vtut</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_011vtut" sourceRef="StartEvent_1" targetRef="SendTask_1tvqp42" />
-    <bpmn:sendTask id="SendTask_1tvqp42" name="Send message" camunda:class="com.wealdtech.flow.tasks.SendMessageTask">
+    <bpmn:sendTask id="SendTask_1tvqp42" name="Send message" camunda:delegateExpression="${SendMessageTask}">
       <bpmn:incoming>SequenceFlow_011vtut</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1yrgjtx</bpmn:outgoing>
     </bpmn:sendTask>

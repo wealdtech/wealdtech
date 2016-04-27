@@ -705,7 +705,23 @@ public class WObject<T extends WObject> implements Comparable<T>
     {
       return null;
     }
+  }
 
+  @Nullable
+  public static <T> T deserialize(@Nullable final String val, final TypeReference<T> typeRef)
+  {
+    if (val == null)
+    {
+      return null;
+    }
+    try
+    {
+      return MAPPER.readValue(val, typeRef);
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
   }
 
   /**
