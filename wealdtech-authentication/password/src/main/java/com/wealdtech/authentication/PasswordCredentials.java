@@ -24,7 +24,7 @@ import static com.wealdtech.Preconditions.checkState;
  * Password-based credentials are based on two pieces of information: a name, which identifies a user and a password, which
  * authenticates the user.  Both are required
  */
-public class PasswordCredentials extends AbstractCredentials
+public class PasswordCredentials extends Credentials
 {
   private static final Logger LOG = LoggerFactory.getLogger(PasswordCredentials.class);
 
@@ -57,7 +57,7 @@ public class PasswordCredentials extends AbstractCredentials
   public String getPassword(){return get(PASSWORD, String.class).get();}
 
   // Builder boilerplate
-  public static class Builder<P extends Builder<P>> extends AbstractCredentials.Builder<P>
+  public static class Builder<P extends Builder<P>> extends Credentials.Builder<P>
   {
     public Builder()
     {

@@ -26,7 +26,7 @@ import static com.wealdtech.Preconditions.checkState;
  * OAuth2-based credentials for authentication.
  * OAuth2-based credentials contain a name, an access token, the date that the access token expires, and a refresh token
  */
-public class OAuth2Credentials extends AbstractCredentials
+public class OAuth2Credentials extends Credentials
 {
   public static final String OAUTH2_CREDENTIALS = "OAuth2";
   private static final Logger LOG = LoggerFactory.getLogger(OAuth2Credentials.class);
@@ -74,7 +74,7 @@ public class OAuth2Credentials extends AbstractCredentials
   public String getRefreshToken(){return get(REFRESH_TOKEN, String.class).get();}
 
   // Builder boilerplate
-  public static class Builder<P extends Builder<P>> extends AbstractCredentials.Builder<P>
+  public static class Builder<P extends Builder<P>> extends Credentials.Builder<P>
   {
     public Builder()
     {

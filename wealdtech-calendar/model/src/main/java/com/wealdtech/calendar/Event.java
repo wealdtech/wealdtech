@@ -13,11 +13,9 @@ package com.wealdtech.calendar;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 import com.wealdtech.DataError;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
@@ -46,6 +44,7 @@ public class Event extends WObject<Event> implements Comparable<Event>
   private static final String END_DATETIME= "enddatetime";
   private static final String STATUS = "status";
   private static final String TRANSPARENCY = "transparency";
+  private static final String ATTENDEES = "attendees";
 
   @JsonCreator
   public Event(final Map<String, Object> data)
@@ -91,6 +90,10 @@ public class Event extends WObject<Event> implements Comparable<Event>
 
   @JsonIgnore
   public Status getStatus() { return get(STATUS, Status.class).get(); }
+
+  private static final TypeReference<ImmutableSet<Attendee>> ATTENDEES_TYPE_REF = new TypeReference<ImmutableSet<Attendee>>(){};
+  @JsonIgnore
+  public ImmutableSet<Attendee> getAttendees() { return get(ATTENDEES, ATTENDEES_TYPE_REF).or(ImmutableSet.<Attendee>of()); }
 
   /**
    * Create a list of events from this event over a given timeframe.  Non-recurring events will either return 0 or 1 events and
@@ -253,6 +256,12 @@ public class Event extends WObject<Event> implements Comparable<Event>
       return self();
     }
 
+    public P attendees(final ImmutableSet<Attendee> attendees)
+    {
+      data(ATTENDEES, attendees);
+      return self();
+    }
+
     public Event build()
     {
       return new Event(data);
@@ -325,15 +334,15 @@ public class Event extends WObject<Event> implements Comparable<Event>
         // N.B. we don't pass the iae as the cause of this exception because
         // this happens during invocation, and in that case the enum handler
         // will report the root cause exception rather than the one we throw.
-        throw new DataError.Bad("A status \"" + val + "\" supplied is invalid");
+        throw new DataError.Bad("An event status \"" + val + "\" supplied is invalid");
       }
     }
 
     public static Status fromInt(final Integer val)
     {
-      checkNotNull(val, "Status not supplied");
+      checkNotNull(val, "Event status not supplied");
       final Status state = _VALMAP.get(val);
-      checkNotNull(state, "Status is invalid");
+      checkNotNull(state, "Event status is invalid");
       return state;
     }
   }

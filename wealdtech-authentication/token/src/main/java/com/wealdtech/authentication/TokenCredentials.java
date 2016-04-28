@@ -23,7 +23,7 @@ import static com.wealdtech.Preconditions.checkState;
  * Token-based credentials for authentication.
  * Token-based credentials are based on a single piece of information: the token itself
  */
-public class TokenCredentials extends AbstractCredentials
+public class TokenCredentials extends Credentials
 {
   private static final Logger LOG = LoggerFactory.getLogger(TokenCredentials.class);
 
@@ -51,7 +51,7 @@ public class TokenCredentials extends AbstractCredentials
   public String getToken(){return get(TOKEN, String.class).get();}
 
   // Builder boilerplate
-  public static class Builder<P extends Builder<P>> extends AbstractCredentials.Builder<P>
+  public static class Builder<P extends Builder<P>> extends Credentials.Builder<P>
   {
     public Builder()
     {

@@ -18,11 +18,9 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.calendar.model.CalendarList;
-import com.google.api.services.calendar.model.CalendarListEntry;
-import com.google.api.services.calendar.model.EventDateTime;
-import com.google.api.services.calendar.model.Events;
+import com.google.api.services.calendar.model.*;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.wealdtech.ServerError;
 import com.wealdtech.TwoTuple;
@@ -291,6 +289,39 @@ public class CalendarClientGoogleImpl implements CalendarClient
                                                   event.getEndDateTime().get().getZone().toTimeZone())));
     }
 
+    if (!event.getAttendees().isEmpty())
+    {
+      final ImmutableList.Builder<EventAttendee> attendeesB = ImmutableList.builder();
+      for (final Attendee attendee : event.getAttendees())
+      {
+        final EventAttendee googleAttendee = new EventAttendee();
+        googleAttendee.setDisplayName(attendee.getName());
+        googleAttendee.setEmail(attendee.getEmail());
+        googleAttendee.setOptional(!attendee.isMandatory());
+        googleAttendee.setResource(attendee.isResource());
+        switch (attendee.getStatus())
+        {
+          case UNKNOWN:
+            googleAttendee.setResponseStatus("needsAction");
+            break;
+          case DECLINED:
+            googleAttendee.setResponseStatus("declined");
+            break;
+          case TENTATIVE:
+            googleAttendee.setResponseStatus("tentative");
+            break;
+          case ACCEPTED:
+            googleAttendee.setResponseStatus("accepted");
+            break;
+          default:
+            LOG.warn("Unhandled attendee status {}", attendee.getStatus());
+            googleAttendee.setResponseStatus("needsAction");
+        }
+        attendeesB.add(googleAttendee);
+      }
+      googleEvent.setAttendees(attendeesB.build());
+    }
+
     System.err.println("Translated event " + event + " to google event " + googleEvent);
 
     return googleEvent;
@@ -360,8 +391,48 @@ public class CalendarClientGoogleImpl implements CalendarClient
       }
     }
 
+    if (googleEvent.getAttendees() != null)
+    {
+      final ImmutableSet.Builder<Attendee> attendeesB = ImmutableSet.builder();
+      for (final EventAttendee attendee : googleEvent.getAttendees())
+      {
+        final Attendee.Builder<?> attendeeB = Attendee.builder();
+        attendeeB.email(attendee.getEmail());
+        attendeeB.name(attendee.getDisplayName());
+        attendeeB.resource(attendee.isResource());
+        attendeeB.mandatory(!attendee.isOptional());
+        if (attendee.getResponseStatus() == null)
+        {
+          attendeeB.status(Attendee.Status.UNKNOWN);
+        }
+        else
+        {
+          switch (attendee.getResponseStatus())
+          {
+            case "needsAction":
+              attendeeB.status(Attendee.Status.UNKNOWN);
+              break;
+            case "declined":
+              attendeeB.status(Attendee.Status.DECLINED);
+              break;
+            case "tentative":
+              attendeeB.status(Attendee.Status.TENTATIVE);
+              break;
+            case "accepted":
+              attendeeB.status(Attendee.Status.ACCEPTED);
+              break;
+            default:
+              LOG.warn("Unexpected attendee response status {}", attendee.getResponseStatus());
+              attendeeB.status(Attendee.Status.UNKNOWN);
+          }
+        }
+        attendeesB.add(attendeeB.build());
+      }
+      builder.attendees(attendeesB.build());
+    }
+
     final Event event = builder.build();
-    System.err.println("Translated google event " + googleEvent + " to event " + event);
+    LOG.debug("Translated google event {} to event {}", googleEvent, event);
     return event;
   }
 

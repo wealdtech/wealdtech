@@ -10,10 +10,59 @@
 
 package com.wealdtech.authentication;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wealdtech.WObject;
+
+import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkState;
+
 /**
- * Credentials are presented to an authentication system to authenticate against a given authentication method
+ * Generic credentials
  */
-public interface Credentials
+public class Credentials extends WObject<Credentials>
 {
-  String getType();
+  protected static final String TYPE = "type";
+
+  @JsonCreator
+  public Credentials(final Map<String, Object> data)
+  {
+    super(data);
+  }
+
+  @Override
+  protected void validate()
+  {
+    checkState(exists(TYPE), "Credentials failed validation: must contain type");
+  }
+
+  @JsonIgnore
+  public String getType(){return get(TYPE, String.class).get();}
+
+  // Builder boilerplate
+  public static class Builder<P extends Builder<P>> extends WObject.Builder<Credentials, P>
+  {
+    public Builder() { super(); }
+
+    public Builder(final Credentials prior)
+    {
+      super(prior);
+    }
+
+    public P type(final String type)
+    {
+      data(TYPE, type);
+      return self();
+    }
+
+    public Credentials build()
+    {
+      return new Credentials(data);
+    }
+  }
+
+  public static Builder<?> builder() { return new Builder(); }
+
+  public static Builder<?> builder(final Credentials prior) { return new Builder(prior); }
 }
