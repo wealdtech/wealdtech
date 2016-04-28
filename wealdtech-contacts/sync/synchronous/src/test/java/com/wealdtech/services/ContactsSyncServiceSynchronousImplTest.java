@@ -12,6 +12,7 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.collect.ImmutableSet;
 import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.authentication.OAuth2Credentials;
@@ -22,7 +23,8 @@ import com.wealdtech.contacts.services.ContactService;
 import com.wealdtech.contacts.services.RelationshipService;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.repositories.PostgreSqlRepository;
+import com.wealdtech.repository.ContactRepositoryPostgreSqlImpl;
+import com.wealdtech.repository.RelationshipRepositoryPostgreSqlImpl;
 import com.wealdtech.services.google.GoogleAccountsClient;
 import org.joda.time.DateTime;
 import org.testng.annotations.BeforeClass;
@@ -44,16 +46,19 @@ public class ContactsSyncServiceSynchronousImplTest
   @BeforeClass
   public void setUp() throws GeneralSecurityException, IOException
   {
-    final PostgreSqlRepository repository =
-        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
+    final PostgreSqlConfiguration postgreSqlConfiguration =
+        new PostgreSqlConfiguration("localhost", 5432, "ellie", "ellie", "ellie", null, null, null);
 
     final ObjectMapper mapper = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    final ContactService contactService = new ContactServicePostgreSqlImpl(repository, mapper);
-    final RelationshipService relationshipService = new RelationshipServicePostgreSqlImpl(repository, contactService, mapper);
+    final ContactService contactService =
+        new ContactServicePostgreSqlImpl(new ContactRepositoryPostgreSqlImpl(postgreSqlConfiguration), mapper);
+    final RelationshipService relationshipService =
+        new RelationshipServicePostgreSqlImpl(new RelationshipRepositoryPostgreSqlImpl(postgreSqlConfiguration), contactService,
+                                              mapper);
 
     final ContactsConfiguration configuration = ContactsConfiguration.fromEnv("contacts_test");
 
-    accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
+    accountsClient = new GoogleAccountsClient(configuration.getOAuth2Configuration());
     final ContactsClient<OAuth2Credentials> contactClient = new ContactsClientGoogleContactsImpl(configuration);
 
     service = new ContactsSyncServiceSynchronousImpl<>(contactService, relationshipService, contactClient);
@@ -63,12 +68,16 @@ public class ContactsSyncServiceSynchronousImplTest
   public void testImport()
   {
     final WID<User> userId = WID.fromString("7edadd9464485b9");
-    final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
-                                                                                 .name("Google contacts")
-                                                                                 .accessToken("irrelevant")
-                                                                                 .expires(DateTime.now().minusDays(1))
-                                                                                 .refreshToken(REFRESH_TOKEN)
-                                                                                 .build());
+    final OAuth2Credentials credentials;
+    credentials = accountsClient.reauth(OAuth2Credentials.builder()
+                                                         .name("Google contacts")
+                                                         .accessToken("irrelevant")
+                                                         .expires(DateTime.now().minusDays(1))
+                                                         .scopes(ImmutableSet.of("https://www.googleapis.com/auth/calendar",
+                                                                                 "https://www.googleapis.com/auth/contacts",
+                                                                                 "profile", "email"))
+                                                         .refreshToken(REFRESH_TOKEN)
+                                                         .build());
 
     service.importContacts(userId, credentials, false);
   }

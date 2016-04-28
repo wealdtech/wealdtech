@@ -19,7 +19,7 @@ import com.wealdtech.contacts.handles.NameHandle;
 import com.wealdtech.contacts.services.ContactService;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.repositories.PostgreSqlRepository;
+import com.wealdtech.repository.ContactRepositoryPostgreSqlImpl;
 import org.joda.time.LocalDateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,12 +37,13 @@ public class ContactServicePostgreSqlImplTest
   @BeforeClass
   public void setUp()
   {
-    final PostgreSqlRepository repository =
-        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
+    final PostgreSqlConfiguration postgreSqlConfiguration =
+        new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null);
 
-    service = new ContactServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
-                                                                      .copy()
-                                                                      .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
+    service = new ContactServicePostgreSqlImpl(new ContactRepositoryPostgreSqlImpl(postgreSqlConfiguration),
+                                               WealdMapper.getServerMapper()
+                                                          .copy()
+                                                          .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
   }
 
   @Test

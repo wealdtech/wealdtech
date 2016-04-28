@@ -15,7 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.wealdtech.User;
+import com.wealdtech.WID;
 import com.wealdtech.WObject;
+import com.wealdtech.contacts.Context;
 import com.wealdtech.contacts.Participant;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -24,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
  * The various elements of a request required for creating an event
  */
@@ -31,17 +36,40 @@ public class CreateEventRequest extends WObject<CreateEventRequest> implements C
 {
   private static final Logger LOG = LoggerFactory.getLogger(CreateEventRequest.class);
 
+  private static final String ORIGINATOR_ID = "originatorid";
   private static final String NAME = "name";
+  private static final String CONTEXT = "context";
   private static final String START_DATE_TIME = "startdatetime";
   private static final String END_DATE_TIME = "enddatetime";
   private static final String START_DATE = "startdate";
   private static final String END_DATE = "enddate";
   private static final String PARTICIPANTS = "participants";
+  private static final TypeReference<WID<User>> ORIGINATOR_ID_TYPE_REF = new TypeReference<WID<User>>(){};
+  private static final TypeReference<ImmutableList<Participant>> PARTICIPANTS_TYPE_REF = new TypeReference<ImmutableList<Participant>>(){};
 
   @JsonCreator
   public CreateEventRequest(final Map<String, Object> data)
   {
     super(data);
+  }
+
+  @Override
+  public void validate()
+  {
+    super.validate();
+    checkState(exists(ORIGINATOR_ID), "CreateEventRequest failed validation: requires originatorid");
+  }
+
+  @JsonIgnore
+  public WID<User> getOriginatorId() { return get(ORIGINATOR_ID, ORIGINATOR_ID_TYPE_REF).get(); }
+
+  /**
+   *  @return the context of the event
+   */
+  @JsonIgnore
+  public Optional<Context> getContext()
+  {
+    return get(CONTEXT, Context.class);
   }
 
   /**
@@ -89,8 +117,6 @@ public class CreateEventRequest extends WObject<CreateEventRequest> implements C
     return get(END_DATE, LocalDate.class);
   }
 
-  private static final TypeReference<ImmutableList<Participant>> PARTICIPANTS_TYPE_REF = new TypeReference<ImmutableList<Participant>>(){};
-
   /**
    * @return the list of participants for the event
    */
@@ -112,9 +138,21 @@ public class CreateEventRequest extends WObject<CreateEventRequest> implements C
       super(prior);
     }
 
+    public P originatorId(final WID<User> originatorId)
+    {
+      data(ORIGINATOR_ID, originatorId);
+      return self();
+    }
+
     public P name(final String name)
     {
       data(NAME, name);
+      return self();
+    }
+
+    public P context(final Context context)
+    {
+      data(CONTEXT, context);
       return self();
     }
 

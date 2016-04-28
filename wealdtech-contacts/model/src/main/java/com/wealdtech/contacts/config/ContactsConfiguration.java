@@ -43,5 +43,5 @@ public class ContactsConfiguration implements Configuration
 
   public String getProductId() { return productId; }
 
-  public OAuth2Configuration getOauth2Configuration() { return oauth2; }
+  public OAuth2Configuration getOAuth2Configuration() { return oauth2; }
 }

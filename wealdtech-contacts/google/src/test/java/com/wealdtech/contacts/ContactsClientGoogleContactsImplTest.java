@@ -37,7 +37,7 @@ public class ContactsClientGoogleContactsImplTest
     // The WID of the user obtaining the contacts.  We keep this constant to allow for repeat syncs
     final WID<User> userId = WID.fromString("7edac9cb9cc0bb7");
 
-    final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOauth2Configuration());
+    final GoogleAccountsClient accountsClient = new GoogleAccountsClient(configuration.getOAuth2Configuration());
     final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                                                  .name("Google contacts")
                                                                                  .accessToken("irrelevant")

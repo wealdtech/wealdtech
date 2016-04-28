@@ -27,7 +27,8 @@ import com.wealdtech.contacts.uses.EmailUse;
 import com.wealdtech.contacts.uses.NameUse;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.repositories.PostgreSqlRepository;
+import com.wealdtech.repository.ContactRepositoryPostgreSqlImpl;
+import com.wealdtech.repository.RelationshipRepositoryPostgreSqlImpl;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -44,13 +45,17 @@ public class ParticipantServiceSynchronousImplTest
   @BeforeClass
   public void setUp()
   {
-    final PostgreSqlRepository repository =
-        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
+    final PostgreSqlConfiguration postgreSqlConfiguration =
+        new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null);
 
     final ObjectMapper mapper = WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    final ContactService contactService = new ContactServicePostgreSqlImpl(repository, mapper);
+
+    final ContactService contactService =
+        new ContactServicePostgreSqlImpl(new ContactRepositoryPostgreSqlImpl(postgreSqlConfiguration), mapper);
     contactService.createDatastore();
-    relationshipService = new RelationshipServicePostgreSqlImpl(repository, contactService, mapper);
+    relationshipService =
+        new RelationshipServicePostgreSqlImpl(new RelationshipRepositoryPostgreSqlImpl(postgreSqlConfiguration), contactService,
+                                              mapper);
     service = new ParticipantServiceSynchronousImpl(relationshipService);
   }
 
