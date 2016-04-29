@@ -38,7 +38,7 @@ public class ValueSet
     {
 
       final Value value =
-          handleValueDefinition(valueDefinition, (Class)valueDefinition.getType(), inputs.get(valueDefinition.getName()), valuesB);
+          handleValueDefinition(valueDefinition, inputs.get(valueDefinition.getName()), valuesB);
       if (value != null)
       {
         valuesB.add(value);
@@ -50,7 +50,6 @@ public class ValueSet
 
   @Nullable
   private static <T> Value<T> handleValueDefinition(final ValueDefinition<T> valueDefinition,
-                                                    final Class<T> type,
                                                     final String input,
                                                     final ImmutableList.Builder<Value<?>> valuesB)
   {
@@ -68,13 +67,13 @@ public class ValueSet
       final ImmutableList<T> results = valueDefinition.getParser().parse(input);
       if (results.isEmpty())
       {
-        value = new Value<>(valueDefinition.getType(), valueDefinition.getName(), input, null, null, Value.State.NOT_PARSED);
+        value = new Value<>(valueDefinition.getName(), input, null, null, Value.State.NOT_PARSED);
       }
       else if (results.size() == 1)
       {
         if (valueDefinition.getValidator() == null)
         {
-          value = new Value<>(valueDefinition.getType(), valueDefinition.getName(), input, null, getResult(results, 0),
+          value = new Value<>(valueDefinition.getName(), input, null, getResult(results, 0),
                               Value.State.VALID);
         }
         else
@@ -82,19 +81,19 @@ public class ValueSet
           if (valueDefinition.getValidator().isValid(results.get(0)))
           {
             value =
-                new Value<>(valueDefinition.getType(), valueDefinition.getName(), input, null, results.get(0), Value.State.VALID);
+                new Value<>(valueDefinition.getName(), input, null, results.get(0), Value.State.VALID);
           }
           else
           {
             value =
-                new Value<>(valueDefinition.getType(), valueDefinition.getName(), input, null, results.get(0), Value.State.INVALID);
+                new Value<>(valueDefinition.getName(), input, null, results.get(0), Value.State.INVALID);
           }
 
         }
       }
       else
       {
-        value = new Value<>(valueDefinition.getType(), valueDefinition.getName(), input, results, null, Value.State.AMBIGUOUS);
+        value = new Value<>(valueDefinition.getName(), input, results, null, Value.State.AMBIGUOUS);
       }
     }
     return value;

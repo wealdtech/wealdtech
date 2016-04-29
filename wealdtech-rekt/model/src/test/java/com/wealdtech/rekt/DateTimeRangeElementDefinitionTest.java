@@ -40,7 +40,7 @@ public class DateTimeRangeElementDefinitionTest
         {
           try
           {
-            final Range<DateTime> result = WealdMapper.getServerMapper().readValue(input, new TypeReference<Range<DateTime>>() {});
+            final Range<DateTime> result = WealdMapper.getMapper().readValue("\"" + input + "\"", new TypeReference<Range<DateTime>>() {});
             resultsB.add(result);
           }
           catch (final IOException ioe)
@@ -52,8 +52,7 @@ public class DateTimeRangeElementDefinitionTest
       }
     };
 
-    final ValueDefinition<Range<DateTime>> elementDefinition =
-        new ValueDefinition<>(Range<DateTime>.class, "duration", parser, true, null, null);
+    final ValueDefinition<Range<DateTime>> elementDefinition = new ValueDefinition<>("duration", parser, true, null, null);
 
     final Definition definition = new Definition(ImmutableList.of(elementDefinition));
 

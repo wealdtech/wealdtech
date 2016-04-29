@@ -14,29 +14,24 @@ import javax.annotation.Nullable;
 
 public class ValueDefinition<T>
 {
-  private final Class<T> type;
   private final String name;
   private final boolean mandatory;
   private final Parser<T> parser;
   private final Validator<T> validator;
   private final T defaultValue;
 
-  public ValueDefinition(final Class<T> type,
-                         final String name,
+  public ValueDefinition(final String name,
                          final Parser<T> parser,
                          final boolean mandatory,
                          @Nullable Validator<T> validator,
                          @Nullable final T defaultValue)
   {
-    this.type = type;
     this.name = name;
     this.parser = parser;
     this.mandatory = mandatory;
     this.validator = validator;
     this.defaultValue = defaultValue;
   }
-
-  public Class<T> getType() { return type; }
 
   public String getName()
   {

@@ -16,29 +16,24 @@ import javax.annotation.Nullable;
 
 public class Value<T>
 {
-  private final Class<T> type;
   private final String name;
   private final String input;
   private final ImmutableList<T> potentialValues;
   private final T value;
   private final State state;
 
-  public Value(final Class<T> type,
-               final String name,
+  public Value(final String name,
                final String input,
                @Nullable final ImmutableList<T> potentialValues,
                @Nullable final T value,
                final State state)
   {
-    this.type = type;
     this.name = name;
     this.input = input;
     this.potentialValues = potentialValues;
     this.value = value;
     this.state = state;
   }
-
-  public Class<T> getType() { return type; }
 
   public String getName()
   {

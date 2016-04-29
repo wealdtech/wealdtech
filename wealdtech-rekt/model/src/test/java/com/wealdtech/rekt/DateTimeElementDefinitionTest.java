@@ -44,7 +44,7 @@ public class DateTimeElementDefinitionTest
       }
     };
 
-    final ValueDefinition<DateTime> elementDefinition = new ValueDefinition<>(DateTime.class, "when", parser, true, null, null);
+    final ValueDefinition<DateTime> elementDefinition = new ValueDefinition<>("when", parser, true, null, null);
 
     final Definition definition = new Definition(ImmutableList.of(elementDefinition));
 
