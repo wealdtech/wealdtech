@@ -72,6 +72,8 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/model/wealdtech-notifications-model.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/model/wealdtech-notifications-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/null/wealdtech-notifications-null.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/null/wealdtech-notifications-null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-rationale/wealdtech-rationale.iml" filepath="$PROJECT_DIR$/wealdtech-rationale/wealdtech-rationale.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-rekt/wealdtech-rekt.iml" filepath="$PROJECT_DIR$/wealdtech-rekt/wealdtech-rekt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-rekt/model/wealdtech-rekt-model.iml" filepath="$PROJECT_DIR$/wealdtech-rekt/model/wealdtech-rekt-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" filepath="$PROJECT_DIR$/wealdtech-retrofit/wealdtech-retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" filepath="$PROJECT_DIR$/wealdtech-roberto/wealdtech-roberto.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/wealdtech-services.iml" filepath="$PROJECT_DIR$/wealdtech-services/wealdtech-services.iml" />
