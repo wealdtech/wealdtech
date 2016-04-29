@@ -10,10 +10,9 @@
 
 package com.wealdtech.rekt;
 
-public interface Validator<T>
+import com.google.common.collect.ImmutableList;
+
+public interface ResultGenerator<T>
 {
-  /**
-   * Validate an element
-   */
-  boolean isValid(T value);
+  ImmutableList<Result> generate(ImmutableList<String> inputs, ResultValidator<T> validator);
 }

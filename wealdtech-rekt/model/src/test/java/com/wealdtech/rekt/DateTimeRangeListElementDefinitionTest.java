@@ -24,14 +24,14 @@ import java.io.IOException;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-public class DateTimeRangeElementDefinitionTest
+public class DateTimeRangeListElementDefinitionTest
 {
   @Test
   public void testSimpleElement()
   {
-    final ResultGenerator<Range<DateTime>> generator = new ResultGenerator<Range<DateTime>>(){
+    final ResultGenerator<ImmutableList<Range<DateTime>>> generator = new ResultGenerator<ImmutableList<Range<DateTime>>>(){
       @Override
-      public ImmutableList<Result> generate(final ImmutableList<String> inputs, final ResultValidator<Range<DateTime>> validator)
+      public ImmutableList<Result> generate(final ImmutableList<String> inputs, final ResultValidator<ImmutableList<Range<DateTime>>> validator)
       {
         final ImmutableList.Builder<Result> resultsB = ImmutableList.builder();
         if (inputs != null)
@@ -40,8 +40,10 @@ public class DateTimeRangeElementDefinitionTest
           {
             try
             {
-              final Range<DateTime> result =
-                  WealdMapper.getMapper().readValue("\"" + input + "\"", new TypeReference<Range<DateTime>>() {});
+                          final ImmutableList<Range<DateTime>> result =
+                              WealdMapper.getMapper().readValue(input, new TypeReference<ImmutableList<Range<DateTime>>>() {});
+//              final Range<DateTime> result =
+//                  WealdMapper.getMapper().readValue("\"" + input + "\"", new TypeReference<Range<DateTime>>() {});
               final boolean valid = validator == null || validator.validate(input, result);
               resultsB.add(Result.builder().value(result).state(valid ? State.VALID : State.INVALID).build());
             }
@@ -55,19 +57,19 @@ public class DateTimeRangeElementDefinitionTest
       }
     };
 
-    final ElementDefinition<Range<DateTime>> elementDefinition = new ElementDefinition<>("duration", true, null, generator, null);
+    final ElementDefinition<ImmutableList<Range<DateTime>>> elementDefinition = new ElementDefinition<>("durations", true, null, generator, null);
 
     final Definition definition = new Definition(ImmutableList.of(elementDefinition));
 
-    final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("duration", ImmutableList.of("[2015-06-05T12:00:00Z,2015-06-05T14:00:00Z)"));
+    final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("durations", ImmutableList.of("[\"[2015-06-05T12:00:00Z,2015-06-05T14:00:00Z)\",\"[2015-06-05T16:00:00Z,2015-06-05T18:00:00Z)\"]"));
 
     final ResultSet resultSet = ResultSet.fromDefinition(definition, inputs);
-    final Element element = resultSet.obtainElement("duration");
+    final Element element = resultSet.obtainElement("durations");
 
     assertNotNull(element);
     assertEquals(element.getResults().get(0).getState(), State.VALID);
-    assertEquals(element.getResults().get(0).getValue(new TypeReference<Range<DateTime>>() {}).get(),
-                 Range.closedOpen(new DateTime(2015, 6, 5, 12, 0, 0, DateTimeZone.UTC),
-                                  new DateTime(2015, 6, 5, 14, 0, 0, DateTimeZone.UTC)));
+    assertEquals(element.getResults().get(0).getValue(new TypeReference<ImmutableList<Range<DateTime>>>() {}).get().get(1),
+                 Range.closedOpen(new DateTime(2015, 6, 5, 16, 0, 0, DateTimeZone.UTC),
+                                  new DateTime(2015, 6, 5, 18, 0, 0, DateTimeZone.UTC)));
   }
 }

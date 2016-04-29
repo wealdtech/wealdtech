@@ -600,6 +600,13 @@ public class WObject<T extends WObject> implements Comparable<T>
     }
 
     final String valStr = stringify(val, Collection.class.isAssignableFrom(klazz));
+
+    if (Objects.equal(klazz, String.class))
+    {
+      // Just return the string value without further parsing
+      return Optional.<U>fromNullable((U)valStr);
+    }
+
     try
     {
       final U result = MAPPER.readValue(valStr, klazz);

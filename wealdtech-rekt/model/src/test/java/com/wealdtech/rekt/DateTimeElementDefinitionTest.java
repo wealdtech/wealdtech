@@ -18,8 +18,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.testng.annotations.Test;
 
-import javax.annotation.Nullable;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -28,33 +26,36 @@ public class DateTimeElementDefinitionTest
   @Test
   public void testSimpleElement()
   {
-    final Parser<DateTime> parser = new Parser<DateTime>()
-    {
+    final ResultGenerator<DateTime> generator = new ResultGenerator<DateTime>(){
       @Override
-      public ImmutableList<DateTime> parse(@Nullable final String input)
+      public ImmutableList<Result> generate(final ImmutableList<String> inputs, final ResultValidator<DateTime> validator)
       {
-        final ImmutableList.Builder<DateTime> resultsB = ImmutableList.builder();
-        if (input != null)
+        final ImmutableList.Builder<Result> resultsB = ImmutableList.builder();
+        if (inputs != null)
         {
-          final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-          final DateTime dt = formatter.parseDateTime(input).withZone(DateTimeZone.UTC);
-          resultsB.add(dt);
+          for (final String input : inputs)
+          {
+            final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+            final DateTime dt = formatter.parseDateTime(input).withZone(DateTimeZone.UTC);
+            final boolean valid = validator == null || validator.validate(input, dt);
+            resultsB.add(Result.builder().value(dt).state(valid ? State.VALID : State.INVALID).build());
+          }
         }
         return resultsB.build();
       }
     };
 
-    final ValueDefinition<DateTime> elementDefinition = new ValueDefinition<>("when", parser, true, null, null);
+    final ElementDefinition<DateTime> elementDefinition = new ElementDefinition<>("when", true, null, generator, null);
 
     final Definition definition = new Definition(ImmutableList.of(elementDefinition));
 
-    final ImmutableMap<String, String> inputs = ImmutableMap.of("when", "2015-06-05T12:00:00Z");
+    final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("when", ImmutableList.of("2015-06-05T12:00:00Z"));
 
-    final ValueSet result = ValueSet.fromDefinition(definition, inputs);
+    final ResultSet resultSet = ResultSet.fromDefinition(definition, inputs);
+    final Element element = resultSet.obtainElement("when");
 
-    final Value<DateTime> parsedElement = result.getValue("when");
-    assertNotNull(parsedElement);
-    assertEquals(parsedElement.getState(), Value.State.VALID);
-    assertEquals(parsedElement.getValue(), new DateTime(2015, 6, 5, 12, 0, 0, DateTimeZone.UTC));
+    assertNotNull(element);
+    assertEquals(element.getResults().get(0).getState(), State.VALID);
+    assertEquals(element.getResults().get(0).getValue(DateTime.class).get(), new DateTime(2015, 6, 5, 12, 0, 0, DateTimeZone.UTC));
   }
 }

@@ -14,14 +14,14 @@ import com.google.common.collect.ImmutableList;
 
 public class Definition
 {
-  private final ImmutableList<? extends ValueDefinition<?>> definitions;
+  private final ImmutableList<? extends ElementDefinition<?>> definitions;
 
-  public Definition(final ImmutableList<? extends ValueDefinition<?>> definitions)
+  public Definition(final ImmutableList<? extends ElementDefinition<?>> definitions)
   {
     this.definitions = definitions;
   }
 
-  public ImmutableList<? extends ValueDefinition<?>> getValueDefinitions()
+  public ImmutableList<? extends ElementDefinition<?>> getElementDefinitions()
   {
     return definitions;
   }

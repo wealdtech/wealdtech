@@ -10,27 +10,25 @@
 
 package com.wealdtech.rekt;
 
-import javax.annotation.Nullable;
-
-public class ValueDefinition<T>
+public class ElementDefinition<T>
 {
   private final String name;
   private final boolean mandatory;
-  private final Parser<T> parser;
-  private final Validator<T> validator;
   private final T defaultValue;
+  private final ResultGenerator<T> generator;
+  private final ResultValidator<T> validator;
 
-  public ValueDefinition(final String name,
-                         final Parser<T> parser,
-                         final boolean mandatory,
-                         @Nullable Validator<T> validator,
-                         @Nullable final T defaultValue)
+  public ElementDefinition(final String name,
+                           final boolean mandatory,
+                           final T defaultValue,
+                           final ResultGenerator<T> generator,
+                           final ResultValidator<T> validator)
   {
     this.name = name;
-    this.parser = parser;
     this.mandatory = mandatory;
-    this.validator = validator;
     this.defaultValue = defaultValue;
+    this.generator = generator;
+    this.validator = validator;
   }
 
   public String getName()
@@ -38,25 +36,23 @@ public class ValueDefinition<T>
     return name;
   }
 
-  public Parser<T> getParser()
-  {
-    return parser;
-  }
-
   public boolean isMandatory()
   {
     return mandatory;
   }
 
-  @Nullable
-  public Validator<T> getValidator()
-  {
-    return validator;
-  }
-
-  @Nullable
   public T getDefaultValue()
   {
     return defaultValue;
+  }
+
+  public ResultGenerator<T> getGenerator()
+  {
+    return generator;
+  }
+
+  public ResultValidator<T> getValidator()
+  {
+    return validator;
   }
 }

@@ -10,65 +10,44 @@
 
 package com.wealdtech.rekt;
 
-import com.google.common.collect.ImmutableList;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.wealdtech.WObject;
 
-import javax.annotation.Nullable;
+import java.util.Map;
 
-public class Value<T>
+public class Value extends WObject<Value> implements Comparable<Value>
 {
-  private final String name;
-  private final String input;
-  private final ImmutableList<T> potentialValues;
-  private final T value;
-  private final State state;
-
-  public Value(final String name,
-               final String input,
-               @Nullable final ImmutableList<T> potentialValues,
-               @Nullable final T value,
-               final State state)
+  @JsonCreator
+  public Value(final Map<String, Object> data)
   {
-    this.name = name;
-    this.input = input;
-    this.potentialValues = potentialValues;
-    this.value = value;
-    this.state = state;
+    super(data);
   }
 
-  public String getName()
+  public static class Builder<P extends Builder<P>> extends WObject.Builder<Value, P>
   {
-    return name;
+    public Builder()
+    {
+      super();
+    }
+
+    public Builder(final Value prior)
+    {
+      super(prior);
+    }
+
+    public Value build()
+    {
+      return new Value(data);
+    }
   }
 
-  public String getInput()
+  public static Builder<?> builder()
   {
-    return input;
+    return new Builder();
   }
 
-  @Nullable
-  public ImmutableList<T> getPotentialValues()
+  public static Builder<?> builder(final Value prior)
   {
-    return potentialValues;
-  }
-
-  @Nullable
-  public T getValue()
-  {
-    return value;
-  }
-
-  public State getState()
-  {
-    return state;
-  }
-
-  public static enum State
-  {
-    NOT_PRESENT,
-    NOT_PARSED,
-    AMBIGUOUS,
-    INVALID,
-    VALID;
+    return new Builder(prior);
   }
 }
-

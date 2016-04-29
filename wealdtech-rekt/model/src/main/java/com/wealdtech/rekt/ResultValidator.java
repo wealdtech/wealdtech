@@ -10,14 +10,7 @@
 
 package com.wealdtech.rekt;
 
-import com.google.common.collect.ImmutableList;
-
-import javax.annotation.Nullable;
-
-public interface Parser<T>
+public interface ResultValidator<T>
 {
-  /**
-   * Parse an element input in to a suitable value
-   */
-  ImmutableList<T> parse(@Nullable String input);
+  boolean validate(String input, T result);
 }
