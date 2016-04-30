@@ -38,7 +38,7 @@ public class DateTimeElementDefinitionTest
             final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
             final DateTime dt = formatter.parseDateTime(input).withZone(DateTimeZone.UTC);
             final boolean valid = validator == null || validator.validate(input, dt);
-            resultsB.add(Result.builder().value(dt).state(valid ? State.VALID : State.INVALID).build());
+            resultsB.add(Result.builder().value(dt).state(valid ? State.GOOD : State.INVALID).build());
           }
         }
         return resultsB.build();
@@ -47,7 +47,7 @@ public class DateTimeElementDefinitionTest
 
     final ElementDefinition<DateTime> elementDefinition = new ElementDefinition<>("when", true, null, generator, null);
 
-    final Definition definition = new Definition(ImmutableList.of(elementDefinition));
+    final ElementDefinitionGroup definition = new ElementDefinitionGroup(ImmutableList.of(elementDefinition));
 
     final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("when", ImmutableList.of("2015-06-05T12:00:00Z"));
 
@@ -55,7 +55,7 @@ public class DateTimeElementDefinitionTest
     final Element element = resultSet.obtainElement("when");
 
     assertNotNull(element);
-    assertEquals(element.getResults().get(0).getState(), State.VALID);
+    assertEquals(element.getResults().get(0).getState(), State.GOOD);
     assertEquals(element.getResults().get(0).getValue(DateTime.class).get(), new DateTime(2015, 6, 5, 12, 0, 0, DateTimeZone.UTC));
   }
 }

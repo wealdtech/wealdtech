@@ -46,7 +46,7 @@ public class ResultSet extends WObject<ResultSet> implements Comparable<ResultSe
     return null;
   }
 
-  public static ResultSet fromDefinition(final Definition definition, final ImmutableMap<String, ImmutableList<String>> inputs)
+  public static ResultSet fromDefinition(final ElementDefinitionGroup definition, final ImmutableMap<String, ImmutableList<String>> inputs)
   {
     final ImmutableList.Builder<Element> elementsB = ImmutableList.builder();
 

@@ -12,11 +12,15 @@ package com.wealdtech.rekt;
 
 import com.google.common.collect.ImmutableList;
 
-public class Definition
+/**
+ * A group of element definitions.
+ * Used to define the overall data required as input
+ */
+public class ElementDefinitionGroup
 {
   private final ImmutableList<? extends ElementDefinition<?>> definitions;
 
-  public Definition(final ImmutableList<? extends ElementDefinition<?>> definitions)
+  public ElementDefinitionGroup(final ImmutableList<? extends ElementDefinition<?>> definitions)
   {
     this.definitions = definitions;
   }

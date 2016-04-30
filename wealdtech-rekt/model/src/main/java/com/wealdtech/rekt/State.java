@@ -24,11 +24,26 @@ import static com.wealdtech.Preconditions.checkNotNull;
 
 public enum State
 {
-  NOT_PRESENT(0),
-  NOT_PARSED(1),
+  /**
+   * No value supplied
+   */
+  MISSING(0),
+  /**
+   * Value supplied cannot be understood
+   */
+  UNPARSEABLE(1),
+  /**
+   * Value supplied results in multiple possible answers
+   */
   AMBIGUOUS(2),
+  /**
+   * Value supplied does not meet validation requirements
+   */
   INVALID(3),
-  VALID(4);
+  /**
+   * Value supplie is good
+   */
+  GOOD(4);
 
   private static final ImmutableSortedMap<Integer, State> _VALMAP;
 

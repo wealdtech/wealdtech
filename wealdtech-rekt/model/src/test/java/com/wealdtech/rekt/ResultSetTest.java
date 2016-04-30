@@ -34,16 +34,16 @@ public class ResultSetTest
                          .inputs(ImmutableList.of("2015-05-06T14:00:00Z", "2015-05-06T16:00:00Z"))
                          .results(ImmutableList.of(Result.builder()
                                                          .value(new DateTime(2015, 5, 6, 14, 0, 0, DateTimeZone.UTC))
-                                                         .state(State.VALID)
+                                                         .state(State.GOOD)
                                                          .build(), Result.builder()
                                                                          .value(
                                                                              new DateTime(2015, 5, 6, 16, 0, 0, DateTimeZone.UTC))
-                                                                         .state(State.VALID)
+                                                                         .state(State.GOOD)
                                                                          .build()))
                          .build());
 
-    final ResultSet resultSet = ResultSet.builder().state(State.VALID).elements(elementsB.build()).build();
-    assertEquals(WObject.serialize(resultSet), "{\"elements\":[{\"inputs\":[\"2015-05-06T14:00:00Z\",\"2015-05-06T16:00:00Z\"],\"name\":\"datetimes\",\"results\":[{\"state\":\"Valid\",\"value\":{\"timestamp\":1430920800000}},{\"state\":\"Valid\",\"value\":{\"timestamp\":1430928000000}}]}],\"state\":\"Valid\"}");
+    final ResultSet resultSet = ResultSet.builder().state(State.GOOD).elements(elementsB.build()).build();
+    assertEquals(WObject.serialize(resultSet), "{\"elements\":[{\"inputs\":[\"2015-05-06T14:00:00Z\",\"2015-05-06T16:00:00Z\"],\"name\":\"datetimes\",\"results\":[{\"state\":\"Good\",\"value\":{\"timestamp\":1430920800000}},{\"state\":\"Good\",\"value\":{\"timestamp\":1430928000000}}]}],\"state\":\"Good\"}");
   }
 
   public static class Person

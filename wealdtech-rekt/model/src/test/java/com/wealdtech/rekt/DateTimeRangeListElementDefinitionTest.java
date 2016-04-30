@@ -45,11 +45,11 @@ public class DateTimeRangeListElementDefinitionTest
 //              final Range<DateTime> result =
 //                  WealdMapper.getMapper().readValue("\"" + input + "\"", new TypeReference<Range<DateTime>>() {});
               final boolean valid = validator == null || validator.validate(input, result);
-              resultsB.add(Result.builder().value(result).state(valid ? State.VALID : State.INVALID).build());
+              resultsB.add(Result.builder().value(result).state(valid ? State.GOOD : State.INVALID).build());
             }
             catch (final IOException ioe)
             {
-              resultsB.add(Result.builder().state(State.NOT_PARSED).build());
+              resultsB.add(Result.builder().state(State.UNPARSEABLE).build());
             }
           }
         }
@@ -59,7 +59,7 @@ public class DateTimeRangeListElementDefinitionTest
 
     final ElementDefinition<ImmutableList<Range<DateTime>>> elementDefinition = new ElementDefinition<>("durations", true, null, generator, null);
 
-    final Definition definition = new Definition(ImmutableList.of(elementDefinition));
+    final ElementDefinitionGroup definition = new ElementDefinitionGroup(ImmutableList.of(elementDefinition));
 
     final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("durations", ImmutableList.of("[\"[2015-06-05T12:00:00Z,2015-06-05T14:00:00Z)\",\"[2015-06-05T16:00:00Z,2015-06-05T18:00:00Z)\"]"));
 
@@ -67,7 +67,7 @@ public class DateTimeRangeListElementDefinitionTest
     final Element element = resultSet.obtainElement("durations");
 
     assertNotNull(element);
-    assertEquals(element.getResults().get(0).getState(), State.VALID);
+    assertEquals(element.getResults().get(0).getState(), State.GOOD);
     assertEquals(element.getResults().get(0).getValue(new TypeReference<ImmutableList<Range<DateTime>>>() {}).get().get(1),
                  Range.closedOpen(new DateTime(2015, 6, 5, 16, 0, 0, DateTimeZone.UTC),
                                   new DateTime(2015, 6, 5, 18, 0, 0, DateTimeZone.UTC)));

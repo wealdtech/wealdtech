@@ -12,5 +12,5 @@ package com.wealdtech.rekt;
 
 public interface ResultValidator<T>
 {
-  boolean validate(String input, T result);
+  boolean validate(String input, T value);
 }

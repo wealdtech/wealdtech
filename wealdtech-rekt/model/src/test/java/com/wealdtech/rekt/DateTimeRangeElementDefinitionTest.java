@@ -43,11 +43,11 @@ public class DateTimeRangeElementDefinitionTest
               final Range<DateTime> result =
                   WealdMapper.getMapper().readValue("\"" + input + "\"", new TypeReference<Range<DateTime>>() {});
               final boolean valid = validator == null || validator.validate(input, result);
-              resultsB.add(Result.builder().value(result).state(valid ? State.VALID : State.INVALID).build());
+              resultsB.add(Result.builder().value(result).state(valid ? State.GOOD : State.INVALID).build());
             }
             catch (final IOException ioe)
             {
-              resultsB.add(Result.builder().state(State.NOT_PARSED).build());
+              resultsB.add(Result.builder().state(State.UNPARSEABLE).build());
             }
           }
         }
@@ -57,7 +57,7 @@ public class DateTimeRangeElementDefinitionTest
 
     final ElementDefinition<Range<DateTime>> elementDefinition = new ElementDefinition<>("duration", true, null, generator, null);
 
-    final Definition definition = new Definition(ImmutableList.of(elementDefinition));
+    final ElementDefinitionGroup definition = new ElementDefinitionGroup(ImmutableList.of(elementDefinition));
 
     final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("duration", ImmutableList.of("[2015-06-05T12:00:00Z,2015-06-05T14:00:00Z)"));
 
@@ -65,7 +65,7 @@ public class DateTimeRangeElementDefinitionTest
     final Element element = resultSet.obtainElement("duration");
 
     assertNotNull(element);
-    assertEquals(element.getResults().get(0).getState(), State.VALID);
+    assertEquals(element.getResults().get(0).getState(), State.GOOD);
     assertEquals(element.getResults().get(0).getValue(new TypeReference<Range<DateTime>>() {}).get(),
                  Range.closedOpen(new DateTime(2015, 6, 5, 12, 0, 0, DateTimeZone.UTC),
                                   new DateTime(2015, 6, 5, 14, 0, 0, DateTimeZone.UTC)));
