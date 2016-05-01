@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableList;
  */
 public class ElementDefinitionGroup
 {
-  private final ImmutableList<? extends ElementDefinition<?>> definitions;
+  protected final ImmutableList<? extends ElementDefinition<?>> definitions;
 
   public ElementDefinitionGroup(final ImmutableList<? extends ElementDefinition<?>> definitions)
   {

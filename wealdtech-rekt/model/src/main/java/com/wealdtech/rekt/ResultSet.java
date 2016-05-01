@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.wealdtech.WObject;
 
 import javax.annotation.Nullable;
@@ -46,13 +46,13 @@ public class ResultSet extends WObject<ResultSet> implements Comparable<ResultSe
     return null;
   }
 
-  public static ResultSet fromDefinition(final ElementDefinitionGroup definition, final ImmutableMap<String, ImmutableList<String>> inputs)
+  public static ResultSet fromDefinition(final ElementDefinitionGroup definition, final ImmutableMultimap<String, String> inputs)
   {
     final ImmutableList.Builder<Element> elementsB = ImmutableList.builder();
 
     for (final ElementDefinition<?> elementDefinition : definition.getElementDefinitions())
     {
-      final Element element = Element.fromDefinition(elementDefinition, inputs.get(elementDefinition.getName()));
+      final Element element = Element.fromDefinition(elementDefinition, ImmutableList.copyOf(inputs.get(elementDefinition.getName())));
       if (element != null)
       {
         elementsB.add(element);
