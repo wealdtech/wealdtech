@@ -10,7 +10,9 @@
 
 package com.wealdtech.rekt;
 
+import javax.annotation.Nullable;
+
 public interface ResultValidator<T>
 {
-  boolean validate(String input, T value);
+  boolean validate(String input, T value, @Nullable AdditionalInfo additionalInfo);
 }

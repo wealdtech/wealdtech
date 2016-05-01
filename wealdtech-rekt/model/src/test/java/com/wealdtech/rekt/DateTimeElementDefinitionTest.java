@@ -28,7 +28,9 @@ public class DateTimeElementDefinitionTest
   {
     final ResultGenerator<DateTime> generator = new ResultGenerator<DateTime>(){
       @Override
-      public ImmutableList<Result> generate(final ImmutableList<String> inputs, final ResultValidator<DateTime> validator)
+      public ImmutableList<Result> generate(final ImmutableList<String> inputs,
+                                            final ResultValidator<DateTime> validator,
+                                            final AdditionalInfo additionalInfo)
       {
         final ImmutableList.Builder<Result> resultsB = ImmutableList.builder();
         if (inputs != null)
@@ -37,7 +39,7 @@ public class DateTimeElementDefinitionTest
           {
             final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
             final DateTime dt = formatter.parseDateTime(input).withZone(DateTimeZone.UTC);
-            final boolean valid = validator == null || validator.validate(input, dt);
+            final boolean valid = validator == null || validator.validate(input, dt, null);
             resultsB.add(Result.builder().value(dt).state(valid ? State.GOOD : State.INVALID).build());
           }
         }

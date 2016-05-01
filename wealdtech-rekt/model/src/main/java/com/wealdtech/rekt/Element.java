@@ -110,7 +110,7 @@ public class Element extends WObject<Element> implements Comparable<Element>
     }
     else
     {
-      elementB.results(definition.getGenerator().generate(inputs, definition.getValidator()));
+      elementB.results(definition.getGenerator().generate(inputs, definition.getValidator(), null));
     }
     return elementB.build();
   }

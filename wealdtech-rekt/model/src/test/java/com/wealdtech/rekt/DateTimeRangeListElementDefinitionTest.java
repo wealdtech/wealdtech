@@ -31,7 +31,9 @@ public class DateTimeRangeListElementDefinitionTest
   {
     final ResultGenerator<ImmutableList<Range<DateTime>>> generator = new ResultGenerator<ImmutableList<Range<DateTime>>>(){
       @Override
-      public ImmutableList<Result> generate(final ImmutableList<String> inputs, final ResultValidator<ImmutableList<Range<DateTime>>> validator)
+      public ImmutableList<Result> generate(final ImmutableList<String> inputs,
+                                            final ResultValidator<ImmutableList<Range<DateTime>>> validator,
+                                            final AdditionalInfo additionalInfo)
       {
         final ImmutableList.Builder<Result> resultsB = ImmutableList.builder();
         if (inputs != null)
@@ -44,7 +46,7 @@ public class DateTimeRangeListElementDefinitionTest
                               WealdMapper.getMapper().readValue(input, new TypeReference<ImmutableList<Range<DateTime>>>() {});
 //              final Range<DateTime> result =
 //                  WealdMapper.getMapper().readValue("\"" + input + "\"", new TypeReference<Range<DateTime>>() {});
-              final boolean valid = validator == null || validator.validate(input, result);
+              final boolean valid = validator == null || validator.validate(input, result, null);
               resultsB.add(Result.builder().value(result).state(valid ? State.GOOD : State.INVALID).build());
             }
             catch (final IOException ioe)

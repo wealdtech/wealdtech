@@ -12,7 +12,11 @@ package com.wealdtech.rekt;
 
 import com.google.common.collect.ImmutableList;
 
+import javax.annotation.Nullable;
+
 public interface ResultGenerator<T>
 {
-  ImmutableList<Result> generate(ImmutableList<String> inputs, ResultValidator<T> validator);
+  ImmutableList<Result> generate(ImmutableList<String> inputs,
+                                 ResultValidator<T> validator,
+                                 @Nullable AdditionalInfo additionalInfo);
 }
