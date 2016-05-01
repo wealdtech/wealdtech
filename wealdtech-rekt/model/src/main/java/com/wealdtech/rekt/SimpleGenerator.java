@@ -36,31 +36,40 @@ public abstract class SimpleGenerator<T> implements ResultGenerator<T>
         else
         {
           final TwoTuple<T, ImmutableList<T>> inputResults = generate(input, additionalInfo);
-          if (inputResults.getS() == null)
+          if (inputResults == null)
           {
-            if (inputResults.getT() == null)
-            {
-              // Input is unparseable
-              resultsB.add(Result.builder().state(State.UNPARSEABLE).build());
-            }
-            else
-            {
-              // Input is ambiguous
-              resultsB.add(Result.builder().potentialValues(inputResults.getT()).state(State.AMBIGUOUS).build());
-            }
+            // Input is unparseable
+            resultsB.add(Result.builder().state(State.UNPARSEABLE).build());
           }
           else
           {
-            if (validator == null)
+
+            if (inputResults.getS() == null)
             {
-              // No validator so the result is good
-              resultsB.add(Result.builder().value(inputResults.getS()).state(State.GOOD).build());
+              if (inputResults.getT() == null)
+              {
+                // Input is unparseable
+                resultsB.add(Result.builder().state(State.UNPARSEABLE).build());
+              }
+              else
+              {
+                // Input is ambiguous
+                resultsB.add(Result.builder().potentialValues(inputResults.getT()).state(State.AMBIGUOUS).build());
+              }
             }
             else
             {
-              // Validator so the result depends on the result of validation
-              final State state = validator.validate(input, inputResults.getS(), additionalInfo) ? State.GOOD : State.INVALID;
-              resultsB.add(Result.builder().value(inputResults.getS()).state(state).build());
+              if (validator == null)
+              {
+                // No validator so the result is good
+                resultsB.add(Result.builder().value(inputResults.getS()).state(State.GOOD).build());
+              }
+              else
+              {
+                // Validator so the result depends on the result of validation
+                final State state = validator.validate(input, inputResults.getS(), additionalInfo) ? State.GOOD : State.INVALID;
+                resultsB.add(Result.builder().value(inputResults.getS()).state(state).build());
+              }
             }
           }
         }
@@ -71,7 +80,9 @@ public abstract class SimpleGenerator<T> implements ResultGenerator<T>
 
   /**
    * Generate results given an input
+   *
    * @param input the input from which to generate the result
+   *
    * @return a two tuple of information.  The first element in the tuple should only be provided if there is a single unambiguous
    * result.  The second element in the tuple should only be provided if there are multiple ambiguous results.
    */

@@ -98,7 +98,9 @@ public class Element extends WObject<Element> implements Comparable<Element>
   }
 
   @Nullable
-  public static <T> Element fromDefinition(final ElementDefinition<T> definition, final ImmutableList<String> inputs)
+  public static <T> Element fromDefinition(final ElementDefinition<T> definition,
+                                           final ImmutableList<String> inputs,
+                                           final AdditionalInfo additionalInfo)
   {
     final Element.Builder<?> elementB = Element.builder().name(definition.getName()).inputs(inputs);
     if (inputs == null)
@@ -110,7 +112,7 @@ public class Element extends WObject<Element> implements Comparable<Element>
     }
     else
     {
-      elementB.results(definition.getGenerator().generate(inputs, definition.getValidator(), null));
+      elementB.results(definition.getGenerator().generate(inputs, definition.getValidator(), additionalInfo));
     }
     return elementB.build();
   }

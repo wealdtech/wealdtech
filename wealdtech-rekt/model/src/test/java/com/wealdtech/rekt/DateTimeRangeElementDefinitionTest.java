@@ -12,7 +12,7 @@ package com.wealdtech.rekt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Range;
 import com.wealdtech.jackson.WealdMapper;
 import org.joda.time.DateTime;
@@ -61,9 +61,9 @@ public class DateTimeRangeElementDefinitionTest
 
     final ElementDefinitionGroup definition = new ElementDefinitionGroup(ImmutableList.of(elementDefinition));
 
-    final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("duration", ImmutableList.of("[2015-06-05T12:00:00Z,2015-06-05T14:00:00Z)"));
+    final ImmutableMultimap<String, String> inputs = ImmutableMultimap.of("duration", "[2015-06-05T12:00:00Z,2015-06-05T14:00:00Z)");
 
-    final ResultSet resultSet = ResultSet.fromDefinition(definition, inputs);
+    final ResultSet resultSet = ResultSet.fromDefinition(definition, inputs, null);
     final Element element = resultSet.obtainElement("duration");
 
     assertNotNull(element);

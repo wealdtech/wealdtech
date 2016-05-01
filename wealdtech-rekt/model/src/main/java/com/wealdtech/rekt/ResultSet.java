@@ -27,10 +27,10 @@ public class ResultSet extends WObject<ResultSet> implements Comparable<ResultSe
 {
   private static final String STATE = "state";
   private static final String ELEMENTS = "elements";
-  private static final TypeReference<ImmutableList<Element>> ELEMENTS_TYPE_REF = new TypeReference<ImmutableList<Element>>(){};
+  private static final TypeReference<ImmutableList<Element>> ELEMENTS_TYPE_REF = new TypeReference<ImmutableList<Element>>() {};
 
   @JsonCreator
-  public ResultSet(final Map<String, Object> data) { super(data); }
+  public ResultSet(final Map<String, Object> data){ super(data); }
 
   @JsonIgnore
   @Nullable
@@ -46,13 +46,16 @@ public class ResultSet extends WObject<ResultSet> implements Comparable<ResultSe
     return null;
   }
 
-  public static ResultSet fromDefinition(final ElementDefinitionGroup definition, final ImmutableMultimap<String, String> inputs)
+  public static ResultSet fromDefinition(final ElementDefinitionGroup definition,
+                                         final ImmutableMultimap<String, String> inputs,
+                                         final AdditionalInfo additionalInfo)
   {
     final ImmutableList.Builder<Element> elementsB = ImmutableList.builder();
 
     for (final ElementDefinition<?> elementDefinition : definition.getElementDefinitions())
     {
-      final Element element = Element.fromDefinition(elementDefinition, ImmutableList.copyOf(inputs.get(elementDefinition.getName())));
+      final Element element =
+          Element.fromDefinition(elementDefinition, ImmutableList.copyOf(inputs.get(elementDefinition.getName())), additionalInfo);
       if (element != null)
       {
         elementsB.add(element);
@@ -70,7 +73,7 @@ public class ResultSet extends WObject<ResultSet> implements Comparable<ResultSe
   }
 
   @JsonIgnore
-  public ImmutableList<Element> getElements() { return get(ELEMENTS, ELEMENTS_TYPE_REF).get(); }
+  public ImmutableList<Element> getElements(){ return get(ELEMENTS, ELEMENTS_TYPE_REF).get(); }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<ResultSet, P>
   {

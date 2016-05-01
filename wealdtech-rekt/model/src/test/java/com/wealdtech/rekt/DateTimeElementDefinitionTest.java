@@ -11,7 +11,7 @@
 package com.wealdtech.rekt;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -51,9 +51,9 @@ public class DateTimeElementDefinitionTest
 
     final ElementDefinitionGroup definition = new ElementDefinitionGroup(ImmutableList.of(elementDefinition));
 
-    final ImmutableMap<String, ImmutableList<String>> inputs = ImmutableMap.of("when", ImmutableList.of("2015-06-05T12:00:00Z"));
+    final ImmutableMultimap<String, String> inputs = ImmutableMultimap.of("when", "2015-06-05T12:00:00Z");
 
-    final ResultSet resultSet = ResultSet.fromDefinition(definition, inputs);
+    final ResultSet resultSet = ResultSet.fromDefinition(definition, inputs, null);
     final Element element = resultSet.obtainElement("when");
 
     assertNotNull(element);
