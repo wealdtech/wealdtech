@@ -12,6 +12,7 @@ package com.wealdtech.jersey.providers;
 
 import com.sun.jersey.api.core.HttpContext;
 import com.wealdtech.User;
+import com.wealdtech.jersey.exceptions.UnauthorizedException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -27,7 +28,7 @@ import javax.ws.rs.ext.Provider;
 public class UserProvider extends AbstractInjectableProvider<User>
 {
   @Context
-  private transient HttpServletRequest servletRequest;
+  private HttpServletRequest servletRequest;
 
   public UserProvider()
   {
@@ -37,6 +38,11 @@ public class UserProvider extends AbstractInjectableProvider<User>
   @Override
   public User getValue(final HttpContext c)
   {
-    return (User)this.servletRequest.getAttribute("com.wealdtech.authenticatedprincipal");
+    final User user = (User)this.servletRequest.getAttribute("com.wealdtech.authenticatedprincipal");
+    if (user == null)
+    {
+      throw new UnauthorizedException("Unauthorized", "Unknown user or incorrect login");
+    }
+    return user;
   }
 }
