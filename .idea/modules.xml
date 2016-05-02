@@ -68,6 +68,9 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/model/wealdtech-mail-model.iml" filepath="$PROJECT_DIR$/wealdtech-mail/model/wealdtech-mail-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" filepath="$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/wealdtech-nlp.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/wealdtech-nlp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/daemon/wealdtech-nlp-daemon.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/daemon/wealdtech-nlp-daemon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/model/wealdtech-nlp-model.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/model/wealdtech-nlp-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/model/wealdtech-notifications-model.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/model/wealdtech-notifications-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/null/wealdtech-notifications-null.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/null/wealdtech-notifications-null.iml" />

@@ -1,0 +1,53 @@
+{
+  "jersey":
+  {
+    "cors":
+    {
+      "origin": "*",
+      "reflectrequest": true
+    }
+  },
+  "logging":
+  {
+    "level": "DEBUG",
+    "overrides": {
+      "org.eclipse.jetty": "INFO"
+    }
+  },
+  "server":
+  {
+    "response":
+    {
+      "servername": "NLP API server",
+      "retryperiod": 300
+    },
+    "instances":
+    [
+      {
+        "name": "main",
+        "threadpool":
+        {
+          "minthreads": 256,
+          "maxthreads": 4096,
+          "idletimeout": 120
+        },
+        "connectors":
+        [
+          {
+            // For development we listen on unsecured connection
+            "type": "http",
+            "bindhost": "0.0.0.0",
+            "port": 8080,
+            "acceptqueuesize": 1024,
+            "reuseaddress": true,
+            "inputbuffersize": 4096
+          }
+        ]
+      }
+    ]
+  },
+  "wid":
+  {
+    "shardid": 1
+  }
+}

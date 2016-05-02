@@ -66,6 +66,9 @@
             <option value="$PROJECT_DIR$/wealdtech-mail/sparkpost" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
+            <option value="$PROJECT_DIR$/wealdtech-nlp" />
+            <option value="$PROJECT_DIR$/wealdtech-nlp/daemon" />
+            <option value="$PROJECT_DIR$/wealdtech-nlp/model" />
             <option value="$PROJECT_DIR$/wealdtech-notifications" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/gcm" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/log" />
@@ -161,6 +164,9 @@
             <option value="$PROJECT_DIR$/wealdtech-mail/sparkpost" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
+            <option value="$PROJECT_DIR$/wealdtech-nlp" />
+            <option value="$PROJECT_DIR$/wealdtech-nlp/daemon" />
+            <option value="$PROJECT_DIR$/wealdtech-nlp/model" />
             <option value="$PROJECT_DIR$/wealdtech-notifications" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/gcm" />
             <option value="$PROJECT_DIR$/wealdtech-notifications/log" />
