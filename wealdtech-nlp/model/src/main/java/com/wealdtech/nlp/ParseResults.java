@@ -47,7 +47,7 @@ public class ParseResults extends WObject<ParseResults> implements Comparable<Pa
 
   private static final TypeReference<ImmutableList<Token>> PHRASES_TYPE_REF = new TypeReference<ImmutableList<Token>>(){};
   @JsonIgnore
-  public ImmutableList<Token> getPhrases() { return get(TOKENS, PHRASES_TYPE_REF).get(); }
+  public ImmutableList<Token> getPhrases() { return get(PHRASES, PHRASES_TYPE_REF).get(); }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<ParseResults, P>
   {

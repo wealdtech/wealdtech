@@ -81,8 +81,8 @@ public class NlpServiceNlp4JImpl implements NlpService
       // Also add as part of a multi-word phrase if appropriate
       if (nodes[i].getNamedEntityTag().startsWith("O") || nodes[i].getNamedEntityTag().startsWith("U"))
       {
-        // This is a single word phrase, so token == phrase
-        phrasesB.add(token);
+        // This is a single word phrase so take most data from the token
+        phrasesB.add(Token.builder(token).entity(nodes[i].getNamedEntityTag().replace("U-", "")).build());
       }
       else if (nodes[i].getNamedEntityTag().startsWith("B"))
       {
