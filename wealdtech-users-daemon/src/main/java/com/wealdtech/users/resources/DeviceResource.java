@@ -26,6 +26,7 @@ import com.wealdtech.utils.RequestHint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,6 +39,7 @@ import static com.wealdtech.Preconditions.checkPermission;
  * Resource for user device methods
  */
 @Path("devices")
+@Singleton
 public class DeviceResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(DeviceResource.class);

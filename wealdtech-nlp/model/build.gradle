@@ -12,20 +12,9 @@ archivesBaseName = 'wealdtech-nlp-model'
 
 dependencies
 {
-    compile 'de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.opennlp-asl:1.7.0'
-    compile 'de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.io.text-asl:1.7.0'
-    compile 'de.tudarmstadt.ukp.dkpro.core:de.tudarmstadt.ukp.dkpro.core.stanfordnlp-gpl:1.7.0'
-    
-//    compile project(':wealdtech-core')
-//    compile project(':wealdtech-jackson')
-//    compile project(':wealdtech-configuration')
-//    compile project(':wealdtech-configuration-logging')
-//    compile project(':wealdtech-wobject')
-//    compile project(':wealdtech-jersey-server')
-//    compile project(':wealdtech-wid-service')
-//    compile project(':wealdtech-notifications:model')
-//    compile project(':wealdtech-application:model')
-//    compile project(':wealdtech-users')
+    // Use NLP4J for processing
+    compile 'edu.emory.mathcs.nlp:nlp4j:1.1.1'
+    compile 'edu.emory.mathcs.nlp:nlp4j-english:1.1.1'
 }
 
 uploadArchives {

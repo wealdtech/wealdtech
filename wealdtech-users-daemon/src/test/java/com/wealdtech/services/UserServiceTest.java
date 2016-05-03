@@ -40,7 +40,7 @@ public class UserServiceTest
     salt = "_" + StringUtils.generateRandomString(6);
     applicationService =
         new ApplicationServicePostgreSqlImpl(new ApplicationRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432,
-                                                                                                                 "user", "test",
+                                                                                                                 "test", "test",
                                                                                                                  "test", null, 1,
                                                                                                                  1L)),
                                              WObject.getObjectMapper());
@@ -48,7 +48,7 @@ public class UserServiceTest
     application = Application.builder().id(WID.<Application>generate()).name("User Service Test").ownerId("1").build();
     applicationService.create(application);
     userService =
-        new UserServicePostgreSqlImpl(new UserRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432, "user",
+        new UserServicePostgreSqlImpl(new UserRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432, "test",
                                                                                                    "test", "test", null, 1, 1L)),
                                       WObject.getObjectMapper());
   }
@@ -93,7 +93,11 @@ public class UserServiceTest
     {
       if (user != null)
       {
-        userService.remove(user);
+        try
+        {
+          userService.remove(user);
+        }
+        catch (final Exception ignored){}
       }
     }
   }

@@ -37,7 +37,7 @@
             // For development we listen on unsecured connection
             "type": "http",
             "bindhost": "0.0.0.0",
-            "port": 8080,
+            "port": 18082,
             "acceptqueuesize": 1024,
             "reuseaddress": true,
             "inputbuffersize": 4096

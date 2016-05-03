@@ -9,16 +9,18 @@
  */
 package test.com.wealdtech.jersey.resources;
 
+import com.wealdtech.jersey.exceptions.ServiceUnavailableException;
+
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import com.wealdtech.jersey.exceptions.ServiceUnavailableException;
 
 /**
  * (Very) simple resource for testing unauthorized exceptions
  */
 @Path("unavailablehelloworld")
+@Singleton
 public class UnavailableHelloWorldResource
 {
   @GET

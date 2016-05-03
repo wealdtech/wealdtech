@@ -10,187 +10,88 @@
 
 package com.wealdtech.nlp.resources;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.wealdtech.GenericWObject;
 import com.wealdtech.ServerError;
-import com.wealdtech.jersey.exceptions.BadRequestException;
-import de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordNamedEntityRecognizer;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordParser;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordPosTagger;
-import de.tudarmstadt.ukp.dkpro.core.stanfordnlp.StanfordSegmenter;
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.jcas.JCas;
+import com.wealdtech.utils.ResourceLoader;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.decode.NLPDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
-import static org.apache.uima.fit.util.JCasUtil.select;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 /**
  *
  */
 @Path("/tokenizer")
+@Singleton
 public class TokenizerResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(TokenizerResource.class);
 
-  private final AnalysisEngine pipeline;
-  private final JCas pipelineCas;
+  private final NLPDecoder decoder;
 
   @Inject
-  public TokenizerResource()
+  public TokenizerResource() throws IOException
   {
-    try
-    {
-      pipeline = createEngine(createEngineDescription(createEngineDescription(StanfordSegmenter.class),
-                                                      createEngineDescription(StanfordPosTagger.class),
-                                                      createEngineDescription(StanfordParser.class),
-//                                                      createEngineDescription(StanfordNamedEntityRecognizer.class, StanfordNamedEntityRecognizer.PARAM_VARIANT, "muc.7class.caseless.distsim.crf")));
-//                                                                createEngineDescription(StanfordNamedEntityRecognizer.class, StanfordNamedEntityRecognizer.PARAM_VARIANT, "muc.7class.distsim.crf")));
-                                                      createEngineDescription(StanfordNamedEntityRecognizer.class, StanfordNamedEntityRecognizer.PARAM_VARIANT, "muc.7class.distsim.crf")));
-
-      pipelineCas = pipeline.newJCas();
-//      AggregateBuilder builder = new AggregateBuilder();
-//
-//      builder.add(AnalysisEngineFactory.createEngineDescription(StanfordSegmenter.class));
-//      builder.add(AnalysisEngineFactory.createEngineDescription(StanfordPosTagger.class));
-//      builder.add(AnalysisEngineFactory.createEngineDescription(StanfordParser.class));
-//      builder.add(AnalysisEngineFactory.createEngineDescription(StanfordNamedEntityRecognizer.class));
-//
-//      pipeline = builder.createAggregate();
-    }
-    catch (Exception e)
-    {
-      throw new ServerError("Failed to initialize pipeline: ", e);
-    }
-//    AnalysisEngineFactory.createEngine();
-//    try
-//    {
-//      this.pipeline = AnalysisEngineFactory.createEngine();
-//    }
-//    catch (final Exception e)
-//    {
-//      LOG.error("Failed to set up tokenizer: ", e);
-//      throw new ServerError("Failed to set up tokenizer", e);
-//    }
+    final URL resource = ResourceLoader.getResource("config-decode-en.xml");
+    decoder = new NLPDecoder(resource.openStream());
   }
 
   @GET
-  public String tokenize(@QueryParam("q") final String input)
+  @Produces({MediaType.APPLICATION_JSON})
+  public GenericWObject tokenize(@QueryParam("q") final String input)
   {
-    try
+    final NLPNode[] nodes = decoder.decode(input);
+    final ImmutableList.Builder<GenericWObject> obs = ImmutableList.builder();
+    for (int i = 1; i < nodes.length; i++)
     {
-      pipelineCas.reset();
-//      final JCas pipelineCas = pipeline.newJCas();
-      pipelineCas.setDocumentText(input);
-      pipelineCas.setDocumentLanguage("en");
-      pipeline.process(pipelineCas);
-      final StringBuilder sb = new StringBuilder();
-//            for (final CAS cas : pipelineCas)
-//            {
-                      for (final NamedEntity ne : select(pipelineCas, NamedEntity.class))
-                      {
-                        sb.append('[');
-                        sb.append(ne.getCoveredText());
-                        sb.append(' ');
-                        sb.append(ne.getValue());
-                        sb.append(']');
-                      }
-                      sb.append('\n');
-//              for (final Token token : select(pipelineCas, Token.class))
-//              {
-//                sb.append('[');
-//                sb.append(token.getCoveredText());
-//                sb.append(' ');
-//                sb.append(token.getPos().getPosValue());
-//                sb.append(']');
-//              }
-//              sb.append('\n');
-//            }
-      return sb.toString();
+      final GenericWObject.Builder<?> builder = GenericWObject.builder();
+      if (nodes[i].getNamedEntityTag().startsWith("O") || nodes[i].getNamedEntityTag().startsWith("U"))
+      {
+        // Single-word entity
+        builder.data("phrase", nodes[i].getWordForm());
+        builder.data("tag", nodes[i].getNamedEntityTag().replace("U-", ""));
+      }
+      else if (nodes[i].getNamedEntityTag().startsWith("B"))
+      {
+        builder.data("tag", nodes[i].getNamedEntityTag().replace("B-", ""));
+        final List<String> words = Lists.newArrayList();
+        words.add(nodes[i++].getWordForm());
+        do
+        {
+          words.add(nodes[i++].getWordForm());
+        }
+        while (!nodes[i - 1].getNamedEntityTag().startsWith("L"));
+        i--;
+        final String tempPhrase = Joiner.on(" ").join(words);
+        builder.data("phrase", tempPhrase.replaceAll("(?U) ([^\\w]+) ", "$1"));
+      }
+      else
+      {
+        throw new ServerError("Error parsing phrase at " + nodes[i].getWordForm() + " (" + nodes[i].getNamedEntityTag() + ")");
+      }
+      obs.add(builder.build());
     }
-    catch (final Exception e)
-    {
-            LOG.error("Failed to parse input: ", e);
-            throw new BadRequestException(e.getMessage(), "Input could not be parsed");
-    }
-//    try
+//    for (int i = 1; i < nodes.length; i++)
 //    {
-//      final JCasIterable en = iteratePipeline(
-//          createReaderDescription(StringReader.class, StringReader.PARAM_DOCUMENT_TEXT, input, StringReader.PARAM_LANGUAGE, "en")
-//          ,createEngineDescription(StanfordSegmenter.class)
-//          ,createEngineDescription(StanfordPosTagger.class)
-//          ,createEngineDescription(StanfordParser.class)
-//          ,createEngineDescription(StanfordNamedEntityRecognizer.class)
-//      );
-//      final StringBuilder sb = new StringBuilder();
-//      for (final JCas jCas : en)
-//      {
-//        for (final Token token : select(jCas, Token.class))
-//        {
-//          sb.append('[');
-//          sb.append(token.getCoveredText());
-//          sb.append(' ');
-//          sb.append(token.getPos().getPosValue());
-//          sb.append(']');
-//        }
-//        sb.append('\n');
-//
-//                for (final NamedEntity ne : select(jCas, NamedEntity.class))
-//                {
-//                  sb.append('[');
-//                  sb.append(ne.getCoveredText());
-//                  sb.append(' ');
-//                  sb.append(ne.getValue());
-//                  sb.append(']');
-//                }
-//                sb.append('\n');
-//        final AnnotationIndex<Annotation> annotationIndex = jCas.getAnnotationIndex();
-//        for (final Annotation annotation : annotationIndex)
-//        {
-//          sb.append('[');
-//          sb.append(annotation.getCoveredText());
-//          sb.append(' ');
-//          sb.append(annotation.getType());
-//          sb.append(']');
-//          sb.append('\n');
-//        }
-//      }
-//      return sb.toString();
-////      final JCas next = en.iterator().next();
-//      //      iteratePipeline();
-////      JCas jcas = JCasFactory.createJCas();
-////      jcas.setDocumentText(input);
-////      pipeline.process(jcas);
-////      for(Token token : iterate(jcas, Token.class)){
-////          System.out.println(token.getTag());
-////      }
-//
-////      return "foo";
+//      final GenericWObject.Builder<?> builder = GenericWObject.builder();
+//      builder.data("word", nodes[i].getWordForm());
+//      builder.data("tag", nodes[i].getNamedEntityTag());
+//      obs.add(builder.build());
 //    }
-//    catch (final Exception e)
-//    {
-//      LOG.error("Failed to parse input: ", e);
-//      throw new BadRequestException(e.getMessage(), "Input could not be parsed");
-//    }
+    return GenericWObject.builder().data("results", obs.build()).build();
   }
-//  @Consumes({MediaType.APPLICATION_JSON})
-//  @Produces({MediaType.APPLICATION_JSON})
-//  public ResultSet makeRequest(@Context final User user,
-//                               @QueryParam("q") final String input,
-//                               @Nullable final ResultSet resultSet)
-//  {
-//    final CreateEventRequestDefinition def = injector.getInstance(CreateEventRequestDefinition.class);
-//    final AdditionalInfo.Builder<?> additionalInfoB = AdditionalInfo.builder();
-//    additionalInfoB.data("userid", user.getId());
-//    additionalInfoB.data("context", com.wealdtech.contacts.Context.PROFESSIONAL);
-//    final AdditionalInfo additionalInfo = additionalInfoB.build();
-//
-//    return ResultSet.fromDefinition(def, ImmutableMultimap.of("summary", "Test meeting", "timeframe", "[2018-06-01T09:00:00Z,2018-06-01T11:00:00Z)", "participants", "Fred", "participants", "Joe"), additionalInfo);
-//  }
 }

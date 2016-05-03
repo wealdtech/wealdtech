@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType;
  * Resource for chat methods
  */
 @Path("topics/{topicid: [0-9A-Za-z]+}/messages")
+@Singleton
 public class MessageResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageResource.class);

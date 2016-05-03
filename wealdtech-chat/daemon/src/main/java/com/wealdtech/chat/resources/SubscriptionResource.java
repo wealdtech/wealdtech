@@ -19,12 +19,14 @@ import com.wealdtech.services.WIDService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import javax.ws.rs.*;
 
 /**
  * Resource for subscriptions
  */
 @Path("/subscriptions")
+@Singleton
 public class SubscriptionResource
 {
   private static final Logger LOG = LoggerFactory.getLogger(SubscriptionResource.class);

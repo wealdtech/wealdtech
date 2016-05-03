@@ -13,6 +13,7 @@ archivesBaseName = 'wealdtech-chat-daemon'
 dependencies
 {
     compile project(':wealdtech-nlp:model')
+    compile project(':wealdtech-wobject')
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-configuration-logging')
     compile project(':wealdtech-jersey-server')

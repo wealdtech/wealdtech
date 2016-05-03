@@ -10,32 +10,21 @@
 
 package test.com.wealdtech.mail;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableList;
-import com.wealdtech.jackson.WealdMapper;
-import com.wealdtech.mail.MailActor;
-import com.wealdtech.mail.MandrillMessage;
-import org.testng.annotations.Test;
-
-import static org.testng.AssertJUnit.assertEquals;
-
 public class MandrillMessageTest
 {
-  @Test(groups = {"base"})
-  public void testSimpleMessage() throws JsonProcessingException
-
-  {
-    final MandrillMessage message = new MandrillMessage.Builder().sender(new MailActor("Test user", "test@test.com"))
-                                                                 .recipients(ImmutableList.of(new MailActor("Test recipient 1",
-                                                                                                            "recipient1@test.com"),
-                                                                                              new MailActor("Test recipient 2",
-                                                                                                            "recipient2@test.com")))
-                                                                 .build();
-
-    final String serialized = WealdMapper.getMapper().writeValueAsString(message);
-    assertEquals("{\"from_name\":\"Test user\",\"from_email\":\"test@test.com\",\"to\":[{\"name\":\"Test recipient 1\",\"email\":\"recipient1@test.com\",\"type\":\"to\"},{\"name\":\"Test recipient 2\",\"email\":\"recipient2@test.com\",\"type\":\"to\"}],\"important\":false,\"track_opens\":true,\"track_clicks\":false,\"auto_text\":false,\"inline_css\":false,\"url_strip_qs\":false,\"preserve_recipients\":false,\"view_content_link\":false,\"merge\":true,\"merge_language\":\"mailchimp\"}", serialized);
-
-  }
-
-
+//  @Test(groups = {"base"})
+//  public void testSimpleMessage() throws JsonProcessingException
+//
+//  {
+//    final MandrillMessage message = new MandrillMessage.Builder().sender(new MailActor("Test user", "test@test.com"))
+//                                                                 .recipients(ImmutableList.of(new MailActor("Test recipient 1",
+//                                                                                                            "recipient1@test.com"),
+//                                                                                              new MailActor("Test recipient 2",
+//                                                                                                            "recipient2@test.com")))
+//                                                                 .build();
+//
+//    final String serialized = WealdMapper.getMapper().writeValueAsString(message);
+//    assertEquals("{\"from_name\":\"Test user\",\"from_email\":\"test@test.com\",\"to\":[{\"name\":\"Test recipient 1\",\"email\":\"recipient1@test.com\",\"type\":\"to\"},{\"name\":\"Test recipient 2\",\"email\":\"recipient2@test.com\",\"type\":\"to\"}],\"important\":false,\"track_opens\":true,\"track_clicks\":false,\"auto_text\":false,\"inline_css\":false,\"url_strip_qs\":false,\"preserve_recipients\":false,\"view_content_link\":false,\"merge\":true,\"merge_language\":\"mailchimp\"}", serialized);
+//
+//  }
 }

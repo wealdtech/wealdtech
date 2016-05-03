@@ -31,7 +31,7 @@ public class ApplicationServiceTest
   {
     applicationService =
         new ApplicationServicePostgreSqlImpl(new ApplicationRepositoryPostgreSqlImpl(new PostgreSqlConfiguration("localhost", 5432,
-                                                                                                                 "application",
+                                                                                                                 "test",
                                                                                                                  "test",
                                                                                                                  "test",
                                                                                                                  null, 1, 1L)),

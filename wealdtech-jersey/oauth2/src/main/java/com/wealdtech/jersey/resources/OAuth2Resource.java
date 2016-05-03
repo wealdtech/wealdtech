@@ -18,6 +18,7 @@ import com.wealdtech.oauth2.OAuth2Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,6 +30,7 @@ import javax.ws.rs.core.UriInfo;
  *
  */
 @Path("oauth2")
+@Singleton
 public class OAuth2Resource
 {
   private static final Logger LOG = LoggerFactory.getLogger(OAuth2Resource.class);

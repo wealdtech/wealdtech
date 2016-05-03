@@ -12,6 +12,7 @@ package com.wealdtech.test.resources;
 
 import com.wealdtech.GenericWObject;
 
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 /**
  */
 @Path("dummy")
+@Singleton
 public class DummyResource
 {
   @GET

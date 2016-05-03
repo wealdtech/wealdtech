@@ -29,6 +29,12 @@ subprojects {
     group = 'com.wealdtech'
     version = '3.0.0'
 
+  configurations.all {
+    resolutionStrategy {
+      force 'edu.stanford.nlp:stanford-corenlp:3.6.0'
+    }
+  }
+
     test {
         useTestNG()
     }
