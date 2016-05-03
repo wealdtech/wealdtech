@@ -13,14 +13,14 @@ archivesBaseName = 'wealdtech-chat-daemon'
 dependencies
 {
     compile project(':wealdtech-nlp:model')
+    compile project(':wealdtech-nlp:services')
     compile project(':wealdtech-wobject')
     compile project(':wealdtech-configuration')
     compile project(':wealdtech-configuration-logging')
     compile project(':wealdtech-jersey-server')
     compile project(':wealdtech-wid-service')
-//    compile project(':wealdtech-users-jersey')
 
-//    testCompile project(':wealdtech-services:chat')
+    testCompile project(':wealdtech-nlp:services:nlp4j')
 }
 
 uploadArchives {

@@ -15,6 +15,7 @@ dependencies
     // Use NLP4J for processing
     compile 'edu.emory.mathcs.nlp:nlp4j:1.1.1'
     compile 'edu.emory.mathcs.nlp:nlp4j-english:1.1.1'
+    compile project(':wealdtech-wobject')
 }
 
 uploadArchives {

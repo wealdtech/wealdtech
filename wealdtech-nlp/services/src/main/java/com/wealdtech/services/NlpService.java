@@ -8,21 +8,14 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-configuration-logging'
+package com.wealdtech.services;
 
-dependencies
+import com.wealdtech.nlp.ParseResults;
+
+/**
+ * Provide NLP services
+ */
+public interface NlpService
 {
-    compile project(':wealdtech-configuration')
-    compile 'ch.qos.logback:logback-classic:1.1.7'
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name 'Wealdtech Logging Configuration'
-                description 'Weald Technology configuration files for logging'
-            }
-        }
-    }
+  ParseResults parse(String input);
 }

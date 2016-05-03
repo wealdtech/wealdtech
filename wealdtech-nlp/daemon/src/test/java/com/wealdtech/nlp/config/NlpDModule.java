@@ -21,11 +21,14 @@ import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
+import com.wealdtech.services.NlpService;
+import com.wealdtech.services.NlpServiceNlp4JImpl;
 import com.wealdtech.services.WIDServiceLocalModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.inject.Singleton;
 
 /**
  *
@@ -66,6 +69,9 @@ public class NlpDModule extends AbstractModule
       // Use a local WID module
       bind(WIDConfiguration.class).toInstance(configuration.getWIDConfiguration());
       install(new WIDServiceLocalModule());
+
+      // Use the NLP4J service for processing
+      bind(NlpService.class).to(NlpServiceNlp4JImpl.class).in(Singleton.class);
     }
     catch (final DataError de)
     {

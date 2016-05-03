@@ -24,6 +24,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mail/mandrill/mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-chat/model/model.iml" filepath="$PROJECT_DIR$/wealdtech-chat/model/model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-wobject/datastore/neo4j/neo4j.iml" filepath="$PROJECT_DIR$/wealdtech-wobject/datastore/neo4j/neo4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/services/nlp4j/nlp4j.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/services/nlp4j/nlp4j.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/null/null.iml" filepath="$PROJECT_DIR$/wealdtech-mail/null/null.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/oauth2/oauth2.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/oauth2/oauth2.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-authentication/password/password.iml" filepath="$PROJECT_DIR$/wealdtech-authentication/password/password.iml" />
@@ -31,6 +32,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/pushwoosh/pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/pushwoosh/pushwoosh.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/service/service.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/service/service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/services/services.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/services/services.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/sparkpost/sparkpost.iml" filepath="$PROJECT_DIR$/wealdtech-mail/sparkpost/sparkpost.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-contacts/sync/sync.iml" filepath="$PROJECT_DIR$/wealdtech-contacts/sync/sync.iml" />
