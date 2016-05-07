@@ -33,6 +33,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/service/service.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/service/service.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/logger/service/log/service-log.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/services/services.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/services/services.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlg/services/simplenlg/simplenlg.iml" filepath="$PROJECT_DIR$/wealdtech-nlg/services/simplenlg/simplenlg.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/sparkpost/sparkpost.iml" filepath="$PROJECT_DIR$/wealdtech-mail/sparkpost/sparkpost.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" filepath="$PROJECT_DIR$/wealdtech-jersey/limiter/service/static/static.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-contacts/sync/sync.iml" filepath="$PROJECT_DIR$/wealdtech-contacts/sync/sync.iml" />
@@ -70,9 +71,14 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mail/model/wealdtech-mail-model.iml" filepath="$PROJECT_DIR$/wealdtech-mail/model/wealdtech-mail-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" filepath="$PROJECT_DIR$/wealdtech-mandrill/wealdtech-mandrill.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" filepath="$PROJECT_DIR$/wealdtech-metrics/wealdtech-metrics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlg/wealdtech-nlg.iml" filepath="$PROJECT_DIR$/wealdtech-nlg/wealdtech-nlg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlg/daemon/wealdtech-nlg-daemon.iml" filepath="$PROJECT_DIR$/wealdtech-nlg/daemon/wealdtech-nlg-daemon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlg/datastore/wealdtech-nlg-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-nlg/datastore/wealdtech-nlg-datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlg/model/wealdtech-nlg-model.iml" filepath="$PROJECT_DIR$/wealdtech-nlg/model/wealdtech-nlg-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/wealdtech-nlp.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/wealdtech-nlp.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/daemon/wealdtech-nlp-daemon.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/daemon/wealdtech-nlp-daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/model/wealdtech-nlp-model.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/model/wealdtech-nlp-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-nlp/services/wealdtech-nlp-services.iml" filepath="$PROJECT_DIR$/wealdtech-nlp/services/wealdtech-nlp-services.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/wealdtech-notifications.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/model/wealdtech-notifications-model.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/model/wealdtech-notifications-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-notifications/null/wealdtech-notifications-null.iml" filepath="$PROJECT_DIR$/wealdtech-notifications/null/wealdtech-notifications-null.iml" />
@@ -87,6 +93,7 @@
       <module fileurl="file://$PROJECT_DIR$/wealdtech-services/pushwoosh/wealdtech-services-pushwoosh.iml" filepath="$PROJECT_DIR$/wealdtech-services/pushwoosh/wealdtech-services-pushwoosh.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-traces/wealdtech-traces.iml" filepath="$PROJECT_DIR$/wealdtech-traces/wealdtech-traces.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-traces/datastore/wealdtech-traces-datastore.iml" filepath="$PROJECT_DIR$/wealdtech-traces/datastore/wealdtech-traces-datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wealdtech-traces/datastore/postgresql/wealdtech-traces-datastore-postgresql.iml" filepath="$PROJECT_DIR$/wealdtech-traces/datastore/postgresql/wealdtech-traces-datastore-postgresql.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-traces/model/wealdtech-traces-model.iml" filepath="$PROJECT_DIR$/wealdtech-traces/model/wealdtech-traces-model.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-users/wealdtech-users.iml" filepath="$PROJECT_DIR$/wealdtech-users/wealdtech-users.iml" />
       <module fileurl="file://$PROJECT_DIR$/wealdtech-users-daemon/wealdtech-users-daemon.iml" filepath="$PROJECT_DIR$/wealdtech-users-daemon/wealdtech-users-daemon.iml" />

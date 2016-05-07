@@ -66,6 +66,13 @@
             <option value="$PROJECT_DIR$/wealdtech-mail/sparkpost" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/daemon" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/datastore/postgresql" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/model" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/services" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/services/simplenlg" />
             <option value="$PROJECT_DIR$/wealdtech-nlp" />
             <option value="$PROJECT_DIR$/wealdtech-nlp/daemon" />
             <option value="$PROJECT_DIR$/wealdtech-nlp/model" />
@@ -166,6 +173,13 @@
             <option value="$PROJECT_DIR$/wealdtech-mail/sparkpost" />
             <option value="$PROJECT_DIR$/wealdtech-mandrill" />
             <option value="$PROJECT_DIR$/wealdtech-metrics" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/daemon" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/datastore" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/datastore/postgresql" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/model" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/services" />
+            <option value="$PROJECT_DIR$/wealdtech-nlg/services/simplenlg" />
             <option value="$PROJECT_DIR$/wealdtech-nlp" />
             <option value="$PROJECT_DIR$/wealdtech-nlp/daemon" />
             <option value="$PROJECT_DIR$/wealdtech-nlp/model" />

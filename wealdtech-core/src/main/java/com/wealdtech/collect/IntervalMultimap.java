@@ -198,12 +198,12 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
 
     for (final Map.Entry<T, IntervalMapEvents<U>> subEntry : subEntries.entrySet())
     {
-      if (!subEntry.getKey().equals(upper))
+      if (subEntry.getKey().compareTo(upper) < 0)
       {
         results.addAll(subEntry.getValue().starts);
       }
       results.addAll(subEntry.getValue().exists);
-      if (!subEntry.getKey().equals(lower))
+      if (subEntry.getKey().compareTo(lower) > 0)
       {
         results.addAll(subEntry.getValue().ends);
       }

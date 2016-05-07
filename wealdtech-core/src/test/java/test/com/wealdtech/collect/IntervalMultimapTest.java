@@ -138,6 +138,44 @@ public class IntervalMultimapTest
     assertEquals(map.get(Range.closedOpen(5, 5)).size(), 0);
   }
 
+  // Ensure that obtaining an range inbetween ranges works
+  @Test
+  public void testInbetween()
+  {
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(0, 10);
+    map.put(testRange1, "Test 1");
+    final Range<Integer> testRange2 = Range.closedOpen(20, 30);
+    map.put(testRange2, "Test 2");
+
+    assertTrue(map.get(Range.closedOpen(10, 20)).isEmpty());
+  }
+
+  // Ensure that obtaining an range after the end of existing ranges works
+  @Test
+  public void testPostEnding()
+  {
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(0, 10);
+    map.put(testRange1, "Test 1");
+
+    assertTrue(map.get(Range.closedOpen(20, 30)).isEmpty());
+  }
+
+  // Ensure that obtaining an range before the start of existing ranges works
+  @Test
+  public void testPreStarting()
+  {
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+
+    final Range<Integer> testRange1 = Range.closedOpen(20, 30);
+    map.put(testRange1, "Test 1");
+
+    assertTrue(map.get(Range.closedOpen(0, 10)).isEmpty());
+  }
+
   @Test
   public void testDateTime()
   {
