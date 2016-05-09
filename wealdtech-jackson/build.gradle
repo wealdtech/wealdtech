@@ -13,9 +13,9 @@ archivesBaseName = 'wealdtech-jackson'
 dependencies
 {
     compile project(':wealdtech-core')
-    compile 'com.fasterxml.jackson.core:jackson-core:2.5.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.5.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.7.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.7.4'
     
     testCompile 'ch.qos.logback:logback-classic:1.1.7'
 }

@@ -13,11 +13,11 @@ archivesBaseName = 'wealdtech-jersey-limiter-jersey'
 dependencies
 {
     compile project(':wealdtech-jersey:limiter:service')
-    compile 'com.sun.jersey:jersey-server:1.18'
+    compile 'com.sun.jersey:jersey-server:1.19.1'
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     // compile 'javax.ws.rs:jsr311-api:1.1.1'
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    compile 'com.google.inject:guice:3.0'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'com.google.inject:guice:4.0'
 
     testCompile project(':wealdtech-jersey-server')
     testCompile project(':wealdtech-jersey:limiter:service:static')

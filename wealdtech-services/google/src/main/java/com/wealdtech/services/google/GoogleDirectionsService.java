@@ -23,8 +23,12 @@ public interface GoogleDirectionsService
    * Obtain directions
    *
    * @param key the Google key
+   * @param departureTime the time at which the user wishes to depart
+   * @param origin the place from which the user wishes to leave
+   * @param destination the place to which the user wishes to travel
+   * @param mode the mode of transport
    *
-   * @return
+   * @return directions
    */
   @GET("/json")
   GenericWObject directions(@Query("key") final String key,

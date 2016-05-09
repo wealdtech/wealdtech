@@ -13,8 +13,8 @@ archivesBaseName = 'wealdtech-contacts-google'
 dependencies
 {
     compile project(':wealdtech-contacts:model')
-    compile 'com.google.http-client:google-http-client-jackson2:1.21.0'
-    compile 'com.google.api-client:google-api-client:1.21.0'
+    compile 'com.google.http-client:google-http-client-jackson2:1.22.0'
+    compile 'com.google.api-client:google-api-client:1.22.0'
     compile 'com.google.gdata:core:1.47.1'
     testCompile project(':wealdtech-services:google')
 }

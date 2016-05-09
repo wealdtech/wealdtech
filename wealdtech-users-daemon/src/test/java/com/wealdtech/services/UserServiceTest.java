@@ -29,7 +29,7 @@ import static org.testng.Assert.assertEquals;
 public class UserServiceTest
 {
   private ApplicationService applicationService;
-  private UserService userService;
+  private UserService<?> userService;
 
   private String salt;
   private Application application = null;

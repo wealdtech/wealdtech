@@ -13,10 +13,7 @@ package com.wealdtech.chat;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.wealdtech.Application;
-import com.wealdtech.Email;
-import com.wealdtech.User;
-import com.wealdtech.WID;
+import com.wealdtech.*;
 import com.wealdtech.authentication.AuthorisationScope;
 import com.wealdtech.authentication.PasswordAuthenticationMethod;
 import com.wealdtech.chat.config.ApplicationModule;
@@ -46,7 +43,7 @@ public class ChatDTest
     // Create an application and users for testing
     ChatD.main(null);
 
-    final Injector injector = Guice.createInjector(new ApplicationModule("config/test-config.json"), new EventBusAsynchronousModule());
+    final Injector injector = Guice.createInjector(new ApplicationModule("chatd-test.json"), new EventBusAsynchronousModule());
 
     salt = "_" + StringUtils.generateRandomString(6);
 

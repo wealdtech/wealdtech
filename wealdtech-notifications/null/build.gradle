@@ -3,7 +3,7 @@ archivesBaseName = 'wealdtech-notifications-null'
 dependencies {
   compile project(':wealdtech-notifications:model')
 
-  testCompile 'commons-io:commons-io:2.1'
+  testCompile 'commons-io:commons-io:2.5'
 }
 
 uploadArchives {

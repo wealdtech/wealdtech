@@ -44,9 +44,8 @@ public class GoogleServicesConfiguration implements Configuration
   }
 
   /**
-   * Obtain a configuration from the environment
-   *
    * @param base the base string to use as the prefix for obtaining environmental variables
+   * @return a configuration from the environment
    */
   public static GoogleServicesConfiguration fromEnv(final String base)
   {

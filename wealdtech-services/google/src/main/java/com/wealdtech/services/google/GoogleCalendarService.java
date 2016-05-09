@@ -27,7 +27,7 @@ public interface GoogleCalendarService
    *
    * @param calendarId the Id of the calendar for which to obtain the events
    *
-   * @return
+   * @return the events from the given calendar
    */
   @GET("/{calendarid}/events")
   GenericWObject getEvents(@Path("calendarid") final String calendarId);
@@ -38,7 +38,7 @@ public interface GoogleCalendarService
    * @param calendarId the Id of the calendar for which to obtain the event
    * @param eventId the Id of the event
    *
-   * @return
+   * @return the specific event from the given calendar
    */
   @GET("/{calendarid}/events/{eventid}")
   GenericWObject getEvent(@Path("calendarid") final String calendarId,
@@ -46,6 +46,11 @@ public interface GoogleCalendarService
 
   /**
    * Create an event in a given calendar
+   *
+   * @param calendarId the Id of the calendar in which to create the event
+   * @param event the event to create
+   *
+   * @return the response from the server
    */
   @POST("/{calendarid}/events")
   Response createEvent(@Path("calendarid") final String calendarId,

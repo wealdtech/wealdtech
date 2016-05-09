@@ -24,7 +24,7 @@ public class NotificationProviderGcmImplTest
   @Test
   public void testSimple()
   {
-    final GcmClient client = new GcmClient(GcmConfiguration.fromEnv("gcm_test"));
+    final GcmClient client = new GcmClient(GcmConfiguration.fromEnv("wealdtech_gcm_test"));
     final NotificationService service = new NotificationService(new NotificationProviderGcmImpl(client));
     service.notify(ImmutableSet.of("test1", "test2"), Notification.builder().data("key1", "val1").data("key2", "val2").build());
   }

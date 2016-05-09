@@ -10,18 +10,24 @@
 
 package com.wealdtech.config;
 
-import com.palominolabs.metrics.guice.MetricsInstrumentationModule;
-import com.wealdtech.utils.WealdMetrics;
+import com.google.inject.AbstractModule;
 
 /**
  * Weald Technology's version of the Instrumentation module, to ensure that we supply the Weald Technology metric registry and
  * ensure that we retain a single registry
  */
-public class WealdInstrumentationModule extends MetricsInstrumentationModule
+public class WealdInstrumentationModule extends AbstractModule
 {
-  public WealdInstrumentationModule()
+  @Override
+  protected void configure()
   {
-    super(WealdMetrics.getMetricRegistry());
 
   }
 }
+//public class WealdInstrumentationModule extends MetricsInstrumentationModule
+//{
+//  public WealdInstrumentationModule()
+//  {
+//    super(WealdMetrics.getMetricRegistry());
+//  }
+//}

@@ -41,7 +41,8 @@ public class WeatherServiceForecastIoImpl implements WeatherService
   {
     try
     {
-      final int hours = Hours.hoursBetween(timeframe.lowerEndpoint(), timeframe.upperEndpoint()).getHours();
+      // We remove a second from the upper endpoint because our range is closedOpen
+      final int hours = Hours.hoursBetween(timeframe.lowerEndpoint(), timeframe.upperEndpoint().minusSeconds(1)).getHours();
       if (hours < 1)
       {
         // Obtain point-in-time weather at start
@@ -56,8 +57,11 @@ public class WeatherServiceForecastIoImpl implements WeatherService
       else
       {
         // Obtain daily weather over timeframe; reset to start-of-day boundaries
+        // Reduce upper endpoint by 1 second because it is an open boundary
         return client.getDailyReport(lat, lng, timeframe.lowerEndpoint().withTimeAtStartOfDay().getMillis() / 1000,
                                      timeframe.upperEndpoint().withTimeAtStartOfDay().getMillis() / 1000);
+//        return client.getDailyReport(lat, lng, timeframe.lowerEndpoint().withTimeAtStartOfDay().getMillis() / 1000,
+//                                     timeframe.upperEndpoint().minusSeconds(1).withTimeAtStartOfDay().getMillis() / 1000);
       }
     }
     catch (final RetrofitError re)

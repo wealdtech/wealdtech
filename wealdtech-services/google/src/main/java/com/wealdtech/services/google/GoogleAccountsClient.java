@@ -57,6 +57,7 @@ public class GoogleAccountsClient
   /**
    * Carry out initial authorisation of OAuth2 response and obtain an access token
    *
+   * @param name the name of the authorisation
    * @param uri the full URI that was called to trigger this authorisation
    *
    * @return An OAuth2 credential

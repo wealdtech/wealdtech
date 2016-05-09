@@ -22,6 +22,13 @@ public interface GoogleAccountsService
 {
   /**
    * Obtain OAuth2 tokens
+   * @param grantType the type of the grant (usually "authorization_code")
+   * @param clientId the client ID
+   * @param clientSecret the client secret
+   * @param redirectUri the Uri to redirect to after providing the token
+   * @param code the code
+   *
+   * @return a generic response object
    */
   @FormUrlEncoded
   @POST("/token")
@@ -33,6 +40,13 @@ public interface GoogleAccountsService
 
   /**
    * Refresh OAuth2 access token
+   *
+   * @param grantType the type of the grant (usually "refresh_token")
+   * @param clientId the client ID
+   * @param clientSecret the client secret
+   * @param refreshToken the user's refresh token
+   *
+   * @return a generic response object
    */
   @FormUrlEncoded
   @POST("/token")

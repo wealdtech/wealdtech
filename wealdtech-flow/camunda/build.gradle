@@ -7,9 +7,9 @@ dependencies {
   compile project(':wealdtech-retrofit')
   compile project(':wealdtech-wobject:datastore:postgresql')
   compile 'com.rabbitmq:amqp-client:3.6.1'
-  compile 'org.postgresql:postgresql:9.4-1201-jdbc41'
+  compile 'org.postgresql:postgresql:9.4.1208'
 
-  testCompile 'commons-io:commons-io:2.1'
+  testCompile 'commons-io:commons-io:2.5'
 }
 
 uploadArchives {

@@ -84,7 +84,7 @@ public interface UserService<T> extends WObjectService<User, T>
   /**
    * Verify an email address
    *
-   * @param credentials
+   * @param credentials the credentials against which to verify the user's email
    */
   void verifyEmail(Credentials credentials);
 

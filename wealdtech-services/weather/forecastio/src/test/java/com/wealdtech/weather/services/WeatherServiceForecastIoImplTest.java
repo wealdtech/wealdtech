@@ -30,7 +30,27 @@ public class WeatherServiceForecastIoImplTest
   @Test
   public void testPoint()
   {
-    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_config_weather"));
+    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_weather_test"));
+
+    final WeatherReport report = service.getReport(50.861716f, -0.083873f,
+                                                   Range.closedOpen(new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC),
+                                                                    new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC)));
+    assertNotNull(report, "Failed to obtain report");
+    assertEquals(report.getType(), WeatherPointType.HOUR, "Obtained incorrect weather point type");
+    final ImmutableList<WeatherPoint> points = report.getPoints();
+    assertFalse(points.isEmpty(), "Failed to obtain weather point");
+    assertEquals(points.size(), 1, "Failed to obtain correct number of weather points");
+    final WeatherPoint point = points.get(0);
+    assertEquals((long)point.getTimestamp(), new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC).getMillis(),
+                 "Incorrect timestamp");
+    assertEquals(point.getTemperature().or(0f), 4.1f, 0.01f, "Incorrect temperature");
+    assertEquals(point.getIcon().orNull(), "clear-night", "Incorrect icon");
+  }
+
+  @Test
+  public void testHour()
+  {
+    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_weather_test"));
 
     final WeatherReport report = service.getReport(50.861716f, -0.083873f,
                                                    Range.closedOpen(new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC),
@@ -48,9 +68,32 @@ public class WeatherServiceForecastIoImplTest
   }
 
   @Test
+  public void testHourPlus()
+  {
+    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_weather_test"));
+
+    final WeatherReport report = service.getReport(50.861716f, -0.083873f,
+                                                   Range.closedOpen(new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC),
+                                                                    new DateTime(2015, 4, 1, 4, 0, 1, DateTimeZone.UTC)));
+    assertNotNull(report, "Failed to obtain report");
+    assertEquals(report.getType(), WeatherPointType.HOUR, "Obtained incorrect weather point type");
+    final ImmutableList<WeatherPoint> points = report.getPoints();
+    assertFalse(points.isEmpty(), "Failed to obtain weather point");
+    assertEquals(points.size(), 2, "Failed to obtain correct number of weather points");
+    final WeatherPoint point1 = points.get(0);
+    assertEquals((long)point1.getTimestamp(), new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC).getMillis(),
+                 "Incorrect timestamp");
+    assertEquals(point1.getTemperature().or(0f), 4.1f, 0.01f, "Incorrect temperature");
+    assertEquals(point1.getIcon().orNull(), "clear-night", "Incorrect icon");
+    final WeatherPoint point2 = points.get(1);
+    assertEquals((long)point2.getTimestamp(), new DateTime(2015, 4, 1, 4, 0, 0, DateTimeZone.UTC).getMillis(),
+                 "Incorrect timestamp");
+  }
+
+  @Test
   public void testMultipleHours()
   {
-    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_config_weather"));
+    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_weather_test"));
 
     final WeatherReport report = service.getReport(50.861716f, -0.083873f,
                                                    Range.closedOpen(new DateTime(2015, 4, 1, 3, 0, 0, DateTimeZone.UTC),
@@ -85,7 +128,7 @@ public class WeatherServiceForecastIoImplTest
   @Test
   public void testMultipleHoursOverMidnight()
   {
-    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_config_weather"));
+    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_weather_test"));
 
     final WeatherReport report = service.getReport(50.861716f, -0.083873f,
                                                    Range.closedOpen(new DateTime(2015, 4, 1, 23, 0, 0, DateTimeZone.UTC),
@@ -134,7 +177,7 @@ public class WeatherServiceForecastIoImplTest
   @Test
   public void testMultipleDays()
   {
-    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_config_weather"));
+    final WeatherService service = new WeatherServiceForecastIoImpl(WeatherConfiguration.fromEnv("wealdtech_weather_test"));
 
     final WeatherReport report = service.getReport(50.861716f, -0.083873f, Range.closedOpen(new DateTime(2015, 6, 1, 3, 0, 0,
                                                                                                          DateTimeZone.forID("Europe/London")),
@@ -144,7 +187,7 @@ public class WeatherServiceForecastIoImplTest
     assertEquals(report.getType(), WeatherPointType.DAY, "Obtained incorrect weather point type");
     final ImmutableList<WeatherPoint> points = report.getPoints();
     assertFalse(points.isEmpty(), "Failed to obtain weather point");
-    assertEquals(points.size(), 3, "Failed to obtain correct number of weather points");
+    assertEquals(points.size(), 2, "Failed to obtain correct number of weather points");
     final WeatherPoint point1 = points.get(0);
     assertEquals((long)point1.getTimestamp(),
                  new DateTime(new DateTime(2015, 6, 1, 0, 0, 0, DateTimeZone.forID("Europe/London"))).getMillis(),
@@ -158,11 +201,5 @@ public class WeatherServiceForecastIoImplTest
     assertEquals(point2.getMinTemp().or(0f), 10.76f, 0.01f, "Incorrect minimum temperature");
     assertEquals(point2.getMaxTemp().or(0f), 14.54f, 0.01f, "Incorrect maximum temperature");
     assertEquals(point2.getIcon().orNull(), "wind", "Incorrect icon");
-    final WeatherPoint point3 = points.get(2);
-    assertEquals((long)point3.getTimestamp(), new DateTime(new DateTime(2015, 6, 3, 0, 0, 0, DateTimeZone.forID("Europe/London"))).getMillis(),
-                 "Incorrect timestamp");
-    assertEquals(point3.getMinTemp().or(0f), 10.47f, 0.01f, "Incorrect minimum temperature");
-    assertEquals(point3.getMaxTemp().or(0f), 15.67f, 0.01f, "Incorrect maximum temperature");
-    assertEquals(point3.getIcon().orNull(), "clear-day", "Incorrect icon");
   }
 }

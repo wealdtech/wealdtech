@@ -12,7 +12,7 @@ archivesBaseName = 'wealdtech-nlg-services-simplenlg'
 
 dependencies
 {
-    compile 'com.google.inject:guice:3.0'
+    compile 'com.google.inject:guice:4.0'
     compile project(':wealdtech-nlg:services')
     // Simple NLG
     compile 'uk.ac.abdn:SimpleNLG:4.4.8'

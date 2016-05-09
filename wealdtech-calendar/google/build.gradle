@@ -13,7 +13,7 @@ archivesBaseName = 'wealdtech-calendar-google'
 dependencies
 {
     compile project(':wealdtech-calendar:model')
-    compile 'com.google.apis:google-api-services-calendar:v3-rev173-1.21.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev180-1.22.0'
     testCompile project(':wealdtech-services:google')
 }
 

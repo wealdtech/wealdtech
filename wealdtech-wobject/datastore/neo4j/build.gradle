@@ -15,11 +15,10 @@ dependencies
     compile project(':wealdtech-wobject:datastore')
     compile project(':wealdtech-configuration')
 
-    compile 'org.neo4j:neo4j:3.0.0-M05'
-    compile 'org.apache.tinkerpop:gremlin-core:3.1.1-incubating'
-    compile 'org.apache.tinkerpop:neo4j-gremlin:3.1.1-incubating'
-    //compile 'org.apache.tinkerpop:tinkergraph-gremlin:3.1.1-incubating'
-    compile 'org.neo4j:neo4j-tinkerpop-api-impl:0.1-2.2'
+    compile 'org.neo4j:neo4j:3.0.1'
+    //compile 'org.apache.tinkerpop:gremlin-core:3.2.0-incubating'
+    //compile 'org.apache.tinkerpop:neo4j-gremlin:3.2.0-incubating'
+    //compile 'org.neo4j:neo4j-tinkerpop-api-impl:0.3-2.3.3'
 }
 
 uploadArchives {

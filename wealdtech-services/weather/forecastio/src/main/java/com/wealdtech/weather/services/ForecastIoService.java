@@ -21,6 +21,7 @@ public interface ForecastIoService
   /**
    * Obtain a forecast for a particular location at a particular time
    *
+   * @param key the api key
    * @param lat a latitude
    * @param lng a longitude
    * @param timestamp the timestamp in <b> seconds</b> since the epoch
@@ -36,6 +37,7 @@ public interface ForecastIoService
   /**
    * Obtain a forecast for a particular location at a particular time
    *
+   * @param key the api key
    * @param lat a latitude
    * @param lng a longitude
    * @param timestamp the timestamp in <b>seconds</b> since the epoch
@@ -52,6 +54,7 @@ public interface ForecastIoService
   /**
    * Obtain a forecast for a particular location at a particular time
    *
+   * @param key the api key
    * @param lat a latitude
    * @param lng a longitude
    * @param timestamp the timestamp in <b>seconds</b> since the epoch
@@ -67,6 +70,7 @@ public interface ForecastIoService
   /**
    * Obtain a forecast for a particular location at a particular time
    *
+   * @param key the api key
    * @param lat a latitude
    * @param lng a longitude
    * @param timestamp the timestamp in <b>seconds</b> since the epoch
@@ -82,6 +86,7 @@ public interface ForecastIoService
   /**
    * Obtain a forecast for a particular location now
    *
+   * @param key the api key
    * @param lat a latitude
    * @param lng a longitude
    *

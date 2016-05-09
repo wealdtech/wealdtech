@@ -12,14 +12,11 @@ package com.wealdtech.repositories;
 
 import com.google.inject.Inject;
 import com.wealdtech.datastore.config.Neo4jConfiguration;
-import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph;
-import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 /**
  */
-public class Neo4jRepository implements Repository<Graph>
+//public class Neo4jRepository implements Repository<Graph>
+public class Neo4jRepository implements Repository<Void>
 {
   private final Neo4jConfiguration configuration;
   private final String url;
@@ -44,21 +41,19 @@ public class Neo4jRepository implements Repository<Graph>
   }
 
   @Override
-  public Graph getConnection()
+  public Void getConnection()
   {
-    Neo4jGraph graph = Neo4jGraph.open("/tmp/neo4jtest");
-
-    final Vertex alice = graph.addVertex(T.id, 1, T.label, "alice");
-    final Vertex bob = graph.addVertex(T.id, 1, T.label, "bob");
-    final Vertex eve = graph.addVertex(T.id, 1, T.label, "eve");
-
-    alice.addEdge("knows", bob);
-    bob.addEdge("knows", alice);
-    eve.addEdge("eavesdrops on", bob);
-
-    return graph;
-    //    return DatastoreConnection.getConnection(this.url, this.configuration.getUsername(), this.configuration.getPassword(),
-//                                             this.configuration.getConnectionAttempts(),
-//                                             this.configuration.getConnectionAttemptGap());
+//    Neo4jGraph graph = Neo4jGraph.open("/tmp/neo4jtest");
+//
+//    final Vertex alice = graph.addVertex(T.id, 1, T.label, "alice");
+//    final Vertex bob = graph.addVertex(T.id, 1, T.label, "bob");
+//    final Vertex eve = graph.addVertex(T.id, 1, T.label, "eve");
+//
+//    alice.addEdge("knows", bob);
+//    bob.addEdge("knows", alice);
+//    eve.addEdge("eavesdrops on", bob);
+//
+//    return graph;
+    return null;
   }
 }

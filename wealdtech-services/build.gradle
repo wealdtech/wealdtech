@@ -10,4 +10,8 @@
 
 subprojects {
     group = 'com.wealdtech.services'
+
+    dependencies {
+      testCompile 'commons-io:commons-io:2.5'
+    }
 }

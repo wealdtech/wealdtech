@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2016 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -8,7 +8,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.chat;
+package com.wealdtech;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
@@ -16,7 +16,9 @@ import com.google.inject.Injector;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.wealdtech.chat.config.ApplicationModule;
 import com.wealdtech.chat.listeners.MessageListener;
-import com.wealdtech.config.WealdInstrumentationModule;
+import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
+import com.wealdtech.chat.services.SubscriptionServicePostgreSqlImpl;
+import com.wealdtech.chat.services.TopicServicePostgreSqlImpl;
 import com.wealdtech.guice.EventBusAsynchronousModule;
 import com.wealdtech.jersey.filters.*;
 import com.wealdtech.jersey.guice.JerseyServletModule;
@@ -34,8 +36,7 @@ public class ChatD
 {
   public static void main(final String[] args)
   {
-    final Injector injector = Guice.createInjector(new ApplicationModule("chatd-config.json"), new WealdInstrumentationModule(),
-                                                   new EventBusAsynchronousModule(),
+    final Injector injector = Guice.createInjector(new ApplicationModule("chatd-test.json"),new EventBusAsynchronousModule(),
                                                    new JerseyServletModule(ImmutableList.of(RequestLoggingFilter.class,
                                                                                             RequestHintFilter.class,
                                                                                             DeviceIdFilter.class,
@@ -48,6 +49,11 @@ public class ChatD
                                                                                             GZIPContentEncodingFilter.class),
                                                                            ImmutableList.of("com.wealdtech.chat.resources")));
     final JettyServer server = injector.getInstance(JettyServer.class);
+
+    // Set up our datastore
+    injector.getInstance(TopicServicePostgreSqlImpl.class).createDatastore();
+    injector.getInstance(SubscriptionServicePostgreSqlImpl.class).createDatastore();
+    injector.getInstance(MessageServicePostgreSqlImpl.class).createDatastore();
 
     // Inject our listeners
     injector.getInstance(MessageListener.class);

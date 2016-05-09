@@ -12,6 +12,7 @@ package com.wealdtech.weather.services;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.wealdtech.DataError;
 import com.wealdtech.retrofit.JacksonRetrofitConverter;
 import com.wealdtech.weather.WeatherPoint;
 import com.wealdtech.weather.WeatherPointType;
@@ -21,6 +22,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.Converter;
 
 import javax.annotation.Nullable;
@@ -57,6 +59,18 @@ public class ForecastIoClient
     {
       response = service.forecastPoint(configuration.getApiKey(), lat, lng, timestamp);
     }
+    catch (final RetrofitError e)
+    {
+      if (e.getResponse().getStatus() == 400)
+      {
+        // Due to a bad key
+        throw new DataError.Permission("Invalid key");
+      }
+      else
+      {
+        throw new DataError.Bad("An error occurred: ", e);
+      }
+    }
     catch (final Exception e)
     {
       LOG.error("Failed to obtain point in time report: ", e);
@@ -79,6 +93,18 @@ public class ForecastIoClient
     try
     {
       response = service.forecastHourly(configuration.getApiKey(), lat, lng, start);
+    }
+    catch (final RetrofitError e)
+    {
+      if (e.getResponse().getStatus() == 400)
+      {
+        // Due to a bad key
+        throw new DataError.Permission("Invalid key");
+      }
+      else
+      {
+        throw new DataError.Bad("An error occurred: ", e);
+      }
     }
     catch (final Exception e)
     {
@@ -123,6 +149,18 @@ public class ForecastIoClient
       {
         response = service.forecastNow(configuration.getApiKey(), lat, lng);
       }
+      catch (final RetrofitError e)
+      {
+        if (e.getResponse().getStatus() == 400)
+        {
+          // Due to a bad key
+          throw new DataError.Permission("Invalid key");
+        }
+        else
+        {
+          throw new DataError.Bad("An error occurred: ", e);
+        }
+      }
       catch (final Exception e)
       {
         LOG.error("Failed to obtain immediate report: ", e);
@@ -154,6 +192,18 @@ public class ForecastIoClient
         try
         {
           response = service.forecastDaily(configuration.getApiKey(), lat, lng, cur.getMillis() / 1000);
+        }
+        catch (final RetrofitError e)
+        {
+          if (e.getResponse().getStatus() == 400)
+          {
+            // Due to a bad key
+            throw new DataError.Permission("Invalid key");
+          }
+          else
+          {
+            throw new DataError.Bad("An error occurred: ", e);
+          }
         }
         catch (final Exception e)
         {

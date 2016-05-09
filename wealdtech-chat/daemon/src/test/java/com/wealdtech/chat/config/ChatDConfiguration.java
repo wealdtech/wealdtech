@@ -17,7 +17,6 @@ import com.wealdtech.configuration.Configuration;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
-import com.wealdtech.services.config.PushWooshConfiguration;
 
 /**
  * Configuration for the various aspects of the Chat daemon
@@ -28,14 +27,12 @@ public class ChatDConfiguration implements Configuration
   private final JerseyServerConfiguration jerseyServerConfiguration;
   private final LoggingConfiguration loggingConfiguration;
   private final PostgreSqlConfiguration postgreSqlConfiguration;
-  private final PushWooshConfiguration pushWooshConfiguration;
   private final WIDConfiguration widConfiguration;
 
   public ChatDConfiguration(@JsonProperty("server") final JettyServerConfiguration jettyServerConfiguration,
                             @JsonProperty("jersey") final JerseyServerConfiguration jerseyServerConfiguration,
                             @JsonProperty("logging") final LoggingConfiguration loggingConfiguration,
                             @JsonProperty("datastore") final PostgreSqlConfiguration postgreSqlConfiguration,
-                            @JsonProperty("pushwoosh") final PushWooshConfiguration pushWooshConfiguration,
                             @JsonProperty("wid") final WIDConfiguration widConfiguration)
   {
     this.jettyServerConfiguration = jettyServerConfiguration;
@@ -43,7 +40,6 @@ public class ChatDConfiguration implements Configuration
     this.loggingConfiguration = loggingConfiguration;
     this.postgreSqlConfiguration = postgreSqlConfiguration;
     this.widConfiguration = widConfiguration;
-    this.pushWooshConfiguration = pushWooshConfiguration;
   }
 
   public JettyServerConfiguration getJettyServerConfiguration() { return jettyServerConfiguration; }
@@ -53,8 +49,6 @@ public class ChatDConfiguration implements Configuration
   public LoggingConfiguration getLoggingConfiguration() { return loggingConfiguration; }
 
   public PostgreSqlConfiguration getPostgreSqlConfiguration() { return postgreSqlConfiguration; }
-
-  public PushWooshConfiguration getPushWooshConfiguration() { return pushWooshConfiguration; }
 
   public WIDConfiguration getWIDConfiguration() { return widConfiguration; }
 }

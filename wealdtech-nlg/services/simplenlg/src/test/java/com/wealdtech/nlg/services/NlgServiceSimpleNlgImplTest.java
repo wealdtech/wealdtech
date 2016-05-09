@@ -24,6 +24,6 @@ public class NlgServiceSimpleNlgImplTest
   {
     final NlgService service = new NlgServiceSimpleNlgImpl();
     final String result = service.generate();
-    assertEquals(result, "foo");
+    assertEquals(result, "My dog is happy.");
   }
 }

@@ -8,11 +8,23 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
+// Provide check for latest version of dependencies
+apply plugin: 'com.github.ben-manes.versions'
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+  }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
     apply plugin: 'signing'
+    apply plugin: 'com.github.ben-manes.versions'
 
     repositories {
         mavenLocal()
@@ -21,7 +33,7 @@ subprojects {
 
     dependencies {
         // @Nullable and @NotNull annotations
-        compile 'com.google.code.findbugs:jsr305:3.0.0'
+        compile 'com.google.code.findbugs:jsr305:3.0.1'
 
         testCompile 'org.testng:testng:6.+'
     }

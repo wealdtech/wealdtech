@@ -39,13 +39,13 @@ public class MessageListener
   private ApplicationService applicationService;
   private NotificationService notificationService;
   private TopicService topicService;
-  private UserService userService;
+  private UserService<?> userService;
 
   @Inject
   public MessageListener(final ApplicationService applicationService,
                          final NotificationService notificationService,
                          final TopicService topicService,
-                         final UserService userService)
+                         final UserService<?> userService)
   {
     this.applicationService = applicationService;
     this.notificationService = notificationService;
@@ -81,10 +81,6 @@ public class MessageListener
                                                  .data("messageid", event.getBody().getId())
                                                  .data("text", event.getBody().getText())
                                                  .build());
-        //        notificationService.notify(deviceIdsB.build(), GenericWObject.builder()
-//                                                                     .data("topicid", event.getTopicId())
-//                                                                     .data("messageid", event.getBody().getId())
-//                                                                     .build());
         break;
       default:
         LOG.error("Unhandled type {} for {}/{}/{}", event.getType(), event.getAppId(), event.getTopicId(), event.getBody());

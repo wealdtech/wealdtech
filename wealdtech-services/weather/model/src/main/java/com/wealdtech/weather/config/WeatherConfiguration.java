@@ -38,8 +38,8 @@ public class WeatherConfiguration implements Configuration
   }
 
   /**
-   * Obtain a weather configuration from the environment
    * @param base the base string to use as the prefix for obtaining environmental variables
+   * @return a weather configuration from the environment
    */
   public static WeatherConfiguration fromEnv(final String base)
   {

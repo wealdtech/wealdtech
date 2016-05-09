@@ -14,7 +14,7 @@ dependencies
 {
     compile project(':wealdtech-core')
     compile project(':wealdtech-wobject')
-    compile 'com.google.inject:guice:3.0'
+    compile 'com.google.inject:guice:4.0'
 }
 
 uploadArchives {

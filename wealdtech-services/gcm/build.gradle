@@ -4,8 +4,6 @@ dependencies {
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')
   compile project(':wealdtech-retrofit')
-
-  testCompile 'commons-io:commons-io:2.1'
 }
 
 uploadArchives {

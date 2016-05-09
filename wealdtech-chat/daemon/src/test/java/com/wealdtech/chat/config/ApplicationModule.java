@@ -35,11 +35,10 @@ import com.wealdtech.jersey.auth.WealdTokenAuthenticator;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
 import com.wealdtech.notifications.providers.NotificationProvider;
-import com.wealdtech.notifications.providers.NotificationProviderPushWooshImpl;
+import com.wealdtech.notifications.providers.NotificationProviderLogImpl;
 import com.wealdtech.repositories.UserRepository;
 import com.wealdtech.repositories.UserRepositoryPostgreSqlImpl;
 import com.wealdtech.services.*;
-import com.wealdtech.services.config.PushWooshConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +71,7 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
-      bind(PushWooshConfiguration.class).toInstance(configuration.getPushWooshConfiguration());
-      bind(NotificationProvider.class).to(NotificationProviderPushWooshImpl.class).in(Singleton.class);
+      bind(NotificationProvider.class).to(NotificationProviderLogImpl.class).in(Singleton.class);
 
       // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency when
       // searching for values
@@ -86,6 +84,8 @@ public class ApplicationModule extends AbstractModule
       bind(PostgreSqlConfiguration.class).annotatedWith(Names.named("userrepositoryconfiguration"))
                                          .toInstance(configuration.getPostgreSqlConfiguration());
       bind(UserRepository.class).to(UserRepositoryPostgreSqlImpl.class).in(Singleton.class);
+      // Bind both parameterised and non-parameterised versions
+      bind(new TypeLiteral<UserService<?>>() {}).to(UserServicePostgreSqlImpl.class).in(Singleton.class);
       bind(UserService.class).to(UserServicePostgreSqlImpl.class).in(Singleton.class);
 
       // Bind Application service to use PostgreSql

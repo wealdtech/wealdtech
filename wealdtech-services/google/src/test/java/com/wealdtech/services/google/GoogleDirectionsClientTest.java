@@ -27,7 +27,7 @@ public class GoogleDirectionsClientTest
     final Integer duration =
         client.getDurationOfJourney(50837551L, 471511L, 50861544L, -83385L, "driving",
                                     new DateTime().plusYears(1).getMillis() / 1000);
-    assertEquals(duration, (Integer)2631, "Incorrect duration");
+    assertEquals(duration, (Integer)2614, "Incorrect duration");
   }
 
 }

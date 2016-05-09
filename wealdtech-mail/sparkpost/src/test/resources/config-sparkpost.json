@@ -2,6 +2,6 @@
   "secret": "secret",
   "sender": {
     "name": "Test sender",
-    "email": "test@mailgateway.dev.cogn.is"
+    "email": "test@mailgateway.wealdtech.com"
   }
 }

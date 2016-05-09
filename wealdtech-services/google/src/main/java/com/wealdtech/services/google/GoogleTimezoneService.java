@@ -20,13 +20,11 @@ import retrofit.http.Query;
 public interface GoogleTimezoneService
 {
   /**
-   * Obtain a timezone for a given lat/lng
-   *
    * @param key the Google key
    * @param location the location as a lat,lng pair
    * @param timestamp the timestamp for which to obtain the information (for DST info)
    *
-   * @return
+   * @return a timezone for the given lat/lng
    */
   @GET("/json")
   GenericWObject timezone(@Query("key") final String key,

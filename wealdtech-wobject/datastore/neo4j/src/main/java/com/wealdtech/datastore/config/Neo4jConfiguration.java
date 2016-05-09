@@ -89,7 +89,7 @@ public class Neo4jConfiguration
   }
 
   /**
-   * Obtain the number of attempts which should be made to connect to the repository
+   * @return the number of attempts which should be made to connect to the repository
    */
   public int getConnectionAttempts()
   {
@@ -97,7 +97,7 @@ public class Neo4jConfiguration
   }
 
   /**
-   * Obtain the gap between successive connection attempts, in ms
+   * @return the gap between successive connection attempts, in ms
    */
   public long getConnectionAttemptGap()
   {

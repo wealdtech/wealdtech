@@ -11,6 +11,7 @@
 package com.wealdtech.calendar;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
@@ -110,6 +111,8 @@ public class CalendarClientGoogleImplTest
     final OAuth2Credentials credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                                                  .name("Google calendar")
                                                                                  .accessToken("irrelevant")
+                                                                                 .scopes(ImmutableSet.of(
+                                                                                     "https://www.googleapis.com/auth/calendar"))
                                                                                  .expires(DateTime.now().minusDays(1))
                                                                                  .refreshToken(REFRESH_TOKEN)
                                                                                  .build());

@@ -12,10 +12,10 @@ archivesBaseName = 'wealdtech-core'
 
 dependencies
 {
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.0'
-    compile 'joda-time:joda-time:2.4'
-    compile 'org.slf4j:jul-to-slf4j:1.7.12'
+    compile 'com.google.guava:guava:19.0'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.4'
+    compile 'joda-time:joda-time:2.9.3'
+    compile 'org.slf4j:jul-to-slf4j:1.7.21'
 }
 
 uploadArchives {

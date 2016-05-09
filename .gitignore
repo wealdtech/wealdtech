@@ -1,7 +1,6 @@
 #
 # Java
 #
-*.class
 bin
 .pmd
 out
@@ -30,6 +29,7 @@ libraries/
 # TestNG
 #
 test-output
+/testenv.sh
 
 #
 # OSX

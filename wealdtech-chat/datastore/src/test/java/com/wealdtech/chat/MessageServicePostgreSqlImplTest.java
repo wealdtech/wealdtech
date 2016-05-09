@@ -53,7 +53,7 @@ public class MessageServicePostgreSqlImplTest
   public void setUp()
   {
     final PostgreSqlRepository repository =
-        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "chat", "chat", "chat", null, null, null));
+        new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
 
     messageService = new MessageServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
                                                                              .copy()

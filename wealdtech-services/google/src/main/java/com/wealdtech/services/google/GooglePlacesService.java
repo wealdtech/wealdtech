@@ -18,7 +18,7 @@ public interface GooglePlacesService
    * @param location any existing location information
    * @param types the types of places that should be returned as autocomplete candidates
    *
-   * @return
+   * @return a list of autocomplete options
    */
   @GET("/autocomplete/json?radius=50000")
   GenericWObject autocomplete(@Query("key") final String key,
@@ -33,6 +33,8 @@ public interface GooglePlacesService
    * @param key the Google key
    * @param placeId the Id of the place returned by the autocomplete command
    * @param language the language to use by preference when returning places
+   *
+   * @return full place details
    */
   @GET("/details/json")
   GenericWObject details(@Query("key") final String key,
