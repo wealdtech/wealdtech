@@ -13,6 +13,7 @@ archivesBaseName = 'wealdtech-configuration-logging'
 dependencies
 {
     compile project(':wealdtech-configuration')
+    compile 'org.slf4j:jul-to-slf4j:1.7.21'
     compile 'ch.qos.logback:logback-classic:1.1.7'
 }
 
@@ -21,7 +22,7 @@ uploadArchives {
         mavenDeployer {
             pom.project {
                 name 'Wealdtech Logging Configuration'
-                description 'Weald Technology configuration files for logging'
+                description 'Weald Technology configuration files for logging with logback'
             }
         }
     }

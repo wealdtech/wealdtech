@@ -35,7 +35,6 @@ public class DateTimeInjector extends PerRequestTypeInjectableProvider<QueryPara
 
   /**
    * Creates a new DateTimeInjector.
-   * <p/>
    *
    * @param uriInfo an instance of {@link UriInfo}
    */

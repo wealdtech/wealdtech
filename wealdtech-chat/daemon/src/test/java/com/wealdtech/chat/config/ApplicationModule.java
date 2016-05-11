@@ -23,6 +23,7 @@ import com.wealdtech.User;
 import com.wealdtech.authorisation.UserAuthorisation;
 import com.wealdtech.chat.datastore.repositories.*;
 import com.wealdtech.chat.services.*;
+import com.wealdtech.config.LoggingConfiguration;
 import com.wealdtech.config.WIDConfiguration;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
@@ -71,6 +72,7 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
+      bind(LoggingConfiguration.class).toInstance(configuration.getLoggingConfiguration());
       bind(NotificationProvider.class).to(NotificationProviderLogImpl.class).in(Singleton.class);
 
       // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency when

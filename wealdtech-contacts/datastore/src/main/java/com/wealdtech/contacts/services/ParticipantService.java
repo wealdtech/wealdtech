@@ -26,6 +26,12 @@ public interface ParticipantService
 {
   /**
    * Obtain participants given a context and some way of identifying them
+   *
+   * @param ownerId the ID of the user obtaining the participant
+   * @param context the context of the relationship
+   * @param contactId the ID of the contact for whom to obtain the participants
+   * @param name the name of the contact for whom to obtain the participants
+   * @param email the email address of the contact for whom to obtain the participants
    */
   ImmutableSet<Participant> obtain(WID<User> ownerId,
                                    Context context,

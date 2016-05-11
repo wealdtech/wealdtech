@@ -42,7 +42,7 @@
   },
   "logging":
   {
-    "level": "DEBUG"
+    "level": "ERROR"
   },
 
   "datastore":

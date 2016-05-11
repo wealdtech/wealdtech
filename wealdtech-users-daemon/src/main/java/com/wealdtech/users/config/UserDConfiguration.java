@@ -18,6 +18,8 @@ import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jersey.config.JerseyServerConfiguration;
 import com.wealdtech.jetty.config.JettyServerConfiguration;
 
+import javax.inject.Inject;
+
 /**
  * Configuration for the various aspects of the User daemon
  */
@@ -30,6 +32,7 @@ public class UserDConfiguration implements Configuration
 //  private final PushWooshConfiguration pushWooshConfiguration;
   private final WIDConfiguration widConfiguration;
 
+  @Inject
   public UserDConfiguration(@JsonProperty("server") final JettyServerConfiguration jettyServerConfiguration,
                             @JsonProperty("jersey") final JerseyServerConfiguration jerseyServerConfiguration,
                             @JsonProperty("logging") final LoggingConfiguration loggingConfiguration,

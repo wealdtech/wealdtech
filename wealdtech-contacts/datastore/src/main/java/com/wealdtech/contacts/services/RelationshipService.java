@@ -33,11 +33,21 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
 
   /**
    * Obtain a relationship
+   *
+   * @param ownerId the ID of the user obtaining the relationship
+   * @param relationshipId the ID of the relationship
+   *
+   * @return the relationship; can be {@code null}
    */
   @Nullable Relationship obtain(WID<User> ownerId, WID<Relationship> relationshipId);
 
   /**
    * Obtain a relationship for a contact
+   *
+   * @param ownerId the ID of the user obtaining the relationship
+   * @param contactId the ID of the contact
+   *
+   * @return the relationship; can be {@code null}
    */
   @Nullable Relationship obtainForContact(WID<User> ownerId, WID<Contact> contactId);
 
@@ -45,6 +55,12 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
    * Obtain the best matching relationships given some relationship information.
    * This will usually return a single relationship, however in the case where there are multiple matching relationships with no
    * differentiation then multiple relationships will be returned.
+   *
+   * @param ownerId the ID of the user obtaining the relationships
+   * @param contactId the ID of the contact
+   * @param name the name of the contact
+   * @param email the email address of the contact
+   *
    * @return a list of the best matching relationships; can be empty
    */
   ImmutableList<Relationship> obtain(WID<User> ownerId,
@@ -53,21 +69,35 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
 
   /**
    * Obtain all relationships with a given handle
+   *
+   * @param ownerId the ID of the user obtaining the relationships
+   * @param context the context of the relationship
+   * @param handle a handle for the relationship
+   *
+   * @return a list of the matching relationships; can be empty
    */
   ImmutableList<Relationship> obtain(WID<User> ownerId, final Context context, Handle handle);
 
   /**
    * Obtain all relationships
+   *
+   * @param ownerId the ID of the user obtaining the relationships
+   *
+   * @return all relationships known by this user
    */
   ImmutableList<Relationship> obtain(WID<User> ownerId);
 
   /**
    * Update a relationship
+   *
+   * @param relationship the relationship to update
    */
   void update(Relationship relationship);
 
   /**
    * Remove a relationship
+   *
+   * @param relationship the relationship to remove
    */
   void remove(Relationship relationship);
 }

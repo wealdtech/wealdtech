@@ -23,6 +23,8 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.Map;
 import java.util.logging.LogManager;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
  *
  */
@@ -34,6 +36,8 @@ public class Logging
    */
   public static void setLogging(final LoggingConfiguration configuration)
   {
+    checkState(configuration != null,  "Logging configuration is required");
+
     // Get rid of j.u.l. and install SLF4J
     LogManager.getLogManager().reset();
     SLF4JBridgeHandler.install();

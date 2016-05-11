@@ -26,14 +26,10 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 public class JerseyServletModule extends ServletModule
 {
@@ -43,10 +39,10 @@ public class JerseyServletModule extends ServletModule
 
   static
   {
-    // Get rid of j.u.l. and install SLF4J
-    LogManager.getLogManager().reset();
-    SLF4JBridgeHandler.install();
-    Logger.getLogger("global").setLevel(Level.FINEST);
+    // Get rid of j.u.l. and install SLF4J - comment out for now whilst we work out if we need this or not
+//    LogManager.getLogManager().reset();
+//    SLF4JBridgeHandler.install();
+//    Logger.getLogger("global").setLevel(Level.FINEST);
   }
 
   /**

@@ -40,15 +40,57 @@ public interface WObjectServiceCallback<T>
    */
   @Nullable String getOrder();
 
+  /**
+   * Set a string value
+   * @param stmt the statement
+   * @param index the index of the value to set
+   * @param val the value to set
+   * @return the callback
+   */
   WObjectServiceCallback<T> setString(T stmt, int index, @Nullable String val);
 
+  /**
+   * Set an array of string values
+   * @param stmt the statement
+   * @param index the index of the value to set
+   * @param val the value to set
+   * @return the callback
+   */
   WObjectServiceCallback<T> setStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);
 
+  /**
+   * Set an array of context-insensitive string values
+   * @param stmt the statement
+   * @param index the index of the value to set
+   * @param val the value to set
+   * @return the callback
+   */
   WObjectServiceCallback<T> setCIStringArray(T stmt, int index, @Nullable ImmutableCollection<String> val);
 
+  /**
+   * Set a WID value
+   * @param stmt the statement
+   * @param index the index of the value to set
+   * @param val the value to set
+   * @return the callback
+   */
   WObjectServiceCallback<T> setWID(T stmt, int index, @Nullable WID<?> val);
 
+  /**
+   * Set an array of WID values
+   * @param stmt the statement
+   * @param index the index of the value to set
+   * @param val the value to set
+   * @return the callback
+   */
   WObjectServiceCallback<T> setWIDArray(T stmt, int index, @Nullable ImmutableCollection<? extends WID<?>> val);
 
+  /**
+   * Set a long value
+   * @param stmt the statement
+   * @param index the index of the value to set
+   * @param val the value to set
+   * @return the callback
+   */
   WObjectServiceCallback<T> setLong(T stmt, int index, @Nullable Long val);
 }

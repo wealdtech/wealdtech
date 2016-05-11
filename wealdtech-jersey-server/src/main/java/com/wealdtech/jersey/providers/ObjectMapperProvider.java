@@ -18,7 +18,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * Provide an objectmapper.
- * <p/>
+ * <p>
  * The default objectmapper will be provided, unless an object mapper
  * configuration is passed in to the constructor for this provider in which case
  * those configuration options will override the default.

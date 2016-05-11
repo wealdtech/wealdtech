@@ -21,6 +21,7 @@ import com.wealdtech.DataError;
 import com.wealdtech.TwoTuple;
 import com.wealdtech.User;
 import com.wealdtech.authorisation.UserAuthorisation;
+import com.wealdtech.config.LoggingConfiguration;
 import com.wealdtech.config.WIDConfiguration;
 import com.wealdtech.configuration.ConfigurationSource;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
@@ -54,7 +55,7 @@ public class ApplicationModule extends AbstractModule
 
   public ApplicationModule(@Nullable final String configFile)
   {
-    this.configFile = MoreObjects.firstNonNull(configFile, "chatd-config.json");
+    this.configFile = MoreObjects.firstNonNull(configFile, "userd-config.json");
   }
 
   @Override
@@ -71,6 +72,7 @@ public class ApplicationModule extends AbstractModule
       bind(JettyServerConfiguration.class).toInstance(configuration.getJettyServerConfiguration());
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
+      bind(LoggingConfiguration.class).toInstance(configuration.getLoggingConfiguration());
 //      bind(PushWooshConfiguration.class).toInstance(configuration.getPushWooshConfiguration());
 //      bind(NotificationProvider.class).to(NotificationProviderPushWooshImpl.class).in(Singleton.class);
 

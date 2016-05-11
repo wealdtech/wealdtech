@@ -19,6 +19,7 @@ import com.wealdtech.chat.listeners.MessageListener;
 import com.wealdtech.chat.services.MessageServicePostgreSqlImpl;
 import com.wealdtech.chat.services.SubscriptionServicePostgreSqlImpl;
 import com.wealdtech.chat.services.TopicServicePostgreSqlImpl;
+import com.wealdtech.config.LoggingConfiguration;
 import com.wealdtech.guice.EventBusAsynchronousModule;
 import com.wealdtech.jersey.filters.*;
 import com.wealdtech.jersey.guice.JerseyServletModule;
@@ -49,6 +50,8 @@ public class ChatD
                                                                                             GZIPContentEncodingFilter.class),
                                                                            ImmutableList.of("com.wealdtech.chat.resources")));
     final JettyServer server = injector.getInstance(JettyServer.class);
+
+    Logging.setLogging(injector.getInstance(LoggingConfiguration.class));
 
     // Set up our datastore
     injector.getInstance(TopicServicePostgreSqlImpl.class).createDatastore();

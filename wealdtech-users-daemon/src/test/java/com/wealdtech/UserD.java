@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
+import com.wealdtech.config.LoggingConfiguration;
 import com.wealdtech.config.WealdInstrumentationModule;
 import com.wealdtech.guice.EventBusAsynchronousModule;
 import com.wealdtech.jersey.filters.*;
@@ -44,6 +45,8 @@ public class UserD
                                                                                             GZIPContentEncodingFilter.class),
                                                                            ImmutableList.of("com.wealdtech.users.resources")));
     final JettyServer server = injector.getInstance(JettyServer.class);
+
+    Logging.setLogging(injector.getInstance(LoggingConfiguration.class));
 
     final UserService userService = injector.getInstance(UserService.class);
     userService.createDatastore();

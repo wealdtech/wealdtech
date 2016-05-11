@@ -13,9 +13,7 @@ package com.wealdtech.jersey.providers;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.PerRequestTypeInjectableProvider;
-import com.wealdtech.jackson.modules.DateTimeDeserializer;
 import com.wealdtech.jackson.modules.DateTimeZoneDeserializer;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import javax.ws.rs.QueryParam;
@@ -24,7 +22,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,7 +34,6 @@ public class DateTimeZoneInjector extends PerRequestTypeInjectableProvider<Query
 
   /**
    * Creates a new DateTimeZoneInjector.
-   * <p/>
    *
    * @param uriInfo an instance of {@link javax.ws.rs.core.UriInfo}
    */

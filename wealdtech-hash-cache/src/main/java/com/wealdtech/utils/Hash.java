@@ -27,7 +27,8 @@ import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
  * Utilities for hashing data using the Bcrypt algorithm.
- * <p/>Due to the expense of hashing using bcrypt this class
+ * <p>
+ * Due to the expense of hashing using bcrypt this class
  * uses a short-term cache to reduce the cost of recalculating the same
  * hash multiple times.  As such, this class should only be used on secure
  * systems.

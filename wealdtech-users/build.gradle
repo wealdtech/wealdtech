@@ -14,7 +14,6 @@ dependencies
 {
     compile project(':wealdtech-wobject')
     compile project(':wealdtech-configuration')
-    compile project(':wealdtech-configuration-logging')
     compile project(':wealdtech-application:model')
     compile project(':wealdtech-authentication:model')
     testCompile project(':wealdtech-authentication:password')
