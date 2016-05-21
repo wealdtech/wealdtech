@@ -34,7 +34,7 @@ import static com.wealdtech.Preconditions.checkState;
 /**
  * WObject service using PostgreSQL as a backend
  */
-public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObjectService<T, PreparedStatement>
+public class WObjectServicePostgreSqlImpl<T extends WObject<?>> implements WObjectService<T, PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObjectServicePostgreSqlImpl.class);
 
@@ -290,6 +290,112 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<T>> implements WObje
     {
       closeConnection(conn);
     }
+  }
+
+  @Override
+  public T obtain(final Class<T> klazz, final WID<T> itemId)
+  {
+    checkState(itemId != null, "Passed NULL item ID for obtaining from the datastore");
+
+    T result = null;
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      final String statement = obtainSql + "\nWHERE d @> ?";
+      final PreparedStatement stmt = conn.prepareStatement(statement);
+
+      final PGobject obj = new PGobject();
+      obj.setType("jsonb");
+      try
+      {
+        obj.setValue("{\"_id\":\"" + itemId.toString() + "\"}");
+        stmt.setObject(1, obj);
+      }
+      catch (final SQLException se)
+      {
+        throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set JSON");
+      }
+
+      try (ResultSet rs = stmt.executeQuery())
+      {
+        if (rs.next())
+        {
+          try
+          {
+            result = mapper.readValue(rs.getString(1), klazz);
+          }
+          catch (final IOException ioe)
+          {
+            LOG.error("Failed to parse object {}: ", rs.getString(1), ioe);
+            throw new ServerError("Failed to obtain information", ioe);
+          }
+        }
+      }
+    }
+    catch (final SQLException se)
+    {
+      throw createSqlException(conn, se, "Failed to obtain item from the datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+    return result;
+  }
+
+  @Override
+  public T obtain(final TypeReference<T> typeRef, final WID<T> itemId)
+  {
+    checkState(itemId != null, "Passed NULL item ID for obtaining from the datastore");
+
+    T result = null;
+    Connection conn = null;
+    try
+    {
+      conn = repository.getConnection();
+
+      final String statement = obtainSql + "\nWHERE d @> ?";
+      final PreparedStatement stmt = conn.prepareStatement(statement);
+
+      final PGobject obj = new PGobject();
+      obj.setType("jsonb");
+      try
+      {
+        obj.setValue("{\"_id\":\"" + itemId.toString() + "\"}");
+        stmt.setObject(1, obj);
+      }
+      catch (final SQLException se)
+      {
+        throw WObjectServicePostgreSqlImpl.createSqlException(stmt, se, "Failed to set JSON");
+      }
+
+      try (ResultSet rs = stmt.executeQuery())
+      {
+        if (rs.next())
+        {
+          try
+          {
+            result = mapper.readValue(rs.getString(1), typeRef);
+          }
+          catch (final IOException ioe)
+          {
+            LOG.error("Failed to parse object {}: ", rs.getString(1), ioe);
+            throw new ServerError("Failed to obtain information", ioe);
+          }
+        }
+      }
+    }
+    catch (final SQLException se)
+    {
+      throw createSqlException(conn, se, "Failed to obtain item from the datastore");
+    }
+    finally
+    {
+      closeConnection(conn);
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")

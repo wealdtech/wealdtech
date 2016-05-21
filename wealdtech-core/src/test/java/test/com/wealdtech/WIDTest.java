@@ -21,6 +21,12 @@ import static org.testng.Assert.*;
 public class WIDTest
 {
   @Test
+  public void createWID()
+  {
+    System.out.println(WID.generate(1L));
+  }
+
+  @Test
   public void testClass()
   {
     final WID<Date> testWid1 = new WID<>(1);

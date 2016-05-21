@@ -63,7 +63,7 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       @Override
       public String getConditions()
       {
-        return "d @> ? AND d @> ?";
+          return "d @> ? AND d @> ?";
       }
 
       @Override

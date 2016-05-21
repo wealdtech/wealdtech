@@ -18,9 +18,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.inject.Inject;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
-import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.jackson.WealdMapper;
+import com.wealdtech.repositories.PostgreSqlRepository;
 import com.wealdtech.services.WObjectService;
+import com.wealdtech.services.WObjectServiceCallback;
 import com.wealdtech.services.WObjectServiceCallbackPostgreSqlImpl;
 import com.wealdtech.services.WObjectServicePostgreSqlImpl;
 import org.joda.time.DateTime;
@@ -93,9 +94,24 @@ public class WObjectPostgreSqlTest
                                            .build();
     service.add(testObj);
 
-    final ImmutableList<TestWObject> testObjs = service.obtain(new TypeReference<TestWObject>(){}, null);
+    final ImmutableList<TestWObject> testObjs = service.obtain(new TypeReference<TestWObject>(){}, (WObjectServiceCallback<PreparedStatement>)null);
     assertNotNull(testObjs);
     assertEquals(testObjs.size(), 1);
+  }
+
+  @Test
+  public void testObtain()
+  {
+    final TestWObject testObj = TestWObject.builder()
+                                           .id(WID.<TestWObject>generate())
+                                           .data("test string", "test value")
+                                           .data("test date", new DateTime(1234567890000L).withZone(DateTimeZone.UTC))
+                                           .build();
+    service.add(testObj);
+
+    TestWObject dbTestObj = service.obtain(TestWObject.class, testObj.getId());
+    assertNotNull(dbTestObj);
+    assertEquals(dbTestObj, testObj);
   }
 
   @Test

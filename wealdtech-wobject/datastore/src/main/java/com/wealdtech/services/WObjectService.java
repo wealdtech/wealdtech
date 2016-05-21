@@ -60,6 +60,16 @@ public interface WObjectService<T extends WObject, U>
   public void remove(WObjectServiceCallback<U> cb);
 
   /**
+   * Obtain object
+   */
+  public T obtain(Class<T> klazz, WID<T> itemId);
+
+  /**
+   * Obtain object
+   */
+  public T obtain(TypeReference<T> typeRef, WID<T> itemId);
+
+  /**
    * Obtain objects
    */
   public ImmutableList<T> obtain(TypeReference<T> typeRef, WObjectServiceCallback<U> cb);

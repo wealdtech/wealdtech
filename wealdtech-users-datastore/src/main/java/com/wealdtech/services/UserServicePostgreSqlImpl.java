@@ -239,7 +239,7 @@ public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User
   @Override
   public ImmutableSet<User> obtainAll()
   {
-    return ImmutableSet.copyOf(obtain(USER_TYPE_REFERENCE, null));
+    return ImmutableSet.copyOf(obtain(USER_TYPE_REFERENCE, (WObjectServiceCallback<PreparedStatement>)null));
   }
 
   @Override
