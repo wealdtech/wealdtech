@@ -231,6 +231,8 @@
       <module name="wealdtech-traces-model_test" target="1.7" />
       <module name="wealdtech-traces_main" target="1.7" />
       <module name="wealdtech-traces_test" target="1.7" />
+      <module name="wealdtech-types_main" target="1.7" />
+      <module name="wealdtech-types_test" target="1.7" />
       <module name="wealdtech-users-daemon_main" target="1.7" />
       <module name="wealdtech-users-daemon_test" target="1.7" />
       <module name="wealdtech-users-datastore_main" target="1.7" />

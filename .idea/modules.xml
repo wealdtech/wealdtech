@@ -279,6 +279,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-traces/model/wealdtech-traces-model_test.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-traces/model/wealdtech-traces-model_test.iml" group="wealdtech-traces/model" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-traces/wealdtech-traces_main.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-traces/wealdtech-traces_main.iml" group="wealdtech-traces" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-traces/wealdtech-traces_test.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-traces/wealdtech-traces_test.iml" group="wealdtech-traces" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-types/wealdtech-types.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-types/wealdtech-types.iml" group="wealdtech-types" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-types/wealdtech-types_main.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-types/wealdtech-types_main.iml" group="wealdtech-types" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-types/wealdtech-types_test.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-types/wealdtech-types_test.iml" group="wealdtech-types" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-users/wealdtech-users.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-users/wealdtech-users.iml" group="wealdtech-users" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-users-daemon/wealdtech-users-daemon.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-users-daemon/wealdtech-users-daemon.iml" group="wealdtech-users-daemon" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wealdtech-users-daemon/wealdtech-users-daemon_main.iml" filepath="$PROJECT_DIR$/.idea/modules/wealdtech-users-daemon/wealdtech-users-daemon_main.iml" group="wealdtech-users-daemon" />
