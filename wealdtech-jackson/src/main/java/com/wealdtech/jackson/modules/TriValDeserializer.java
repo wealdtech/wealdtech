@@ -33,7 +33,7 @@ public class TriValDeserializer extends StdDeserializer<TriVal<?>>
   }
 
   @Override
-  public TriVal<?> getNullValue()
+  public TriVal<?> getNullValue(final DeserializationContext context)
   {
     return TriVal.absent();
   }

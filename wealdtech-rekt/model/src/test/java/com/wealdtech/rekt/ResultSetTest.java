@@ -106,7 +106,7 @@ public class ResultSetTest
 
     final ResultSet resultSet = WObject.deserialize(ser, ResultSet.class);
     assertNotNull(resultSet);
-    assertEquals(resultSet.getElements().get(0).getResults().get(0).getValue(DateTime.class).get(),
+    assertEquals(resultSet.getElements().get(0).getResults().get(0).getValue(DateTime.class).orNull(),
                  new DateTime(2015, 5, 6, 14, 0, 0, DateTimeZone.UTC));
   }
 

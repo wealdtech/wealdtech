@@ -46,6 +46,8 @@ public class Event extends WObject<Event> implements Comparable<Event>
   private static final String TRANSPARENCY = "transparency";
   private static final String ATTENDEES = "attendees";
 
+  private static final String TYPE = "type";
+
   @JsonCreator
   public Event(final Map<String, Object> data)
   {
@@ -90,6 +92,9 @@ public class Event extends WObject<Event> implements Comparable<Event>
 
   @JsonIgnore
   public Status getStatus() { return get(STATUS, Status.class).get(); }
+
+  @JsonIgnore
+  public String getType() { return get(TYPE, String.class).get(); }
 
   private static final TypeReference<ImmutableSet<Attendee>> ATTENDEES_TYPE_REF = new TypeReference<ImmutableSet<Attendee>>(){};
   @JsonIgnore
@@ -163,6 +168,12 @@ public class Event extends WObject<Event> implements Comparable<Event>
       data.put(STATUS, Status.CONFIRMED);
     }
 
+    // Default type to event
+    if (!data.containsKey(TYPE))
+    {
+      data.put(TYPE, "Event");
+    }
+
     return data;
   }
 
@@ -175,6 +186,7 @@ public class Event extends WObject<Event> implements Comparable<Event>
     if (!exists(START_DATE) && !exists(START_DATETIME)) { throw new DataError.Missing("Event needs 'start date' or 'start datetime' information"); }
     if (!exists(TRANSPARENCY)) { throw new DataError.Missing("Event needs 'transparency' information"); }
     if (!exists(STATUS)) { throw new DataError.Missing("Event needs 'status' information"); }
+    if (!exists(TYPE)) { throw new DataError.Missing("Event needs 'type' information"); }
     // TODO more validation when we add recurrence
   }
 
@@ -250,6 +262,12 @@ public class Event extends WObject<Event> implements Comparable<Event>
       return self();
     }
 
+    public P type(final String type)
+    {
+      data(TYPE, type);
+      return self();
+    }
+
     public P transparency(final Transparency transparency)
     {
       data(TRANSPARENCY, transparency);
@@ -268,15 +286,9 @@ public class Event extends WObject<Event> implements Comparable<Event>
     }
   }
 
-  public static Builder<?> builder()
-  {
-    return new Builder();
-  }
+  public static Builder<?> builder() { return new Builder(); }
 
-  public static Builder<?> builder(final Event prior)
-  {
-    return new Builder(prior);
-  }
+  public static Builder<?> builder(final Event prior) { return new Builder(prior); }
 
   /**
    * The status of an event: cancelled, tentative, confirmed

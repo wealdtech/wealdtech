@@ -98,14 +98,7 @@ public class Calendar extends WObject<Calendar> implements Comparable<Calendar>
     }
   }
 
-  public static Builder<?> builder()
-  {
-    return new Builder();
-  }
+  public static Builder<?> builder() { return new Builder(); }
 
-  public static Builder<?> builder(final Calendar prior)
-  {
-    return new Builder(prior);
-  }
-
-  }
+  public static Builder<?> builder(final Calendar prior) { return new Builder(prior); }
+}

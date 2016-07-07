@@ -10,13 +10,13 @@
 
 package com.wealdtech.jackson.modules;
 
-import java.util.List;
-
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.wealdtech.TriVal;
+
+import java.util.List;
 
 public class TriValBeanSerializerModifier extends BeanSerializerModifier
 {
