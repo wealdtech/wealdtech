@@ -66,6 +66,8 @@ public class ChatClient
 
   /**
    * Create a message
+   * @param topicId the ID of the topic in which to create the message
+   * @param message the message to create
    */
   public void createMessage(final WID<Topic> topicId, final Message message)
   {
@@ -74,6 +76,9 @@ public class ChatClient
 
   /**
    * Obtain a message
+   * @param topicId the ID of the topic in which to obtian the message
+   * @param messageId the ID of th emessage to obtain
+   * @return the message; can be {@code null}
    */
   public Message obtainMessage(final WID<Topic> topicId, final WID<Message> messageId)
   {
@@ -82,6 +87,7 @@ public class ChatClient
 
   /**
    * Remove an entire topic
+   * @param topicId the ID of the topic to remove
    */
   public void removeTopic(final WID<Topic> topicId)
   {
