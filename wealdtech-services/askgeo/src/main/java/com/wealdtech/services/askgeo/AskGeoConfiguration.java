@@ -38,6 +38,7 @@ public class AskGeoConfiguration implements Configuration
    * Obtain a configuration from the environment
    *
    * @param base the base string to use as the prefix for obtaining environmental variables
+   * @return the configuration
    */
   public static AskGeoConfiguration fromEnv(final String base)
   {

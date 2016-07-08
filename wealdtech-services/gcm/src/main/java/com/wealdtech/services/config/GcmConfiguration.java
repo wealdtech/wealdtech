@@ -41,6 +41,7 @@ public class GcmConfiguration implements Configuration
    * Obtain a configuration from the environment
    *
    * @param base the base string to use as the prefix for obtaining environmental variables
+   * @return a configuration
    */
   public static GcmConfiguration fromEnv(final String base)
   {

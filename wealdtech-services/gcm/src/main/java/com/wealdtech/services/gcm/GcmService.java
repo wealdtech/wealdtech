@@ -23,6 +23,9 @@ public interface GcmService
 {
   /**
    * Send a message
+   * @param auth the authorization header for the request
+   * @param body the request
+   * @return the response
    */
   @POST("/send")
   Response sendMessage(@Header("Authorization") final String auth, @Body final WObject<?> body);

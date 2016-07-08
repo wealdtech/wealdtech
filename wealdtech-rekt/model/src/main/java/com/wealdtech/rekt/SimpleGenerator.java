@@ -82,6 +82,7 @@ public abstract class SimpleGenerator<T> implements ResultGenerator<T>
    * Generate results given an input
    *
    * @param input the input from which to generate the result
+   * @param additionalInfo additional information about the input
    *
    * @return a two tuple of information.  The first element in the tuple should only be provided if there is a single unambiguous
    * result.  The second element in the tuple should only be provided if there are multiple ambiguous results.

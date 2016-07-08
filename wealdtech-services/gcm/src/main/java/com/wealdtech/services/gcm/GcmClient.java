@@ -46,6 +46,8 @@ public class GcmClient
 
   /**
    * Send a message
+   * @param recipients the recipients of the message
+   * @param message the message
    */
   public void sendMessage(final ImmutableSet<String>recipients, final WObject<?> message)
   {
