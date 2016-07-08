@@ -19,7 +19,8 @@ import com.google.common.collect.Ordering;
 /**
  * Allow ordering of Joda Periods by comparing them against a common base date.
  * Access to this should be through the static INSTANCE value.
- * <p/>Note that as the date chosen as a comparison base is arbitrary there are some
+ * <p>
+ * Note that as the date chosen as a comparison base is arbitrary there are some
  * situations where the results are open to debate as to their accuracy when considering
  * periods of differing types (<em>e.g.</em> comparing 31 days to 1 month).  The results
  * will, however, be consistent.

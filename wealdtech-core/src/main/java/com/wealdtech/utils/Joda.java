@@ -25,7 +25,7 @@ public class Joda
 {
   /**
    * A {@link DateTimeFieldType} using the notion of absolute week of the month.
-   * <p/>The absolute week of the month is derived directly from the day of the
+   * The absolute week of the month is derived directly from the day of the
    * month, with the first seven days of any given month being in the first week,
    * the second seven days being in the second week, <em>etc.</em>.
    */
@@ -66,7 +66,7 @@ public class Joda
 
   /**
    * A {@link DateTimeFieldType} using the notion of absolute week of the year.
-   * <p/>The absolute week of the year is derived directly from the day of the
+   * The absolute week of the year is derived directly from the day of the
    * year, with the first seven days of any given year being in the first week,
    * the second seven days being in the second week, <em>etc.</em>.
    */

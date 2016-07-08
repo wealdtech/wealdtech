@@ -20,9 +20,9 @@ import java.util.*;
 import static com.wealdtech.Preconditions.checkNotNull;
 
 /**
- * An IntervalMultimap is a form of
- * @param <T>
- * @param <U>
+ * An IntervalMultimap is a form of multimap that provides details of which values fall within which ranges.
+ * @param <T> The type of the map keys; always supplied as ranges
+ * @param <U> The type of the values
  */
 public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range<T>, U>
 {

@@ -23,7 +23,6 @@ import com.wealdtech.jetty.JettyHttpsConnectorFactory;
 
 /**
  * Configuration for a Jetty connector.
- * <p>
  */
 public final class JettyConnectorConfiguration implements Configuration
 {

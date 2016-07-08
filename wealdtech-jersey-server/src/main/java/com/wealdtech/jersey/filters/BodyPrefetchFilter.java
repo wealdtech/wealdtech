@@ -26,7 +26,8 @@ import java.io.InputStream;
 /**
  * Prefetch and store the full body of the request so that it can be read by
  * subsequent filters without upsetting message body readers.
- * <p/>Required if authentication systems, logging filters, or anything else
+ * <p>
+ * Required if authentication systems, logging filters, or anything else
  * that wants access to the body of the request.
  */
 public class BodyPrefetchFilter implements Filter

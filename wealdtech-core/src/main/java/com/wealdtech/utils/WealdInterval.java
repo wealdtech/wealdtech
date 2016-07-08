@@ -28,7 +28,7 @@ import static com.wealdtech.Preconditions.checkState;
 /**
  * A WealdInterval is similar to a Joda {@link org.joda.time.Interval} except that it retains the timezones of both the start and
  * the end times.  It also implements {@link Comparable} as per {@link IntervalOrdering}.
- * <p/>
+ * <p>
  * A WealdInterval is considered to be a closed-open range, and as such the end must be after the start.
  */
 public class WealdInterval implements Comparable<WealdInterval>
@@ -83,7 +83,6 @@ public class WealdInterval implements Comparable<WealdInterval>
 
   /**
    * Obtain a Joda {@link Interval} from this Weald interval.
-   * <p/>
    * <b>N.B.</b>
    * This loses information about the timezone in which the end datetime resides so should be used with caution.
    * @return A Joda interval

@@ -35,6 +35,8 @@ public class MessageObjects<T> implements Serializable
 
   /**
    * Create a MessageObjects.
+   * @param userId the ID of the user creating the item
+   * @param hint hints about the origination of the request
    * @param prior the prior state of the object, or <code>null</code> if there was not one
    * @param current the current state of the object, or <code>null</code> if there is not one
    * @throws DataError if the objects passed do not match a valid state
@@ -55,6 +57,7 @@ public class MessageObjects<T> implements Serializable
 
   /**
    * Obtain the ID of the user who initiated the change of state of the object.
+   * @return the user ID
    */
   public Long getUserId()
   {

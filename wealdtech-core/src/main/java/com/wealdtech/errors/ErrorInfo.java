@@ -23,9 +23,9 @@ import com.wealdtech.DataError;
 
 /**
  * Information regarding an error.
- * <p/>
  * Detailed information to pass back as part of an HTTP response.
- * <p/>This provides a standardized way to return information containing
+ * <p>
+ * This provides a standardized way to return information containing
  * multiple fields to a client
  */
 public class ErrorInfo implements Comparable<ErrorInfo>
@@ -87,8 +87,7 @@ public class ErrorInfo implements Comparable<ErrorInfo>
   }
 
   /**
-   * Obtain the code for this error.
-   * @return the error code
+   * @return the code for this error.
    */
   public final String getErrorCode()
   {
@@ -96,8 +95,7 @@ public class ErrorInfo implements Comparable<ErrorInfo>
   }
 
   /**
-   * Obtain a message for this error suitable for display to end-users.
-   * @return a message
+   * @return a message for this error suitable for display to end-users.
    */
   public final String getUserMessage()
   {
@@ -105,8 +103,7 @@ public class ErrorInfo implements Comparable<ErrorInfo>
   }
 
   /**
-   * Obtain a message for this error suitable for display to developers.
-   * @return a message
+   * @return a message for this error suitable for display to developers.
    */
   public final String getDeveloperMessage()
   {
@@ -114,8 +111,7 @@ public class ErrorInfo implements Comparable<ErrorInfo>
   }
 
   /**
-   * Obtain a link to follow for more information on this error.
-   * @return a link
+   * @return a link to follow for more information on this error.
    */
   public final URI getMoreInfo()
   {

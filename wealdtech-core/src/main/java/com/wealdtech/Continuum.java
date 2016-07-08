@@ -16,11 +16,11 @@ import com.google.common.collect.Range;
 /**
  * A continuum is a ranged value with discrete groupings within set ranges.  It is similar to an enum except there is also a set
  * range of values associated with each enum to allow for quantitative difference between items with the same base type.
- * <p/>
+ * <p>
  * A continuum is useful where something like an enum is useful but does not provide quite enough detail.  An example of this would
  * be prioritised attendance levels, where there are discrete levels such as 'like to attend' and 'must attend' but there needs to
  * be a way of ordering multiple 'like to attend' items without creating an arbitrary number of enums.
- * <p/>
+ * <p>
  * To create your own continuum simply subclass this and set your own values for {@code ranges}
  */
 public abstract class Continuum<C extends Comparable<C>> implements Comparable<Continuum<C>>

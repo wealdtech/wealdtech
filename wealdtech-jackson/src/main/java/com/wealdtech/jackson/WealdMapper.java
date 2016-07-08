@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * Provide Jackson object mappers with Weald settings. This provides two object mappers, one for clients (which will be sending REST
  * requests to servers) and one for servers (which will be receiving REST requests from clients). Please ensure that you use the
  * appropriate mapper, otherwise bad things will happen.
- * <p/>
+ * <p>
  * If you are unsure which one you should be using, use the client mapper.
  */
 public enum WealdMapper

@@ -51,7 +51,7 @@ public abstract class WealdError extends RuntimeException
   }
 
   /**
-   * Provide the full path of the throwing class
+   * @return the full path of the throwing class
    */
   public String getThrowingClassName()
   {
@@ -65,7 +65,7 @@ public abstract class WealdError extends RuntimeException
   }
 
   /**
-   * Provide the name of the throwing method
+   * @return the name of the throwing method
    */
   public String getThrowingMethodName()
   {

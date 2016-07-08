@@ -16,7 +16,7 @@ package com.wealdtech;
  * Such errors suggest that the caller should attempt to carry out
  * the request again at a later date, at which point the server error
  * may have been resolved.
- * <p/>
+ * <p>
  * Note that server errors do not provide any information on the validity
  * of the server passed to the method.
  */

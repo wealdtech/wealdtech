@@ -53,7 +53,8 @@ public class HttpException extends WealdError
   /**
    * Generate an HTTP exception with underlying application exception.
    * @param status an HTTP status to be sent back to the requestor
-   * @param message an explanation of the error
+   * @param message a code-level message to be passed back to the requestor
+   * @param userMessage a user-representable message to be passed back to the requestor
    * @param t the underlying application exception
    */
   public HttpException(final Status status, final String message, final String userMessage, final Throwable t)
@@ -66,7 +67,8 @@ public class HttpException extends WealdError
   /**
    * Generate an HTTP exception with underlying application exception.
    * @param status an HTTP status to be sent back to the requestor
-   * @param message a message to be pased back to the requestor
+   * @param message a code-level message to be passed back to the requestor
+   * @param userMessage a user-representable message to be passed back to the requestor
    * @param retryAfter the number of seconds the requestor should wait before resubmitting the request
    * @param t the underlying application exception
    */
