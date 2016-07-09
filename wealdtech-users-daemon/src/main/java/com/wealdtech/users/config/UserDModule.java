@@ -41,19 +41,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
-//import com.wealdtech.notifications.providers.NotificationProvider;
-//import com.wealdtech.notifications.providers.NotificationProviderPushWooshImpl;
-//import com.wealdtech.services.config.PushWooshConfiguration;
-
 /**
  */
-public class ApplicationModule extends AbstractModule
+public class UserDModule extends AbstractModule
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserDModule.class);
 
   private final String configFile;
 
-  public ApplicationModule(@Nullable final String configFile)
+  public UserDModule(@Nullable final String configFile)
   {
     this.configFile = MoreObjects.firstNonNull(configFile, "userd-config.json");
   }
@@ -73,8 +69,6 @@ public class ApplicationModule extends AbstractModule
       bind(JerseyServerConfiguration.class).toInstance(configuration.getJerseyServerConfiguration());
       bind(PostgreSqlConfiguration.class).toInstance(configuration.getPostgreSqlConfiguration());
       bind(LoggingConfiguration.class).toInstance(configuration.getLoggingConfiguration());
-//      bind(PushWooshConfiguration.class).toInstance(configuration.getPushWooshConfiguration());
-//      bind(NotificationProvider.class).to(NotificationProviderPushWooshImpl.class).in(Singleton.class);
 
       // We have multiple different object mappers.  The database-facing mapper users longs for timestamps for efficiency when
       // searching for values
@@ -98,9 +92,6 @@ public class ApplicationModule extends AbstractModule
       // Use a local WID module
       bind(WIDConfiguration.class).toInstance(configuration.getWIDConfiguration());
       install(new WIDServiceLocalModule());
-
-      // Use the asynchronous chat service
-//      bind(ChatService.class).to(ChatServiceAsynchronousImpl.class).in(Singleton.class);
 
       bind(new TypeLiteral<Authenticator<TwoTuple<User, UserAuthorisation>>>() {}).annotatedWith(Names.named("basicauth"))
                                                                                   .to(WealdBasicAuthenticator.class)

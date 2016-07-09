@@ -45,7 +45,7 @@
     "level": "ERROR"
   },
 
-  "datastore":
+  "repository":
   {
     "host": "localhost",
     "port": 5432,

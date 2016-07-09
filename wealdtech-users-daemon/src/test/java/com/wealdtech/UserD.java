@@ -21,7 +21,7 @@ import com.wealdtech.jersey.filters.*;
 import com.wealdtech.jersey.guice.JerseyServletModule;
 import com.wealdtech.jetty.JettyServer;
 import com.wealdtech.services.UserService;
-import com.wealdtech.users.config.ApplicationModule;
+import com.wealdtech.users.config.UserDModule;
 
 /**
  * Daemon for the users API.
@@ -31,7 +31,7 @@ public class UserD
 {
   public static void main(final String[] args)
   {
-    final Injector injector = Guice.createInjector(new ApplicationModule("userd-config.json"),
+    final Injector injector = Guice.createInjector(new UserDModule("userd-config.json"),
                                                    new WealdInstrumentationModule(),
                                                    new EventBusAsynchronousModule(),
                                                    new JerseyServletModule(ImmutableList.of(RequestLoggingFilter.class,

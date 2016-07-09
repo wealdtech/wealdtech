@@ -35,7 +35,7 @@ public class TokenAuthenticator implements Authenticator
       {
         if (Objects.equal(method.getType(), TokenAuthenticationMethod.TOKEN_AUTHENTICATION))
         {
-          final TokenAuthenticationMethod tokenMethod = (TokenAuthenticationMethod)method;
+          final TokenAuthenticationMethod tokenMethod = TokenAuthenticationMethod.recast(method, TokenAuthenticationMethod.class);
           if (Objects.equal(tokenMethod.getToken(), tokenCredentials.getToken()))
           {
             scope = tokenMethod.getScope();

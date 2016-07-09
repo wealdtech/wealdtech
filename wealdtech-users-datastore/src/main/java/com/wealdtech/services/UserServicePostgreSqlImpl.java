@@ -121,33 +121,45 @@ public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User
         }), null);
         if (dbUser != null)
         {
-          // We have obtained the user via the single-use token, so remove the token
-          final User.Builder<?> updatedUserB = User.builder(dbUser);
-
-          final ImmutableSet.Builder<AuthenticationMethod> authenticationMethodsB = ImmutableSet.builder();
-          boolean found = false;
-          for (final AuthenticationMethod authenticationMethod : dbUser.getAuthenticationMethods())
+          final AuthorisationScope scope = new TokenAuthenticator().authenticate(credentials, dbUser.getAuthenticationMethods());
+          if (scope != AuthorisationScope.NONE)
           {
-            if (Objects.equal(authenticationMethod.getType(), TokenAuthenticationMethod.TOKEN_AUTHENTICATION) &&
-                Objects.equal(((TokenAuthenticationMethod)authenticationMethod).getToken(), tokenCredentials.getToken()))
-            {
-              found = true;
-            }
-            else
-            {
-              authenticationMethodsB.add(authenticationMethod);
-            }
+            // User is authenticated
+            user = dbUser;
           }
-          if (!found)
-          {
-            // Didn't find the token, be upset
-            throw new DataError.Bad("Failed to find token to remove on use");
-          }
-          updatedUserB.authenticationMethods(authenticationMethodsB.build());
-
-          user = updatedUserB.build();
-          update(dbUser, user);
         }
+//        if (dbUser != null)
+//        {
+//          // We have obtained the user via the single-use token, so remove the token
+//          final User.Builder<?> updatedUserB = User.builder(dbUser);
+//
+//          final ImmutableSet.Builder<AuthenticationMethod> authenticationMethodsB = ImmutableSet.builder();
+//          boolean found = false;
+//          for (final AuthenticationMethod authenticationMethod : dbUser.getAuthenticationMethods())
+//          {
+//            if (Objects.equal(authenticationMethod.getType(), TokenAuthenticationMethod.TOKEN_AUTHENTICATION))
+//            {
+//              final TokenAuthenticationMethod tokenAuthenticationMethod =
+//                  TokenAuthenticationMethod.recast(authenticationMethod, TokenAuthenticationMethod.class);
+//              if (Objects.equal(tokenAuthenticationMethod.getToken(), tokenCredentials.getToken()))
+//              {
+//                found = true;
+//              }
+//              else
+//              {
+//                authenticationMethodsB.add(authenticationMethod);
+//              }
+//            }
+//            if (!found)
+//            {
+//              // Didn't find the token, be upset
+//              throw new DataError.Bad("Failed to find token to remove on use");
+//            }
+//            updatedUserB.authenticationMethods(authenticationMethodsB.build());
+//
+//          user = updatedUserB.build();
+//          update(dbUser, user);
+//        }
         break;
       //      {
       //        // For all other credentials we obtain the user via the auth ID, which is part of the authentication method
