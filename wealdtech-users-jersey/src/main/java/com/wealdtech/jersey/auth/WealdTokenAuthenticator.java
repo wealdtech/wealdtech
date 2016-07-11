@@ -101,9 +101,19 @@ public final class WealdTokenAuthenticator extends WealdAuthenticator
   @Override
   public Credentials obtainRequestCredentials(final ContainerRequest request)
   {
+    // See if the token is passed in using a query parameter
     final MultivaluedMap<String, String> params = request.getQueryParameters();
-    final String secret = params.getFirst("token");
-    checkNotNull(secret, "Missing ott parameter");
+    String secret = params.getFirst("token");
+    if (secret == null)
+    {
+      // No luck there; check the authorization header
+      final String headerValue = request.getHeaderValue(ContainerRequest.AUTHORIZATION);
+      if (headerValue.startsWith("Token "))
+      {
+        secret = headerValue.replace("Token ", "");
+      }
+    }
+    checkNotNull(secret, "Missing token");
 
     return TokenCredentials.builder().token(secret).build();
   }
