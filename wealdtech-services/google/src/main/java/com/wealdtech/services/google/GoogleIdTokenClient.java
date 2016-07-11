@@ -11,6 +11,7 @@
 package com.wealdtech.services.google;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.DataError;
 import com.wealdtech.GenericWObject;
@@ -34,16 +35,16 @@ public class GoogleIdTokenClient
 
   private final GoogleIdTokenService service;
 
-  private final String clientId;
+  private final ImmutableList<String> clientIds;
 
   /**
    *
-   * @param clientId the Google client ID; required to verify tokens
+   * @param clientIds the valid Google client IDs; required to verify tokens
    */
   @Inject
-  public GoogleIdTokenClient(@Named("googleclientid") final String clientId)
+  public GoogleIdTokenClient(@Named("googleclientids") final ImmutableList<String> clientIds)
   {
-    this.clientId = clientId;
+    this.clientIds = clientIds;
 
     final Converter converter = new JacksonRetrofitConverter();
     final RestAdapter adapter =
@@ -71,7 +72,7 @@ public class GoogleIdTokenClient
     {
       throw new DataError.Bad("Missing aud in response");
     }
-    if (!aud.get().equals(clientId))
+    if (!clientIds.contains(aud.get()))
     {
       throw new DataError.Bad("Incorrect aud in response");
     }
