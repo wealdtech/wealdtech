@@ -61,10 +61,10 @@ public class GoogleTimezoneClient
   }
 
   @Nullable
-  public DateTimeZone timezone(final GoogleServicesConfiguration configuration, final Double lat, final Double lng)
+  public DateTimeZone timezone(final String apiKey, final Double lat, final Double lng)
   {
-    final WObject<?> results = service.timezone(configuration.getTimezonesApiKey(),
-                                                Double.toString(lat) + "," + Double.toString(lng), DateTime.now().getMillis() / 1000);
+    final WObject<?> results =
+        service.timezone(apiKey, Double.toString(lat) + "," + Double.toString(lng), DateTime.now().getMillis() / 1000);
     // Ensure that we have a valid response
     if (results == null || !results.exists("status") || !results.get("status", String.class).get().equals("OK"))
     {

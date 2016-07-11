@@ -24,7 +24,7 @@ public class GoogleTimezoneClientTest
   {
     final GoogleTimezoneClient client = GoogleTimezoneClient.getInstance();
 
-    final DateTimeZone timezone = client.timezone(GoogleServicesConfiguration.fromEnv("wealdtech_config_google"), 28.431157, -81.308083);
+    final DateTimeZone timezone = client.timezone(System.getenv("wealdtech_config_google_api"), 28.431157, -81.308083);
     assertEquals(timezone, DateTimeZone.forID("America/New_York"));
   }
 

@@ -108,7 +108,7 @@ public final class WealdTokenAuthenticator extends WealdAuthenticator
     {
       // No luck there; check the authorization header
       final String headerValue = request.getHeaderValue(ContainerRequest.AUTHORIZATION);
-      if (headerValue.startsWith("Token "))
+      if (headerValue != null && headerValue.startsWith("Token "))
       {
         secret = headerValue.replace("Token ", "");
       }
