@@ -13,7 +13,7 @@ archivesBaseName = 'wealdtech-mail-sparkpost'
 dependencies
 {
     compile project(':wealdtech-mail:model')
-    compile 'com.sparkpost:sparkpost-lib:+'
+    compile 'com.sparkpost:sparkpost-lib:0.16.1'
 }
 
 uploadArchives {
