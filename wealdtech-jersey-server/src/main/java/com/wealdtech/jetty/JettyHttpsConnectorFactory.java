@@ -45,7 +45,7 @@ public class JettyHttpsConnectorFactory extends JettyHttpConnectorFactory
 //    final ConnectionFactory instrumentedConnectionFactory = new InstrumentedConnectionFactory(httpConnectionFactory, WealdMetrics.getMetricRegistry().timer(timerName));
 //    // And create the connection itself
 //    return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, sslConnectionFactory, instrumentedConnectionFactory);
-        return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, sslConnectionFactory);
+        return buildConnector(server, threadPool, scheduler, bufferPool, name, configuration, sslConnectionFactory, httpConnectionFactory);
   }
 
   @Override
