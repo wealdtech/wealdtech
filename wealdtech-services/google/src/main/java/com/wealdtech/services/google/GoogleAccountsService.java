@@ -11,9 +11,10 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.GenericWObject;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.POST;
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.POST;
 
 /**
  * Interact with the Google Account API
@@ -22,6 +23,7 @@ public interface GoogleAccountsService
 {
   /**
    * Obtain OAuth2 tokens
+   *
    * @param grantType the type of the grant (usually "authorization_code")
    * @param clientId the client ID
    * @param clientSecret the client secret
@@ -31,12 +33,12 @@ public interface GoogleAccountsService
    * @return a generic response object
    */
   @FormUrlEncoded
-  @POST("/token")
-  GenericWObject obtainToken(@Field(encodeName = false,encodeValue = false, value = "grant_type") final String grantType,
-                             @Field(encodeName = false,encodeValue = false, value = "client_id") final String clientId,
-                             @Field(encodeName = false,encodeValue = false, value = "client_secret") final String clientSecret,
-                             @Field(encodeName = false,encodeValue = false, value = "redirect_uri") final String redirectUri,
-                             @Field(encodeName = false,encodeValue = false, value = "code") final String code);
+  @POST("token")
+  Call<GenericWObject> obtainToken(@Field(encoded = true, value = "grant_type") final String grantType,
+                                   @Field(encoded = true, value = "client_id") final String clientId,
+                                   @Field(encoded = true, value = "client_secret") final String clientSecret,
+                                   @Field(encoded = true, value = "redirect_uri") final String redirectUri,
+                                   @Field(encoded = true, value = "code") final String code);
 
   /**
    * Refresh OAuth2 access token
@@ -49,9 +51,9 @@ public interface GoogleAccountsService
    * @return a generic response object
    */
   @FormUrlEncoded
-  @POST("/token")
-  GenericWObject refreshToken(@Field(encodeName = false,encodeValue = false, value = "grant_type") final String grantType,
-                              @Field(encodeName = false,encodeValue = false, value = "client_id") final String clientId,
-                              @Field(encodeName = false,encodeValue = false, value = "client_secret") final String clientSecret,
-                              @Field(encodeName = false,encodeValue = false, value = "refresh_token") final String refreshToken);
+  @POST("token")
+  Call<GenericWObject> refreshToken(@Field(encoded = true, value = "grant_type") final String grantType,
+                                    @Field(encoded = true, value = "client_id") final String clientId,
+                                    @Field(encoded = true, value = "client_secret") final String clientSecret,
+                                    @Field(encoded = true, value = "refresh_token") final String refreshToken);
 }

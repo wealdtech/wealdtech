@@ -11,19 +11,19 @@
 package com.wealdtech.services.chat;
 
 import com.google.inject.Inject;
-import com.wealdtech.ServerError;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 /**
  * Client forWealdtech Chat
@@ -39,29 +39,30 @@ public class ChatClient
   @Inject
   public ChatClient(final String appId, final String username, final String password)
   {
-    final Converter converter = new JacksonRetrofitConverter();
-    final RequestInterceptor authenticationInterceptor = new RequestInterceptor()
+    final OkHttpClient.Builder httpClientB = new OkHttpClient.Builder();
+    final Interceptor authenticationInterceptor = new Interceptor()
     {
       @Override
-      public void intercept(RequestFacade request)
+      public Response intercept(final Chain chain) throws IOException
       {
-        request.addHeader("Application-ID", appId);
-        try
-        {
-          request.addHeader("Authorization",
-                            "Basic " + DatatypeConverter.printBase64Binary((username + ":" + password).getBytes("UTF-8")));
-        }
-        catch (UnsupportedEncodingException e)
-        {
-          throw new ServerError("Unable to encode username and password for basic authorisation");
-        }
+        final Request original = chain.request();
+
+        // Customize the request
+        final Request request = original.newBuilder()
+                                  .header("Application-ID", appId)
+                                  .header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(
+                                      (username + ":" + password).getBytes("UTF-8")))
+                                  .method(original.method(), original.body())
+                                  .build();
+
+        final Response response = chain.proceed(request);
+
+        // Customize or return the response
+        return response;
       }
     };
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
-                                                         .setConverter(converter)
-                                                         .setRequestInterceptor(authenticationInterceptor)
-                                                         .build();
-    this.service = adapter.create(ChatService.class);
+
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, ChatService.class, httpClientB.build());
   }
 
   /**
@@ -71,7 +72,7 @@ public class ChatClient
    */
   public void createMessage(final WID<Topic> topicId, final Message message)
   {
-    service.createMessage(topicId.toString(), message);
+    RetrofitHelper.call(service.createMessage(topicId.toString(), message));
   }
 
   /**
@@ -82,7 +83,7 @@ public class ChatClient
    */
   public Message obtainMessage(final WID<Topic> topicId, final WID<Message> messageId)
   {
-    return service.obtainMessage(topicId.toString(), messageId.toString());
+    return RetrofitHelper.call(service.obtainMessage(topicId.toString(), messageId.toString()));
   }
 
   /**
@@ -91,6 +92,6 @@ public class ChatClient
    */
   public void removeTopic(final WID<Topic> topicId)
   {
-    service.removeTopic(topicId.toString());
+    RetrofitHelper.call(service.removeTopic(topicId.toString()));
   }
 }

@@ -15,12 +15,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.DataError;
 import com.wealdtech.GenericWObject;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import javax.inject.Named;
 
@@ -31,7 +29,7 @@ public class GoogleIdTokenClient
 {
   private static final Logger LOG = LoggerFactory.getLogger(GoogleIdTokenClient.class);
 
-  private static final String ENDPOINT = "https://www.googleapis.com/oauth2/v3";
+  private static final String ENDPOINT = "https://www.googleapis.com/oauth2/v3/";
 
   private final GoogleIdTokenService service;
 
@@ -46,10 +44,7 @@ public class GoogleIdTokenClient
   {
     this.clientIds = clientIds;
 
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setLogLevel(RestAdapter.LogLevel.FULL).setConverter(converter).build();
-    this.service = adapter.create(GoogleIdTokenService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, GoogleIdTokenService.class);
   }
 
   /**
@@ -61,7 +56,7 @@ public class GoogleIdTokenClient
    */
   public GenericWObject obtainInfo(final String idToken)
   {
-    final GenericWObject response = service.obtainInfo(idToken);
+    final GenericWObject response = RetrofitHelper.call(service.obtainInfo(idToken));
 
     LOG.debug("Response is {}", response);
 

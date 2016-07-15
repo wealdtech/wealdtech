@@ -11,8 +11,8 @@
 package com.wealdtech.mail.mandrill;
 
 import com.google.common.collect.ImmutableMap;
-import retrofit.http.Body;
-import retrofit.http.POST;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 
 import java.util.List;
 

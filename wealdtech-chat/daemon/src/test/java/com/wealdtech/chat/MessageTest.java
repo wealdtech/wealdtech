@@ -27,9 +27,13 @@ public class MessageTest
   @Test
   public void testSimpleMessage()
   {
+    final ChatDTest test = new ChatDTest();
+    test.setUp();
     final ChatClient user1ChatClient =
-        new ChatClient(ChatDTest.application.getId().toString(), ChatDTest.user1.getEmails().iterator().next().getAddress(),
-                       "test");
+        new ChatClient(test.application.getId().toString(), test.user1.getEmails().iterator().next().getAddress(), "test");
+//    final ChatClient user1ChatClient =
+//        new ChatClient(ChatDTest.application.getId().toString(), ChatDTest.user1.getEmails().iterator().next().getAddress(),
+//                       "test");
     final WID<Topic> topicId = WID.generate();
 
     Message testMessage = null;
@@ -55,10 +59,11 @@ public class MessageTest
     }
     finally
     {
-      if (testMessage != null)
-      {
-        user1ChatClient.removeTopic(topicId);
-      }
+      // Removals not yet implements
+//      if (testMessage != null)
+//      {
+//        user1ChatClient.removeTopic(topicId);
+//      }
     }
   }
 }

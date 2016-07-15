@@ -14,11 +14,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.wealdtech.mail.config.MandrillConfiguration;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import java.util.List;
 
@@ -40,10 +38,7 @@ public class MandrillClient
   {
     this.configuration = configuration;
 
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).build();
-    this.service = adapter.create(MandrillService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, MandrillService.class);
   }
 
   public List<MandrillSendResponse> sendTemplate(final String template,

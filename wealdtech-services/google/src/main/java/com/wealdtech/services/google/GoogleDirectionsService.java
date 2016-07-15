@@ -11,8 +11,9 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.GenericWObject;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Interact with the Google Directions API
@@ -30,10 +31,10 @@ public interface GoogleDirectionsService
    *
    * @return directions
    */
-  @GET("/json")
-  GenericWObject directions(@Query("key") final String key,
-                            @Query("departure_time") final Long departureTime,
-                            @Query("origin") final String origin,
-                            @Query("destination") final String destination,
-                            @Query("mode") final String mode);
+  @GET("json")
+  Call<GenericWObject> directions(@Query("key") final String key,
+                                  @Query("departure_time") final Long departureTime,
+                                  @Query("origin") final String origin,
+                                  @Query("destination") final String destination,
+                                  @Query("mode") final String mode);
 }

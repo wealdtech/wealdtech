@@ -11,7 +11,8 @@
 package com.wealdtech.roberto.dataprovider.github;
 
 import com.wealdtech.GitHubStatus;
-import retrofit.http.GET;
+import retrofit2.Call;
+import retrofit2.http.GET;
 
 /**
  */
@@ -20,6 +21,6 @@ public interface GitHubService
   /**
    * Obtain status of API
    */
-  @GET("/status.json")
-  GitHubStatus status();
+  @GET("status.json")
+  Call<GitHubStatus> status();
 }

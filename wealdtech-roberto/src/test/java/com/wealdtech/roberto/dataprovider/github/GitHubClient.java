@@ -11,11 +11,9 @@
 package com.wealdtech.roberto.dataprovider.github;
 
 import com.wealdtech.GitHubStatus;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 /**
  */
@@ -46,15 +44,11 @@ public class GitHubClient
 
   public GitHubStatus status()
   {
-    return service.status();
+    return RetrofitHelper.call(service.status());
   }
 
   private GitHubClient()
   {
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
-                                                         .setConverter(converter)
-                                                         .build();
-    this.service = adapter.create(GitHubService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, GitHubService.class);
   }
 }

@@ -14,11 +14,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.wealdtech.GenericWObject;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +28,7 @@ public class GoogleDirectionsClient
 {
   private static final Logger LOG = LoggerFactory.getLogger(GoogleDirectionsClient.class);
 
-  private static final String ENDPOINT = "https://maps.googleapis.com/maps/api/directions";
+  private static final String ENDPOINT = "https://maps.googleapis.com/maps/api/directions/";
 
   private final GoogleServicesConfiguration configuration;
 
@@ -43,10 +41,7 @@ public class GoogleDirectionsClient
   {
     this.configuration = configuration;
 
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).build();
-
-    this.service = adapter.create(GoogleDirectionsService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, GoogleDirectionsService.class);
   }
 
   /**
@@ -69,7 +64,7 @@ public class GoogleDirectionsClient
   {
     final String start = Double.toString(startLat / 1000000.0) + "," + Double.toString(startLng / 1000000.0);
     final String end = Double.toString(endLat / 1000000.0) + "," + Double.toString(endLng / 1000000.0);
-    GenericWObject object = service.directions(configuration.getDirectionsApiKey(), startTimestamp, start, end, mode);
+    GenericWObject object = RetrofitHelper.call(service.directions(configuration.getDirectionsApiKey(), startTimestamp, start, end, mode));
     final Optional<List<GenericWObject>> routes = object.get("routes", LIST);
     if (routes.isPresent() && !routes.get().isEmpty())
     {

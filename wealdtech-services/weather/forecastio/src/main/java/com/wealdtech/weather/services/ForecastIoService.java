@@ -10,9 +10,9 @@
 
 package com.wealdtech.weather.services;
 
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 /**
  */
@@ -24,31 +24,15 @@ public interface ForecastIoService
    * @param key the api key
    * @param lat a latitude
    * @param lng a longitude
-   * @param timestamp the timestamp in <b> seconds</b> since the epoch
-   * @param cb the callback when the forecast has been obtained
-   */
-  @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=uk&exclude=minutely,hourly,daily,alerts,flags")
-  void forecast(@Path("key") final String key,
-                @Path("lat") final float lat,
-                @Path("lng") final float lng,
-                @Path("timestamp") final long timestamp,
-                Callback<ForecastIoResponse> cb);
-
-  /**
-   * Obtain a forecast for a particular location at a particular time
-   *
-   * @param key the api key
-   * @param lat a latitude
-   * @param lng a longitude
    * @param timestamp the timestamp in <b>seconds</b> since the epoch
    *
-   * @return the forecast data
+   * @return the call results
    */
   @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=uk&exclude=minutely,hourly,daily,alerts,flags")
-  ForecastIoResponse forecastPoint(@Path("key") final String key,
-                                   @Path("lat") final float lat,
-                                   @Path("lng") final float lng,
-                                   @Path("timestamp") final long timestamp);
+  Call<ForecastIoResponse> forecastPoint(@Path("key") final String key,
+                                         @Path("lat") final float lat,
+                                         @Path("lng") final float lng,
+                                         @Path("timestamp") final long timestamp);
 
 
   /**
@@ -62,10 +46,10 @@ public interface ForecastIoService
    * @return the forecast data
    */
   @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=si&exclude=currently,minutely,daily,alerts,flags")
-  ForecastIoResponse forecastHourly(@Path("key") final String key,
-                                    @Path("lat") final float lat,
-                                    @Path("lng") final float lng,
-                                    @Path("timestamp") final long timestamp);
+  Call<ForecastIoResponse> forecastHourly(@Path("key") final String key,
+                                          @Path("lat") final float lat,
+                                          @Path("lng") final float lng,
+                                          @Path("timestamp") final long timestamp);
 
   /**
    * Obtain a forecast for a particular location at a particular time
@@ -78,10 +62,10 @@ public interface ForecastIoService
    * @return the forecast data
    */
   @GET("/forecast/{key}/{lat},{lng},{timestamp}?units=si&exclude=currently,minutely,hourly,alerts,flags")
-  ForecastIoResponse forecastDaily(@Path("key") final String key,
-                                   @Path("lat") final float lat,
-                                   @Path("lng") final float lng,
-                                   @Path("timestamp") final long timestamp);
+  Call<ForecastIoResponse> forecastDaily(@Path("key") final String key,
+                                         @Path("lat") final float lat,
+                                         @Path("lng") final float lng,
+                                         @Path("timestamp") final long timestamp);
 
   /**
    * Obtain a forecast for a particular location now
@@ -93,7 +77,5 @@ public interface ForecastIoService
    * @return the forecast data
    */
   @GET("/forecast/{key}/{lat},{lng}?units=si&exclude=currently,minutely,alerts,flags")
-  ForecastIoResponse forecastNow(@Path("key") final String key,
-                                 @Path("lat") final float lat,
-                                 @Path("lng") final float lng);
+  Call<ForecastIoResponse> forecastNow(@Path("key") final String key, @Path("lat") final float lat, @Path("lng") final float lng);
 }

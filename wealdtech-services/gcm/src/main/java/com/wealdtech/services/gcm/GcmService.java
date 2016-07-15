@@ -10,11 +10,11 @@
 
 package com.wealdtech.services.gcm;
 
-import com.wealdtech.WObject;
-import retrofit.client.Response;
-import retrofit.http.Body;
-import retrofit.http.Header;
-import retrofit.http.POST;
+import com.wealdtech.GenericWObject;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
 
 /**
  * Interact with Google Cloud Messaging API
@@ -27,6 +27,6 @@ public interface GcmService
    * @param body the request
    * @return the response
    */
-  @POST("/send")
-  Response sendMessage(@Header("Authorization") final String auth, @Body final WObject<?> body);
+  @POST("send")
+  Call<Void> sendMessage(@Header("Authorization") final String auth, @Body final GenericWObject body);
 }

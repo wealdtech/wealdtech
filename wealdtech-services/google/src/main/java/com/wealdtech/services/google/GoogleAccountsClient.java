@@ -18,12 +18,10 @@ import com.wealdtech.DataError;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.configuration.OAuth2Configuration;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -36,7 +34,7 @@ public class GoogleAccountsClient
 {
   private static final Logger LOG = LoggerFactory.getLogger(GoogleAccountsClient.class);
 
-  private static final String ENDPOINT = "https://accounts.google.com/o/oauth2";
+  private static final String ENDPOINT = "https://accounts.google.com/o/oauth2/";
 
   private final OAuth2Configuration configuration;
 
@@ -47,11 +45,7 @@ public class GoogleAccountsClient
   {
     this.configuration = configuration;
 
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setLogLevel(RestAdapter.LogLevel.FULL).setConverter(converter).build();
-
-    this.service = adapter.create(GoogleAccountsService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, GoogleAccountsService.class);
   }
 
   /**
@@ -76,9 +70,9 @@ public class GoogleAccountsClient
     }
     final String state = params.get("state").iterator().next();
 
-    final GenericWObject response =
+    final GenericWObject response = RetrofitHelper.call(
         service.obtainToken("authorization_code", configuration.getClientId(), configuration.getSecret(),
-                            configuration.getCallbackUri().toString(), code);
+                            configuration.getCallbackUri().toString(), code));
 
     LOG.debug("Response is {}", response);
 
@@ -121,8 +115,9 @@ public class GoogleAccountsClient
   {
     if (credentials == null) { return null; }
 
-    final GenericWObject response = service.refreshToken("refresh_token", configuration.getClientId(), configuration.getSecret(),
-                                                         credentials.getRefreshToken());
+    final GenericWObject response = RetrofitHelper.call(
+        service.refreshToken("refresh_token", configuration.getClientId(), configuration.getSecret(),
+                             credentials.getRefreshToken()));
 
     LOG.debug("Response is {}", response);
 

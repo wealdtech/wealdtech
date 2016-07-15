@@ -14,12 +14,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.WObject;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import com.wealdtech.services.config.GcmConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 /**
  * Client for Google Cloud Messaging
@@ -38,10 +36,7 @@ public class GcmClient
   public GcmClient(final GcmConfiguration configuration)
   {
     this.configuration = configuration;
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).setLogLevel(RestAdapter.LogLevel.FULL).build();
-    this.service = adapter.create(GcmService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, GcmService.class);
   }
 
   /**
@@ -51,8 +46,8 @@ public class GcmClient
    */
   public void sendMessage(final ImmutableSet<String>recipients, final WObject<?> message)
   {
-    service.sendMessage(auth(configuration.getApiKey()),
-                        GenericWObject.builder().data("registration_ids", recipients).data("data", message).build());
+    RetrofitHelper.call(service.sendMessage(auth(configuration.getApiKey()),
+                        GenericWObject.builder().data("registration_ids", recipients).data("data", message).build()));
   }
 
   private static String auth(final String key)

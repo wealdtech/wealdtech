@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.wealdtech.WObject;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import javax.annotation.Nullable;
 
@@ -68,10 +66,6 @@ public class AskGeoClient
 
   private AskGeoClient()
   {
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
-                                                         .setConverter(converter)
-                                                         .build();
-    this.service = adapter.create(AskGeoService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, AskGeoService.class);
   }
 }

@@ -11,8 +11,8 @@
 package com.wealdtech.services.chat;
 
 import com.wealdtech.chat.Message;
-import retrofit.client.Response;
-import retrofit.http.*;
+import retrofit2.Call;
+import retrofit2.http.*;
 
 /**
  * Interact with the Wealdtech Chat API
@@ -25,8 +25,8 @@ public interface ChatService
    * @param message the message to create
    * @return the result of the creation
    */
-  @POST("/topics/{topicid}/messages")
-  Response createMessage(@Path("topicid") final String topicId, @Body final Message message);
+  @POST("topics/{topicid}/messages")
+  Call<Void> createMessage(@Path("topicid") final String topicId, @Body final Message message);
 
   /**
    * Obtain a specific message
@@ -34,14 +34,14 @@ public interface ChatService
    * @param messageId the ID of the message to obtain
    * @return the message; can be {@code null}
    */
-  @GET("/topics/{topicid}/messages/{messageid}")
-  Message obtainMessage(@Path("topicid") final String topicId, @Path("messageid") final String messageId);
+  @GET("topics/{topicid}/messages/{messageid}")
+  Call<Message> obtainMessage(@Path("topicid") final String topicId, @Path("messageid") final String messageId);
 
   /**
    * Remove a specific topic
    * @param topicId the Id of the topic to remove
    * @return the result of the removal
    */
-  @DELETE("/topics/{topicid}")
-  Response removeTopic(@Path("topicid") final String topicId);
+  @DELETE("topics/{topicid}")
+  Call<Void> removeTopic(@Path("topicid") final String topicId);
 }

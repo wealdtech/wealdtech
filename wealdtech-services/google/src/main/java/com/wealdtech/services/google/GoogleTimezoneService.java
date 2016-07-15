@@ -11,8 +11,9 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.GenericWObject;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Interact with the Google Timezone API
@@ -26,8 +27,8 @@ public interface GoogleTimezoneService
    *
    * @return a timezone for the given lat/lng
    */
-  @GET("/json")
-  GenericWObject timezone(@Query("key") final String key,
-                          @Query("location") final String location,
-                          @Query("timestamp") final long timestamp);
+  @GET("json")
+  Call<GenericWObject> timezone(@Query("key") final String key,
+                                @Query("location") final String location,
+                                @Query("timestamp") final long timestamp);
 }

@@ -11,14 +11,12 @@
 package com.wealdtech.services.google;
 
 import com.google.common.base.Optional;
-import com.wealdtech.WObject;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.GenericWObject;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import javax.annotation.Nullable;
 
@@ -52,19 +50,14 @@ public class GoogleTimezoneClient
 
   private GoogleTimezoneClient()
   {
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter = new RestAdapter.Builder().setEndpoint(ENDPOINT)
-                                                         .setConverter(converter)
-                                                         .setLogLevel(RestAdapter.LogLevel.FULL)
-                                                         .build();
-    this.service = adapter.create(GoogleTimezoneService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, GoogleTimezoneService.class);
   }
 
   @Nullable
   public DateTimeZone timezone(final String apiKey, final Double lat, final Double lng)
   {
-    final WObject<?> results =
-        service.timezone(apiKey, Double.toString(lat) + "," + Double.toString(lng), DateTime.now().getMillis() / 1000);
+    final GenericWObject results = RetrofitHelper.call(
+        service.timezone(apiKey, Double.toString(lat) + "," + Double.toString(lng), DateTime.now().getMillis() / 1000));
     // Ensure that we have a valid response
     if (results == null || !results.exists("status") || !results.get("status", String.class).get().equals("OK"))
     {

@@ -165,7 +165,7 @@ public class WeatherServiceForecastIoImplTest
     assertEquals(point5.getIcon().orNull(), "clear-night", "Incorrect icon");
   }
 
-  @Test(expectedExceptions = {DataError.Permission.class})
+  @Test(expectedExceptions = {DataError.Bad.class})
   public void testBadKey()
   {
     final WeatherService service = new WeatherServiceForecastIoImpl(new WeatherConfiguration("aaabbb"));

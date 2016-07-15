@@ -11,8 +11,9 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.GenericWObject;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Interact with the Google ID Token API
@@ -25,6 +26,6 @@ public interface GoogleIdTokenService
    *
    * @return a generic response object
    */
-  @GET("/tokeninfo")
-  GenericWObject obtainInfo(@Query("id_token") final String idToken);
+  @GET("tokeninfo")
+  Call<GenericWObject> obtainInfo(@Query("id_token") final String idToken);
 }

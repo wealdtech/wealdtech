@@ -19,11 +19,9 @@ import com.wealdtech.mail.MailRecipientResponse;
 import com.wealdtech.mail.MailResponse;
 import com.wealdtech.mail.config.MailConfiguration;
 import com.wealdtech.mail.services.MailService;
-import com.wealdtech.retrofit.JacksonRetrofitConverter;
+import com.wealdtech.retrofit.RetrofitHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit.RestAdapter;
-import retrofit.converter.Converter;
 
 import java.util.List;
 
@@ -50,10 +48,7 @@ public class MailServiceMandrillImpl implements MailService
     checkState(configuration.getSecret().isPresent(), "Mandrill configuration requires API key provided in \"secret\"");
     checkState(configuration.getSender().isPresent(), "Mandrill configuration requires sender");
 
-    final Converter converter = new JacksonRetrofitConverter();
-    final RestAdapter adapter =
-        new RestAdapter.Builder().setEndpoint(ENDPOINT).setConverter(converter).build();
-    this.service = adapter.create(MandrillService.class);
+    this.service = RetrofitHelper.createRetrofit(ENDPOINT, MandrillService.class);
   }
 
   @Override

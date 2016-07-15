@@ -1,8 +1,9 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.GenericWObject;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Interact with the Google Places API
@@ -20,12 +21,12 @@ public interface GooglePlacesService
    *
    * @return a list of autocomplete options
    */
-  @GET("/autocomplete/json?radius=50000")
-  GenericWObject autocomplete(@Query("key") final String key,
-                              @Query("input") final String input,
-                              @Query("language") final String language,
-                              @Query(value = "location", encodeValue = false) final String location,
-                              @Query("types") final String types);
+  @GET("autocomplete/json?radius=50000")
+  Call<GenericWObject> autocomplete(@Query("key") final String key,
+                                    @Query("input") final String input,
+                                    @Query("language") final String language,
+                                    @Query(value = "location", encoded = true) final String location,
+                                    @Query("types") final String types);
 
   /**
    * Obtain full information on a place
@@ -36,8 +37,8 @@ public interface GooglePlacesService
    *
    * @return full place details
    */
-  @GET("/details/json")
-  GenericWObject details(@Query("key") final String key,
-                         @Query("placeid") final String placeId,
-                         @Query("language") final String language);
+  @GET("details/json")
+  Call<GenericWObject> details(@Query("key") final String key,
+                               @Query("placeid") final String placeId,
+                               @Query("language") final String language);
 }

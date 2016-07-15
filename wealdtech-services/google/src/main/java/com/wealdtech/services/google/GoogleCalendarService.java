@@ -11,11 +11,11 @@
 package com.wealdtech.services.google;
 
 import com.wealdtech.GenericWObject;
-import retrofit.client.Response;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 /**
  * Interact with the Google Calendar API
@@ -29,8 +29,8 @@ public interface GoogleCalendarService
    *
    * @return the events from the given calendar
    */
-  @GET("/{calendarid}/events")
-  GenericWObject getEvents(@Path("calendarid") final String calendarId);
+  @GET("{calendarid}/events")
+  Call<GenericWObject> getEvents(@Path("calendarid") final String calendarId);
 
   /**
    * Obtain a specific event from a given calendar
@@ -40,9 +40,8 @@ public interface GoogleCalendarService
    *
    * @return the specific event from the given calendar
    */
-  @GET("/{calendarid}/events/{eventid}")
-  GenericWObject getEvent(@Path("calendarid") final String calendarId,
-                          @Path("eventid") final String eventId);
+  @GET("{calendarid}/events/{eventid}")
+  Call<GenericWObject> getEvent(@Path("calendarid") final String calendarId, @Path("eventid") final String eventId);
 
   /**
    * Create an event in a given calendar
@@ -52,7 +51,6 @@ public interface GoogleCalendarService
    *
    * @return the response from the server
    */
-  @POST("/{calendarid}/events")
-  Response createEvent(@Path("calendarid") final String calendarId,
-                       @Body final GoogleCalendarEvent event);
+  @POST("{calendarid}/events")
+  Call<Void> createEvent(@Path("calendarid") final String calendarId, @Body final GoogleCalendarEvent event);
 }

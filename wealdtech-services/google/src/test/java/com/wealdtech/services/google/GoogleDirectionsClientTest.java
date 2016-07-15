@@ -13,7 +13,7 @@ package com.wealdtech.services.google;
 import org.joda.time.DateTime;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  */
@@ -27,7 +27,7 @@ public class GoogleDirectionsClientTest
     final Integer duration =
         client.getDurationOfJourney(50837551L, 471511L, 50861544L, -83385L, "driving",
                                     new DateTime().plusYears(1).getMillis() / 1000);
-    assertEquals(duration, (Integer)2614, "Incorrect duration");
+    assertTrue(Math.abs(duration - 2600) < 100, "Incorrect duration");
   }
 
 }
