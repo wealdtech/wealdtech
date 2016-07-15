@@ -28,6 +28,7 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
 {
   /**
    * Create a relationship
+   * @param relationship the relationship to create
    */
   void create(Relationship relationship);
 
@@ -57,6 +58,7 @@ public interface RelationshipService<T> extends WObjectService<Relationship, T>
    * differentiation then multiple relationships will be returned.
    *
    * @param ownerId the ID of the user obtaining the relationships
+   * @param context the context in which the user is looking for relationships
    * @param contactId the ID of the contact
    * @param name the name of the contact
    * @param email the email address of the contact

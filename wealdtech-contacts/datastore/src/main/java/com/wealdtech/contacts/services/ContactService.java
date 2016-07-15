@@ -26,31 +26,42 @@ public interface ContactService<T> extends WObjectService<Contact, T>
 {
   /**
    * Create a contact
+   * @param contact the contact to create
    */
   void create(Contact contact);
 
   /**
    * Obtain a contact
+   * @param ownerId the ID of the user obtaining the contact
+   * @param contactId the ID of the contact to obtain
+   * @return the contact
    */
   @Nullable Contact obtain(WID<User> ownerId, WID<Contact> contactId);
 
   /**
    * Obtain all contacts
+   * @param ownerId the ID of the user obtaining the contacts
+   * @return all contacts known by the user
    */
   ImmutableList<Contact> obtain(WID<User> ownerId);
 
   /**
    * Obtain all contacts with a given handle
+   * @param ownerId the ID of the user obtaining the contacts
+   * @param handle a handle of the user obtaining the contacts
+   * @return all contacts known by the user that match the handle
    */
   ImmutableList<Contact> obtain(WID<User> ownerId, Handle handle);
 
   /**
    * Update a contact
+   * @param contact the contact to update
    */
   void update(Contact contact);
 
   /**
    * Remove a contact
+   * @param contact the contact to remove
    */
   void remove(Contact contact);
 }

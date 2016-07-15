@@ -32,6 +32,7 @@ public interface ParticipantService
    * @param contactId the ID of the contact for whom to obtain the participants
    * @param name the name of the contact for whom to obtain the participants
    * @param email the email address of the contact for whom to obtain the participants
+   * @return all participants matching the provided information
    */
   ImmutableSet<Participant> obtain(WID<User> ownerId,
                                    Context context,

@@ -22,15 +22,18 @@ public interface ContactsSyncService<C extends Credentials>
   /**
    * Import contacts from the given source
    *
+   * @param userId the ID of the user importing the contents
+   * @param credentials the credentials to access the sync source
+   * @param removeMissing if {@code true} then remove any contacts in the sink that are not in the source
+   * @return the number of contacts imported
    */
   int importContacts(final WID<User> userId, C credentials, boolean removeMissing);
 
   /**
    * Export contacts to the given source
+   * @param credentials the credentials to access the export sink
    * @param removeUnknown carry out a full export by removing any items in the destination that are not in the source
    * @return the number of contacts exported
    */
   int exportContacts(C credentials, boolean removeUnknown);
-
-//  TwoTuple(int, int) syncContacts();
 }
