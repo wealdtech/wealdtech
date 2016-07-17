@@ -42,6 +42,7 @@ public class User extends WObject<User> implements Comparable<User>
   private static final String IDENTITIES = "identities";
   private static final String CREDENTIALS = "credentials";
   private static final String AVATAR = "avatar";
+  private static final String FRIENDS = "friends";
 
   @JsonCreator
   public User(final Map<String, Object> data)
@@ -106,13 +107,10 @@ public class User extends WObject<User> implements Comparable<User>
     return get(DEVICE_REGISTRATIONS, DEVICE_REGISTRATIONS_TYPEREF).or(ImmutableSet.<DeviceRegistration>of());
   }
 
-  @JsonIgnore
   private static final TypeReference<ImmutableSet<Identity>> IDENTITIES_TYPEREF = new TypeReference<ImmutableSet<Identity>>() {};
-
   @JsonIgnore
   public ImmutableSet<Identity> getIdentities(){ return get(IDENTITIES, IDENTITIES_TYPEREF).or(ImmutableSet.<Identity>of()); }
 
-  @JsonIgnore
   private static final TypeReference<ImmutableSet<? extends Credentials>> CREDENTIALS_TYPEREF =
       new TypeReference<ImmutableSet<? extends Credentials>>() {};
 
@@ -124,6 +122,10 @@ public class User extends WObject<User> implements Comparable<User>
 
   @JsonIgnore
   public Optional<String> getAvatar(){ return get(AVATAR, String.class); }
+
+  private static final TypeReference<ImmutableSet<Friend>> FRIENDS_TYPEREF = new TypeReference<ImmutableSet<Friend>>() {};
+  @JsonIgnore
+  public ImmutableSet<Friend> getFriends(){ return get(FRIENDS, FRIENDS_TYPEREF).or(ImmutableSet.<Friend>of()); }
 
   @JsonIgnore
   @Nullable
@@ -530,6 +532,12 @@ public class User extends WObject<User> implements Comparable<User>
     public P avatar(final String avatar)
     {
       data(AVATAR, avatar);
+      return self();
+    }
+
+    public P friends(final ImmutableSet<Friend> friends)
+    {
+      data(FRIENDS, friends);
       return self();
     }
 
