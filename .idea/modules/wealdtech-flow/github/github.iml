@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":wealdtech-flow:github" external.linked.project.path="$MODULE_DIR$/../../../../wealdtech-flow/github" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech.flow" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../wealdtech-flow/github">
+      <excludeFolder url="file://$MODULE_DIR$/../../../../wealdtech-flow/github/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../wealdtech-flow/github/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

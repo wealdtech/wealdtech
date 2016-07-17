@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 - 2014 Weald Technology Trading Limited
+ * Copyright 2012 - 2016 Weald Technology Trading Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -40,7 +40,8 @@ public class JettyHttpsConnectorFactory extends JettyHttpConnectorFactory
     // Set up the SSL connection factory
     final SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.toString());
 
-//    // Instrument the connections
+    // Instrument the connections
+    // Currently disabled as per https://github.com/http4s/http4s/issues/396
 //    final String timerName = MetricRegistry.name(HttpConnectionFactory.class, configuration.getBindHost(), Integer.toString(configuration.getPort()), "connections");
 //    final ConnectionFactory instrumentedConnectionFactory = new InstrumentedConnectionFactory(httpConnectionFactory, WealdMetrics.getMetricRegistry().timer(timerName));
 //    // And create the connection itself

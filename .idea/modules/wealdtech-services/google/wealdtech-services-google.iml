@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":wealdtech-services:google" external.linked.project.path="$MODULE_DIR$/../../../../wealdtech-services/google" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech.services" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../wealdtech-services/google">
+      <excludeFolder url="file://$MODULE_DIR$/../../../../wealdtech-services/google/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../wealdtech-services/google/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

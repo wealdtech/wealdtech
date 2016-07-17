@@ -21,9 +21,11 @@ build
 #
 # IntelliJ
 #
-workspace.xml
-libraries/
-*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/vcs.xml
+.idea/gradle.xml
+.idea/libraries
 
 #
 # TestNG

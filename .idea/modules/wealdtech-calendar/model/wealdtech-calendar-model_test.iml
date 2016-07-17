@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":wealdtech-calendar:model:test" external.linked.project.path="$MODULE_DIR$/../../../../wealdtech-calendar/model" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech.calendar" external.system.module.type="sourceSet" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
+    <output-test url="file://$MODULE_DIR$/../../../../wealdtech-calendar/model/build/classes/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../wealdtech-calendar/model/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../wealdtech-calendar/model/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../wealdtech-calendar/model/src/test/resources" type="java-test-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="wealdtech-calendar-model_main" />
+    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
+    <orderEntry type="module" module-name="oauth2_main" />
+    <orderEntry type="module" module-name="wealdtech-conditions_main" />
+    <orderEntry type="module" module-name="wealdtech-configuration_main" />
+    <orderEntry type="module" module-name="wealdtech-configuration-logging_main" />
+    <orderEntry type="module" module-name="wealdtech-configuration-oauth2_main" />
+    <orderEntry type="module" module-name="wealdtech-contacts-model_main" />
+    <orderEntry type="module" module-name="wealdtech-core_main" />
+    <orderEntry type="module" module-name="wealdtech-jackson_main" />
+    <orderEntry type="module" module-name="wealdtech-notifications-model_main" />
+    <orderEntry type="module" module-name="wealdtech-wid-service_main" />
+    <orderEntry type="module" module-name="wealdtech-wobject_main" />
+    <orderEntry type="library" name="Gradle: org.testng:testng:6.9.10" level="project" />
+    <orderEntry type="module" module-name="wealdtech-authentication-model_main" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:19.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.inject:guice:4.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:jul-to-slf4j:1.7.21" level="project" />
+    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.1.7" level="project" />
+    <orderEntry type="module" module-name="wealdtech-users_main" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.21" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-guava:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
+    <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" name="Gradle: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-core:1.1.7" level="project" />
+    <orderEntry type="module" module-name="model_main" />
+  </component>
+  <component name="TestModuleProperties" production-module="wealdtech-calendar-model_main" />
+</module>
