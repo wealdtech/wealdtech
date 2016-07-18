@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id=":wealdtech-wobject:datastore:neo4j" external.linked.project.path="$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j" external.root.project.path="$MODULE_DIR$/../../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech.wobject" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../../../wealdtech-wobject/datastore/neo4j/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="wealdtech-wobject-datastore" exported="" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.parboiled:parboiled-core:1.1.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-cypher-frontend-3.0:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-cypher-frontend-2.3:2.3.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm:5.0.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-backward-codecs:5.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-unsafe:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-resource:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.4.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: net.sf.opencsv:opencsv:2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.parboiled:parboiled-scala_2.11:1.1.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-cypher-compiler-3.0:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-cypher-compiler-2.3:2.3.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-codegen:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.scala-lang:scala-reflect:2.11.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.scala-lang:scala-library:2.11.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-codecs:5.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-queryparser:5.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-core:5.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.lucene:lucene-analyzers-common:5.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-lucene-upgrade:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-security:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-logging:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-csv:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-io:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-primitive-collections:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-collections:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-common:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-graphdb-api:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-consistency-check:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-jmx:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-cypher:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-graph-matching:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-udc:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-graph-algo:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-lucene-index:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j-kernel:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.neo4j:neo4j:3.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
+    <orderEntry type="module" module-name="wealdtech-configuration" exported="" />
   </component>
 </module>

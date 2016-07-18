@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id=":wealdtech-users" external.linked.project.path="$MODULE_DIR$/../../../wealdtech-users" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../../wealdtech-users/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/../../../wealdtech-users/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../wealdtech-users">
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-users/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-users/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-users/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-users/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/../../../wealdtech-users/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../wealdtech-users/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="wealdtech-wobject" exported="" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
+    <orderEntry type="module" module-name="token" scope="TEST" />
+    <orderEntry type="module" module-name="password" scope="TEST" />
+    <orderEntry type="module" module-name="wealdtech-authentication-model" exported="" />
+    <orderEntry type="module" module-name="model" exported="" />
+    <orderEntry type="module" module-name="wealdtech-configuration" exported="" />
   </component>
 </module>

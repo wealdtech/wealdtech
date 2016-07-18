@@ -26,6 +26,7 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
+import com.sun.jersey.spi.container.ResourceFilterFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.Map;
 public class JerseyServletModule extends ServletModule
 {
   private Collection<String> packages;
+  private Collection<Class<? extends ResourceFilterFactory>> resourceFilterFactories;
   private Collection<Class<? extends ContainerRequestFilter>> requestFilters;
   private Collection<Class<? extends ContainerResponseFilter>> responseFilters;
 
@@ -48,6 +50,26 @@ public class JerseyServletModule extends ServletModule
   /**
    * Create a Jersey servlet module.
    *
+   * @param resourceFilterFactories a set of class names for resource filter factories
+   * @param requestFilters a set of class names for request filters
+   * @param responseFilters a set of class names for response filters
+   * @param packages a collection of names of packages in which to look for resources
+   */
+  public JerseyServletModule(final Collection<Class<? extends ResourceFilterFactory>> resourceFilterFactories,
+                             final Collection<Class<? extends ContainerRequestFilter>> requestFilters,
+                             final Collection<Class<? extends ContainerResponseFilter>> responseFilters,
+                             final Collection<String> packages)
+  {
+    super();
+    this.resourceFilterFactories = resourceFilterFactories;
+    this.requestFilters = requestFilters;
+    this.responseFilters = responseFilters;
+    this.packages = packages;
+  }
+
+  /**
+   * Create a Jersey servlet module.
+   *
    * @param requestFilters a set of class names for request filters
    * @param responseFilters a set of class names for response filters
    * @param packages a collection of names of packages in which to look for resources
@@ -57,6 +79,7 @@ public class JerseyServletModule extends ServletModule
                              final Collection<String> packages)
   {
     super();
+    this.resourceFilterFactories = null;
     this.requestFilters = requestFilters;
     this.responseFilters = responseFilters;
     this.packages = packages;
@@ -68,6 +91,10 @@ public class JerseyServletModule extends ServletModule
     final Map<String, String> params = new HashMap<String, String>();
     params.put(PackagesResourceConfig.PROPERTY_PACKAGES,
                Joiner.on(",").join(Iterables.concat(ImmutableList.of("com.wealdtech.jersey"), packages)));
+    if (resourceFilterFactories != null)
+    {
+      params.put(PackagesResourceConfig.PROPERTY_RESOURCE_FILTER_FACTORIES, Joiner.on(",").join(resourceFilterFactories));
+    }
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, Joiner.on(",").join(requestFilters));
     params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, Joiner.on(",").join(responseFilters));
 

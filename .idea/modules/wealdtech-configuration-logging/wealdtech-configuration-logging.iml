@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id=":wealdtech-configuration-logging" external.linked.project.path="$MODULE_DIR$/../../../wealdtech-configuration-logging" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging">
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../wealdtech-configuration-logging/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="wealdtech-configuration" exported="" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: ch.qos.logback:logback-core:1.1.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-api:1.7.21" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: ch.qos.logback:logback-classic:1.1.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:jul-to-slf4j:1.7.21" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
   </component>
 </module>
