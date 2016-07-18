@@ -21,9 +21,11 @@ import java.util.Map;
  */
 public class DeviceRegistration extends WObject<DeviceRegistration> implements Comparable<DeviceRegistration>
 {
-  private static final String TYPE = "type";
   private static final String NAME = "name";
+  private static final String DEVICE_TYPE = "devicetype";
+  private static final String SERVICE = "service";
   private static final String DEVICE_ID = "deviceid";
+  private static final String TOKEN = "token";
 
   @JsonCreator
   public DeviceRegistration(final Map<String, Object> data)
@@ -33,28 +35,28 @@ public class DeviceRegistration extends WObject<DeviceRegistration> implements C
 
   protected void validate()
   {
-    if (!exists(TYPE))
-    {
-      throw new DataError.Missing("Device registration needs 'type' information");
-    }
-
-    if (!exists(DEVICE_ID))
-    {
-      throw new DataError.Missing("Device registration needs 'deviceid' information");
-    }
-  }
-
-  @JsonIgnore
-  public DeviceType getType()
-  {
-    return get(TYPE, DeviceType.class).get();
+    if (!exists(DEVICE_TYPE))  { throw new DataError.Missing("Device registration needs 'type' information"); }
+    if (!exists(SERVICE))  { throw new DataError.Missing("Device registration needs 'service' information"); }
+    if (!exists(DEVICE_ID))  { throw new DataError.Missing("Device registration needs 'deviceid' information"); }
   }
 
   @JsonIgnore
   public Optional<String> getName() { return get(NAME, String.class); }
 
   @JsonIgnore
+  public DeviceType getDeviceType()
+  {
+    return get(DEVICE_TYPE, DeviceType.class).get();
+  }
+
+  @JsonIgnore
+  public String getService() { return get(SERVICE, String.class).get(); }
+
+  @JsonIgnore
   public String getDeviceId(){ return get(DEVICE_ID, String.class).get(); }
+
+  @JsonIgnore
+  public Optional<String> getToken(){ return get(TOKEN, String.class); }
 
   // Builder boilerplate
   public static class Builder<P extends Builder<P>> extends WObject.Builder<DeviceRegistration, P>
@@ -69,21 +71,33 @@ public class DeviceRegistration extends WObject<DeviceRegistration> implements C
       super(prior);
     }
 
-    public P type(final DeviceType type)
-    {
-      data(TYPE, type);
-      return self();
-    }
-
     public P name(final String name)
     {
       data(NAME, name);
       return self();
     }
 
+    public P deviceType(final DeviceType deviceType)
+    {
+      data(DEVICE_TYPE, deviceType);
+      return self();
+    }
+
+    public P service(final String service)
+    {
+      data(SERVICE, service);
+      return self();
+    }
+
     public P deviceId(final String deviceId)
     {
       data(DEVICE_ID, deviceId);
+      return self();
+    }
+
+    public P token(final String token)
+    {
+      data(TOKEN, token);
       return self();
     }
 

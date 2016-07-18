@@ -1,0 +1,18 @@
+archivesBaseName = 'wealdtech-services-fcm'
+
+dependencies {
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-wobject')
+  compile project(':wealdtech-retrofit')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech FCM Service'
+                description 'Access to Firebase Cloud Messaging services'
+            } 
+        }
+    }
+}
