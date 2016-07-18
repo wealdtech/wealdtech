@@ -42,7 +42,8 @@ public class User extends WObject<User> implements Comparable<User>
   private static final String IDENTITIES = "identities";
   private static final String CREDENTIALS = "credentials";
   private static final String AVATAR = "avatar";
-  private static final String FRIENDS = "friends";
+  private static final String FRIEND_IDS = "friendids";
+  private static final String BLOCKED_IDS = "blockedids";
 
   @JsonCreator
   public User(final Map<String, Object> data)
@@ -123,9 +124,13 @@ public class User extends WObject<User> implements Comparable<User>
   @JsonIgnore
   public Optional<String> getAvatar(){ return get(AVATAR, String.class); }
 
-  private static final TypeReference<ImmutableSet<Friend>> FRIENDS_TYPEREF = new TypeReference<ImmutableSet<Friend>>() {};
+  private static final TypeReference<ImmutableSet<WID<User>>> FRIEND_IDS_TYPEREF = new TypeReference<ImmutableSet<WID<User>>>() {};
   @JsonIgnore
-  public ImmutableSet<Friend> getFriends(){ return get(FRIENDS, FRIENDS_TYPEREF).or(ImmutableSet.<Friend>of()); }
+  public ImmutableSet<WID<User>> getFriendIds(){ return get(FRIEND_IDS, FRIEND_IDS_TYPEREF).or(ImmutableSet.<WID<User>>of()); }
+
+  private static final TypeReference<ImmutableSet<WID<User>>> BLOCKED_IDS_TYPEREF = new TypeReference<ImmutableSet<WID<User>>>() {};
+  @JsonIgnore
+  public ImmutableSet<WID<User>> getBlockedIds(){ return get(BLOCKED_IDS, BLOCKED_IDS_TYPEREF).or(ImmutableSet.<WID<User>>of()); }
 
   @JsonIgnore
   @Nullable
@@ -535,9 +540,15 @@ public class User extends WObject<User> implements Comparable<User>
       return self();
     }
 
-    public P friends(final ImmutableSet<Friend> friends)
+    public P friendIds(final ImmutableSet<WID<User>> friendIds)
     {
-      data(FRIENDS, friends);
+      data(FRIEND_IDS, friendIds);
+      return self();
+    }
+
+    public P blockedIds(final ImmutableSet<WID<User>> blockedIds)
+    {
+      data(BLOCKED_IDS, blockedIds);
       return self();
     }
 
