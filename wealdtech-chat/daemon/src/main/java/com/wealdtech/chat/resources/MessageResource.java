@@ -48,6 +48,11 @@ public class MessageResource
 
   /**
    * Obtain a single message
+   * @param app the Application
+   * @param user the authenticated user
+   * @param topicId the ID of the topic from which to obtain the message
+   * @param messageId the Id of the message to obtain
+   * @return the message
    */
   @Timed
   @GET
@@ -55,14 +60,19 @@ public class MessageResource
   @Produces({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
   public Message obtainMessage(@Context final Application app,
                                @Context final User user,
-                            @PathParam("topicid") final WID<Topic> topicId,
-                            @PathParam("messageid") final WID<Message> messageId)
+                               @PathParam("topicid") final WID<Topic> topicId,
+                               @PathParam("messageid") final WID<Message> messageId)
   {
     return chatService.obtainMessage(app, user, topicId, messageId);
   }
 
   /**
    * Obtain all new messages in a single topic since a given time
+   * @param app the Application
+   * @param user the authenticated user
+   * @param topicId the ID of the topic from which to obtain the messages
+   * @param since the time since we want to obtain new message; can be {@code null} to obtain all messages
+   * @return the messages
    */
   @Timed
   @GET
@@ -77,6 +87,10 @@ public class MessageResource
 
   /**
    * Add a message to a topic
+   * @param app the Application
+   * @param user the authenticated user
+   * @param topicId the ID of the topic from which to create the message
+   * @param message the message to create
    *
    * @param message the message
    */
@@ -85,7 +99,8 @@ public class MessageResource
   @Consumes({MediaType.APPLICATION_JSON, ChatMediaType.V1_JSON})
   public void createMessage(@Context final Application app,
                             @Context final User user,
-                            @PathParam("topicid") final WID<Topic> topicId, final Message message)
+                            @PathParam("topicid") final WID<Topic> topicId,
+                            final Message message)
   {
     // Create the message
     chatService.createMessage(app, user, topicId, message);

@@ -20,7 +20,7 @@ import com.google.common.collect.Range;
 import com.wealdtech.authentication.AuthenticationMethod;
 import com.wealdtech.authentication.Credentials;
 import com.wealdtech.authentication.IdentityAuthenticationMethod;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +38,6 @@ public class User extends WObject<User> implements Comparable<User>
 {
   private static final Logger LOG = LoggerFactory.getLogger(User.class);
 
-  // Internal control
-  private static final String CREATED = "_created";
-  private static final String MODIFIED = "_modified";
-  private static final String VERSION = "_version";
-
   private static final String NAME = "name";
   private static final String EMAILS = "emails";
   private static final String AUTHENTICATION_METHODS = "authenticationmethods";
@@ -57,42 +52,6 @@ public class User extends WObject<User> implements Comparable<User>
   public User(final Map<String, Object> data)
   {
     super(data);
-  }
-
-  @Override
-  public void onPriorToStore()
-  {
-    if (!data.containsKey(CREATED))
-    {
-      data.put(CREATED, DateTime.now());
-    }
-    if (data.containsKey(MODIFIED))
-    {
-      data.put(MODIFIED, DateTime.now());
-    }
-
-    if (data.containsKey(VERSION))
-    {
-      final Object obj = data.get(VERSION);
-      final Integer version;
-      if (obj instanceof String)
-      {
-        version = Integer.valueOf((String)obj);
-      }
-      else if (obj instanceof Integer)
-      {
-        version = (int)obj;
-      }
-      else if (obj instanceof Long)
-      {
-        version = (int)(long)obj;
-      }
-      else
-      {
-        throw new DataError.Bad("Unknown instance for version " + obj.getClass().getCanonicalName());
-      }
-      data.put(VERSION, version + 1);
-    }
   }
 
   @Override
@@ -135,10 +94,10 @@ public class User extends WObject<User> implements Comparable<User>
   public WID<User> getId(){ return super.getId(); }
 
   @JsonIgnore
-  public DateTime getCreated() { return get(CREATED, DateTime.class).get(); }
+  public LocalDateTime getCreated() { return get(CREATED, LocalDateTime.class).get(); }
 
   @JsonIgnore
-  public DateTime getModified() { return get(MODIFIED, DateTime.class).get(); }
+  public LocalDateTime getModified() { return get(MODIFIED, LocalDateTime.class).get(); }
 
   @JsonIgnore
   public Integer getVersion() { return get(VERSION, Integer.class).get(); }

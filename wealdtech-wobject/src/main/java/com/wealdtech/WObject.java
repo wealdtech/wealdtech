@@ -27,6 +27,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.*;
 import com.wealdtech.jackson.WealdMapper;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,11 @@ import static com.wealdtech.Preconditions.checkState;
 public class WObject<T extends WObject> implements Comparable<T>
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObject.class);
+
+  // Internal control
+  protected static final String CREATED = "_created";
+  protected static final String MODIFIED = "_modified";
+  protected static final String VERSION = "_version";
 
   // Key for scratch data
   private static final String SCRATCH = "__scratch";
@@ -899,5 +905,37 @@ public class WObject<T extends WObject> implements Comparable<T>
    * often shown in (for example) the format 'YYYY-MM-DD HH:MM:SS' but might want to be stored in the database as longs. In this
    * situation this method can ensure that the relevant field is a datetime rather than a string prior to serialization
    */
-  public void onPriorToStore(){}
+  public void onPriorToStore()
+  {
+    if (data.containsKey(VERSION))
+    {
+      // This is a versioned object to set version data
+      if (!data.containsKey(CREATED))
+      {
+        data.put(CREATED, LocalDateTime.now());
+      }
+
+      data.put(MODIFIED, LocalDateTime.now());
+      final Object obj = data.get(VERSION);
+      final Integer version;
+      if (obj instanceof String)
+      {
+        version = Integer.valueOf((String)obj);
+      }
+      else if (obj instanceof Integer)
+      {
+        version = (int)obj;
+      }
+      else if (obj instanceof Long)
+      {
+        version = (int)(long)obj;
+      }
+      else
+      {
+        throw new DataError.Bad("Unknown instance for version " + obj.getClass().getCanonicalName());
+      }
+      data.put(VERSION, version + 1);
+    }
+  }
+
 }

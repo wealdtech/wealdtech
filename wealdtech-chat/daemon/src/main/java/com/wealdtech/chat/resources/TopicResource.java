@@ -45,6 +45,9 @@ public class TopicResource
 
   /**
    * Remove a topic
+   * @param app the Application
+   * @param user the authenticated user
+   * @param topicId the ID of the topic to remove
    */
   @Timed
   @DELETE
