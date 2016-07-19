@@ -17,7 +17,10 @@ import com.google.common.base.*;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
-import com.wealdtech.authentication.*;
+import com.wealdtech.authentication.AuthenticationMethod;
+import com.wealdtech.authentication.Credentials;
+import com.wealdtech.authentication.IdentityAuthenticationMethod;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +37,11 @@ import static com.wealdtech.Preconditions.checkState;
 public class User extends WObject<User> implements Comparable<User>
 {
   private static final Logger LOG = LoggerFactory.getLogger(User.class);
+
+  // Internal control
+  private static final String CREATED = "_created";
+  private static final String MODIFIED = "_modified";
+  private static final String VERSION = "_version";
 
   private static final String NAME = "name";
   private static final String EMAILS = "emails";
@@ -52,9 +60,56 @@ public class User extends WObject<User> implements Comparable<User>
   }
 
   @Override
+  public void onPriorToStore()
+  {
+    if (!data.containsKey(CREATED))
+    {
+      data.put(CREATED, DateTime.now());
+    }
+    if (data.containsKey(MODIFIED))
+    {
+      data.put(MODIFIED, DateTime.now());
+    }
+
+    if (data.containsKey(VERSION))
+    {
+      final Object obj = data.get(VERSION);
+      final Integer version;
+      if (obj instanceof String)
+      {
+        version = Integer.valueOf((String)obj);
+      }
+      else if (obj instanceof Integer)
+      {
+        version = (int)obj;
+      }
+      else if (obj instanceof Long)
+      {
+        version = (int)(long)obj;
+      }
+      else
+      {
+        throw new DataError.Bad("Unknown instance for version " + obj.getClass().getCanonicalName());
+      }
+      data.put(VERSION, version + 1);
+    }
+  }
+
+  @Override
+  protected Map<String, Object> preCreate(final Map<String, Object> data)
+  {
+    if (!data.containsKey(VERSION))
+    {
+      data.put(VERSION, 0);
+    }
+    return super.preCreate(data);
+  }
+
+  @Override
   protected void validate()
   {
     checkState(exists(ID), "User failed validation: must contain ID");
+    checkState(exists(VERSION), "User failed validation: must contain version");
     checkState(exists(NAME), "User failed validation: must contain name");
     checkState(!findState().equals(UserState.INVALID), "User failed validation: invalid state");
 
@@ -78,6 +133,16 @@ public class User extends WObject<User> implements Comparable<User>
   @Nonnull
   @JsonIgnore
   public WID<User> getId(){ return super.getId(); }
+
+  @JsonIgnore
+  public DateTime getCreated() { return get(CREATED, DateTime.class).get(); }
+
+  @JsonIgnore
+  public DateTime getModified() { return get(MODIFIED, DateTime.class).get(); }
+
+  @JsonIgnore
+  public Integer getVersion() { return get(VERSION, Integer.class).get(); }
+
 
   @JsonIgnore
   public String getName(){ return get(NAME, String.class).get(); }
@@ -310,6 +375,8 @@ public class User extends WObject<User> implements Comparable<User>
 
     @Override
     public boolean apply(final User user)
+
+
     {
       int nonIdentityAuthenticationMethods = 0;
       for (final AuthenticationMethod authenticationMethod : user.getAuthenticationMethods())
@@ -376,6 +443,8 @@ public class User extends WObject<User> implements Comparable<User>
         {
           verifiedemails++;
         }
+
+
       }
       return range.contains(verifiedemails);
     }

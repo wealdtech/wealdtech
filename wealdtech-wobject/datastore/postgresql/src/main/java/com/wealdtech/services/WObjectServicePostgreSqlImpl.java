@@ -222,10 +222,28 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<?>> implements WObje
     // Allow the item to carry out its own internal processing prior to storage
     item.onPriorToStore();
 
+    boolean handleCommit = false;
     Connection conn = null;
     try
     {
       conn = repository.getConnection();
+
+      if (item.exists("_version"))
+      {
+        // This is a versioned object so lock the existing object and check version numbers
+        conn.setAutoCommit(false);
+        handleCommit = true;
+        final GenericWObject dbItem = obtainForUpdate(conn, item.getId());
+        if (dbItem.exists("_version"))
+        {
+          int version = item.get("_version", Integer.class).get();
+          int dbVersion = dbItem.get("_version", Integer.class).get();
+          if (version <= dbVersion)
+          {
+            throw new DataError.Bad("Presented object version " + version + " not higher than existing version " + dbVersion + ", not updating");
+          }
+        }
+      }
 
       final PreparedStatement stmt = conn.prepareStatement(updateSql);
       final PGobject obj = new PGobject();
@@ -240,14 +258,19 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<?>> implements WObje
       }
       stmt.setObject(1, obj);
       stmt.setString(2, item.getId().toString());
+//      try { Thread.sleep(10000l); } catch (InterruptedException ignored) {}
       stmt.execute();
+      if (handleCommit) { conn.commit(); }
+//      try { Thread.sleep(10000l); } catch (InterruptedException ignored) {}
     }
     catch (final SQLException se)
     {
+      if (handleCommit) { try { conn.rollback(); }catch (final SQLException ignored) {} }
       throw createSqlException(conn, se, "Failed to update item in datastore");
     }
     finally
     {
+      if (conn != null && handleCommit){ try { conn.setAutoCommit(true); }catch (final SQLException ignored) {} }
       closeConnection(conn);
     }
   }
@@ -460,6 +483,38 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<?>> implements WObje
     {
       closeConnection(conn);
     }
+  }
+
+  /**
+   * Obtain an item from the database, locking the row as we do so
+   */
+  private GenericWObject obtainForUpdate(final Connection conn, final WID<?> itemId) throws SQLException
+  {
+    GenericWObject result = null;
+    final String statement = obtainSql + "\nWHERE d @> ?" + "\nFOR UPDATE";
+    final PreparedStatement stmt = conn.prepareStatement(statement);
+
+    final PGobject obj = new PGobject();
+    obj.setType("jsonb");
+    obj.setValue("{\"_id\":\"" + itemId.toString() + "\"}");
+    stmt.setObject(1, obj);
+
+    try (ResultSet rs = stmt.executeQuery())
+    {
+      if (rs.next())
+      {
+        try
+        {
+          result = mapper.readValue(rs.getString(1), GenericWObject.class);
+        }
+        catch (final IOException ioe)
+        {
+          LOG.error("Failed to parse object {}: ", rs.getString(1), ioe);
+          throw new ServerError("Failed to obtain information", ioe);
+        }
+      }
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")
