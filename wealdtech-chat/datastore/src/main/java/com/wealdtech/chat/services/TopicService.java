@@ -23,22 +23,31 @@ public interface TopicService
 {
   /**
    * Create a topic
+   * @param app the application to which this topic belongs
+   * @param topic the topic
    */
   void create(Application app, Topic topic);
 
   /**
    * Update a topic
+   * @param app the application to which this topic belongs
+   * @param topic the topic
    */
   void update(Application app, Topic topic);
 
   /**
    * Obtain a topic
+   * @param app the application to which this topic belongs
+   * @param topicId the IdDof the topic to obtain
+   * @return the topic
    */
   @Nullable
   Topic obtain(Application app, WID<Topic> topicId);
 
   /**
    * Remove a topic
+   * @param app the application to which this topic belongs
+   * @param topic the topic
    */
   void remove(Application app, Topic topic);
 }

@@ -38,8 +38,8 @@ public abstract class AbstractFragment implements Fragment
 
   /**
    * Pick a suitable phrase given the generation parameters
-   * @param params
-   * @return
+   * @param params the parameters passed to aid generation of the result
+   * @return the result
    */
   protected String pick(final GenerationParameters params)
   {

@@ -25,21 +25,30 @@ public interface SubscriptionService
 {
   /**
    * Add a subscription
+   * @param subscription the subscription
    */
   void add(Subscription subscription);
 
   /**
    * Remove a subscription
+   * @param subscriptionId the ID of the subscription to remove
    */
   void remove(WID<Subscription> subscriptionId);
 
   /**
    * Obtain all subscriptions to a particular topic
+   * @param appId the ID of the application to which the topic belongs
+   * @param topicId the ID of the topic to which to subscribe
+   * @return all subscriptions to this topic
    */
   ImmutableSet<Subscription> obtain(final WID<Application> appId, WID<Topic> topicId);
 
   /**
    * Obtain all subscriptions to a particular topic and set of users
+   * @param appId the ID of the application to which the topic belongs
+   * @param topicId the ID of the topic to which to subscribe
+   * @param userIds the IDs of the users for which to obtain the subscriptions
+   * @return all subscriptions to this topic by the users
    */
   ImmutableSet<Subscription> obtain(final WID<Application> appId, WID<Topic> topicId, ImmutableCollection<WID<User>> userIds);
 }
