@@ -20,6 +20,8 @@ public class UnauthorizedException extends HttpException
 
   public static final String USERMESSAGE = "You are not allowed to access that information";
 
+  public UnauthorizedException(final String message) { this(message, message); }
+
   public UnauthorizedException(final String message, final String userMessage)
   {
     super(Status.UNAUTHORIZED, message, userMessage);

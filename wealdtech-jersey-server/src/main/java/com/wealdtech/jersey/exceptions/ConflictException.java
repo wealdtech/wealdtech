@@ -20,6 +20,8 @@ public class ConflictException extends HttpException
 
   public static final String USERMESSAGE = "This item already exists";
 
+  public ConflictException(final String message) { this(message, message); }
+
   public ConflictException(final String message, final String userMessage)
   {
     super(Status.CONFLICT, message, userMessage);

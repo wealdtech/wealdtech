@@ -9,10 +9,10 @@
  */
 package com.wealdtech.jersey.exceptions;
 
-import javax.ws.rs.core.Response.Status;
-
 import com.google.common.base.Optional;
 import com.wealdtech.WealdError;
+
+import javax.ws.rs.core.Response.Status;
 
 /**
  * Base class for daemon HTTP exceptions that provide additional information to
@@ -29,7 +29,7 @@ public class HttpException extends WealdError
    * Generate an HTTP exception with underlying application exception.
    * @param status an HTTP status to be sent back to the requestor
    * @param message an explanation of the error
-   * @param userMessage TODO
+   * @param userMessage A user-friendly explanation of what went wrong
    */
   public HttpException(final Status status, final String message, String userMessage)
   {

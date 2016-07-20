@@ -20,6 +20,8 @@ public class NotFoundException extends HttpException
 
   public static final String USERMESSAGE = "We could not find the item to which the request refers";
 
+  public NotFoundException(final String message) { this(message, message); }
+
   public NotFoundException(final String message, final String userMessage)
   {
     super(Status.NOT_FOUND, message, userMessage);

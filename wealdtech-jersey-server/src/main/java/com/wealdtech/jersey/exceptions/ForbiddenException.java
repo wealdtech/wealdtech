@@ -20,6 +20,8 @@ public class ForbiddenException extends HttpException
 
   public static final String USERMESSAGE = "You are not allowed to carry out that action";
 
+  public ForbiddenException(final String message) { this(message, message); }
+
   public ForbiddenException(final String message, final String userMessage)
   {
     super(Status.FORBIDDEN, message, userMessage);

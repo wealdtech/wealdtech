@@ -18,6 +18,9 @@ import com.wealdtech.retrofit.RetrofitHelper;
 import com.wealdtech.services.config.FcmConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  *
@@ -40,19 +43,36 @@ public class FcmClient
   }
 
   /**
-   * Send a message
+   * Send a message.
+   * This operates asynchronously
    * @param recipients the recipients of the message
    * @param message the message
    */
   public void sendMessage(final ImmutableSet<String> recipients, final WObject<?> message)
   {
-    RetrofitHelper.call(service.sendMessage(auth(configuration.getApiKey()),
-                                            GenericWObject.builder().data("registration_ids", recipients).data("data", message).build()));
+    final Call<Void> call = service.sendMessage(auth(configuration.getApiKey()), GenericWObject.builder()
+                                                                                                   .data("registration_ids",
+                                                                                                         recipients)
+                                                                                                   .data("data", message)
+                                                                                                   .build());
+    call.enqueue(new Callback<Void>(){
+      @Override
+      public void onResponse(final Call<Void> call, final Response<Void> response)
+      {
+        LOG.error("Response is {}", response.body());
+        if (!response.isSuccessful())
+        {
+          LOG.error("Attempt to send message failed: {}", response.errorBody());
+        }
+      }
+
+      @Override
+      public void onFailure(final Call<Void> call, final Throwable t)
+      {
+        LOG.error("Attempt to send message failed: ", t);
+      }
+    });
   }
 
-  private static String auth(final String key)
-  {
-    return "key=" + key;
-  }
-
+  private static String auth(final String key) { return "key=" + key; }
 }

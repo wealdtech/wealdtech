@@ -26,6 +26,8 @@ public class ServiceUnavailableException extends HttpException
   @Inject
   private static JettyServerConfiguration configuration;
 
+  public ServiceUnavailableException(final String message) { this(message, message); }
+
   public ServiceUnavailableException(final String message, final String userMessage)
   {
     super(Status.SERVICE_UNAVAILABLE, message, userMessage, configuration.getResponseConfiguration().getRetryPeriod(), null);

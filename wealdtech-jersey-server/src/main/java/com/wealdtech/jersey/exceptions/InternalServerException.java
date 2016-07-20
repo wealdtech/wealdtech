@@ -20,6 +20,8 @@ public class InternalServerException extends HttpException
 
   public static final String USERMESSAGE = "Our systems are experiencing a problem; please try again later";
 
+  public InternalServerException(final String message) { this(message, message); }
+
   public InternalServerException(final String message, final String userMessage)
   {
     super(Status.INTERNAL_SERVER_ERROR, message, userMessage);

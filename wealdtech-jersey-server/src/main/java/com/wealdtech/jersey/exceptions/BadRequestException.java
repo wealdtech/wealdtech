@@ -20,6 +20,8 @@ public class BadRequestException extends HttpException
 
   public static final String USERMESSAGE = "Your request was not understood";
 
+  public BadRequestException(final String message) { this(message, message); }
+
   public BadRequestException(final String message, final String userMessage)
   {
     super(Status.BAD_REQUEST, message, userMessage);
