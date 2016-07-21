@@ -13,6 +13,7 @@ package com.wealdtech;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
+import org.joda.time.LocalDateTime;
 
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 public class DeviceRegistration extends WObject<DeviceRegistration> implements Comparable<DeviceRegistration>
 {
+  private static final String LAST_SEEN = "_lastseen";
   private static final String NAME = "name";
   private static final String DEVICE_TYPE = "devicetype";
   private static final String SERVICE = "service";
@@ -33,12 +35,26 @@ public class DeviceRegistration extends WObject<DeviceRegistration> implements C
     super(data);
   }
 
+  @Override
+  protected Map<String, Object> preCreate(final Map<String, Object> data)
+  {
+    if (!data.containsKey(LAST_SEEN))
+    {
+      data.put(LAST_SEEN, LocalDateTime.now());
+    }
+    return super.preCreate(data);
+  }
+
   protected void validate()
   {
+    if (!exists(LAST_SEEN))  { throw new DataError.Missing("Device registration needs '_lastseen' information"); }
     if (!exists(DEVICE_TYPE))  { throw new DataError.Missing("Device registration needs 'type' information"); }
     if (!exists(SERVICE))  { throw new DataError.Missing("Device registration needs 'service' information"); }
     if (!exists(DEVICE_ID))  { throw new DataError.Missing("Device registration needs 'deviceid' information"); }
   }
+
+  @JsonIgnore
+  public LocalDateTime getLastSeen() { return get(LAST_SEEN, LocalDateTime.class).get(); }
 
   @JsonIgnore
   public Optional<String> getName() { return get(NAME, String.class); }
@@ -69,6 +85,12 @@ public class DeviceRegistration extends WObject<DeviceRegistration> implements C
     public Builder(final DeviceRegistration prior)
     {
       super(prior);
+    }
+
+    public P lastSeen(final LocalDateTime lastSeen)
+    {
+      data(LAST_SEEN, lastSeen);
+      return self();
     }
 
     public P name(final String name)

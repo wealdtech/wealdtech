@@ -60,13 +60,13 @@ public final class JerseyPreconditions
   }
 
   /**
-   * Throw a 404 exception if the expression evaluates to {@code false}
-   * @param expression the expression
+   * Throw a 404 exception if the object is {@code null}
+   * @param obj the object
    * @param message the message to send
    */
-  public static void checkPresence(final boolean expression, final String message)
+  public static void checkPresence(final Object obj, final String message)
   {
-    if (!expression)
+    if (obj == null)
     {
       throw new NotFoundException(message);
     }
