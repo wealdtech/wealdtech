@@ -11,6 +11,7 @@
 package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.common.base.Splitter;
@@ -41,15 +42,61 @@ public class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
   @Override
   public Range<DateTime> deserialize(final JsonParser jp, final DeserializationContext deserializationContext) throws IOException
   {
-    final String txt = jp.getText();
-    if (txt == null)
+    final JsonToken token = jp.getCurrentToken();
+    if (token == JsonToken.START_OBJECT)
     {
-      return null;
+      // Deserialize from objects
+      return deserializeFromObjects(jp, deserializationContext);
     }
-    return deserialize(txt);
+    else
+    {
+      // Deserialize from string
+      final String txt = jp.getText();
+      if (txt == null)
+      {
+        return null;
+      }
+      return deserializeFromString(txt);
+    }
   }
 
-  public static Range<DateTime> deserialize(final String txt) throws IOException
+  public static Range<DateTime> deserializeFromObjects(final JsonParser jp, final DeserializationContext deserializationContext) throws IOException
+  {
+    DateTime from = null;
+    DateTime to = null;
+
+    final DateTimeDeserializer dtDeserializer = new DateTimeDeserializer();
+
+    while (jp.nextToken() != JsonToken.END_OBJECT)
+    {
+      final String fieldName = jp.getCurrentName();
+      jp.nextToken();
+      if ("from".equals(fieldName))
+      {
+        from = dtDeserializer.deserialize(jp, deserializationContext);
+      }
+      else if ("to".equals(fieldName))
+      {
+        to = dtDeserializer.deserialize(jp, deserializationContext);
+      }
+    }
+
+    if (from == null && to == null)
+    {
+      return Range.all();
+    }
+    if (from == null)
+    {
+      return Range.lessThan(to);
+    }
+    if (to == null)
+    {
+      return Range.atLeast(from);
+    }
+    return Range.closedOpen(from, to);
+  }
+
+  public static Range<DateTime> deserializeFromString(final String txt) throws IOException
   {
     final int txtLen = txt.length();
 

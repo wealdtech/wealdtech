@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Optional;
+import com.google.common.collect.Range;
 import com.wealdtech.jackson.ObjectMapperFactory;
 import com.wealdtech.utils.WealdInterval;
 import org.joda.time.*;
@@ -480,5 +481,59 @@ public class JacksonModulesTest
 
     final String value = this.mapper.writeValueAsString(interval);
     assertEquals(value, "{\"start\":{\"timestamp\":1375916523000,\"timezone\":\"Europe/Paris\"},\"end\":{\"timestamp\":1375920125000,\"timezone\":\"Europe/London\"}}");
+  }
+
+  @Test
+  public void testSerDateTimeRangeAsString() throws Exception
+  {
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final Range<DateTime> range = Range.closedOpen(fromDt, toDt);
+
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).writeValueAsString(range);
+    assertEquals(value, "\"[2013-08-08T01:02:03+02:00 Europe/Paris,2013-08-08T01:02:05+01:00 Europe/London)\"");
+  }
+
+  @Test
+  public void testDeserDateTimeRangeAsString() throws Exception
+  {
+    final String value = "\"[2013-08-08T01:02:03+02:00 Europe/Paris,2013-08-08T01:02:05+01:00 Europe/London)\"";
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final Range<DateTime> range = Range.closedOpen(fromDt, toDt);
+
+    final Range<DateTime> deser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).readValue(value, new TypeReference<Range<DateTime>>(){});
+    assertEquals(range, deser);
+  }
+
+  @Test
+  public void testSerDateTimeRangeAsTimestamps() throws Exception
+  {
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final Range<DateTime> range = Range.closedOpen(fromDt, toDt);
+
+    final String value = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).writeValueAsString(range);
+    assertEquals(value, "{\"from\":{\"timestamp\":1375916523000,\"timezone\":\"Europe/Paris\"},\"to\":{\"timestamp\":1375920125000,\"timezone\":\"Europe/London\"}}");
+  }
+
+  @Test
+  public void testDeserDateTimeRangeAsTimestamps() throws Exception
+  {
+    final String value = "{\"from\":{\"timestamp\":1375916523000,\"timezone\":\"Europe/Paris\"},\"to\":{\"timestamp\":1375920125000,\"timezone\":\"Europe/London\"}}";
+    final DateTimeZone fromDtz = DateTimeZone.forID("Europe/Paris");
+    final DateTime fromDt = DateTime.parse("2013-08-08T01:02:03+0200").withZone(fromDtz);
+    final DateTimeZone toDtz = DateTimeZone.forID("Europe/London");
+    final DateTime toDt = DateTime.parse("2013-08-08T01:02:05+0100").withZone(toDtz);
+    final Range<DateTime> range = Range.closedOpen(fromDt, toDt);
+
+    final Range<DateTime> deser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).readValue(value, new TypeReference<Range<DateTime>>(){});
+    assertEquals(range, deser);
   }
 }

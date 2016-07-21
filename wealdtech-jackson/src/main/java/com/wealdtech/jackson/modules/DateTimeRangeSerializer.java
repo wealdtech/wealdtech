@@ -12,6 +12,7 @@ package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -39,45 +40,63 @@ public class DateTimeRangeSerializer extends StdSerializer<Range<DateTime>>
   {
     if (value != null)
     {
-      final StringBuilder sb = new StringBuilder(64);
-      if (value.hasLowerBound())
+      if (provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
       {
-        if (value.lowerBoundType().equals(BoundType.CLOSED))
+        final DateTimeSerializer serializer = new DateTimeSerializer();
+        gen.writeStartObject();
+        if (value.hasLowerBound())
         {
-          sb.append('[');
+          gen.writeFieldName("from");
+          serializer.serialize(value.lowerEndpoint(), gen, provider);
+        }
+        if (value.hasUpperBound())
+        {
+          gen.writeFieldName("to");
+          serializer.serialize(value.upperEndpoint(), gen, provider);
+        }
+      }
+      else
+      {
+        final StringBuilder sb = new StringBuilder(64);
+        if (value.hasLowerBound())
+        {
+          if (value.lowerBoundType().equals(BoundType.CLOSED))
+          {
+            sb.append('[');
+          }
+          else
+          {
+            sb.append('(');
+          }
+          sb.append(formatter.print(value.lowerEndpoint()));
         }
         else
         {
           sb.append('(');
+          sb.append(NEGATIVE_INFINITY);
         }
-        sb.append(formatter.print(value.lowerEndpoint()));
-      }
-      else
-      {
-        sb.append('(');
-        sb.append(NEGATIVE_INFINITY);
-      }
-      sb.append(',');
+        sb.append(',');
 
-      if (value.hasUpperBound())
-      {
-        sb.append(formatter.print(value.upperEndpoint()));
-        if (value.upperBoundType().equals(BoundType.CLOSED))
+        if (value.hasUpperBound())
         {
-          sb.append(']');
+          sb.append(formatter.print(value.upperEndpoint()));
+          if (value.upperBoundType().equals(BoundType.CLOSED))
+          {
+            sb.append(']');
+          }
+          else
+          {
+            sb.append(')');
+          }
         }
         else
         {
+          sb.append(POSITIVE_INFINITY);
           sb.append(')');
         }
-      }
-      else
-      {
-        sb.append(POSITIVE_INFINITY);
-        sb.append(')');
-      }
 
-      gen.writeString(sb.toString());
+        gen.writeString(sb.toString());
+      }
     }
   }
 
