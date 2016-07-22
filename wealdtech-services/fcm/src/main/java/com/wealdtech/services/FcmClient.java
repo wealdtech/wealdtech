@@ -22,6 +22,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.IOException;
+
 /**
  *
  */
@@ -59,10 +61,14 @@ public class FcmClient
       @Override
       public void onResponse(final Call<Void> call, final Response<Void> response)
       {
-        LOG.error("Response is {}", response.body());
         if (!response.isSuccessful())
         {
-          LOG.error("Attempt to send message failed: {}", response.errorBody());
+          LOG.error("Response status is {}", response.code());
+          try
+          {
+            LOG.error("Error body is {}", response.errorBody().string());
+          }
+          catch (final IOException ignored) {}
         }
       }
 
