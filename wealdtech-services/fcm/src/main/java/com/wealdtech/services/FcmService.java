@@ -28,5 +28,5 @@ public interface FcmService
    * @return the response
    */
   @POST("send")
-  Call<Void> sendMessage(@Header("Authorization") final String auth, @Body final GenericWObject body);
+  Call<GenericWObject> sendMessage(@Header("Authorization") final String auth, @Body final GenericWObject body);
 }

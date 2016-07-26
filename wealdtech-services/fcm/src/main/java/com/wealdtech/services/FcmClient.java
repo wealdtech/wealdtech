@@ -52,14 +52,14 @@ public class FcmClient
    */
   public void sendMessage(final ImmutableSet<String> recipients, final WObject<?> message)
   {
-    final Call<Void> call = service.sendMessage(auth(configuration.getApiKey()), GenericWObject.builder()
+    final Call<GenericWObject> call = service.sendMessage(auth(configuration.getApiKey()), GenericWObject.builder()
                                                                                                    .data("registration_ids",
                                                                                                          recipients)
                                                                                                    .data("data", message)
                                                                                                    .build());
-    call.enqueue(new Callback<Void>(){
+    call.enqueue(new Callback<GenericWObject>(){
       @Override
-      public void onResponse(final Call<Void> call, final Response<Void> response)
+      public void onResponse(final Call<GenericWObject> call, final Response<GenericWObject> response)
       {
         if (!response.isSuccessful())
         {
@@ -70,10 +70,14 @@ public class FcmClient
           }
           catch (final IOException ignored) {}
         }
+        else
+        {
+          LOG.debug("Response is {}", response.body());
+        }
       }
 
       @Override
-      public void onFailure(final Call<Void> call, final Throwable t)
+      public void onFailure(final Call<GenericWObject> call, final Throwable t)
       {
         LOG.error("Attempt to send message failed: ", t);
       }
