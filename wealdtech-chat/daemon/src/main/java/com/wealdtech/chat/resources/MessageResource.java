@@ -91,8 +91,6 @@ public class MessageResource
    * @param user the authenticated user
    * @param topicId the ID of the topic from which to create the message
    * @param message the message to create
-   *
-   * @param message the message
    */
   @Timed
   @POST

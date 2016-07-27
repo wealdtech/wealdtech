@@ -14,14 +14,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
-import com.wealdtech.DataError;
 import com.wealdtech.User;
 import com.wealdtech.WID;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * A chat message.  The chat message contains the message itself as well as its associated metadata
@@ -30,10 +31,10 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
 {
   private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
-  private static final String FROM = "from";
+  private static final String FROM_ID = "fromid";
   private static final String SCOPE = "scope";
   private static final String TIMESTAMP = "timestamp";
-  private static final String TO = "to";
+  private static final String TO_IDS = "toids";
   private static final String TEXT = "text";
 
   @JsonCreator
@@ -47,7 +48,7 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
     data = super.preCreate(data);
     if (!data.containsKey(TIMESTAMP))
     {
-      data.put(TIMESTAMP, new DateTime());
+      data.put(TIMESTAMP, new LocalDateTime());
     }
     return data;
   }
@@ -55,46 +56,25 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
   protected void validate()
   {
     super.validate();
-    if (!exists(FROM))
-    {
-      throw new DataError.Missing("Message needs 'from' information");
-    }
 
-    if (!exists(SCOPE))
-    {
-      throw new DataError.Missing("Message needs 'scope' information");
-    }
-
-    if (!exists(TIMESTAMP))
-    {
-      throw new DataError.Missing("Message needs 'timestamp' information");
-    }
+    checkState(exists(FROM_ID), "Message failed validation: must contain fromid");
+    checkState(exists(SCOPE), "Message failed validation: must contain scope");
+    checkState(exists(TIMESTAMP), "Message failed validation: must contain timestamp");
 
     final MessageScope scope = getScope();
     if (scope == MessageScope.GROUP || scope == MessageScope.INDIVIDUAL)
     {
-      if (!exists(TO))
-      {
-        throw new DataError.Missing("Directed message needs 'to' information");
-      }
-      final ImmutableSet<WID<User>> to = getTo();
-      if (to.isEmpty())
-      {
-        throw new DataError.Missing("Directed message needs 'to' information");
-      }
+      checkState(exists(TO_IDS) && !getTo().isEmpty(), "Message failed validation: directed message must contain to");
     }
 
-    if (!exists(TEXT))
-    {
-      throw new DataError.Missing("Message needs 'text' information");
-    }
+    checkState(exists(TEXT), "Message failed validation: must contain text");
   }
 
   private static final TypeReference<WID<User>> FROM_TYPE_REF = new TypeReference<WID<User>>(){};
   @JsonIgnore
   public WID<User> getFrom()
   {
-    return get(FROM, FROM_TYPE_REF).get();
+    return get(FROM_ID, FROM_TYPE_REF).get();
   }
 
   @JsonIgnore
@@ -104,16 +84,16 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
   }
 
   @JsonIgnore
-  public DateTime getTimestamp()
+  public LocalDateTime getTimestamp()
   {
-    return get(TIMESTAMP, DateTime.class).get();
+    return get(TIMESTAMP, LocalDateTime.class).get();
   }
 
   private static final TypeReference<ImmutableSet<WID<User>>> TO_TYPE_REF = new TypeReference<ImmutableSet<WID<User>>>(){};
   @JsonIgnore
   public ImmutableSet<WID<User>> getTo()
   {
-    return get(TO, TO_TYPE_REF).or(ImmutableSet.<WID<User>>of());
+    return get(TO_IDS, TO_TYPE_REF).or(ImmutableSet.<WID<User>>of());
   }
 
   @JsonIgnore
@@ -125,7 +105,7 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
   @Override
   public void onPriorToStore()
   {
-    // Ensure that our timestamp is a datetime and not a string
+    // Ensure that our timestamp is a localdatetime and not a string
     getTimestamp();
   }
 
@@ -141,9 +121,9 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
       super(prior);
     }
 
-    public P from(final WID<User> from)
+    public P fromId(final WID<User> fromId)
     {
-      data(FROM, from);
+      data(FROM_ID, fromId);
       return self();
     }
 
@@ -153,15 +133,15 @@ public class Message extends ChatObject<Message> implements Comparable<Message>
       return self();
     }
 
-    public P timestamp(final DateTime timestamp)
+    public P timestamp(final LocalDateTime timestamp)
     {
       data(TIMESTAMP, timestamp);
       return self();
     }
 
-    public P to(final ImmutableSet<WID<User>> to)
+    public P toIds(final ImmutableSet<WID<User>> toIds)
     {
-      data(TO, to);
+      data(TO_IDS, toIds);
       return self();
     }
 

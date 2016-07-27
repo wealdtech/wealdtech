@@ -14,6 +14,6 @@ package com.wealdtech.chat.services;
  */
 public class ChatDatastoreConstants
 {
-  static final String APP_ID = "appid";
+  static final String APP_ID = "_appid";
   static final String TOPIC_ID = "topicid";
 }

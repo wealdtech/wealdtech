@@ -28,7 +28,7 @@ import static org.testng.Assert.assertEquals;
 
 public class MiscModuleTest
 {
-  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper().copy();
+  private final transient ObjectMapper mapper = ObjectMapperFactory.getDefaultMapper().copy().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
   @BeforeClass
   public void setUp()

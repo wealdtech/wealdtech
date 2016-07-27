@@ -16,6 +16,7 @@ import com.wealdtech.User;
 import com.wealdtech.WID;
 import com.wealdtech.chat.Message;
 import com.wealdtech.chat.Topic;
+import com.wealdtech.services.WObjectService;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
 /**
  * Interface defining message service methods
  */
-public interface MessageService
+public interface MessageService<T> extends WObjectService<Message, T>
 {
   /**
    * Create a message

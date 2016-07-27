@@ -13,7 +13,7 @@ package com.wealdtech.chat;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.WID;
 import com.wealdtech.services.chat.ChatClient;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -41,10 +41,10 @@ public class MessageTest
     {
       testMessage = Message.builder()
                            .id(WID.<Message>generate())
-                           .from(ChatDTest.user1.getId())
+                           .fromId(ChatDTest.user1.getId())
                            .scope(MessageScope.INDIVIDUAL)
-                           .to(ImmutableSet.of(ChatDTest.user2.getId()))
-                           .timestamp(new DateTime())
+                           .toIds(ImmutableSet.of(ChatDTest.user2.getId()))
+                           .timestamp(new LocalDateTime())
                            .text("Simple message")
                            .build();
       user1ChatClient.createMessage(topicId, testMessage);

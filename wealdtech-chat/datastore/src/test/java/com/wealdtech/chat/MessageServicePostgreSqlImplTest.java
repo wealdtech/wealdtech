@@ -57,34 +57,29 @@ public class MessageServicePostgreSqlImplTest
 
     messageService = new MessageServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
                                                                              .copy()
-                                                                             .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
+                                                                             .enable(
+                                                                                 SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     messageService.createDatastore();
 
     user1 = User.builder()
                 .id(WID.<User>generate())
                 .name("Message Service Test User 1")
-                .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
-                                                                                   .password("test")
-                                                                                   .scope(AuthorisationScope.FULL)
-                                                                                   .build()))
+                .authenticationMethods(
+                    ImmutableSet.of(PasswordAuthenticationMethod.builder().password("test").scope(AuthorisationScope.FULL).build()))
                 .emails(ImmutableSet.of(Email.builder().address("test1@test.com").primary(true).verified(true).build()))
                 .build();
     user2 = User.builder()
                 .id(WID.<User>generate())
                 .name("Message Service Test User 2")
-                .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
-                                                                                   .password("test")
-                                                                                   .scope(AuthorisationScope.FULL)
-                                                                                   .build()))
+                .authenticationMethods(
+                    ImmutableSet.of(PasswordAuthenticationMethod.builder().password("test").scope(AuthorisationScope.FULL).build()))
                 .emails(ImmutableSet.of(Email.builder().address("test2@test.com").primary(true).verified(true).build()))
                 .build();
     user3 = User.builder()
                 .id(WID.<User>generate())
                 .name("Message Service Test User 3")
-                .authenticationMethods(ImmutableSet.of(PasswordAuthenticationMethod.builder()
-                                                                                   .password("test")
-                                                                                   .scope(AuthorisationScope.FULL)
-                                                                                   .build()))
+                .authenticationMethods(
+                    ImmutableSet.of(PasswordAuthenticationMethod.builder().password("test").scope(AuthorisationScope.FULL).build()))
                 .emails(ImmutableSet.of(Email.builder().address("test3@test.com").primary(true).verified(true).build()))
                 .build();
     topic1 = Topic.builder()
@@ -115,15 +110,15 @@ public class MessageServicePostgreSqlImplTest
   {
     final Message testMessage = Message.builder()
                                        .id(WID.<Message>generate())
-                                       .from(WID.<User>generate())
+                                       .fromId(WID.<User>generate())
                                        .scope(MessageScope.EVERYONE)
                                        .text("Test message")
                                        .build();
     messageService.create(app, user1, topic1, testMessage);
 
     final Message message = messageService.obtain(app, user1, topic1, testMessage.getId());
-    assertEquals(Message.serialize(Message.builder(testMessage).data("appid", app.getId()).data("topicid", topic1.getId()).build()),
-                 Message.serialize(message));
+    assertEquals(Message.serialize(message), Message.serialize(
+        Message.builder(testMessage).data("_appid", app.getId()).data("topicid", topic1.getId()).build()));
   }
 
   @Test
@@ -137,14 +132,14 @@ public class MessageServicePostgreSqlImplTest
   {
     final Message testMessage1 = Message.builder()
                                         .id(WID.<Message>generate())
-                                        .from(user1.getId())
+                                        .fromId(user1.getId())
                                         .scope(MessageScope.EVERYONE)
                                         .text("Test message 1")
                                         .build();
     messageService.create(app, user1, topic1, testMessage1);
     final Message testMessage2 = Message.builder()
                                         .id(WID.<Message>generate())
-                                        .from(user1.getId())
+                                        .fromId(user1.getId())
                                         .scope(MessageScope.EVERYONE)
                                         .text("Test message 2")
                                         .build();
@@ -152,11 +147,11 @@ public class MessageServicePostgreSqlImplTest
 
     final ImmutableList<Message> messages = messageService.obtain(app, user1, topic1);
     assertMessagesContain(messages,
-                          Message.builder(testMessage1).data("appid", app.getId()).data("topicid", topic1.getId()).build());
+                          Message.builder(testMessage1).data("_appid", app.getId()).data("topicid", topic1.getId()).build());
     assertMessagesDoNotContain(messages,
-                               Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topic1.getId()).build());
+                               Message.builder(testMessage2).data("_appid", app.getId()).data("topicid", topic1.getId()).build());
     assertMessagesDoNotContain(messages,
-                               Message.builder(testMessage2).data("appid", app.getId()).data("topicid", topic2.getId()).build());
+                               Message.builder(testMessage2).data("_appid", app.getId()).data("topicid", topic2.getId()).build());
   }
 
   @Test
@@ -164,16 +159,18 @@ public class MessageServicePostgreSqlImplTest
   {
     final Message testMessage = Message.builder()
                                        .id(WID.<Message>generate())
-                                       .from(user1.getId())
+                                       .fromId(user1.getId())
                                        .scope(MessageScope.GROUP)
-                                       .to(ImmutableSet.of(user2.getId(), user3.getId()))
+                                       .toIds(ImmutableSet.of(user2.getId(), user3.getId()))
                                        .text("Test message")
                                        .build();
     messageService.create(app, user1, topic1, testMessage);
 
     final ImmutableList<Message> messages = messageService.obtainTo(app, user2, topic1, null);
+    System.err.println("Messages are " +  messages);
+    System.err.println("Message is " + Message.builder(testMessage).data("_appid", app.getId()).data("topicid", topic1.getId()).build());
     assertMessagesContain(messages,
-                          Message.builder(testMessage).data("appid", app.getId()).data("topicid", topic1.getId()).build());
+                          Message.builder(testMessage).data("_appid", app.getId()).data("topicid", topic1.getId()).build());
   }
 
   private static void assertMessagesContain(@Nullable final ImmutableList<Message> messages, final Message expectedMessage)

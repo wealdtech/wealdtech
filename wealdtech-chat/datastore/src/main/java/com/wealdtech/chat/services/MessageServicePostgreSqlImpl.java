@@ -34,7 +34,7 @@ import java.sql.PreparedStatement;
 /**
  * Message service using PostgreSQL as a backend
  */
-public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Message> implements MessageService
+public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Message> implements MessageService<PreparedStatement>
 {
   private static final Logger LOG = LoggerFactory.getLogger(MessageServicePostgreSqlImpl.class);
 
@@ -114,9 +114,9 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"appid\":\"" + app.getId().toString() + "\"}");
-        setJson(stmt, index++, "{\"topicid\":\"" + topic.getId().toString() + "\"}");
-        setJson(stmt, index++, "{\"from\":\"" + user.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topic.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"fromid\":\"" + user.getId().toString() + "\"}");
       }
     });
   }
@@ -136,9 +136,9 @@ public class MessageServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<M
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        setJson(stmt, index++, "{\"appid\":\"" + app.getId().toString() + "\"}");
-        setJson(stmt, index++, "{\"topicid\":\"" + topic.getId().toString() + "\"}");
-        setJson(stmt, index++, "{\"to\":[\"" + user.getId().toString() + "\"]}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.APP_ID + "\":\"" + app.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"" + ChatDatastoreConstants.TOPIC_ID + "\":\"" + topic.getId().toString() + "\"}");
+        setJson(stmt, index++, "{\"toids\":[\"" + user.getId().toString() + "\"]}");
       }
     });
   }
