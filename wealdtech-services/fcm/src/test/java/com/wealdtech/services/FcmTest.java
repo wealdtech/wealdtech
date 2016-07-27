@@ -10,10 +10,13 @@
 
 package com.wealdtech.services;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.services.config.FcmConfiguration;
 import org.testng.annotations.Test;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  *
@@ -26,6 +29,12 @@ public class FcmTest
     final FcmConfiguration configuration = FcmConfiguration.fromEnv("wealdtech_fcm");
     final FcmClient client = new FcmClient(configuration);
     final GenericWObject data = GenericWObject.builder().data("stringv", "foo").data("boolv", true).data("intv", 2).build();
-    client.sendMessage(ImmutableSet.of(System.getenv("wealdtech_fcm_recipient")), data);
+    client.sendMessage(ImmutableList.of(System.getenv("wealdtech_fcm_recipient")), data, new Callback<GenericWObject>(){
+      @Override
+      public void onResponse(final Call<GenericWObject> call, final Response<GenericWObject> response){}
+
+      @Override
+      public void onFailure(final Call<GenericWObject> call, final Throwable t){}
+    });
   }
 }

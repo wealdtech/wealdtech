@@ -10,7 +10,7 @@
 
 package com.wealdtech.services;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.WObject;
@@ -18,11 +18,7 @@ import com.wealdtech.retrofit.RetrofitHelper;
 import com.wealdtech.services.config.FcmConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
-
-import java.io.IOException;
 
 /**
  *
@@ -50,38 +46,10 @@ public class FcmClient
    * @param recipients the recipients of the message
    * @param message the message
    */
-  public void sendMessage(final ImmutableSet<String> recipients, final WObject<?> message)
+  public void sendMessage(final ImmutableList<String> recipients, final WObject<?> message, final Callback<GenericWObject> cb)
   {
-    final Call<GenericWObject> call = service.sendMessage(auth(configuration.getApiKey()), GenericWObject.builder()
-                                                                                                   .data("registration_ids",
-                                                                                                         recipients)
-                                                                                                   .data("data", message)
-                                                                                                   .build());
-    call.enqueue(new Callback<GenericWObject>(){
-      @Override
-      public void onResponse(final Call<GenericWObject> call, final Response<GenericWObject> response)
-      {
-        if (!response.isSuccessful())
-        {
-          LOG.error("Response status is {}", response.code());
-          try
-          {
-            LOG.error("Error body is {}", response.errorBody().string());
-          }
-          catch (final IOException ignored) {}
-        }
-        else
-        {
-          LOG.debug("Response is {}", response.body());
-        }
-      }
-
-      @Override
-      public void onFailure(final Call<GenericWObject> call, final Throwable t)
-      {
-        LOG.error("Attempt to send message failed: ", t);
-      }
-    });
+    service.sendMessage(auth(configuration.getApiKey()),
+                        GenericWObject.builder().data("registration_ids", recipients).data("data", message).build()).enqueue(cb);
   }
 
   private static String auth(final String key) { return "key=" + key; }
