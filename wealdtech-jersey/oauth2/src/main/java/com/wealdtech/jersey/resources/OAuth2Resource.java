@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 /**
- *
+ * A generic OAuth2 resource that allows pluggable handlers for different OAuth2 providers.
  */
 @Path("oauth2")
 @Singleton

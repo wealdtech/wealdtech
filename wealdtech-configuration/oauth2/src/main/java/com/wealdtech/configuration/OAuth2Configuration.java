@@ -12,8 +12,6 @@ package com.wealdtech.configuration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 
 import java.net.URI;
 
@@ -53,14 +51,14 @@ public class OAuth2Configuration implements Configuration
 
   public URI getCallbackUri() { return callbackUri; }
 
-  public URI generateAuthorizationUri(ImmutableList<String> scopes)
-  {
-    return URI.create("https://accounts.google.com/o/oauth2/auth?" +
-                      "client_id=" + getClientId() +
-                      "&response_type=code" +
-                      "&scope=" + Joiner.on("%20").join(scopes) +
-                      "&redirect_uri=" + getCallbackUri() +
-                      "&state=auth" +
-                      "&access_type=offline");
-  }
+//  public URI generateAuthorizationUri(ImmutableList<String> scopes)
+//  {
+//    return URI.create("https://accounts.google.com/o/oauth2/auth?" +
+//                      "client_id=" + getClientId() +
+//                      "&response_type=code" +
+//                      "&scope=" + Joiner.on("%20").join(scopes) +
+//                      "&redirect_uri=" + getCallbackUri() +
+//                      "&state=auth" +
+//                      "&access_type=offline");
+//  }
 }

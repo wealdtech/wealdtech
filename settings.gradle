@@ -103,7 +103,6 @@ def nameProject(project) {
   project.children.each {subproject ->
     if (new File(subproject.projectDir, "src").exists()) {
       subproject.name = subproject.path.replaceAll(':', '-').substring(1)
-      //print "Project " + subproject.path + " name is " + subproject.name + "\n"
     }
     nameProject(subproject)
   }
