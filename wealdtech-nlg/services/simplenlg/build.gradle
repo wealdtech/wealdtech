@@ -11,7 +11,7 @@
 dependencies
 {
     compile 'com.google.inject:guice:4.0'
-    compile project(':wealdtech-nlg:wealdtech-nlg-services')
+    compile project(':wealdtech-nlg:services:wealdtech-nlg-services-model')
     // Simple NLG
     compile 'uk.ac.abdn:SimpleNLG:4.4.8'
 }
