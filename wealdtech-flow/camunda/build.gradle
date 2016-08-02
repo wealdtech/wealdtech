@@ -1,11 +1,9 @@
-archivesBaseName = 'wealdtech-flow-camunda'
-
 dependencies {
-  compile project(':wealdtech-flow:model')
+  compile project(':wealdtech-flow:wealdtech-flow-model')
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')
   compile project(':wealdtech-retrofit')
-  compile project(':wealdtech-wobject:datastore:postgresql')
+  compile project(':wealdtech-wobject:datastore:wealdtech-wobject-datastore-postgresql')
   compile 'com.rabbitmq:amqp-client:3.6.1'
   compile 'org.postgresql:postgresql:9.4.1208'
 

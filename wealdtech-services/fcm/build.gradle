@@ -1,5 +1,3 @@
-archivesBaseName = 'wealdtech-services-fcm'
-
 dependencies {
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')

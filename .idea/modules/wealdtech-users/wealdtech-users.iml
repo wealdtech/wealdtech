@@ -19,10 +19,10 @@
     <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
-    <orderEntry type="module" module-name="token" scope="TEST" />
-    <orderEntry type="module" module-name="password" scope="TEST" />
+    <orderEntry type="module" module-name="wealdtech-authentication-token" scope="TEST" />
+    <orderEntry type="module" module-name="wealdtech-authentication-password" scope="TEST" />
     <orderEntry type="module" module-name="wealdtech-authentication-model" exported="" />
-    <orderEntry type="module" module-name="model" exported="" />
+    <orderEntry type="module" module-name="wealdtech-application-model" exported="" />
     <orderEntry type="module" module-name="wealdtech-configuration" exported="" />
   </component>
 </module>

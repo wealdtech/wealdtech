@@ -1,8 +1,6 @@
-archivesBaseName = 'wealdtech-notifications-gcm'
-
 dependencies {
-  compile project(':wealdtech-notifications:model')
-  compile project(':wealdtech-services:gcm')
+  compile project(':wealdtech-notifications:wealdtech-notifications-model')
+  compile project(':wealdtech-services:wealdtech-services-gcm')
 
   testCompile 'commons-io:commons-io:2.5'
 }

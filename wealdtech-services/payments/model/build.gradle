@@ -1,5 +1,3 @@
-archivesBaseName = 'wealdtech-services-payments-model'
-
 dependencies {
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')

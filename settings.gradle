@@ -24,7 +24,7 @@ include 'wealdtech-application:datastore',
         'wealdtech-configuration',
         'wealdtech-configuration-logging',
         'wealdtech-configuration:oauth2',
-        'wealdtech-contacts:datastore',
+        'wealdtech-contacts:datastore:model',
         'wealdtech-contacts:datastore:postgresql',
         'wealdtech-contacts:model',
         'wealdtech-contacts:google',
@@ -41,11 +41,11 @@ include 'wealdtech-application:datastore',
         'wealdtech-jersey-server',
         'wealdtech-jersey:limiter:jersey',
         'wealdtech-jersey:limiter:model',
-        'wealdtech-jersey:limiter:service',
+        'wealdtech-jersey:limiter:service:model',
         'wealdtech-jersey:limiter:service:static',
         'wealdtech-jersey:logger:jersey',
         'wealdtech-jersey:logger:model',
-        'wealdtech-jersey:logger:service',
+        'wealdtech-jersey:logger:service:model',
         'wealdtech-jersey:logger:service:log',
         'wealdtech-jersey:oauth2',
         'wealdtech-mail:mandrill',
@@ -55,7 +55,7 @@ include 'wealdtech-application:datastore',
         'wealdtech-mandrill',
         'wealdtech-metrics',
         'wealdtech-nlg:daemon',
-        'wealdtech-nlg:datastore',
+        'wealdtech-nlg:datastore:model',
         'wealdtech-nlg:datastore:postgresql',
         'wealdtech-nlg:model',
         'wealdtech-nlg:services',
@@ -91,7 +91,21 @@ include 'wealdtech-application:datastore',
         'wealdtech-users-jersey',
         'wealdtech-wid-service',
         'wealdtech-wobject',
-        'wealdtech-wobject:datastore',
+        'wealdtech-wobject:datastore:model',
         'wealdtech-wobject:datastore:postgresql',
         'wealdtech-wobject:datastore:neo4j',
         'wealdtech-application:model'
+
+// We want each project to have a unique name.
+// If not, then gradle confuses :a:x and :b:x as they have the same last element
+// So here we set the project's names to their full path i.e. a-x and b-x
+def nameProject(project) {
+  project.children.each {subproject ->
+    if (new File(subproject.projectDir, "src").exists()) {
+      subproject.name = subproject.path.replaceAll(':', '-').substring(1)
+      //print "Project " + subproject.path + " name is " + subproject.name + "\n"
+    }
+    nameProject(subproject)
+  }
+}
+nameProject(rootProject)

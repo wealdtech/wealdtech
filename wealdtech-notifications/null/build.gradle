@@ -1,7 +1,5 @@
-archivesBaseName = 'wealdtech-notifications-null'
-
 dependencies {
-  compile project(':wealdtech-notifications:model')
+  compile project(':wealdtech-notifications:wealdtech-notifications-model')
 
   testCompile 'commons-io:commons-io:2.5'
 }

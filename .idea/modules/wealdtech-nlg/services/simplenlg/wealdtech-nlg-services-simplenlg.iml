@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":wealdtech-nlg:wealdtech-nlg-services:wealdtech-nlg-services-simplenlg" external.linked.project.path="$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg" external.root.project.path="$MODULE_DIR$/../../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/build/classes/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../../../wealdtech-nlg/services/simplenlg/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="wealdtech-nlg-services" exported="" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.guava:guava:19.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: classworlds:classworlds:1.1-alpha-2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: junit:junit:3.8.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: backport-util-concurrent:backport-util-concurrent:3.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven.wagon:wagon-provider-api:1.0-beta-6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-repository-metadata:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.ant:ant-launcher:1.9.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.plexus:plexus-interpolation:1.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-plugin-registry:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-artifact-manager:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-model:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-profile:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-settings:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.ant:ant:1.9.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.plexus:plexus-utils:3.0.20" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-artifact:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-project:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven:maven-plugin-api:2.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.maven.plugins:maven-antrun-plugin:1.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: uk.ac.abdn:SimpleNLG:4.4.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.inject:guice:4.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
+  </component>
+</module>

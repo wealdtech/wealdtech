@@ -1,10 +1,8 @@
-archivesBaseName = 'wealdtech-services-weather-forecastio'
-
 dependencies {
   compile project(':wealdtech-configuration')
   compile project(':wealdtech-wobject')
   compile project(':wealdtech-retrofit')
-  compile project(':wealdtech-services:weather:model')
+  compile project(':wealdtech-services:weather:wealdtech-services-weather-model')
   compile 'com.google.inject:guice:4.0'
 }
 

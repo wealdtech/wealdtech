@@ -8,11 +8,9 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-jersey-logger-jersey'
-
 dependencies
 {
-    compile project(':wealdtech-jersey:logger:service')
+    compile project(':wealdtech-jersey:logger:service:wealdtech-jersey-logger-service-model')
     compile 'com.sun.jersey:jersey-server:1.19.1'
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     // compile 'javax.ws.rs:jsr311-api:1.1.1'
@@ -20,7 +18,7 @@ dependencies
     compile 'com.google.inject:guice:4.0'
 
     testCompile project(':wealdtech-jersey-server')
-    testCompile project(':wealdtech-jersey:logger:service:log')
+    testCompile project(':wealdtech-jersey:logger:service:wealdtech-jersey-logger-service-log')
 }
 
 uploadArchives {

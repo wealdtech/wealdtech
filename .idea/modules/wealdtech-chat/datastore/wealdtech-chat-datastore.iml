@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":wealdtech-chat:datastore" external.linked.project.path="$MODULE_DIR$/../../../../wealdtech-chat/datastore" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech.chat" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":wealdtech-chat:wealdtech-chat-datastore" external.linked.project.path="$MODULE_DIR$/../../../../wealdtech-chat/datastore" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="com.wealdtech" external.system.module.version="3.0.0" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../../../wealdtech-chat/datastore/build/classes/main" />
     <output-test url="file://$MODULE_DIR$/../../../../wealdtech-chat/datastore/build/classes/test" />
@@ -21,7 +21,7 @@
     <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
     <orderEntry type="module" module-name="wealdtech-events" exported="" />
     <orderEntry type="module" module-name="wealdtech-users-datastore" exported="" />
-    <orderEntry type="module" module-name="datastore" exported="" />
-    <orderEntry type="module" module-name="wealdtech-wobject-datastore" exported="" />
+    <orderEntry type="module" module-name="wealdtech-application-datastore" exported="" />
+    <orderEntry type="module" module-name="wealdtech-wobject-datastore-model" exported="" />
   </component>
 </module>

@@ -9,8 +9,6 @@
  */
 
 subprojects {
-  group = 'com.wealdtech.flow'
-
   configurations {
     compile.exclude group: 'org.testng', module: 'testng'
   }

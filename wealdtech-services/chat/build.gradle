@@ -1,8 +1,6 @@
-archivesBaseName = 'wealdtech-services-chat'
-
 dependencies {
   compile project(':wealdtech-configuration')
-  compile project(':wealdtech-chat:model')
+  compile project(':wealdtech-chat:wealdtech-chat-model')
   compile project(':wealdtech-retrofit')
 }
 

@@ -8,16 +8,14 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-archivesBaseName = 'wealdtech-users'
-
 dependencies
 {
     compile project(':wealdtech-wobject')
     compile project(':wealdtech-configuration')
-    compile project(':wealdtech-application:model')
-    compile project(':wealdtech-authentication:model')
-    testCompile project(':wealdtech-authentication:password')
-    testCompile project(':wealdtech-authentication:token')
+    compile project(':wealdtech-application:wealdtech-application-model')
+    compile project(':wealdtech-authentication:wealdtech-authentication-model')
+    testCompile project(':wealdtech-authentication:wealdtech-authentication-password')
+    testCompile project(':wealdtech-authentication:wealdtech-authentication-token')
 }
 
 uploadArchives {
