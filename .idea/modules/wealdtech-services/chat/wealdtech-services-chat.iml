@@ -14,12 +14,82 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="wealdtech-configuration" exported="" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="module" module-name="wealdtech-configuration" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:19.0" level="project" />
+    <orderEntry type="library" name="Gradle: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" name="Gradle: javax.xml.stream:stax-api:1.0-2" level="project" />
+    <orderEntry type="library" name="Gradle: javax.xml.bind:jaxb-api:2.2.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-annotation:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-jvm:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-json:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty.websocket:websocket-client:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-util:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty.websocket:websocket-api:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-security:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-io:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-http:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.jackson:jackson-xc:1.9.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.jackson:jackson-jaxrs:1.9.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.jackson:jackson-mapper-asl:1.9.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.jackson:jackson-core-asl:1.9.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.3-1" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.jettison:jettison:1.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-graphite:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-healthchecks:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-core:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-core:1.1.7" level="project" />
+    <orderEntry type="library" name="Gradle: io.reactivex:rxjava:1.1.5" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.3.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-jetty9:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-jersey:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.dropwizard.metrics:metrics-servlets:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty.websocket:websocket-server:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty.websocket:websocket-common:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-servlet:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-server:9.2.17.v20160517" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: javax.ws.rs:jsr311-api:1.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.inject.extensions:guice-servlet:4.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.jersey.contribs:jersey-guice:1.19.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.jersey:jersey-json:1.19.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.jersey:jersey-servlet:1.19.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.jersey:jersey-server:1.19.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.jersey:jersey-core:1.19.1" level="project" />
+    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.1.7" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:jul-to-slf4j:1.7.21" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.21" level="project" />
+    <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-guava:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:converter-jackson:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:adapter-rxjava:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.retrofit2:retrofit:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.inject:guice:4.0" level="project" />
+    <orderEntry type="module" module-name="wealdtech-authentication-model" />
+    <orderEntry type="module" module-name="wealdtech-users" />
+    <orderEntry type="module" module-name="wealdtech-application-model" />
+    <orderEntry type="module" module-name="wealdtech-notifications-model" />
+    <orderEntry type="module" module-name="wealdtech-wid-service" />
+    <orderEntry type="module" module-name="wealdtech-metrics" />
+    <orderEntry type="module" module-name="wealdtech-jersey-server" />
+    <orderEntry type="module" module-name="wealdtech-wobject" />
+    <orderEntry type="module" module-name="wealdtech-configuration-logging" />
+    <orderEntry type="module" module-name="wealdtech-core" />
+    <orderEntry type="module" module-name="wealdtech-jackson" />
+    <orderEntry type="module" module-name="wealdtech-chat-model" />
+    <orderEntry type="module" module-name="wealdtech-retrofit" />
+    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
-    <orderEntry type="module" module-name="wealdtech-retrofit" exported="" />
-    <orderEntry type="module" module-name="wealdtech-chat-model" exported="" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
   </component>
 </module>

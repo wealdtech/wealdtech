@@ -14,10 +14,21 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="wealdtech-jersey-limiter-service-model" exported="" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="module" module-name="wealdtech-jersey-limiter-service-model" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-guava:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.21" level="project" />
+    <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.7.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:19.0" level="project" />
+    <orderEntry type="module" module-name="wealdtech-jackson" />
+    <orderEntry type="module" module-name="wealdtech-core" />
+    <orderEntry type="module" module-name="wealdtech-wobject" />
+    <orderEntry type="module" module-name="wealdtech-jersey-limiter-model" />
+    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.testng:testng:6.9.10" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.beust:jcommander:1.48" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
   </component>
 </module>
