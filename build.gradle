@@ -27,8 +27,8 @@ def javaProjects()
 
 
 allprojects {
-  //apply plugin: 'nebula.lint'
-  //gradleLint.rules = ['all-dependency']
+//  apply plugin: 'nebula.lint'
+//  gradleLint.rules = ['all-dependency']
 }
 
 configure(javaProjects())

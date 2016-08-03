@@ -849,6 +849,7 @@ public class WObject<T extends WObject> implements Comparable<T>
    *
    * @param obj the object to recast
    * @param klazz the class to which to recast
+   * @param <P> the class of to which to recast
    *
    * @return the recasted object
    */

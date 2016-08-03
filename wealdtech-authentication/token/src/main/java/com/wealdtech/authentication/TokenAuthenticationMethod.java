@@ -52,6 +52,7 @@ public class TokenAuthenticationMethod extends AuthenticationMethod
 
   /**
    * Tokens are reusable unless explicitly set to be single-use
+   * @return {@code true} if the token is single-use, otherwise {@code false}
    */
   @JsonIgnore
   public boolean isSingleUse() { return get(SINGLE_USE, Boolean.class).or(false); }

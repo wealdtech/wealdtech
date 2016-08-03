@@ -20,9 +20,9 @@ import com.wealdtech.configuration.Configuration;
  */
 public class NotificationConfiguration implements Configuration
 {
-  final String accountId;
-  final String applicationId;
-  final String secret;
+  private final String accountId;
+  private final String applicationId;
+  private final String secret;
 
   @JsonCreator
   private NotificationConfiguration(@JsonProperty("accountid") final String accountId,
@@ -44,6 +44,7 @@ public class NotificationConfiguration implements Configuration
    * Obtain a configuration from the environment
    *
    * @param base the base string to use as the prefix for obtaining environmental variables
+   * @return a configuration
    */
   public static NotificationConfiguration fromEnv(final String base)
   {

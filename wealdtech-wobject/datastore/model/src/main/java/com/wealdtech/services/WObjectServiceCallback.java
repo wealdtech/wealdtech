@@ -22,21 +22,25 @@ public interface WObjectServiceCallback<T>
 {
   /**
    * Obtain the query for the callback.  This is only used when running a generic query.  In all other cases it is ignored
+   * @return the query
    */
   @Nullable String getQuery();
 
   /**
    * Obtain the conditions when obtaining or updating objects.
+   * @return the conditions
    */
   @Nullable String getConditions();
 
   /**
    * Obtain the values for conditions when obtaining or updating objects.
+   * @param stmt the statement for which to set the conditions
    */
   void setConditionValues(T stmt);
 
   /**
    * Obtain the required ordering when obtaining objects
+   * @return the order
    */
   @Nullable String getOrder();
 

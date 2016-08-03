@@ -35,47 +35,66 @@ public interface WObjectService<T extends WObject, U>
   public void destroyDatastore();
 
   /**
-   * Add a object
+   * Add an item
+   * @param item the item to add
    */
   public void add(T item);
 
   /**
-   * Update an object.  The item to be updated is defined by the ID of the item provided
+   * Update an item.  The item to be updated is defined by the ID of the item provided
+   * @param item the item to update
    */
   public void update(T item);
 
   /**
-   * Update an object.  The object to be updated is defined by the callback provided
+   * Update an item.  The item to be updated is defined by the callback provided
+   * @param item the item
+   * @param cb the callback defining the item to update
    */
   public void update(T item, WObjectServiceCallback<U> cb);
 
   /**
-   * Remove an object
+   * Remove an item
+   * @param itemId the ID of the item to remove
    */
   public void remove(WID<T> itemId);
 
   /**
-   * Remove multiple objects based on callback conditions
+   * Remove multiple items based on callback conditions
+   * @param cb the callback defining the item(s) to remove
    */
   public void remove(WObjectServiceCallback<U> cb);
 
   /**
-   * Obtain object
+   * Obtain an item
+   * @param klazz the class of the item to obtain
+   * @param itemId the ID of the item to obtain
+   * @return the item; can be {@code null}
    */
   public T obtain(Class<T> klazz, WID<T> itemId);
 
   /**
-   * Obtain object
+   * Obtain an item
+   * @param typeRef the type reference of the item to obtain
+   * @param itemId the ID of the item to obtain
+   * @return the item; can be {@code null}
    */
   public T obtain(TypeReference<T> typeRef, WID<T> itemId);
 
   /**
-   * Obtain objects
+   * Obtain items
+   * @param typeRef the type reference of the items to obtain
+   * @param cb the callback defining the item(s) to obtain
+   * @return a list of items
    */
   public ImmutableList<T> obtain(TypeReference<T> typeRef, WObjectServiceCallback<U> cb);
 
   /**
-   * Run a generic query
+   * Run a generic query to obtain items
+   * @param typeRef the type reference of the items to obtain
+   * @param cb the callback defining the item(s) to obtain
+   * @param <V> the type of the items to return
+   * @return a list of items
    */
   public <V> ImmutableList<V> query(TypeReference<V> typeRef, WObjectServiceCallback<U> cb);
 }
