@@ -17,6 +17,7 @@ import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.calendar.config.CalendarConfiguration;
 import com.wealdtech.services.google.GoogleAccountsClient;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -113,7 +114,7 @@ public class CalendarClientGoogleImplTest
                                                                                  .accessToken("irrelevant")
                                                                                  .scopes(ImmutableSet.of(
                                                                                      "https://www.googleapis.com/auth/calendar"))
-                                                                                 .expires(DateTime.now().minusDays(1))
+                                                                                 .expires(LocalDateTime.now().minusDays(1))
                                                                                  .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
 

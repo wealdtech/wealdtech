@@ -19,7 +19,7 @@ import com.wealdtech.GenericWObject;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.configuration.OAuth2Configuration;
 import com.wealdtech.retrofit.RetrofitHelper;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +99,7 @@ public class GoogleAccountsClient
     return OAuth2Credentials.builder()
                             .name(name)
                             .accessToken(accessToken.get())
-                            .expires(DateTime.now().plusSeconds(ttl.get()))
+                            .expires(LocalDateTime.now().plusSeconds(ttl.get()))
                             .refreshToken(refreshToken.get())
                             .build();
   }
@@ -137,7 +137,7 @@ public class GoogleAccountsClient
 
     return OAuth2Credentials.builder(credentials)
                             .accessToken(accessToken.get())
-                            .expires(DateTime.now().plusSeconds(ttl.get()))
+                            .expires(LocalDateTime.now().plusSeconds(ttl.get()))
                             .build();
   }
 

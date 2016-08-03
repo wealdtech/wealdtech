@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableSet;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.configuration.OAuth2Configuration;
 import com.wealdtech.retrofit.RetrofitHelper;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +130,8 @@ public class StripeClient
     final OAuth2Credentials credentials = OAuth2Credentials.builder()
                                                            .name(name)
                                                            .accessToken(accessToken.get())
-                                                           .expires(DateTime.now().plusYears(15)) // Stripe token doesn't expire
+                                                           .expires(
+                                                               LocalDateTime.now().plusYears(15)) // Stripe token doesn't expire
                                                            .scopes(ImmutableSet.of(scope))
                                                            .refreshToken(refreshToken.get())
                                                            // Additional data for Stripe
@@ -150,32 +151,33 @@ public class StripeClient
    */
   public OAuth2Credentials reauth(final OAuth2Credentials credentials)
   {
-    if (credentials == null) { return null; }
-
-    final GenericWObject response = RetrofitHelper.call(
-        service.refreshToken("refresh_token", configuration.getSecret(),
-                             credentials.getRefreshToken()));
-
-    LOG.debug("Response is {}", response);
-
-    // TODO handle bad response
-
-    final Optional<String> accessToken = response.get("access_token", String.class);
-    if (!accessToken.isPresent())
-    {
-      throw new DataError.Bad("Missing access token in response");
-    }
-
-    final Optional<Integer> ttl = response.get("expires_in", Integer.class);
-    if (!ttl.isPresent())
-    {
-      throw new DataError.Bad("Missing ttl in response");
-    }
-
-    return OAuth2Credentials.builder(credentials)
-                            .accessToken(accessToken.get())
-                            .expires(DateTime.now().plusSeconds(ttl.get()))
-                            .build();
+    throw new ServerError("Not implemented");
+    //    if (credentials == null) { return null; }
+//
+//    final GenericWObject response = RetrofitHelper.call(
+//        service.refreshToken("refresh_token", configuration.getSecret(),
+//                             credentials.getRefreshToken()));
+//
+//    LOG.debug("Response is {}", response);
+//
+//    // TODO handle bad response
+//
+//    final Optional<String> accessToken = response.get("access_token", String.class);
+//    if (!accessToken.isPresent())
+//    {
+//      throw new DataError.Bad("Missing access token in response");
+//    }
+//
+//    final Optional<Integer> ttl = response.get("expires_in", Integer.class);
+//    if (!ttl.isPresent())
+//    {
+//      throw new DataError.Bad("Missing ttl in response");
+//    }
+//
+//    return OAuth2Credentials.builder(credentials)
+//                            .accessToken(accessToken.get())
+//                            .expires(DateTime.now().plusSeconds(ttl.get()))
+//                            .build();
   }
 
   private static ImmutableMultimap<String, String> splitQuery(URI uri)

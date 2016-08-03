@@ -17,7 +17,7 @@ import com.wealdtech.WID;
 import com.wealdtech.authentication.OAuth2Credentials;
 import com.wealdtech.contacts.config.ContactsConfiguration;
 import com.wealdtech.services.google.GoogleAccountsClient;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class ContactsClientGoogleContactsImplTest
                                                                                  .accessToken("irrelevant")
                                                                                  .scopes(ImmutableSet.of(
                                                                                      "https://www.googleapis.com/auth/calendar"))
-                                                                                 .expires(DateTime.now().minusDays(1))
+                                                                                 .expires(LocalDateTime.now().minusDays(1))
                                                                                  .refreshToken(REFRESH_TOKEN)
                                                                                  .build());
     final ContactsClient<OAuth2Credentials> client = new ContactsClientGoogleContactsImpl(configuration);

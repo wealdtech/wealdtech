@@ -26,7 +26,7 @@ import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.repository.ContactRepositoryPostgreSqlImpl;
 import com.wealdtech.repository.RelationshipRepositoryPostgreSqlImpl;
 import com.wealdtech.services.google.GoogleAccountsClient;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -72,7 +72,7 @@ public class ContactsSyncServiceSynchronousImplTest
     credentials = accountsClient.reauth(OAuth2Credentials.builder()
                                                          .name("Google contacts")
                                                          .accessToken("irrelevant")
-                                                         .expires(DateTime.now().minusDays(1))
+                                                         .expires(LocalDateTime.now().minusDays(1))
                                                          .scopes(ImmutableSet.of("https://www.googleapis.com/auth/calendar",
                                                                                  "https://www.googleapis.com/auth/contacts",
                                                                                  "profile", "email"))

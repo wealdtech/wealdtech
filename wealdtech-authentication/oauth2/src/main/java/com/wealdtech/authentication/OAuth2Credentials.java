@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class OAuth2Credentials extends Credentials
   public String getAccessToken(){return get(ACCESS_TOKEN, String.class).get();}
 
   @JsonIgnore
-  public DateTime getExpires(){return get(EXPIRES, DateTime.class).get();}
+  public LocalDateTime getExpires(){return get(EXPIRES, LocalDateTime.class).get();}
 
   @JsonIgnore
   public String getRefreshToken(){return get(REFRESH_TOKEN, String.class).get();}
@@ -106,7 +106,7 @@ public class OAuth2Credentials extends Credentials
       return self();
     }
 
-    public P expires(final DateTime expires)
+    public P expires(final LocalDateTime expires)
     {
       data(EXPIRES, expires);
       return self();
