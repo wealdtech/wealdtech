@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.ClientError;
+import com.wealdtech.User;
 import com.wealdtech.oauth2.OAuth2Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 /**
  * A generic OAuth2 resource that allows pluggable handlers for different OAuth2 providers.
@@ -45,16 +47,15 @@ public class OAuth2Resource
 
   @GET
   @Path("{handler}/auth")
-  public Response generateAuthorisationUri(//@Context final User authenticatedUser,
-                                           @Context final UriInfo uriInfo,
+  public Response generateAuthorisationUri(@Context final User authenticatedUser,
                                            @PathParam("handler") final String handler)
   {
     if (!handlers.containsKey(handler))
     {
       throw new ClientError("Unknown handler " + handler);
     }
-    handlers.get(handler).generateAuthorisationUri(uriInfo.getQueryParameters(true));
-    return Response.ok().build();
+    final URI redirectUri = handlers.get(handler).generateAuthorisationUri(authenticatedUser.getId().toString());
+    return Response.temporaryRedirect(redirectUri).build();
   }
 
   @GET

@@ -10,7 +10,6 @@
 
 package com.wealdtech.oauth2;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
 
 /**
@@ -21,14 +20,14 @@ public interface OAuth2Handler
   /**
    * Generate the authorisation URI for this provider
    *
-   * @param queryParams the query parameters passed in to the request
+   * @param id an ID that will identify the user when the callback returns
    * @return A URI that will provide the correct request for authorisation against the provider
    */
-  URI generateAuthorisationUri(MultivaluedMap<String, String> queryParams);
+  URI generateAuthorisationUri(String id);
 
   /**
    * Authorise a request
    * @param uri the URI that triggered the authorisation callback
    */
-  void handleAuthorisation(final URI uri);
+  void handleAuthorisation(URI uri);
 }

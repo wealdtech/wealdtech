@@ -16,6 +16,7 @@ dependencies
     // compile 'javax.ws.rs:jsr311-api:1.1.1'
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'com.google.inject:guice:4.0'
+    compile project(':wealdtech-users')
 
     testCompile project(':wealdtech-jersey-server')
 }

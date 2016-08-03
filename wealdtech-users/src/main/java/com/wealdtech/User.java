@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.wealdtech.Preconditions.checkState;
@@ -47,6 +48,7 @@ public class User extends WObject<User> implements Comparable<User>
   private static final String AVATAR = "avatar";
   private static final String FRIEND_IDS = "friendids";
   private static final String BLOCKED_IDS = "blockedids";
+  private static final String LOCALE = "locale";
 
   @JsonCreator
   public User(final Map<String, Object> data)
@@ -147,6 +149,9 @@ public class User extends WObject<User> implements Comparable<User>
 
   @JsonIgnore
   public Optional<String> getAvatar(){ return get(AVATAR, String.class); }
+
+  @JsonIgnore
+  public Optional<Locale> getLocale() {return get(LOCALE, Locale.class); }
 
   private static final TypeReference<ImmutableSet<WID<User>>> FRIEND_IDS_TYPEREF = new TypeReference<ImmutableSet<WID<User>>>() {};
   @JsonIgnore
@@ -565,6 +570,12 @@ public class User extends WObject<User> implements Comparable<User>
     public P avatar(final String avatar)
     {
       data(AVATAR, avatar);
+      return self();
+    }
+
+    public P locale(final Locale locale)
+    {
+      data(LOCALE, locale);
       return self();
     }
 
