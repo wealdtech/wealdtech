@@ -15,6 +15,8 @@ import com.wealdtech.jersey.exceptions.ForbiddenException;
 import com.wealdtech.jersey.exceptions.NotFoundException;
 import com.wealdtech.jersey.exceptions.UnauthorizedException;
 
+import javax.annotation.Nullable;
+
 /**
  * Preconditions that throw exceptions suitable for Jersey when they are not met
  */
@@ -64,7 +66,7 @@ public final class JerseyPreconditions
    * @param obj the object
    * @param message the message to send
    */
-  public static void checkPresence(final Object obj, final String message)
+  public static void checkPresence(@Nullable final Object obj, final String message)
   {
     if (obj == null)
     {

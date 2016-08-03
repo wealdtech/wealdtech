@@ -259,7 +259,7 @@ public final class Preconditions
    * @throws DataError.Missing
    *           if {@code reference} is null
    */
-  public static <T> T checkNotNull(T reference)
+  public static <T> T checkNotNull(@Nullable T reference)
   {
     if (reference == null)
     {
@@ -281,7 +281,7 @@ public final class Preconditions
    * @throws DataError.Missing
    *           if {@code reference} is null
    */
-  public static <T> T checkNotNull(T reference, @Nullable Object errorMessage)
+  public static <T> T checkNotNull(@Nullable T reference, @Nullable Object errorMessage)
   {
     if (reference == null)
     {
@@ -311,7 +311,7 @@ public final class Preconditions
    * @throws DataError.Missing
    *           if {@code reference} is null
    */
-  public static <T> T checkNotNull(T reference, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs)
+  public static <T> T checkNotNull(@Nullable T reference, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs)
   {
     if (reference == null)
     {
