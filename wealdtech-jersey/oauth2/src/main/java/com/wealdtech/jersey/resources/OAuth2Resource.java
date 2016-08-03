@@ -10,10 +10,10 @@
 
 package com.wealdtech.jersey.resources;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.wealdtech.ClientError;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import com.wealdtech.User;
 import com.wealdtech.oauth2.OAuth2Handler;
 import org.slf4j.Logger;
@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
+import static com.wealdtech.Preconditions.checkState;
+
 /**
  * A generic OAuth2 resource that allows pluggable handlers for different OAuth2 providers.
  */
@@ -37,12 +39,12 @@ public class OAuth2Resource
 {
   private static final Logger LOG = LoggerFactory.getLogger(OAuth2Resource.class);
 
-  private final ImmutableMap<String, ? extends OAuth2Handler> handlers;
+  private final Injector injector;
 
   @Inject
-  public OAuth2Resource(@Named("oauth2handlers") final ImmutableMap<String, ? extends OAuth2Handler> handlers)
+  public OAuth2Resource(final Injector injector)
   {
-    this.handlers = handlers;
+    this.injector = injector;
   }
 
   @GET
@@ -50,11 +52,10 @@ public class OAuth2Resource
   public Response generateAuthorisationUri(@Context final User authenticatedUser,
                                            @PathParam("handler") final String handler)
   {
-    if (!handlers.containsKey(handler))
-    {
-      throw new ClientError("Unknown handler " + handler);
-    }
-    final URI redirectUri = handlers.get(handler).generateAuthorisationUri(authenticatedUser.getId().toString());
+    final OAuth2Handler oauth2Handler = injector.getInstance(Key.get(OAuth2Handler.class, Names.named(handler + "oauth2handler")));
+    checkState(oauth2Handler != null, "Unknown handler " + handler);
+
+    final URI redirectUri = oauth2Handler.generateAuthorisationUri(authenticatedUser.getId().toString());
     return Response.temporaryRedirect(redirectUri).build();
   }
 
@@ -63,11 +64,10 @@ public class OAuth2Resource
   public Response authorisation(@Context final UriInfo uriInfo,
                                 @PathParam("handler") final String handler)
   {
-    if (!handlers.containsKey(handler))
-    {
-      throw new ClientError("Unknown handler " + handler);
-    }
-    handlers.get(handler).handleAuthorisation(uriInfo.getRequestUri());
+    final OAuth2Handler oauth2Handler = injector.getInstance(Key.get(OAuth2Handler.class, Names.named(handler + "oauth2handler")));
+    checkState(oauth2Handler != null, "Unknown handler " + handler);
+
+    oauth2Handler.handleAuthorisation(uriInfo.getRequestUri());
     return Response.ok().build();
   }
 }
