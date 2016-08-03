@@ -16,12 +16,19 @@ buildscript {
   }
   dependencies {
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+    classpath 'com.netflix.nebula:gradle-lint-plugin:4.0.1'
   }
 }
 
 def javaProjects()
 {
   return subprojects.findAll { new File(it.projectDir, "src").exists() }
+}
+
+
+allprojects {
+  //apply plugin: 'nebula.lint'
+  //gradleLint.rules = ['all-dependency']
 }
 
 configure(javaProjects())
@@ -131,3 +138,26 @@ configure(javaProjects())
         }
     }
 }
+
+// Task to print out the project dependencies in dot format
+task dotDeps << {
+  println "digraph dependencies {"
+  println "splines = ortho;"
+
+  // For all projects except 'all'...
+  allprojects.findAll { !it.name.equals("all") }.each { p ->
+    def projectName = "${p.group.replaceFirst(/^com\.wealdtech\.?/, '').replaceAll(/\./, "-")}-${p.name}".replaceFirst(/^-/, '').replaceFirst(/^wealdtech-/, '')
+    // For the 'compile' configuration...
+    p.configurations.all.findAll { it.name.equals("compile") && !it.allDependencies.empty }.each { c ->
+      // For any dependecny which is a subproject
+      c.allDependencies.findAll { it.group.startsWith("com.wealdtech") && !it.group.contains("javax")}.each { dep ->
+        def depName = "${dep.name}".replaceFirst(/^wealdtech-/, '')
+        println "\"${projectName}\" -> \"${depName}\";"
+      }
+    }
+  }
+  println "{ rank=same \"core\" \"jackson\" \"configuration\" \"wobject\"}"
+
+  println "}"
+}
+

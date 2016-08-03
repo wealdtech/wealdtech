@@ -44,9 +44,23 @@ public class OAuth2Resource
   }
 
   @GET
+  @Path("{handler}/auth")
+  public Response generateAuthorisationUri(//@Context final User authenticatedUser,
+                                           @Context final UriInfo uriInfo,
+                                           @PathParam("handler") final String handler)
+  {
+    if (!handlers.containsKey(handler))
+    {
+      throw new ClientError("Unknown handler " + handler);
+    }
+    handlers.get(handler).generateAuthorisationUri(uriInfo.getQueryParameters(true));
+    return Response.ok().build();
+  }
+
+  @GET
   @Path("{handler}/callback")
-  public Response authorisation(@PathParam("handler") final String handler,
-                                @Context UriInfo uriInfo)
+  public Response authorisation(@Context final UriInfo uriInfo,
+                                @PathParam("handler") final String handler)
   {
     if (!handlers.containsKey(handler))
     {

@@ -49,12 +49,19 @@ public class StripeClient
   /**
    * @return the authorisation URI for this client
    */
-  public URI generateAuthorisationUri()
+  public URI generateAuthorisationUri(final String state)
   {
-    return URI.create(ENDPOINT + "authorize?response_type=code&scope=read_write&client_id=" + configuration.getClientId());
+    return URI.create(ENDPOINT + "authorize?response_type=code&scope=read_write&client_id=" + configuration.getClientId() + "&state=" + state);
   }
 
-  public OAuth2Credentials auth(final String name, final URI uri)
+  /**
+   * Carry out authorisation given an authorisation callback from Stripe.
+   * This contacts Stripe's servers to obtain suitable credentials for the user
+   * @param name the name to be used for the resultant credentials
+   * @param uri the authorisation callback URI
+   * @return a two tuple containing the state string from the callback URI and the resultant credentials
+   */
+  public TwoTuple<String, OAuth2Credentials> auth(final String name, final URI uri)
   {
     final ImmutableMultimap<String, String> params = splitQuery(uri);
 
@@ -83,6 +90,12 @@ public class StripeClient
     }
     final String scope = params.get("scope").iterator().next();
 
+    if (!params.containsKey("state"))
+    {
+      throw new ClientError("Bad authorisation URI missing state");
+    }
+    final String state = params.get("state").iterator().next();
+
     // Authorise using the code we have been given
     final GenericWObject response = RetrofitHelper.call(service.obtainToken("authorization_code", configuration.getSecret(), code));
 
@@ -102,13 +115,30 @@ public class StripeClient
       throw new DataError.Bad("Missing refresh token in response");
     }
 
-    return OAuth2Credentials.builder()
-                            .name(name)
-                            .accessToken(accessToken.get())
-                            .expires(DateTime.now().plusYears(15)) // Token doesn't expire
-                            .scopes(ImmutableSet.of(scope))
-                            .refreshToken(refreshToken.get())
-                            .build();
+    final Optional<String> stripePublishableKey = response.get("stripe_publishable_key", String.class);
+    if (!stripePublishableKey.isPresent())
+    {
+      throw new DataError.Bad("Missing stripe publishable key in response");
+    }
+
+    final Optional<String> stripeUserId = response.get("stripe_user_id", String.class);
+    if (!stripeUserId.isPresent())
+    {
+      throw new DataError.Bad("Missing stripe user ID in response");
+    }
+
+    final OAuth2Credentials credentials = OAuth2Credentials.builder()
+                                                           .name(name)
+                                                           .accessToken(accessToken.get())
+                                                           .expires(DateTime.now().plusYears(15)) // Stripe token doesn't expire
+                                                           .scopes(ImmutableSet.of(scope))
+                                                           .refreshToken(refreshToken.get())
+                                                           // Additional data for Stripe
+                                                           .data("stripepublishablekey", stripePublishableKey.get())
+                                                           .data("stripeuserid", stripeUserId.get())
+                                                           .build();
+
+    return new TwoTuple<>(state, credentials);
   }
 
   /**
