@@ -11,6 +11,7 @@
 package com.wealdtech.services;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.User;
@@ -53,6 +54,13 @@ public interface UserService<T> extends WObjectService<User, T>
    * @return the users; can be empty if no users with the provided IDs exist
    */
   ImmutableSet<User> obtain(ImmutableCollection<WID<User>> ids);
+
+  /**
+   * Obtain a set of users that match the given input.
+   * @param input the input, to be matched against user name and email addresses
+   * @return a set of matching users
+   */
+  ImmutableList<User> obtainMatching(final String input);
 
   /**
    * Obtain a user given an email address.  The email address match is case-insensitive

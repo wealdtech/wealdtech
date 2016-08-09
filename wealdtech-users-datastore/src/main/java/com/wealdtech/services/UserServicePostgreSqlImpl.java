@@ -15,10 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.*;
@@ -378,6 +375,28 @@ public class UserServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<User
 
   @JsonIgnore
   private static final TypeReference<GenericWObject> WOBJECT_TYPE_REFERENCE = new TypeReference<GenericWObject>() {};
+
+  @Override
+  public ImmutableList<User> obtainMatching(final String input)
+  {
+    return query(USER_TYPE_REFERENCE, new WObjectServiceCallbackPostgreSqlImpl()
+    {
+      @Override
+      public String getQuery()
+      {
+        return "SELECT d from t_user d, jsonb_array_elements(d->'emails') email\n" +
+               "WHERE LOWER(d->>'name') LIKE ? OR LOWER(email->>'address') LIKE ?";
+
+      }
+      @Override
+      public void setConditionValues(final PreparedStatement stmt)
+      {
+        int index = 1;
+        setString(stmt, index++, input.toLowerCase(Locale.ENGLISH) + "%");
+        setString(stmt, index++, input.toLowerCase(Locale.ENGLISH) + "%");
+      }
+    });
+  }
 
   @Override
   public ImmutableSet<GenericWObject> obtainKnownEmails(final ImmutableCollection<String> emailAddresses)
