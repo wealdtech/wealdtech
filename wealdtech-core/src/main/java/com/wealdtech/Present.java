@@ -15,10 +15,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Function;
-import com.google.common.base.Supplier;
-
-import static com.google.common.base.Preconditions.*;
+import static com.wealdtech.Preconditions.*;
 
 final class Present<T> extends TriVal<T> {
   private final T reference;
@@ -53,22 +50,12 @@ final class Present<T> extends TriVal<T> {
     return this;
   }
 
-  @Override public T or(Supplier<? extends T> supplier) {
-    checkNotNull(supplier);
-    return reference;
-  }
-
   @Override public T orNull() {
     return reference;
   }
 
   @Override public Set<T> asSet() {
     return Collections.singleton(reference);
-  }
-
-  @Override public <V> TriVal<V> transform(Function<? super T, V> function) {
-    return new Present<V>(checkNotNull(function.apply(reference),
-        "the Function passed to TriVal.transform() must not return null."));
   }
 
   @Override public boolean equals(@Nullable Object object) {

@@ -10,15 +10,12 @@
 
 package com.wealdtech;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.wealdtech.Preconditions.checkNotNull;
 
 import java.util.Collections;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Function;
-import com.google.common.base.Supplier;
 
 final class Absent extends TriVal<Object> {
   static final Absent INSTANCE = new Absent();
@@ -50,22 +47,12 @@ final class Absent extends TriVal<Object> {
     return (TriVal<Object>) checkNotNull(secondChoice);
   }
 
-  @Override public Object or(Supplier<?> supplier) {
-    return checkNotNull(supplier.get(),
-        "use TriVal.orNull() instead of a Supplier that returns null");
-  }
-
   @Override @Nullable public Object orNull() {
     return null;
   }
 
   @Override public Set<Object> asSet() {
     return Collections.emptySet();
-  }
-
-  @Override public <V> TriVal<V> transform(Function<Object, V> function) {
-    checkNotNull(function);
-    return TriVal.absent();
   }
 
   @Override public boolean equals(@Nullable Object object) {

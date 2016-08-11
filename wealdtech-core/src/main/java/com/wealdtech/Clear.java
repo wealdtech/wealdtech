@@ -17,9 +17,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Function;
-import com.google.common.base.Supplier;
-
 final class Clear extends TriVal<Object> {
   static final Clear INSTANCE = new Clear();
 
@@ -50,22 +47,12 @@ final class Clear extends TriVal<Object> {
     return (TriVal<Object>) checkNotNull(secondChoice);
   }
 
-  @Override public Object or(Supplier<?> supplier) {
-    return checkNotNull(supplier.get(),
-        "use TriVal.orNull() instead of a Supplier that returns null");
-  }
-
   @Override @Nullable public Object orNull() {
     return null;
   }
 
   @Override public Set<Object> asSet() {
     return Collections.emptySet();
-  }
-
-  @Override public <V> TriVal<V> transform(Function<Object, V> function) {
-    checkNotNull(function);
-    return TriVal.clear();
   }
 
   @Override public boolean equals(@Nullable Object object) {

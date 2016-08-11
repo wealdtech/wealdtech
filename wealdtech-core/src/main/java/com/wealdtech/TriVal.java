@@ -18,11 +18,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
-import com.google.common.base.Supplier;
-import com.google.common.collect.AbstractIterator;
-
 public abstract class TriVal<T> implements Serializable
 {
   /**
@@ -122,15 +117,6 @@ public abstract class TriVal<T> implements Serializable
   public abstract TriVal<T> or(TriVal<? extends T> secondChoice);
 
   /**
-   * Returns the contained instance if it is present; {@code supplier.get()} otherwise. If the
-   * supplier returns {@code null}, a {@link NullPointerException} is thrown.
-   *
-   * @throws NullPointerException if the supplier returns {@code null}
-   */
-  @Beta
-  public abstract T or(Supplier<? extends T> supplier);
-
-  /**
    * Returns the contained instance if it is present; {@code null} otherwise. If the
    * instance is known to be present, use {@link #get()} instead.
    */
@@ -144,17 +130,6 @@ public abstract class TriVal<T> implements Serializable
    * @since 11.0
    */
   public abstract Set<T> asSet();
-
-  /**
-   * If the instance is present, it is transformed with the given {@link Function}; otherwise,
-   * {@link TriVal#absent} is returned. If the function returns {@code null}, a
-   * {@link NullPointerException} is thrown.
-   *
-   * @throws NullPointerException if the function returns {@code null}
-   *
-   * @since 12.0
-   */
-  public abstract <V> TriVal<V> transform(Function<? super T, V> function);
 
   /**
    * Returns {@code true} if {@code object} is an {@code TriVal} instance, and either
@@ -182,39 +157,6 @@ public abstract class TriVal<T> implements Serializable
    * Returns a string representation which hides the detail of the trival itself
    */
   public abstract String toSimpleString();
-
-  /**
-   * Returns the value of each present instance from the supplied {@code TriVals}, in order,
-   * skipping over occurrences of {@link TriVal#absent}. Iterators are unmodifiable and are
-   * evaluated lazily.
-   *
-   * @since 11.0 (generics widened in 13.0)
-   */
-  @Beta
-  public static <T> Iterable<T> presentInstances(
-      final Iterable<? extends TriVal<? extends T>> TriVals) {
-    checkNotNull(TriVals);
-    return new Iterable<T>() {
-      @Override
-      public Iterator<T> iterator() {
-        return new AbstractIterator<T>() {
-          private final Iterator<? extends TriVal<? extends T>> iterator =
-              checkNotNull(TriVals.iterator());
-
-          @Override
-          protected T computeNext() {
-            while (this.iterator.hasNext()) {
-              TriVal<? extends T> TriVal = this.iterator.next();
-              if (TriVal.isPresent()) {
-                return TriVal.get();
-              }
-            }
-            return endOfData();
-          }
-        };
-      }
-    };
-  }
 
   private static final long serialVersionUID = 0;
 }
