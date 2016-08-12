@@ -10,7 +10,7 @@
 
 package com.wealdtech;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.wealdtech.Preconditions.checkNotNull;
 
 import java.util.Collections;
 import java.util.Set;
