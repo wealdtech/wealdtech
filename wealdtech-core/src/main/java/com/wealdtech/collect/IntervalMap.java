@@ -61,31 +61,28 @@ public class IntervalMap<T extends Comparable, U> implements Map<Range<T>, U>
   public U get(final Object key)
   {
     final T actualKey = (T)key;
-    final U result;
     Entry<T, TwoTuple<T, U>> entry = entries.floorEntry(actualKey);
-    if (entry == null)
-    {
-      // No match at all
-      result = null;
-    }
-    else
+    while (entry != null)
     {
       if (entry.getKey().equals(actualKey))
       {
         // We have a direct hit on the start of an entry
-        result = entry.getValue().getT();
+        return entry.getValue().getT();
       }
       else if (actualKey.compareTo(entry.getValue().getS()) < 0)
       {
         // We are within an entry's bounds
         return entry.getValue().getT();
       }
-      else
+      else if (actualKey.compareTo(entry.getKey()) < 0)
       {
-        result = null;
+        // We have fallen below the entry's bounds, give up
+        return null;
       }
+      // It is possible that there is an entry that starts lower than the current one that applies, so grab it to test
+      entry = entries.lowerEntry(entry.getKey());
     }
-    return result;
+    return null;
   }
 
   @Override

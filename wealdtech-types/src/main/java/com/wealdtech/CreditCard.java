@@ -116,7 +116,12 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
   public static Builder<?> builder(final CreditCard prior) { return new Builder(prior); }
 
   /**
-   * Information on the brand of a credit card
+   * Information on the brand of a credit card.
+   * The ranges define the shortest numbers that can uniquely identify the card.  For example, although it appears at first
+   * that China Unionpay could provide a smaller range [62,63) this is not allowed because there are Discover cards in the
+   * range [622126, 622926) so the longer number of digits is required to ensure that the brands can be defined.
+   * Having multiple ranges with the same number of digits is fine if one range sits entirely within another (as is the case
+   * with the Discover cards, one of whose ranges sits entirely within that for China Unionpay).
    */
   public static enum Brand
   {
@@ -125,7 +130,7 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
                                    Range.closedOpen(37L, 38L)), 4, "CID")
 
     ,CHINA_UNIONPAY("^62[0-9]{14,17}$",
-                    Arrays.asList(Range.closedOpen(62L, 63L)), 3, "CVN2")
+                    Arrays.asList(Range.closedOpen(620000L, 630000L)), 3, "CVN2")
 
     ,DINERS_CLUB("^3(?:0[0-5]|[68][0-9])[0-9]{11}$",
                  Arrays.asList(Range.closedOpen(54L, 56L),
