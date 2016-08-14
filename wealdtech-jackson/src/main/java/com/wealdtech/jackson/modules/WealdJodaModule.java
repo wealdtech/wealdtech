@@ -58,6 +58,8 @@ public class WealdJodaModule extends Module
     deserializers.addDeserializer(Interval.class, new IntervalDeserializer());
     serializers.addSerializer(new DateTimeZoneSerializer());
     deserializers.addDeserializer(DateTimeZone.class, new DateTimeZoneDeserializer());
+    serializers.addSerializer(new YearMonthSerializer());
+    deserializers.addDeserializer(YearMonth.class, new YearMonthDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

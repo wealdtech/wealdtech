@@ -536,4 +536,20 @@ public class JacksonModulesTest
     final Range<DateTime> deser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).readValue(value, new TypeReference<Range<DateTime>>(){});
     assertEquals(range, deser);
   }
+
+  @Test
+  public void testSerYearMonth() throws Exception
+  {
+    final YearMonth ym1 = new YearMonth(19, 9);
+    final String value = this.mapper.writeValueAsString(ym1);
+    assertEquals(value, "\"09/19\"");
+  }
+
+  @Test
+  public void testDeserYearMonth() throws Exception
+  {
+    final String value = "\"01/01\"";
+    final YearMonth deser = this.mapper.readValue(value, YearMonth.class);
+    assertEquals(deser, new YearMonth(2001, 1));
+  }
 }
