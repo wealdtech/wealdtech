@@ -34,7 +34,7 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
   private static final String CSC = "csc";
 
   @JsonCreator
-  public CreditCard(final Map<String, Object> data) { super(data); }
+  public CreditCard(final Map<String, Object> data){ super(data); }
 
   @Override
   protected Map<String, Object> preCreate(final Map<String, Object> data)
@@ -58,13 +58,13 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
    * @return the main number for the credit card
    */
   @JsonIgnore
-  public String getNumber() { return get(NUMBER, String.class).get(); }
+  public String getNumber(){ return get(NUMBER, String.class).get(); }
 
   @JsonIgnore
-  public YearMonth getExpiry() { return get(EXPIRY, YearMonth.class).get(); }
+  public YearMonth getExpiry(){ return get(EXPIRY, YearMonth.class).get(); }
 
   @JsonIgnore
-  public String getCsc() { return get(CSC, String.class).get(); }
+  public String getCsc(){ return get(CSC, String.class).get(); }
 
   private static String cleanNumber(final String input)
   {
@@ -111,9 +111,9 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
     }
   }
 
-  public static Builder<?> builder() { return new Builder(); }
+  public static Builder<?> builder(){ return new Builder(); }
 
-  public static Builder<?> builder(final CreditCard prior) { return new Builder(prior); }
+  public static Builder<?> builder(final CreditCard prior){ return new Builder(prior); }
 
   /**
    * Information on the brand of a credit card.
@@ -125,37 +125,40 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
    */
   public static enum Brand
   {
-    AMERICAN_EXPRESS("^3[47][0-9]{13}$",
-                     Arrays.asList(Range.closedOpen(34L, 35L),
-                                   Range.closedOpen(37L, 38L)), 4, "CID")
-
-    ,CHINA_UNIONPAY("^62[0-9]{14,17}$",
-                    Arrays.asList(Range.closedOpen(620000L, 630000L)), 3, "CVN2")
-
-    ,DINERS_CLUB("^3(?:0[0-5]|[68][0-9])[0-9]{11}$",
-                 Arrays.asList(Range.closedOpen(54L, 56L),
-                               Range.closedOpen(300L, 306L),
-                               Range.closedOpen(309L, 310L),
-                               Range.closedOpen(36L, 37L),
-                               Range.closedOpen(38L, 40L)), 3, "CID")
-
-    ,DISCOVER("^6(?:011|5[0-9]{2})[0-9]{12}$",
-              Arrays.asList(Range.closedOpen(6011L, 6012L),
-                            Range.closedOpen(622126L, 622926L),
-                            Range.closedOpen(644L, 650L),
-                            Range.closedOpen(65L, 66L)), 3, "CID")
-
-    ,JCB("^(?:2131|1800|35\\d{3})\\d{11}$",
-         Arrays.asList(Range.closedOpen(3528L, 3590L)), 3, "CAV2")
-
-    ,MASTERCARD("^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$",
-                Arrays.asList(Range.closedOpen(50L, 56L),
-                              Range.closedOpen(2221L, 2721L)), 3, "CVC2")
-
-    ,VISA("^4[0-9]{12}(?:[0-9]{3})?$",
-          Arrays.asList(Range.closedOpen(4L, 5L)), 3, "CVV2")
-
-    ;
+    AMERICAN_EXPRESS("^3[47][0-9]{13}$", Arrays.asList(Range.closedOpen(34L, 35L), Range.closedOpen(37L, 38L)), 4,
+                     "CID"), CHINA_UNIONPAY("^62[0-9]{14,17}$", Arrays.asList(Range.closedOpen(620000L, 630000L)), 3,
+                                            "CVN2"), DINERS_CLUB("^3(?:0[0-5]|[68][0-9])[0-9]{11}$",
+                                                                 Arrays.asList(Range.closedOpen(54L, 56L),
+                                                                               Range.closedOpen(300L, 306L),
+                                                                               Range.closedOpen(309L, 310L),
+                                                                               Range.closedOpen(36L, 37L),
+                                                                               Range.closedOpen(38L, 40L)), 3,
+                                                                 "CID"), DISCOVER("^6(?:011|5[0-9]{2})[0-9]{12}$",
+                                                                                  Arrays.asList(Range.closedOpen(6011L, 6012L),
+                                                                                                Range.closedOpen(622126L, 622926L),
+                                                                                                Range.closedOpen(644L, 650L),
+                                                                                                Range.closedOpen(65L, 66L)), 3,
+                                                                                  "CID"), JCB("^(?:2131|1800|35\\d{3})\\d{11}$",
+                                                                                              Arrays.asList(
+                                                                                                  Range.closedOpen(3528L, 3590L)),
+                                                                                              3,
+                                                                                              "CAV2"), MASTERCARD("^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$",
+                                                                                                                  Arrays.asList(
+                                                                                                                      Range.closedOpen(
+                                                                                                                          50L, 56L),
+                                                                                                                      Range.closedOpen(
+                                                                                                                          2221L,
+                                                                                                                          2721L)),
+                                                                                                                  3,
+                                                                                                                  "CVC2"), VISA("^4[0-9]{12}(?:[0-9]{3})?$",
+                                                                                                                                Arrays
+                                                                                                                                    .asList(
+                                                                                                                                        Range
+                                                                                                                                            .closedOpen(
+                                                                                                                                                4L,
+                                                                                                                                                5L)),
+                                                                                                                                3,
+                                                                                                                                "CVV2");
 
     public final String validationRegex;
     public final List<Range<Long>> prefixes;
@@ -171,6 +174,7 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
     }
 
     private static final IntervalMap<Long, Brand> _BRANDSMAP;
+
     static
     {
       _BRANDSMAP = new IntervalMap<>();
@@ -201,7 +205,9 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
 
     /**
      * Obtain a brand for a credit card given a number
+     *
      * @param number the credit card number
+     *
      * @return the brand, or {@code null} if the brand cannot be determined
      */
     @Nullable
@@ -238,5 +244,26 @@ public class CreditCard extends WObject<CreditCard> implements Comparable<Credit
     {
       return StringUtils.capitalize(super.toString().toLowerCase(Locale.ENGLISH)).replaceAll("_", " ");
     }
+  }
+
+  public static boolean luhn(final String number)
+  {
+    int sum = 0;
+    boolean alternate = false;
+    for (int i = number.length() - 1; i >= 0; i--)
+    {
+      int n = Integer.parseInt(number.substring(i, i + 1));
+      if (alternate)
+      {
+        n *= 2;
+        if (n > 9)
+        {
+          n = (n % 10) + 1;
+        }
+      }
+      sum += n;
+      alternate = !alternate;
+    }
+    return (sum % 10 == 0);
   }
 }
