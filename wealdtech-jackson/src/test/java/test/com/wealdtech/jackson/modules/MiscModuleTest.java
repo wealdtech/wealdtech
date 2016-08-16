@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Currency;
 
 import static org.testng.Assert.assertEquals;
 
@@ -147,5 +148,22 @@ public class MiscModuleTest
     final String ser = "\"[2014-03-25T18:00:00-04:00 America/New_York,2014-03-25T19:00:00-04:00 America/New_York)\"";
     final Range<DateTime> deser = this.mapper.readValue(ser, new TypeReference<Range<DateTime>>(){});
     assertEquals(range, deser);
+  }
+
+  @Test
+  public void testSerCurrency() throws Exception
+  {
+    final Currency currency = Currency.getInstance("GBP");
+    final String ser = this.mapper.writeValueAsString(currency);
+    assertEquals(ser, "\"GBP\"");
+  }
+
+  @Test
+  public void testDeserCurrency() throws Exception
+  {
+    final Currency currency = Currency.getInstance("GBP");
+    final String ser = "\"GBP\"";
+    final Currency deser = this.mapper.readValue(ser, Currency.class);
+    assertEquals(currency, deser);
   }
 }

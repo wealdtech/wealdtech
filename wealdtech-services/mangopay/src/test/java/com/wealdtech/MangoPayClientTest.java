@@ -11,10 +11,13 @@
 package com.wealdtech;
 
 import com.wealdtech.config.MangoPayConfiguration;
+import com.wealdtech.mangopay.CardRegistration;
 import com.wealdtech.services.MangoPayClient;
 import org.joda.time.LocalDate;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.Currency;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -40,9 +43,22 @@ public class MangoPayClientTest
   }
 
   @Test
-  public void testCreate()
+  public void testCreateUser()
   {
     String id = client.createUser("Test", "User", "Test@test.com", new LocalDate(1970, 1, 1), "GB", "GB", "test");
     assertNotNull(id);
+  }
+
+  @Test
+  public void testCreateCardRegistration()
+  {
+    String id = client.createUser("Test", "User", "Test@test.com", new LocalDate(1970, 1, 1), "GB", "GB", "test");
+    assertNotNull(id);
+
+    final CardRegistration
+        registration = client.createCardRegistration(id, CreditCard.Brand.VISA, Currency.getInstance("GBP"), "Test");
+
+    assertNotNull(registration);
+    System.err.println(registration);
   }
 }

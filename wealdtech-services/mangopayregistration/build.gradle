@@ -7,12 +7,6 @@ dependencies {
   compile project(':wealdtech-wobject')
   compile project(':wealdtech-types')
 
-  // Configuration for OAuth2 client
-  compile project(':wealdtech-configuration:wealdtech-configuration-oauth2')
-
-  // OAuth2 credentials
-  compile project(':wealdtech-authentication:wealdtech-authentication-oauth2')
-
   // Retrofit for accessing the remote service
   compile project(':wealdtech-retrofit')
 
@@ -23,8 +17,8 @@ uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name 'Wealdtech MangoPay Payments Service'
-                description 'Access to MangoPay service'
+                name 'Wealdtech MangoPay Card Registration Service'
+                description 'Access to MangoPay card registration service'
             } 
         }
     }

@@ -12,12 +12,10 @@ package com.wealdtech.services;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.mangopay.MangoPayApi;
-import com.mangopay.core.enumerations.CountryIso;
-import com.mangopay.core.enumerations.CurrencyIso;
-import com.mangopay.entities.CardRegistration;
+import com.wealdtech.CreditCard;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.config.MangoPayConfiguration;
+import com.wealdtech.mangopay.CardRegistration;
 import com.wealdtech.retrofit.RetrofitHelper;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -30,6 +28,10 @@ import javax.inject.Inject;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Currency;
+
+import static com.wealdtech.Preconditions.checkState;
 
 /**
  * Client for the MangoPay service
@@ -41,16 +43,9 @@ public class MangoPayClient
   private final MangoPayConfiguration configuration;
   private final MangoPayService service;
 
-  private final MangoPayApi mangoService;
-
   @Inject
   public MangoPayClient(final MangoPayConfiguration configuration)
   {
-    this.mangoService = new MangoPayApi();
-    this.mangoService.Config.ClientId = configuration.getClientId();
-    this.mangoService.Config.ClientPassword = configuration.getSecret();
-    this.mangoService.Config.BaseUrl = configuration.getEndpoint().toString();
-
     this.configuration = configuration;
     this.service = RetrofitHelper.createRetrofit(configuration.getEndpoint().toString(), MangoPayService.class);
   }
@@ -65,9 +60,9 @@ public class MangoPayClient
     boolean success = false;
     try
     {
-      final Response<GenericWObject>
-          response = service.ping(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId()).execute();
-      if(response.isSuccessful())
+      final Response<GenericWObject> response =
+          service.ping(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId()).execute();
+      if (response.isSuccessful())
       {
         final Optional<String> clientId = response.body().get("ClientId", String.class);
         if (clientId.isPresent() && Objects.equal(clientId.get(), configuration.getClientId()))
@@ -77,18 +72,6 @@ public class MangoPayClient
       }
     }
     catch (final IOException ignored) {}
-//    try
-//    {
-//      final Client client = mangoService.Clients.get();
-//      if (Objects.equal(client.ClientId, mangoService.Config.ClientId))
-//      {
-//        success = true;
-//      }
-//    }
-//    catch (final Exception e)
-//    {
-//      LOG.error("Exception occurred: ", e);
-//    }
 
     return success;
   }
@@ -114,25 +97,6 @@ public class MangoPayClient
                            final String residence,
                            final String tag)
   {
-//    final UserNatural user = new UserNatural();
-//    user.FirstName = firstName;
-//    user.LastName = lastName;
-//    user.Email = email;
-//    user.Birthday = dateOfBirth.toDateTime(LocalTime.MIDNIGHT, DateTimeZone.UTC).getMillis() / 1000L;
-//    user.Nationality = countryIsoFromString(nationality);
-//    user.CountryOfResidence = countryIsoFromString(residence);
-//    user.Tag = tag;
-//
-//    try
-//    {
-//      final User createdUser = mangoService.Users.create(user);
-//      return createdUser.Id;
-//    }
-//    catch (final Exception e)
-//    {
-//      LOG.error("Exception occurred: ", e);
-//    }
-//    return null;
     final GenericWObject.Builder<?> builder = GenericWObject.builder();
     if (tag != null)
     {
@@ -149,7 +113,8 @@ public class MangoPayClient
     try
     {
       final Response<GenericWObject> response =
-          service.createUser(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(), builder.build()).execute();
+          service.createUser(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                             builder.build()).execute();
       if (!response.isSuccessful())
       {
         LOG.error("Failed to create user: {} ", response.errorBody().string());
@@ -174,39 +139,110 @@ public class MangoPayClient
     return userId;
   }
 
-  public GenericWObject createCardRegistration(final String userId, final String currency)
+  public String createWallet(final String userId, final Currency currency, final String description, final String tag)
   {
-    final CardRegistration cardRegistration = new CardRegistration();
-    cardRegistration.UserId = userId;
-    cardRegistration.Currency = currencyIsoFromString(currency);
+    final GenericWObject.Builder<?> builder = GenericWObject.builder();
+    if (tag != null)
+    {
+      builder.data("Tag", tag);
+    }
+    builder.data("owners", Collections.singletonList(userId));
+    builder.data("description", description);
+    builder.data("currency", currency.toString());
 
+    String walletId = null;
     try
     {
-      final CardRegistration createdCardRegistration = mangoService.CardRegistrations.create(cardRegistration);
-      final GenericWObject.Builder<?> builder = GenericWObject.builder();
-      builder.data("accesskey", createdCardRegistration.AccessKey);
-      builder.data("baseurl", mangoService.Config.BaseUrl);
-      builder.data("cardpreregistrationid", createdCardRegistration.Id);
-      builder.data("cardregistrationurl", createdCardRegistration.CardRegistrationURL);
-      builder.data("cardtype", createdCardRegistration.CardType);
-      builder.data("preregistrationdata", cardRegistration.PreregistrationData);
-      return builder.build();
+      final Response<GenericWObject> response =
+          service.createWallet(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                               builder.build()).execute();
+      if (!response.isSuccessful())
+      {
+        LOG.error("Failed to create wallet: {} ", response.errorBody().string());
+      }
+      else
+      {
+        final Optional<String> id = response.body().get("Id", String.class);
+        if (!id.isPresent())
+        {
+          LOG.error("Failed to create wallet; response is {}", response.body().toString());
+        }
+        else
+        {
+          walletId = id.get();
+        }
+      }
     }
-    catch (final Exception e)
+    catch (final IOException ioe)
     {
-      LOG.error("Exception occurred: ", e);
+      LOG.error("IO exception: ", ioe);
     }
-    return null;
+    return walletId;
   }
 
-  private static CountryIso countryIsoFromString(final String str)
+  /**
+   * @param userId the MangoPay ID of the user registering the card
+   * @param brand the brand of the card being registered
+   * @param currency the currency that payments from this card will be taken
+   * @param tag an optional tag for the registration
+   *
+   * @return a card registration object
+   */
+  public CardRegistration createCardRegistration(final String userId,
+                                                 final CreditCard.Brand brand,
+                                                 final Currency currency,
+                                                 final String tag)
   {
-    return CountryIso.valueOf(str);
+    final GenericWObject.Builder<?> builder = GenericWObject.builder();
+    if (tag != null)
+    {
+      builder.data("Tag", tag);
+    }
+    builder.data("UserId", userId);
+    builder.data("Currency", currency.toString());
+    builder.data("CardType", brandToType(brand));
+
+    final GenericWObject response = RetrofitHelper.call(
+        service.createCardRegistration(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                                       builder.build()));
+
+    final CardRegistration.Builder<?> resultB = CardRegistration.builder();
+    checkState(response.get("Id", String.class).isPresent(), "Response failed to provide Id");
+    resultB.registrationId(response.get("Id", String.class).get());
+    checkState(response.get("AccessKey", String.class).isPresent(), "Response failed to provide AccessKey");
+    resultB.accessKey(response.get("AccessKey", String.class).get());
+    checkState(response.get("PreregistrationData", String.class).isPresent(), "Response failed to provide PreregistrationData");
+    resultB.preRegistrationData(response.get("PreregistrationData", String.class).get());
+    checkState(response.get("CardRegistrationURL", String.class).isPresent(), "Response failed to provide CardRegistrationURL");
+    resultB.cardRegistrationUrl(response.get("CardRegistrationURL", String.class).get());
+
+    return resultB.build();
   }
 
-  private static CurrencyIso currencyIsoFromString(final String str)
+  public GenericWObject obtainCardRegistration(final String registrationId)
   {
-    return CurrencyIso.valueOf(str);
+    return RetrofitHelper.call(
+        service.obtainCardRegistration(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                                       registrationId));
+  }
+
+  public String completeCardRegistration(final String userId, final String registrationId, final String data)
+  {
+    // Ensure that this is a valid registration for completion
+    final GenericWObject registration = obtainCardRegistration(registrationId);
+
+    final GenericWObject.Builder<?> builder = GenericWObject.builder();
+    builder.data("RegistrationData", data);
+
+    final GenericWObject response = RetrofitHelper.call(
+        service.updateCardRegistration(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                                       registrationId, builder.build()));
+
+    checkState(response != null, "Failed to register card");
+    final Optional<String> cardId = response.get("CardId", String.class);
+    checkState(cardId.isPresent(), "Failed to obtain card ID");
+
+    return cardId.get();
   }
 
   private static String auth(final String username, final String password)
@@ -219,6 +255,33 @@ public class MangoPayClient
     {
       LOG.error("username and/or password not in UTF-8: ", uee);
       return null;
+    }
+  }
+
+  /**
+   * Supply the MangoPay credit card type given Weald's brand
+   *
+   * @param brand the brand
+   *
+   * @return the MangoPay type; can be {@code null}
+   */
+  private static String brandToType(final CreditCard.Brand brand)
+  {
+    if (brand == null) { return null; }
+    switch (brand)
+    {
+      case AMERICAN_EXPRESS:
+        return "AMEX";
+      case DINERS_CLUB:
+        return "DINERS";
+      case CHINA_UNIONPAY:
+      case DISCOVER:
+      case JCB:
+      case MASTERCARD:
+      case VISA:
+        return "CB_VISA_MASTERCARD";
+      default:
+        return null;
     }
   }
 }

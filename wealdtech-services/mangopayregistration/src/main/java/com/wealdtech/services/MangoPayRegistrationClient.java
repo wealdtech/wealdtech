@@ -1,0 +1,44 @@
+/*
+ * Copyright 2012 - 2016 Weald Technology Trading Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
+ */
+
+package com.wealdtech.services;
+
+import com.wealdtech.retrofit.RetrofitHelper;
+import org.joda.time.LocalDate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * A specialised client to allow clients to register cards with MangoPay without needing to send the data to the application
+ * server.
+ */
+public class MangoPayRegistrationClient
+{
+  private final MangoPayRegistrationService service;
+
+  public MangoPayRegistrationClient()
+  {
+    this.service = RetrofitHelper.createRetrofit(null, MangoPayRegistrationService.class);
+  }
+
+  public String register(final String url, final String accessKey, final String preregistrationData, final String cardNumber, final LocalDate cardExpiry, final String cardCsc)
+  {
+
+    final Map<String, String> data = new HashMap<>();
+    data.put("accessKeyRef", accessKey);
+    data.put("data", preregistrationData);
+    data.put("cardNumber", cardNumber);
+    data.put("cardExpirationDate", cardExpiry.toString("MMYY"));
+    data.put("cardCvx", cardCsc);
+
+    return RetrofitHelper.call(this.service.registerCard(url, data));
+  }
+}

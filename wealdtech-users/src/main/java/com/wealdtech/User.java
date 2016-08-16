@@ -141,6 +141,9 @@ public class User extends WObject<User> implements Comparable<User>
   private static final TypeReference<ImmutableSet<? extends Credentials>> CREDENTIALS_TYPEREF =
       new TypeReference<ImmutableSet<? extends Credentials>>() {};
 
+  /**
+   * @return credentials that allow this user to access external resources
+   */
   @JsonIgnore
   public ImmutableSet<? extends Credentials> getCredentials()
   {
