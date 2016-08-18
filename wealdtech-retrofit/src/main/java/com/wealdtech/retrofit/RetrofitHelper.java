@@ -81,28 +81,32 @@ public class RetrofitHelper
     }
     else
     {
+      String text = null;
+      if (response.errorBody() != null)
+      {
+        try
+        {
+          text = response.errorBody().string();
+        }
+        catch (final IOException ignored) {}
+      }
       switch (response.code())
       {
         case HttpURLConnection.HTTP_BAD_REQUEST:
+          LOG.error("Bad request: {}", text);
           throw new DataError.Bad("Bad request");
         case HttpURLConnection.HTTP_UNAUTHORIZED:
+          LOG.error("Unauthorized: {}", text);
           throw new DataError.Authentication("Unauthorized");
         case HttpURLConnection.HTTP_FORBIDDEN:
+          LOG.error("Forbidden: {}", text);
           throw new DataError.Permission("Not allowed");
         case HttpURLConnection.HTTP_NOT_FOUND:
+          LOG.error("Not found: {}", text);
           throw new DataError.Missing("Not found");
         default:
-          String error = null;
-          try
-          {
-            error = response.errorBody().string();
-          }
-          catch (final IOException ioe)
-          {
-
-          }
-          LOG.warn("API error: {}", error);
-          throw new ClientError("API error: " + error);
+          LOG.warn("Error {}: {}", response.code(), text);
+          throw new ClientError("API error: " + text);
       }
     }
   }

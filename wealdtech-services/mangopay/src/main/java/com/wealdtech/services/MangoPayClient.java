@@ -14,6 +14,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.wealdtech.CreditCard;
 import com.wealdtech.GenericWObject;
+import com.wealdtech.Money;
 import com.wealdtech.config.MangoPayConfiguration;
 import com.wealdtech.mangopay.CardRegistration;
 import com.wealdtech.retrofit.RetrofitHelper;
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Currency;
 
@@ -219,6 +221,13 @@ public class MangoPayClient
     return resultB.build();
   }
 
+  /**
+   * Obtain an active card registration
+   *
+   * @param registrationId the ID of the card registration
+   *
+   * @return the card registration
+   */
   public GenericWObject obtainCardRegistration(final String registrationId)
   {
     return RetrofitHelper.call(
@@ -226,6 +235,15 @@ public class MangoPayClient
                                        registrationId));
   }
 
+  /**
+   * Complete the card registration process
+   *
+   * @param userId the ID of the user completing the registration process
+   * @param registrationId the ID of the card registration
+   * @param data the data returned to the local client after tokenising the credit card details
+   *
+   * @return the ID of the registered card
+   */
   public String completeCardRegistration(final String userId, final String registrationId, final String data)
   {
     // Ensure that this is a valid registration for completion
@@ -243,6 +261,74 @@ public class MangoPayClient
     checkState(cardId.isPresent(), "Failed to obtain card ID");
 
     return cardId.get();
+  }
+
+  public String payIn(final String senderId,
+                      final String senderCardId,
+                      final String recipientId,
+                      final String recipientWalletId,
+                      final Money funds,
+                      final Money fees)
+  {
+    // Ensure that the details of the sender and recipient are correct
+    final GenericWObject sender = RetrofitHelper.call(
+        service.obtainUser(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(), senderId));
+    System.err.println(sender);
+    checkState(sender != null, "Failed to obtain sender information");
+
+    final GenericWObject senderCard = RetrofitHelper.call(
+        service.obtainCard(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                           senderCardId));
+    System.err.println(senderCard);
+    checkState(senderCard != null, "failed to obtain sender credit card details");
+    // TODO further validation of card - active, anything else?
+
+    final GenericWObject recipient = RetrofitHelper.call(
+        service.obtainUser(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(), recipientId));
+    System.err.println(recipient);
+    checkState(recipient != null, "failed to obtain recipient information");
+
+    final GenericWObject recipientWallet = RetrofitHelper.call(
+        service.obtainWallet(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                             recipientWalletId));
+    System.err.println(recipientWallet);
+    checkState(recipientWallet != null, "failed to obtain recipient wallet");
+
+    // Ensure that everything uses the same currency
+    final Currency senderCardCurrency = senderCard.get("Currency", Currency.class).orNull();
+    checkState(senderCardCurrency != null, "Sender credit card has no currency information");
+    final Currency recipientWalletCurrency = recipientWallet.get("Currency", Currency.class).orNull();
+    checkState(recipientWalletCurrency != null, "Recipient wallet has no currency information");
+    checkState(Objects.equal(senderCardCurrency, recipientWalletCurrency),
+               "Sender credit card currency does not match recipient wallet currency");
+    checkState(Objects.equal(senderCardCurrency, funds.getCurrency()), "Sender credit card currency does not match funds currency");
+    checkState(Objects.equal(senderCardCurrency, fees.getCurrency()), "Sender credit card currency does not match fees currency");
+
+    // Create the payin object
+    final GenericWObject.Builder<?> builder = GenericWObject.builder();
+    builder.data("AuthorId", senderId);
+    builder.data("CreditedUserId", recipientId);
+    builder.data("CardId", senderCardId);
+    builder.data("CreditedWalletId", recipientWalletId);
+    final GenericWObject fundsObj = GenericWObject.builder()
+                                                  .data("Currency", funds.getCurrency())
+                                                  .data("Amount", funds.getAmount().multiply(new BigDecimal(100)).toBigIntegerExact().toString())
+                                                  .build();
+    builder.data("DebitedFunds", fundsObj);
+    final GenericWObject feesObj = GenericWObject.builder()
+                                                 .data("Currency", fees.getCurrency())
+                                                 .data("Amount", fees.getAmount().multiply(new BigDecimal(100)).toBigIntegerExact().toString())
+                                                 .build();
+    builder.data("Fees", feesObj);
+    builder.data("SecureModeReturnURL", "http://localhost/");
+    builder.data("SecureMode", "DEFAULT");
+
+    final GenericWObject result = RetrofitHelper.call(
+        service.createDirectPayIn(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
+                                  builder.build()));
+
+    System.err.println(result);
+    return result.get("Id", String.class).orNull();
   }
 
   private static String auth(final String username, final String password)

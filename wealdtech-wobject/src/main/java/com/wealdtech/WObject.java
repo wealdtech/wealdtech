@@ -202,29 +202,32 @@ public class WObject<T extends WObject> implements Comparable<T>
       // This is allowable so we need to handle it here
       if (!(entry.getKey() instanceof String) || !entry.getKey().startsWith("_"))
       {
-        if (entry.getValue() instanceof WObject<?>)
+        if (entry.getValue() != null)
         {
-          resultB.put(entry.getKey(), new WObject(((WObject<?>)entry.getValue()).getData()));
-        }
-        else if (entry.getValue() instanceof Map)
-        {
-          resultB.put(entry.getKey(), strip((Map<String, Object>)entry.getValue()));
-        }
-        else if (entry.getValue() instanceof List)
-        {
-          resultB.put(entry.getKey(), strip((List)entry.getValue()));
-        }
-        else if (entry.getValue() instanceof Set)
-        {
-          resultB.put(entry.getKey(), strip((Set)entry.getValue()));
-        }
-        else if (entry.getValue() instanceof Collection)
-        {
-          resultB.put(entry.getKey(), strip((Collection)entry.getValue()));
-        }
-        else
-        {
-          resultB.put(entry.getKey(), entry.getValue());
+          if (entry.getValue() instanceof WObject<?>)
+          {
+            resultB.put(entry.getKey(), new WObject(((WObject<?>)entry.getValue()).getData()));
+          }
+          else if (entry.getValue() instanceof Map)
+          {
+            resultB.put(entry.getKey(), strip((Map<String, Object>)entry.getValue()));
+          }
+          else if (entry.getValue() instanceof List)
+          {
+            resultB.put(entry.getKey(), strip((List)entry.getValue()));
+          }
+          else if (entry.getValue() instanceof Set)
+          {
+            resultB.put(entry.getKey(), strip((Set)entry.getValue()));
+          }
+          else if (entry.getValue() instanceof Collection)
+          {
+            resultB.put(entry.getKey(), strip((Collection)entry.getValue()));
+          }
+          else
+          {
+            resultB.put(entry.getKey(), entry.getValue());
+          }
         }
       }
     }
@@ -236,29 +239,32 @@ public class WObject<T extends WObject> implements Comparable<T>
     final ImmutableList.Builder<Object> resultB = ImmutableList.builder();
     for (final Object value : collection)
     {
-      if (value instanceof WObject<?>)
+      if (value != null)
       {
-        resultB.add(new WObject(((WObject<?>)value).getData()));
-      }
-      else if (value instanceof Map)
-      {
-        resultB.add(strip((Map<String, Object>)value));
-      }
-      else if (value instanceof List)
-      {
-        resultB.add(strip((List)value));
-      }
-      else if (value instanceof Set)
-      {
-        resultB.add(strip((Set)value));
-      }
-      else if (value instanceof Collection)
-      {
-        resultB.add(strip((Collection)value));
-      }
-      else
-      {
-        resultB.add(value);
+        if (value instanceof WObject<?>)
+        {
+          resultB.add(new WObject(((WObject<?>)value).getData()));
+        }
+        else if (value instanceof Map)
+        {
+          resultB.add(strip((Map<String, Object>)value));
+        }
+        else if (value instanceof List)
+        {
+          resultB.add(strip((List)value));
+        }
+        else if (value instanceof Set)
+        {
+          resultB.add(strip((Set)value));
+        }
+        else if (value instanceof Collection)
+        {
+          resultB.add(strip((Collection)value));
+        }
+        else
+        {
+          resultB.add(value);
+        }
       }
     }
     return resultB.build();

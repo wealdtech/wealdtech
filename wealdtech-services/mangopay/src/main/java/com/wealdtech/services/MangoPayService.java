@@ -27,6 +27,11 @@ public interface MangoPayService
                                   @Path("clientid") final String clientId,
                                   @Body GenericWObject body);
 
+  @GET("{clientid}/users/{userid}")
+  Call<GenericWObject> obtainUser(@Header("Authorization") final String auth,
+                                  @Path("clientid") final String clientId,
+                                  @Path("userid") final String userId);
+
   @POST("{clientid}/wallets")
   Call<GenericWObject> createWallet(@Header("Authorization") final String auth,
                                     @Path("clientid") final String clientId,
@@ -47,4 +52,19 @@ public interface MangoPayService
                                               @Path("clientid") final String clientId,
                                               @Path("registrationid") final String registrationId,
                                               @Body GenericWObject body);
+
+  @GET("{clientid}/wallets/{walletid}")
+  Call<GenericWObject> obtainWallet(@Header("Authorization") final String auth,
+                                    @Path("clientid") final String clientId,
+                                    @Path("walletid") final String walletId);
+
+  @GET("{clientid}/cards/{cardid}")
+  Call<GenericWObject> obtainCard(@Header("Authorization") final String auth,
+                                  @Path("clientid") final String clientId,
+                                  @Path("cardid") final String cardId);
+
+  @POST("{clientid}/payins/card/direct")
+  Call<GenericWObject> createDirectPayIn(@Header("Authorization") final String auth,
+                                         @Path("clientid") final String clientId,
+                                         @Body GenericWObject body);
 }
