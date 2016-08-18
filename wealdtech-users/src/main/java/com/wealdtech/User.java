@@ -150,6 +150,25 @@ public class User extends WObject<User> implements Comparable<User>
     return get(CREDENTIALS, CREDENTIALS_TYPEREF).or(ImmutableSet.<Credentials>of());
   }
 
+  /**
+   * Find credentials that match a given type
+   * @param type the type of credential to obtain
+   * @return a set of matching credentials
+   */
+  @JsonIgnore
+  public ImmutableSet<? extends Credentials> findCredentials(final String type)
+  {
+    final ImmutableSet.Builder<Credentials> builder = ImmutableSet.builder();
+    for (final Credentials credential : getCredentials())
+    {
+      if (Objects.equal(credential.getType(), type))
+      {
+        builder.add(credential);
+      }
+    }
+    return builder.build();
+  }
+
   @JsonIgnore
   public Optional<String> getAvatar(){ return get(AVATAR, String.class); }
 
