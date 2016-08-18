@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import com.wealdtech.CreditCard;
 import com.wealdtech.GenericWObject;
 import com.wealdtech.Money;
+import com.wealdtech.ServerError;
 import com.wealdtech.config.MangoPayConfiguration;
 import com.wealdtech.mangopay.CardRegistration;
 import com.wealdtech.retrofit.RetrofitHelper;
@@ -273,25 +274,25 @@ public class MangoPayClient
     // Ensure that the details of the sender and recipient are correct
     final GenericWObject sender = RetrofitHelper.call(
         service.obtainUser(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(), senderId));
-    System.err.println(sender);
+    LOG.debug("Sender is {}", sender);
     checkState(sender != null, "Failed to obtain sender information");
 
     final GenericWObject senderCard = RetrofitHelper.call(
         service.obtainCard(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
                            senderCardId));
-    System.err.println(senderCard);
+    LOG.debug("Sender card is {}", senderCard);
     checkState(senderCard != null, "failed to obtain sender credit card details");
     // TODO further validation of card - active, anything else?
 
     final GenericWObject recipient = RetrofitHelper.call(
         service.obtainUser(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(), recipientId));
-    System.err.println(recipient);
+    LOG.debug("Recipient is {}", recipient);
     checkState(recipient != null, "failed to obtain recipient information");
 
     final GenericWObject recipientWallet = RetrofitHelper.call(
         service.obtainWallet(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
                              recipientWalletId));
-    System.err.println(recipientWallet);
+    LOG.debug("Recipient wallet is {}", recipientWallet);
     checkState(recipientWallet != null, "failed to obtain recipient wallet");
 
     // Ensure that everything uses the same currency
@@ -327,8 +328,18 @@ public class MangoPayClient
         service.createDirectPayIn(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
                                   builder.build()));
 
-    System.err.println(result);
-    return result.get("Id", String.class).orNull();
+    LOG.debug("Result of payment is {}", result);
+    final Optional<String> resultCode = result.get("ResultCode", String.class);
+    checkState(resultCode.isPresent(), "Problem processing payment");
+    if (!Objects.equal(resultCode.get(), "000000"))
+    {
+      LOG.warn("Problem processing payment");
+      throw new ServerError("Problem processing payment");
+    }
+
+    final Optional<String> id = result.get("Id", String.class);
+    checkState(id.isPresent(), "Problem processing payment");
+    return id.get();
   }
 
   private static String auth(final String username, final String password)
