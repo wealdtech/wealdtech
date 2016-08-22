@@ -12,10 +12,7 @@ package com.wealdtech.services;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.wealdtech.CreditCard;
-import com.wealdtech.GenericWObject;
-import com.wealdtech.Money;
-import com.wealdtech.ServerError;
+import com.wealdtech.*;
 import com.wealdtech.config.MangoPayConfiguration;
 import com.wealdtech.mangopay.CardRegistration;
 import com.wealdtech.retrofit.RetrofitHelper;
@@ -243,9 +240,9 @@ public class MangoPayClient
    * @param registrationId the ID of the card registration
    * @param data the data returned to the local client after tokenising the credit card details
    *
-   * @return the ID of the registered card
+   * @return a two tuple of the name and ID of the registered card
    */
-  public String completeCardRegistration(final String userId, final String registrationId, final String data)
+  public TwoTuple<String, String> completeCardRegistration(final String userId, final String registrationId, final String data)
   {
     // Ensure that this is a valid registration for completion
     final GenericWObject registration = obtainCardRegistration(registrationId);
@@ -257,11 +254,16 @@ public class MangoPayClient
         service.updateCardRegistration(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(),
                                        registrationId, builder.build()));
 
+    LOG.error("Card registration result is {}", response);
+
     checkState(response != null, "Failed to register card");
     final Optional<String> cardId = response.get("CardId", String.class);
     checkState(cardId.isPresent(), "Failed to obtain card ID");
 
-    return cardId.get();
+    final Optional<String> cardName = response.get("CardName", String.class);
+    checkState(cardName.isPresent(), "Failed to obtain card name");
+
+    return new TwoTuple<>(cardName.get(), cardId.get());
   }
 
   public String payIn(final String senderId,
