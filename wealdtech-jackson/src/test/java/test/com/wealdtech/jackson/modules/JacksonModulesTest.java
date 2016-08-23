@@ -26,6 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import static org.testng.Assert.*;
 
@@ -552,4 +553,30 @@ public class JacksonModulesTest
     final YearMonth deser = this.mapper.readValue(value, YearMonth.class);
     assertEquals(deser, new YearMonth(2001, 1));
   }
+
+  @Test
+  public void testSerLocale1() throws Exception
+  {
+    final Locale locale = Locale.UK;
+    final String value = this.mapper.writeValueAsString(locale);
+    assertEquals(value, "\"en-GB\"");
+  }
+
+  @Test
+  public void testDeserLocale1() throws Exception
+  {
+    final String value = "\"en\"";
+    final Locale locale = this.mapper.readValue(value, Locale.class);
+    assertEquals(locale.getLanguage(), "en");
+  }
+
+  @Test
+  public void testDeserLocale2() throws Exception
+  {
+    final String value = "\"en-GB\"";
+    final Locale locale = this.mapper.readValue(value, Locale.class);
+    assertEquals(locale.getLanguage(), "en");
+    assertEquals(locale.getCountry(), "GB");
+  }
 }
+

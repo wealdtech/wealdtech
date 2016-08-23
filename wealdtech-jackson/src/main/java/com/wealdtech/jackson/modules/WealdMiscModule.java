@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import com.google.common.collect.Range;
-import com.wealdtech.jackson.JDoc;
 import com.wealdtech.utils.messaging.MessageObjects;
 
 import java.net.InetSocketAddress;
+import java.util.Locale;
 
 /**
  * Custom serializers and deserializers for miscellaneous types.
@@ -52,11 +52,13 @@ public class WealdMiscModule extends Module
     serializers.addSerializer(new InetSocketAddressSerializer());
     serializers.addSerializer(new MessageObjectsSerializer());
     serializers.addSerializer(new DateTimeRangeSerializer());
+    serializers.addSerializer(new LocaleSerializer());
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
     deserializers.addDeserializer(MessageObjects.class, new MessageObjectsDeserializer());
     deserializers.addDeserializer(Range.class, new DateTimeRangeDeserializer());
+    deserializers.addDeserializer(Locale.class, new LocaleDeserializer());
 
     context.addSerializers(serializers);
     context.addDeserializers(deserializers);

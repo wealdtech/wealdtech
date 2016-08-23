@@ -26,7 +26,7 @@ import java.util.Iterator;
 
 public class DateTimeRangeDeserializer extends JsonDeserializer<Range<DateTime>>
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeDeserializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeRangeDeserializer.class);
 
   private static final String NEGATIVE_INFINITY = "-∞";
   private static final String POSITIVE_INFINITY = "+∞";
