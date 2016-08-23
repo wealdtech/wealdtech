@@ -10,11 +10,11 @@
 
 package com.wealdtech.services;
 
-import retrofit2.Call;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
+import rx.Observable;
 
 import java.util.Map;
 
@@ -22,5 +22,5 @@ public interface MangoPayRegistrationService
 {
   @POST
   @FormUrlEncoded
-  Call<String> registerCard(@Url String url, @FieldMap Map<String,String> data);
+  Observable<String> registerCard(@Url String url, @FieldMap Map<String,String> data);
 }

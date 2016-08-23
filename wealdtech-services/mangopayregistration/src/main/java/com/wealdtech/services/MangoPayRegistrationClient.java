@@ -11,7 +11,8 @@
 package com.wealdtech.services;
 
 import com.wealdtech.retrofit.RetrofitHelper;
-import org.joda.time.LocalDate;
+import org.joda.time.YearMonth;
+import rx.Observable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class MangoPayRegistrationClient
     this.service = RetrofitHelper.createRetrofit(null, MangoPayRegistrationService.class);
   }
 
-  public String register(final String url, final String accessKey, final String preregistrationData, final String cardNumber, final LocalDate cardExpiry, final String cardCsc)
+  public Observable<String> register(final String url, final String accessKey, final String preregistrationData, final String cardNumber, final YearMonth cardExpiry, final String cardCsc)
   {
 
     final Map<String, String> data = new HashMap<>();
@@ -39,6 +40,6 @@ public class MangoPayRegistrationClient
     data.put("cardExpirationDate", cardExpiry.toString("MMYY"));
     data.put("cardCvx", cardCsc);
 
-    return RetrofitHelper.call(this.service.registerCard(url, data));
+    return this.service.registerCard(url, data);
   }
 }
