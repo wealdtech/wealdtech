@@ -13,6 +13,7 @@ dependencies
     compile project(':wealdtech-core')
     compile project(':wealdtech-jackson')
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
 }

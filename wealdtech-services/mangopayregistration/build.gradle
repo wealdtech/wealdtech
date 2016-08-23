@@ -10,6 +10,7 @@ dependencies {
   // Retrofit for accessing the remote service
   compile project(':wealdtech-retrofit')
 
+
   compile 'com.google.inject:guice:4.0'
 }
 

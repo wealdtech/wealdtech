@@ -10,8 +10,9 @@
 
 package com.wealdtech.services;
 
-import com.wealdtech.retrofit.RetrofitHelper;
 import org.joda.time.YearMonth;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
 
 import java.util.HashMap;
@@ -23,11 +24,31 @@ import java.util.Map;
  */
 public class MangoPayRegistrationClient
 {
+  private static volatile MangoPayRegistrationClient instance = null;
+
   private final MangoPayRegistrationService service;
 
-  public MangoPayRegistrationClient()
+  public static MangoPayRegistrationClient getInstance()
   {
-    this.service = RetrofitHelper.createRetrofit(null, MangoPayRegistrationService.class);
+    if (instance == null)
+    {
+      synchronized (MangoPayRegistrationClient.class)
+      {
+        if (instance == null)
+        {
+          instance = new MangoPayRegistrationClient();
+        }
+      }
+    }
+    return instance;
+  }
+
+  private MangoPayRegistrationClient()
+  {
+    this.service = new Retrofit.Builder().addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                                       .baseUrl("http://www.wealdtech.com/")
+                                       .build()
+                                       .create(MangoPayRegistrationService.class);
   }
 
   public Observable<String> register(final String url, final String accessKey, final String preregistrationData, final String cardNumber, final YearMonth cardExpiry, final String cardCsc)
