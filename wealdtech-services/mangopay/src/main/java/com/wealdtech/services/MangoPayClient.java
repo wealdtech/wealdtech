@@ -234,15 +234,26 @@ public class MangoPayClient
   }
 
   /**
+   * Obtain a card
+   * @param cardId the ID of the card t obtain
+   * @return the card
+   */
+  public GenericWObject obtainCard(final String cardId)
+  {
+    return RetrofitHelper.call(
+        service.obtainCard(auth(configuration.getClientId(), configuration.getSecret()), configuration.getClientId(), cardId));
+  }
+
+  /**
    * Complete the card registration process
    *
    * @param userId the ID of the user completing the registration process
    * @param registrationId the ID of the card registration
    * @param data the data returned to the local client after tokenising the credit card details
    *
-   * @return a two tuple of the name and ID of the registered card
+   * @return the ID of the registered card
    */
-  public TwoTuple<String, String> completeCardRegistration(final String userId, final String registrationId, final String data)
+  public String completeCardRegistration(final String userId, final String registrationId, final String data)
   {
     // Ensure that this is a valid registration for completion
     final GenericWObject registration = obtainCardRegistration(registrationId);
@@ -260,10 +271,7 @@ public class MangoPayClient
     final Optional<String> cardId = response.get("CardId", String.class);
     checkState(cardId.isPresent(), "Failed to obtain card ID");
 
-    final Optional<String> cardName = response.get("CardName", String.class);
-    checkState(cardName.isPresent(), "Failed to obtain card name");
-
-    return new TwoTuple<>(cardName.get(), cardId.get());
+    return cardId.get();
   }
 
   public String payIn(final String senderId,
