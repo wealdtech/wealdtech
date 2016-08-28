@@ -605,5 +605,19 @@ public class JacksonModulesTest
     assertEquals(deser, map);
   }
 
+  @Test
+  public void testDeserIntervalMultimapDuplicateKeys() throws Exception
+  {
+    final String value = "{\"[8‥12)\":[\"bar\"],\"[15‥20)\":[\"baz\"],\"[1‥10)\":[\"foo\"],\"[1‥10)\":[\"bletch\"]}";
+    final IntervalMultimap<Integer, String> deser = mapper.readValue(value, new TypeReference<IntervalMultimap<Integer, String>>(){});
+
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+    map.put(Range.closedOpen(1, 10), "foo");
+    map.put(Range.closedOpen(8, 12), "bar");
+    map.put(Range.closedOpen(15, 20), "baz");
+    map.put(Range.closedOpen(1, 10), "bletch");
+
+    assertEquals(deser, map);
+  }
 }
 
