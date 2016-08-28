@@ -11,7 +11,7 @@
 package com.wealdtech.nlg.idialects;
 
 /**
- * An idialect is a list of phrases that can be used given a number of parameters.  It is a probablistic system based on a number
+ * An idialect is a list of phrases that can be used given a number of parameters.  It is a probabilistic system based on a number
  * of construction parameters
  */
 public interface Idialect

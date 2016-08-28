@@ -12,30 +12,101 @@ package com.wealdtech.jackson.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 
 public class RangeSerializer extends StdSerializer<Range<?>>
 {
-  public RangeSerializer()
+  public RangeSerializer(final JavaType valueType)
   {
-    super(Range.class, true);
+    super(valueType);
   }
+
+  private static final String NEGATIVE_INFINITY = "-∞";
+  private static final String POSITIVE_INFINITY = "+∞";
 
   @Override
   public void serialize(final Range<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException
   {
-    gen.writeString(value.toString());
+    final Class<?> cls;
+    if (value.hasLowerBound())
+    {
+      cls = value.lowerEndpoint().getClass();
+    }
+    else if (value.hasUpperBound())
+    {
+      cls = value.upperEndpoint().getClass();
+    }
+    else
+    {
+      cls = Object.class;
+    }
+
+    if (DateTime.class.isAssignableFrom(cls))
+    {
+      new DateTimeRangeSerializer().serialize((Range<DateTime>)value, gen, provider);
+    }
+    else
+    {
+
+      if (value != null)
+      {
+        gen.writeRaw('"');
+        if (value.hasLowerBound())
+        {
+          if (value.lowerBoundType().equals(BoundType.CLOSED))
+          {
+            gen.writeRaw('[');
+          }
+          else
+          {
+            gen.writeRaw('(');
+          }
+          provider.findTypedValueSerializer(value.lowerEndpoint().getClass(), true, null)
+                  .serialize(value.lowerEndpoint(), gen, provider);
+          //        provider.defaultSerializeValue(value.lowerEndpoint(), gen);
+        }
+        else
+        {
+          gen.writeRaw('(');
+          gen.writeRaw(NEGATIVE_INFINITY);
+        }
+        gen.writeRaw(',');
+
+        if (value.hasUpperBound())
+        {
+          provider.defaultSerializeValue(value.upperEndpoint(), gen);
+          if (value.upperBoundType().equals(BoundType.CLOSED))
+          {
+            gen.writeRaw(']');
+          }
+          else
+          {
+            gen.writeRaw(')');
+          }
+        }
+        else
+        {
+          gen.writeRaw(POSITIVE_INFINITY);
+          gen.writeRaw(')');
+        }
+        gen.writeRaw('"');
+      }
+    }
   }
 
   @Override
-  public void serializeWithType(final Range<?> value, JsonGenerator jgen, SerializerProvider provider,
-                                TypeSerializer typeSer)
-      throws IOException, JsonProcessingException
+  public void serializeWithType(final Range<?> value,
+                                JsonGenerator jgen,
+                                SerializerProvider provider,
+                                TypeSerializer typeSer) throws IOException, JsonProcessingException
   {
     typeSer.writeTypePrefixForScalar(value, jgen, Range.class);
     serialize(value, jgen, provider);

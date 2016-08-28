@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
+import com.wealdtech.collect.IntervalMultimap;
 import com.wealdtech.jackson.ObjectMapperFactory;
 import com.wealdtech.utils.WealdInterval;
 import org.joda.time.*;
@@ -508,7 +509,7 @@ public class JacksonModulesTest
     final Range<DateTime> range = Range.closedOpen(fromDt, toDt);
 
     final Range<DateTime> deser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false).readValue(value, new TypeReference<Range<DateTime>>(){});
-    assertEquals(range, deser);
+    assertEquals(deser, range);
   }
 
   @Test
@@ -535,7 +536,7 @@ public class JacksonModulesTest
     final Range<DateTime> range = Range.closedOpen(fromDt, toDt);
 
     final Range<DateTime> deser = this.mapper.copy().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true).readValue(value, new TypeReference<Range<DateTime>>(){});
-    assertEquals(range, deser);
+    assertEquals(deser, range);
   }
 
   @Test
@@ -578,5 +579,31 @@ public class JacksonModulesTest
     assertEquals(locale.getLanguage(), "en");
     assertEquals(locale.getCountry(), "GB");
   }
+
+  @Test
+  public void testSerIntervalMultimap() throws Exception
+  {
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+    map.put(Range.closedOpen(1, 10), "foo");
+    map.put(Range.closedOpen(8, 12), "bar");
+    map.put(Range.closedOpen(15, 20), "baz");
+    final String value = this.mapper.writeValueAsString(map);
+    assertEquals(value, "{\"[8‥12)\":[\"bar\"],\"[15‥20)\":[\"baz\"],\"[1‥10)\":[\"foo\"]}");
+  }
+
+  @Test
+  public void testDeserIntervalMultimap() throws Exception
+  {
+    final String value = "{\"[8‥12)\":[\"bar\"],\"[15‥20)\":[\"baz\"],\"[1‥10)\":[\"foo\"]}";
+    final IntervalMultimap<Integer, String> deser = mapper.readValue(value, new TypeReference<IntervalMultimap<Integer, String>>(){});
+
+    final IntervalMultimap<Integer, String> map = new IntervalMultimap<>();
+    map.put(Range.closedOpen(1, 10), "foo");
+    map.put(Range.closedOpen(8, 12), "bar");
+    map.put(Range.closedOpen(15, 20), "baz");
+
+    assertEquals(deser, map);
+  }
+
 }
 

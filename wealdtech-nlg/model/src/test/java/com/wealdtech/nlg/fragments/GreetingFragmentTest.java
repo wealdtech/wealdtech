@@ -10,11 +10,10 @@
 
 package com.wealdtech.nlg.fragments;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Range;
 import com.google.common.net.MediaType;
 import com.wealdtech.WID;
-import com.wealdtech.collect.IntervalMultimap;
 import com.wealdtech.nlg.FormatType;
 import com.wealdtech.nlg.GenerationModel;
 import com.wealdtech.nlg.GenerationParameters;
@@ -40,16 +39,23 @@ public class GreetingFragmentTest
 
     final ImmutableMultimap<String, String> args = ImmutableMultimap.of("first name", "John");
 
-    final IntervalMultimap<Integer, String> selections = new IntervalMultimap<>();
-    selections.put(Range.closedOpen(0, 50), "Dear {first name}");
-    selections.put(Range.closedOpen(40, 70), "Hi {first name}");
-    selections.put(Range.closedOpen(60, 90), "Hi");
-    selections.put(Range.closedOpen(90, 100), "Hey");
+//    final Phrase phrase = Phrase.builder().selection(selection).build();
+//    final Structure structure = Structure.builder().phrase(selection).build();
+//    final ImmutableSet<Selection> greetingSelections = ImmutableSet.of(selection);
+//    final IntervalMultimap<Integer, String> selections = new IntervalMultimap<>();
+//    selections.put(Range.closedOpen(0, 50), "Dear {first name}");
+//    selections.put(Range.closedOpen(40, 70), "Hi {first name}");
+//    selections.put(Range.closedOpen(60, 90), "Hi");
+//    selections.put(Range.closedOpen(90, 100), "Hey");
 
+//    final GenerationModel model =
+//        GenerationModel.builder().id(WID.<GenerationModel>generate()).name("Test model").selections(selections).build();
+//    final GreetingFragment fragment = new GreetingFragment();
+//    final String generated = fragment.generate(params, args);
     final GenerationModel model =
-        GenerationModel.builder().id(WID.<GenerationModel>generate()).name("Test model").selections(selections).build();
-    final GreetingFragment fragment = new GreetingFragment(model);
-    final String generated = fragment.generate(params, args);
+        GenerationModel.builder().id(WID.<GenerationModel>generate()).name("Test model").fragments(
+            ImmutableList.<Fragment>of(GreetingFragment.builder().build())).build();
+    final String generated = model.generate(params, args);
     assertEquals(generated, "Hi John");
   }
 }

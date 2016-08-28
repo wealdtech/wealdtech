@@ -15,5 +15,6 @@ package com.wealdtech.nlg.services;
  */
 public interface NlgService
 {
+
   String generate();
 }

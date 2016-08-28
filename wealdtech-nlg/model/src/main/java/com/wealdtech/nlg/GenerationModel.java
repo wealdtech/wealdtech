@@ -13,9 +13,11 @@ package com.wealdtech.nlg;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
 import com.wealdtech.WID;
 import com.wealdtech.WObject;
-import com.wealdtech.collect.IntervalMultimap;
+import com.wealdtech.nlg.fragments.Fragment;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -23,12 +25,13 @@ import java.util.Map;
 import static com.wealdtech.Preconditions.checkState;
 
 /**
- * A model of text for generation
+ * A model of text for generation.
+ * The model contains a list of fragments.  When generating the text each fragment will be handled in turn.
  */
 public class GenerationModel extends WObject<GenerationModel> implements Comparable<GenerationModel>
 {
   private static final String NAME = "name";
-  private static final String SELECTIONS = "selections";
+  private static final String FRAGMENTS = "fragments";
 
   @JsonCreator
   public GenerationModel(final Map<String, Object> data){super(data);}
@@ -39,7 +42,7 @@ public class GenerationModel extends WObject<GenerationModel> implements Compara
     super.validate();
     checkState(exists(ID), "Generation model failed validation: missing ID");
     checkState(exists(NAME), "Generation model failed validation: missing name");
-    checkState(exists(SELECTIONS), "Generation model failed validation: missing selections");
+    checkState(exists(FRAGMENTS), "Generation model failed validation: missing fragments");
   }
 
   // We override getId() to make it non-null as we confirm ID's existence in validate()
@@ -51,10 +54,25 @@ public class GenerationModel extends WObject<GenerationModel> implements Compara
   @JsonIgnore
   public String getName(){ return get(NAME, String.class).get(); }
 
-  private static final TypeReference<IntervalMultimap<Integer, String>> SELECTIONS_TYPE_REF = new TypeReference<IntervalMultimap<Integer, String>>(){};
+  private static final TypeReference<ImmutableList<Fragment>> FRAGMENTS_TYPE_REF = new TypeReference<ImmutableList<Fragment>>(){};
   @JsonIgnore
-  public IntervalMultimap<Integer, String> getSelections(){ return get(SELECTIONS, SELECTIONS_TYPE_REF).get(); }
+  public ImmutableList<Fragment> getFragments(){ return get(FRAGMENTS, FRAGMENTS_TYPE_REF).get(); }
 
+  /**
+   * Generate the text from the model
+   * @param params
+   * @param args
+   * @return
+   */
+  public String generate(final GenerationParameters params, final ImmutableMultimap<String, String> args)
+  {
+    final StringBuilder sb = new StringBuilder();
+    for (final Fragment fragment : getFragments())
+    {
+      sb.append(fragment.generate(params, args));
+    }
+    return sb.toString();
+  }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<GenerationModel, P>
   {
@@ -74,9 +92,9 @@ public class GenerationModel extends WObject<GenerationModel> implements Compara
       return self();
     }
 
-    public P selections(final IntervalMultimap<Integer, String> selections)
+    public P fragments(final ImmutableList<Fragment> fragments)
     {
-      data(SELECTIONS, selections);
+      data(FRAGMENTS, fragments);
       return self();
     }
 

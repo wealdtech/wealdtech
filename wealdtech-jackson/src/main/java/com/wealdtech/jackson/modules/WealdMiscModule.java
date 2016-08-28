@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
-import com.google.common.collect.Range;
 import com.wealdtech.utils.messaging.MessageObjects;
 
 import java.net.InetSocketAddress;
@@ -51,16 +50,20 @@ public class WealdMiscModule extends Module
     final SimpleSerializers serializers = new SimpleSerializers();
     serializers.addSerializer(new InetSocketAddressSerializer());
     serializers.addSerializer(new MessageObjectsSerializer());
-    serializers.addSerializer(new DateTimeRangeSerializer());
     serializers.addSerializer(new LocaleSerializer());
+    context.addSerializers(serializers);
 
     final SimpleDeserializers deserializers = new SimpleDeserializers();
     deserializers.addDeserializer(InetSocketAddress.class, new InetSocketAddressDeserializer());
     deserializers.addDeserializer(MessageObjects.class, new MessageObjectsDeserializer());
-    deserializers.addDeserializer(Range.class, new DateTimeRangeDeserializer());
     deserializers.addDeserializer(Locale.class, new LocaleDeserializer());
-
-    context.addSerializers(serializers);
+    context.addDeserializers(new TriValDeserializers());
     context.addDeserializers(deserializers);
+
+    context.addSerializers(new RangeSerializers());
+    context.addDeserializers(new RangeDeserializers());
+    context.addKeyDeserializers(new RangeKeyDeserializers());
+
+    context.addDeserializers(new IntervalMultimapDeserializers());
   }
 }

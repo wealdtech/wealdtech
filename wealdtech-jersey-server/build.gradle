@@ -30,7 +30,7 @@ dependencies
     compile 'com.google.inject.extensions:guice-servlet:4.0'
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'javax.ws.rs:jsr311-api:1.1.1'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.7.4'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.1'
 
     // Jetty
     compile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'

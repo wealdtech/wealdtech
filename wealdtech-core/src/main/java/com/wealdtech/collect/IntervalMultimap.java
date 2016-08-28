@@ -11,10 +11,13 @@
 package com.wealdtech.collect;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.*;
+import com.google.common.base.Objects;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 
 import javax.annotation.Nullable;
-
 import java.util.*;
 
 import static com.wealdtech.Preconditions.checkNotNull;
@@ -29,10 +32,13 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
   private TreeMap<T, IntervalMapEvents<U>> entries;
   private int size;
 
+  private Map<Range<T>, Collection<U>> rawMap;
+
   public IntervalMultimap()
   {
     entries = new TreeMap<>();
     size = 0;
+    rawMap = new HashMap<>();
   }
 
   @Override
@@ -65,10 +71,8 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
     throw new UnsupportedOperationException("Not implemented");
   }
 
-  public String dump()
-  {
-    return entries.toString();
-  }
+  @Override
+  public String toString() { return rawMap.toString(); }
 
   @Override
   public boolean put(@Nullable final Range<T> key, @Nullable final U value)
@@ -132,6 +136,16 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
     }
 
     size++;
+
+    // Also add to our raw map
+    Collection<U> values = rawMap.get(key);
+    if (values == null)
+    {
+      values = new ArrayList<>();
+    }
+    values.add(value);
+    rawMap.put(key, values);
+
     return true;
   }
 
@@ -250,7 +264,7 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
   @Override
   public Map<Range<T>, Collection<U>> asMap()
   {
-    throw new UnsupportedOperationException("Cannot obtain map");
+    return rawMap;
   }
 
   private static class IntervalMapEvents<U>
@@ -273,4 +287,18 @@ public class IntervalMultimap<T extends Comparable, U> implements Multimap<Range
     }
   }
 
+  @Override
+  public boolean equals(final Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    final IntervalMultimap<?, ?> that = (IntervalMultimap<?, ?>)o;
+    return entries.toString().equals(that.entries.toString());
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hashCode(entries);
+  }
 }

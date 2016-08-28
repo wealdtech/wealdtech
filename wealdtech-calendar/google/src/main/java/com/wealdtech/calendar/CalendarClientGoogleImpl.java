@@ -238,7 +238,6 @@ public class CalendarClientGoogleImpl implements CalendarClient
 
       fbMap.put(Range.closedOpen(start, end), 1);
     }
-    System.err.println(fbMap.dump());
 
     return null;
   }
