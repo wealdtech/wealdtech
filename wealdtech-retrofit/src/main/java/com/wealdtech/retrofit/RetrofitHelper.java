@@ -14,6 +14,7 @@ import com.wealdtech.ClientError;
 import com.wealdtech.DataError;
 import com.wealdtech.jackson.WealdMapper;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Call;
@@ -21,7 +22,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -39,12 +39,15 @@ public class RetrofitHelper
    */
   public static <T> T createRetrofit(final String baseUri, final Class<T> service)
   {
-    return new Retrofit.Builder().addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                                 .addConverterFactory(ScalarsConverterFactory.create())
-                                 .addConverterFactory(JacksonConverterFactory.create(WealdMapper.getMapper()))
-                                 .baseUrl(baseUri)
-                                 .build()
-                                 .create(service);
+    final OkHttpClient.Builder builder = new OkHttpClient.Builder();
+    // TODO manage via configuration or argument
+    if (true)
+    {
+      final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      builder.interceptors().add(loggingInterceptor);
+    }
+    return createRetrofit(baseUri, service, builder.build());
   }
 
   /**

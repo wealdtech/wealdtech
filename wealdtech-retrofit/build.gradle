@@ -16,6 +16,8 @@ dependencies
     compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
+    // Log Retrofit requests
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
 }
 
 uploadArchives {
