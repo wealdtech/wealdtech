@@ -22,6 +22,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -61,6 +62,7 @@ public class RetrofitHelper
   public static <T> T createRetrofit(final String baseUri, final Class<T> service, OkHttpClient client)
   {
     return new Retrofit.Builder().addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                                 .addConverterFactory(ScalarsConverterFactory.create())
                                  .addConverterFactory(JacksonConverterFactory.create(WealdMapper.getMapper()))
                                  .baseUrl(baseUri)
                                  .client(client)
