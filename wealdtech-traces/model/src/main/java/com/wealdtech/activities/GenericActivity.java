@@ -21,27 +21,8 @@ import java.util.Map;
 @JsonTypeName("generic")
 public class GenericActivity extends Activity<GenericActivity> implements Comparable<GenericActivity>
 {
-  private static final String _TYPE = "generic";
-
   @JsonCreator
   public GenericActivity(final Map<String, Object> data){ super(data); }
-
-  @Override
-  protected Map<String, Object> preCreate(Map<String, Object> data)
-  {
-    data = super.preCreate(data);
-
-    // Set our defining types
-    data.put(TYPE, _TYPE);
-
-    return data;
-  }
-
-  @Override
-  protected void validate()
-  {
-    super.validate();
-  }
 
   public static class Builder<P extends Builder<P>> extends Activity.Builder<GenericActivity, P>
   {

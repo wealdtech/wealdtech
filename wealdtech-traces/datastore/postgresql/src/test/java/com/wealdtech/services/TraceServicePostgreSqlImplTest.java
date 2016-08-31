@@ -20,7 +20,6 @@ import com.wealdtech.activities.Activity;
 import com.wealdtech.activities.GenericActivity;
 import com.wealdtech.activities.MealActivity;
 import com.wealdtech.contexts.Context;
-import com.wealdtech.contexts.GenericContext;
 import com.wealdtech.contexts.LocationContext;
 import com.wealdtech.contexts.NamedEntityContext;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
@@ -84,7 +83,7 @@ public class TraceServicePostgreSqlImplTest
     }
 
     {
-      final GenericActivity meetingActivity = GenericActivity.builder().data("meetingtype", "In person").build();
+      final GenericActivity meetingActivity = GenericActivity.builder().type("meeting").data("meetingtype", "In person").build();
       final NamedEntityContext mikeContext =
           NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
       final LocationContext officeContext =
@@ -100,7 +99,7 @@ public class TraceServicePostgreSqlImplTest
 
     {
       final GenericActivity scanActivity =
-          GenericActivity.builder().data("scantype", "Star").data("class", "G").data("name", "Sol").build();
+          GenericActivity.builder().type("scan").data("scantype", "Star").data("class", "G").data("name", "Sol").build();
       final NamedEntityContext cmdrContext =
           NamedEntityContext.builder().name("McDonald").gender(NamedEntityContext.Gender.MALE).build();
       final LocationContext systemContext = LocationContext.builder().name("Sol").locationType(LocationContext.Type.OTHER).build();
@@ -179,7 +178,7 @@ public class TraceServicePostgreSqlImplTest
   @Test
   public void testObtainByMinimalContext()
   {
-    final GenericContext context = GenericContext.builder().data("name", "Sol").build();
+    final LocationContext context = LocationContext.builder().name("Sol").build();
     final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(),
                                                               Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
                                                                                new LocalDateTime(2020, 1, 14, 0, 0, 0)));
@@ -190,7 +189,7 @@ public class TraceServicePostgreSqlImplTest
   @Test
   public void testObtainByMinimalActivity()
   {
-    final GenericActivity activity = GenericActivity.builder().data("class", "g").build();
+    final GenericActivity activity = GenericActivity.builder().type("scan").data("class", "g").build();
     final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(), ImmutableSet.<Activity>of(activity),
                                                               Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
                                                                                new LocalDateTime(2020, 1, 14, 0, 0, 0)));

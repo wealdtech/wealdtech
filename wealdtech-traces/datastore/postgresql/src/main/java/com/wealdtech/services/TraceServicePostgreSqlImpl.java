@@ -69,15 +69,13 @@ public class TraceServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Tra
       final PreparedStatement stmt4 = conn.prepareStatement("CREATE INDEX i_trace_ctsv ON t_trace USING gin(ctsv)");
       stmt4.execute();
       final PreparedStatement stmt5 = conn.prepareStatement(
-          "CREATE FUNCTION t_trace_trigger1() RETURNS trigger AS $$\n" +
-          "BEGIN\n" +
+          "CREATE FUNCTION t_trace_trigger1() RETURNS trigger AS $$\n" + "BEGIN\n" +
           "  new.atsv := to_tsvector('english', (SELECT string_agg(item.value, ' ')\n" +
-          "                                      FROM jsonb_each_text((new.d->'activity')::JSONB - 'type') item));\n" +
+          "                                      FROM jsonb_each_text(new.d->'activity') item));\n" +
           "  new.ctsv := to_tsvector('english', (SELECT string_agg(item.value, ' ')\n" +
           "                                      FROM jsonb_array_elements(new.d->'contexts') element," +
-          "                                           jsonb_each_text(element - 'type') item));\n" +
-          "  return new;\n" +
-          "END\n" +
+          "                                           jsonb_each_text(element) item));\n" +
+          "  return new;\n" + "END\n" +
           "$$ LANGUAGE plpgsql;");
       stmt5.execute();
       final PreparedStatement stmt6 = conn.prepareStatement(
@@ -241,19 +239,26 @@ public class TraceServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Tra
       public void setConditionValues(final PreparedStatement stmt)
       {
         int index = 1;
-        
+
         if (activities != null && !activities.isEmpty())
         {
           final List<String> activitiesValues = Lists.newArrayList();
           for (final Activity activity : activities)
           {
             final List<String> activityValues = Lists.newArrayList();
+            String type = null;
             for (final Map.Entry<String, Object> entry : ((Map<String, Object>)activity.getData()).entrySet())
             {
-              if (Objects.equal(entry.getKey(), "type")) { continue; }
-              activityValues.add(entry.getValue().toString());
+              if (Objects.equal(entry.getKey(), "type"))
+              {
+                type = entry.getValue().toString();
+              }
+              else
+              {
+                activityValues.add(entry.getValue().toString());
+              }
             }
-            activitiesValues.add("(" + Joiner.on(" | ").join(activityValues) + ")");
+            activitiesValues.add("(" + type + " & (" + Joiner.on(" | ").join(activityValues) + "))");
           }
           setString(stmt, index++, Joiner.on(" & ").join(activitiesValues));
         }
@@ -263,12 +268,17 @@ public class TraceServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Tra
           for (final Context context : contexts)
           {
             final List<String> contextValues = Lists.newArrayList();
+            String type = null;
             for (final Map.Entry<String, Object> entry : ((Map<String, Object>)context.getData()).entrySet())
             {
-              if (Objects.equal(entry.getKey(), "type")) { continue; }
-              contextValues.add(entry.getValue().toString());
+              if (Objects.equal(entry.getKey(), "type")) {
+                type = entry.getValue().toString(); }
+                else
+              {
+                contextValues.add(entry.getValue().toString());
+              }
             }
-            contextsValues.add("(" + Joiner.on(" | ").join(contextValues) + ")");
+            contextsValues.add("(" + type + " & (" + Joiner.on(" | ").join(contextValues) + "))");
           }
           setString(stmt, index++, Joiner.on(" & ").join(contextsValues));
         }
