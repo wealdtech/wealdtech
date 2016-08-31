@@ -12,19 +12,25 @@ package com.wealdtech;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.wealdtech.activities.Activity;
+import com.wealdtech.contexts.Context;
 import org.joda.time.LocalDateTime;
 
 import java.util.Map;
+
+import static com.wealdtech.Preconditions.checkState;
+import static sun.security.x509.X509CertInfo.SUBJECT;
 
 /**
  * A trace is a combination of subject and timeframe
  */
 public class Trace extends WObject<Trace> implements Comparable<Trace>
 {
-  private static final String TYPE = "type";
-  private static final String SUBJECT = "subject";
-  private static final String REFERENCE = "reference";
+  private static final String CONTEXTS = "contexts";
+  private static final String ACTIVITIES = "activities";
   private static final String TIMESTAMP = "timestamp";
 
   @JsonCreator
@@ -33,23 +39,27 @@ public class Trace extends WObject<Trace> implements Comparable<Trace>
     super(data);
   }
 
-  @JsonIgnore
-  public Optional<String> getType() { return get(TYPE, String.class); }
+  private static final TypeReference<ImmutableSet<Activity>> ACTIVITIES_TYPE_REF = new TypeReference<ImmutableSet<Activity>>() {};
 
   @JsonIgnore
-  public Optional<String> getSubject() { return get(SUBJECT, String.class); }
+  public ImmutableSet<Activity> getActivities(){ return get(ACTIVITIES, ACTIVITIES_TYPE_REF).or(ImmutableSet.<Activity>of()); }
 
   @JsonIgnore
-  public Optional<String> getReference() { return get(REFERENCE, String.class); }
+  public Optional<String> getSubject(){ return get(SUBJECT, String.class); }
+
+  private static final TypeReference<ImmutableSet<Context>> CONTEXTS_TYPE_REF = new TypeReference<ImmutableSet<Context>>() {};
 
   @JsonIgnore
-  public LocalDateTime getTimestamp() { return get(TIMESTAMP, LocalDateTime.class).get(); }
+  public ImmutableSet<Context> getContexts(){ return get(CONTEXTS, CONTEXTS_TYPE_REF).or(ImmutableSet.<Context>of()); }
+
+  @JsonIgnore
+  public LocalDateTime getTimestamp(){ return get(TIMESTAMP, LocalDateTime.class).get(); }
 
   @Override
   protected void validate()
   {
     super.validate();
-    if (!exists(TIMESTAMP)) { throw new DataError.Missing("Trace needs 'timestamp' information"); }
+    checkState(exists(TIMESTAMP), "Trace failed validation: missing timestamp");
   }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Trace, P>
@@ -64,9 +74,9 @@ public class Trace extends WObject<Trace> implements Comparable<Trace>
       super(prior);
     }
 
-    public P type(final String type)
+    public P activities(final ImmutableSet<Activity> activities)
     {
-      data(TYPE, type);
+      data(ACTIVITIES, activities);
       return self();
     }
 
@@ -76,9 +86,9 @@ public class Trace extends WObject<Trace> implements Comparable<Trace>
       return self();
     }
 
-    public P reference(final String reference)
+    public P contexts(final ImmutableSet<Context> contexts)
     {
-      data(REFERENCE, reference);
+      data(CONTEXTS, contexts);
       return self();
     }
 

@@ -38,13 +38,13 @@ public class WObjectServicePostgreSqlImpl<T extends WObject<?>> implements WObje
 {
   private static final Logger LOG = LoggerFactory.getLogger(WObjectServicePostgreSqlImpl.class);
 
-  private final PostgreSqlRepository repository;
+  protected final PostgreSqlRepository repository;
 
   private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS t_TABLENAME(d JSONB NOT NULL)";
 
   private static final String DESTROY_TABLE_SQL = "DROP TABLE IF EXISTS t_TABLENAME";
 
-  private static final String ADD_SQL = "INSERT INTO t_TABLENAME VALUES(?)";
+  private static final String ADD_SQL = "INSERT INTO t_TABLENAME(d) VALUES(?)";
 
   private static final String REMOVE_SQL = "DELETE FROM t_TABLENAME";
 

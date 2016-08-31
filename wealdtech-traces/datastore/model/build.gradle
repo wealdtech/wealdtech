@@ -8,24 +8,18 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.wealdtech.services;
+dependencies {
+  compile project(':wealdtech-traces:wealdtech-traces-model')
+  compile project(':wealdtech-wobject:datastore:wealdtech-wobject-datastore-model')
+}
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
-import com.wealdtech.Trace;
-import com.wealdtech.WID;
-import org.joda.time.LocalDateTime;
-
-/**
- *
- */
-public interface TraceService
-{
-  void create(Trace trace);
-
-  void remove(Trace trace);
-
-  Trace obtain(WID<Trace> traceId);
-
-  ImmutableList<Trace> obtain(Range<LocalDateTime> timeframe);
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Traces'
+                description 'Weald Technology traces datastore model'
+            }
+        }
+    }
 }

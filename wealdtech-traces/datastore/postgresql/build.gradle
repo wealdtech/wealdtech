@@ -10,6 +10,7 @@
 
 dependencies {
     compile project(':wealdtech-traces:wealdtech-traces-model')
+    compile project(':wealdtech-traces:datastore:wealdtech-traces-datastore-model')
     compile project(':wealdtech-wobject:datastore:wealdtech-wobject-datastore-postgresql')
 }
 

@@ -12,9 +12,16 @@ package com.wealdtech.services;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.wealdtech.Trace;
 import com.wealdtech.WID;
+import com.wealdtech.activities.Activity;
+import com.wealdtech.activities.GenericActivity;
+import com.wealdtech.activities.MealActivity;
+import com.wealdtech.contexts.Context;
+import com.wealdtech.contexts.LocationContext;
+import com.wealdtech.contexts.NamedEntityContext;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
 import com.wealdtech.jackson.WealdMapper;
 import com.wealdtech.repositories.PostgreSqlRepository;
@@ -32,15 +39,63 @@ public class TraceServicePostgreSqlImplTest
 {
   private TraceServicePostgreSqlImpl traceService;
 
+  private Trace mealTrace1, mealTrace2, meetingTrace1;
+
   @BeforeClass
   public void setUp()
   {
     final PostgreSqlRepository repository =
         new PostgreSqlRepository(new PostgreSqlConfiguration("localhost", 5432, "test", "test", "test", null, null, null));
 
-    traceService = new TraceServicePostgreSqlImpl(repository, WealdMapper.getServerMapper().copy().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
+    traceService = new TraceServicePostgreSqlImpl(repository, WealdMapper.getServerMapper()
+                                                                         .copy()
+                                                                         .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     traceService.createDatastore();
 
+    {
+      final MealActivity dinnerActivity = MealActivity.builder().mealType(MealActivity.MealType.DINNER).build();
+      final NamedEntityContext mikeContext =
+          NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
+      final LocationContext restaurantContext =
+          LocationContext.builder().name("Eleven Madison Park").locationType(LocationContext.Type.RESTAURANT).build();
+      mealTrace1 = Trace.builder()
+                        .id(WID.<Trace>generate())
+                        .contexts(ImmutableSet.<Context>of(mikeContext, restaurantContext))
+                        .activities(ImmutableSet.<Activity>of(dinnerActivity))
+                        .timestamp(new LocalDateTime(2020, 1, 1, 19, 0, 0))
+                        .build();
+      traceService.add(mealTrace1);
+    }
+
+    {
+      final MealActivity dinnerActivity = MealActivity.builder().mealType(MealActivity.MealType.DINNER).build();
+      final NamedEntityContext janeContext =
+          NamedEntityContext.builder().name("Jane").gender(NamedEntityContext.Gender.FEMALE).build();
+      final LocationContext restaurantContext =
+          LocationContext.builder().name("Eleven Madison Park").locationType(LocationContext.Type.RESTAURANT).build();
+      mealTrace2 = Trace.builder()
+                        .id(WID.<Trace>generate())
+                        .contexts(ImmutableSet.<Context>of(janeContext, restaurantContext))
+                        .activities(ImmutableSet.<Activity>of(dinnerActivity))
+                        .timestamp(new LocalDateTime(2020, 1, 2, 19, 0, 0))
+                        .build();
+      traceService.add(mealTrace2);
+    }
+
+    {
+      final GenericActivity meetingActivity = GenericActivity.builder().data("meetingtype", "In person").build();
+      final NamedEntityContext mikeContext =
+          NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
+      final LocationContext officeContext =
+          LocationContext.builder().name("Cognis HQ").locationType(LocationContext.Type.WORKPLACE).build();
+      meetingTrace1 = Trace.builder()
+                           .id(WID.<Trace>generate())
+                           .contexts(ImmutableSet.<Context>of(mikeContext, officeContext))
+                           .activities(ImmutableSet.<Activity>of(meetingActivity))
+                           .timestamp(new LocalDateTime(2020, 1, 2, 21, 0, 0))
+                           .build();
+      traceService.add(meetingTrace1);
+    }
   }
 
   @AfterClass
@@ -53,74 +108,55 @@ public class TraceServicePostgreSqlImplTest
   }
 
   @Test
-  public void testCreate()
+  public void testObtainById()
   {
-    final Trace trace1 = Trace.builder()
-                              .id(WID.<Trace>generate())
-                              .type("meeting")
-                              .timestamp(new LocalDateTime(2020, 1, 1, 19, 0, 0))
-                              .subject("dinner with mike")
-                              .build();
-
-    try
-    {
-      traceService.create(trace1);
-
-      final Trace dbTrace = traceService.obtain(trace1.getId());
-      assertEquals(dbTrace, trace1);
-    }
-
-    finally
-    {
-      try
-      {
-        traceService.remove(trace1);
-      }
-      catch (final Exception ignored) {}
-    }
+    final Trace dbTrace = traceService.obtain(mealTrace1.getId());
+    assertEquals(dbTrace, mealTrace1);
   }
 
   @Test
   public void testObtainByRange()
   {
-    final Trace trace1 = Trace.builder()
-                              .id(WID.<Trace>generate())
-                              .type("meeting")
-                              .timestamp(new LocalDateTime(2020, 1, 2, 19, 0, 0))
-                              .subject("dinner with mike")
-                              .build();
+    final ImmutableList<Trace> dbTraces =
+        traceService.obtain(Range.closedOpen(new LocalDateTime(2020, 1, 2, 0, 0, 0), new LocalDateTime(2020, 1, 3, 0, 0, 0)));
+    assertEquals(dbTraces.size(), 2);
+    assertEquals(dbTraces.get(0), mealTrace2);
+    assertEquals(dbTraces.get(1), meetingTrace1);
+  }
 
-    final Trace trace2 = Trace.builder()
-                              .id(WID.<Trace>generate())
-                              .type("call")
-                              .timestamp(new LocalDateTime(2020, 1, 2, 21, 0, 0))
-                              .subject("sales update")
-                              .build();
+  @Test
+  public void testObtainByContext()
+  {
+    final NamedEntityContext context = NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
+    final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(),
+                                                              Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
+                                                                               new LocalDateTime(2020, 1, 14, 0, 0, 0)));
+    assertEquals(dbTraces.size(), 2);
+    assertEquals(dbTraces.get(0), mealTrace1);
+    assertEquals(dbTraces.get(1), meetingTrace1);
+  }
 
-    try
-    {
-      traceService.create(trace1);
-      traceService.create(trace2);
+  @Test
+  public void testObtainByActivity()
+  {
+    final MealActivity activity = MealActivity.builder().mealType(MealActivity.MealType.DINNER).build();
+    final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(), ImmutableSet.<Activity>of(activity),
+                                                              Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
+                                                                               new LocalDateTime(2020, 1, 14, 0, 0, 0)));
+    assertEquals(dbTraces.size(), 2);
+    assertEquals(dbTraces.get(0), mealTrace1);
+    assertEquals(dbTraces.get(1), mealTrace2);
+  }
 
-      final ImmutableList<Trace> dbTraces =
-          traceService.obtain(Range.closedOpen(new LocalDateTime(2020, 1, 2, 0, 0, 0), new LocalDateTime(2020, 1, 3, 0, 0, 0)));
-      assertEquals(dbTraces.size(), 2);
-      assertEquals(dbTraces.get(0), trace1);
-      assertEquals(dbTraces.get(1), trace2);
-    }
-
-    finally
-    {
-      try
-      {
-        traceService.remove(trace2);
-      }
-      catch (final Exception ignored) {}
-      try
-      {
-        traceService.remove(trace1);
-      }
-      catch (final Exception ignored) {}
-    }
+  @Test
+  public void testObtainByContextAndActivity()
+  {
+    final NamedEntityContext context = NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
+    final MealActivity activity = MealActivity.builder().mealType(MealActivity.MealType.DINNER).build();
+    final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(activity),
+                                                              Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
+                                                                               new LocalDateTime(2020, 1, 14, 0, 0, 0)));
+    assertEquals(dbTraces.size(), 1);
+    assertEquals(dbTraces.get(0), mealTrace1);
   }
 }
