@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.common.base.Optional;
 import com.wealdtech.DataError;
 import com.wealdtech.utils.StringUtils;
 
@@ -38,7 +39,7 @@ public class NamedEntityContext extends Context<NamedEntityContext> implements C
   public String getName() { return get(NAME, String.class).get(); }
 
   @JsonIgnore
-  public Gender getGender() { return get(GENDER, Gender.class).get(); }
+  public Optional<Gender> getGender() { return get(GENDER, Gender.class); }
 
   @JsonCreator
   public NamedEntityContext(final Map<String, Object> data){ super(data); }
@@ -60,7 +61,6 @@ public class NamedEntityContext extends Context<NamedEntityContext> implements C
     super.validate();
 
     checkState(exists(NAME), "Named entity context failed validation: missing name");
-    checkState(exists(GENDER), "Named entity context failed validation: missing gender");
   }
 
   public static class Builder<P extends Builder<P>> extends Context.Builder<NamedEntityContext, P>

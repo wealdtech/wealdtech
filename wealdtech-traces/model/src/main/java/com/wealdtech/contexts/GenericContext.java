@@ -11,12 +11,9 @@
 package com.wealdtech.contexts;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.Map;
-
-import static com.wealdtech.Preconditions.checkState;
 
 /**
  * A Context for a location.
@@ -25,11 +22,6 @@ import static com.wealdtech.Preconditions.checkState;
 public class GenericContext extends Context<GenericContext> implements Comparable<GenericContext>
 {
   private static final String _TYPE = "generic";
-
-  private static final String NAME = "name";
-
-  @JsonIgnore
-  public String getName() { return get(NAME, String.class).get(); }
 
   @JsonCreator
   public GenericContext(final Map<String, Object> data){ super(data); }
@@ -49,8 +41,6 @@ public class GenericContext extends Context<GenericContext> implements Comparabl
   protected void validate()
   {
     super.validate();
-
-    checkState(exists(NAME), "Person context failed validation: missing name");
   }
 
   public static class Builder<P extends Builder<P>> extends Context.Builder<GenericContext, P>
@@ -63,12 +53,6 @@ public class GenericContext extends Context<GenericContext> implements Comparabl
     public Builder(final GenericContext prior)
     {
       super(prior);
-    }
-
-    public P name(final String name)
-    {
-      data(NAME, name);
-      return self();
     }
 
     public GenericContext build()

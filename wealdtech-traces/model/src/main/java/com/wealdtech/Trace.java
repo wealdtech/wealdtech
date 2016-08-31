@@ -13,7 +13,6 @@ package com.wealdtech;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.wealdtech.activities.Activity;
 import com.wealdtech.contexts.Context;
@@ -22,7 +21,6 @@ import org.joda.time.LocalDateTime;
 import java.util.Map;
 
 import static com.wealdtech.Preconditions.checkState;
-import static sun.security.x509.X509CertInfo.SUBJECT;
 
 /**
  * A trace is a combination of subject and timeframe
@@ -30,7 +28,7 @@ import static sun.security.x509.X509CertInfo.SUBJECT;
 public class Trace extends WObject<Trace> implements Comparable<Trace>
 {
   private static final String CONTEXTS = "contexts";
-  private static final String ACTIVITIES = "activities";
+  private static final String ACTIVITY = "activity";
   private static final String TIMESTAMP = "timestamp";
 
   @JsonCreator
@@ -39,13 +37,8 @@ public class Trace extends WObject<Trace> implements Comparable<Trace>
     super(data);
   }
 
-  private static final TypeReference<ImmutableSet<Activity>> ACTIVITIES_TYPE_REF = new TypeReference<ImmutableSet<Activity>>() {};
-
   @JsonIgnore
-  public ImmutableSet<Activity> getActivities(){ return get(ACTIVITIES, ACTIVITIES_TYPE_REF).or(ImmutableSet.<Activity>of()); }
-
-  @JsonIgnore
-  public Optional<String> getSubject(){ return get(SUBJECT, String.class); }
+  public Activity getActivity(){ return get(ACTIVITY, Activity.class).get(); }
 
   private static final TypeReference<ImmutableSet<Context>> CONTEXTS_TYPE_REF = new TypeReference<ImmutableSet<Context>>() {};
 
@@ -74,15 +67,9 @@ public class Trace extends WObject<Trace> implements Comparable<Trace>
       super(prior);
     }
 
-    public P activities(final ImmutableSet<Activity> activities)
+    public P activity(final Activity activity)
     {
-      data(ACTIVITIES, activities);
-      return self();
-    }
-
-    public P subject(final String subject)
-    {
-      data(SUBJECT, subject);
+      data(ACTIVITY, activity);
       return self();
     }
 

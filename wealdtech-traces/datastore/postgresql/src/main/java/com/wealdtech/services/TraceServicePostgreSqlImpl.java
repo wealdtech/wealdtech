@@ -14,7 +14,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Range;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wealdtech.Trace;
@@ -68,8 +71,11 @@ public class TraceServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Tra
       final PreparedStatement stmt5 = conn.prepareStatement(
           "CREATE FUNCTION t_trace_trigger1() RETURNS trigger AS $$\n" +
           "BEGIN\n" +
-          "  new.atsv := to_tsvector('english', coalesce(new.d->>'activities',''));\n" +
-          "  new.ctsv := to_tsvector('english', coalesce(new.d->>'contexts',''));\n" +
+          "  new.atsv := to_tsvector('english', (SELECT string_agg(item.value, ' ')\n" +
+          "                                      FROM jsonb_each_text((new.d->'activity')::JSONB - 'type') item));\n" +
+          "  new.ctsv := to_tsvector('english', (SELECT string_agg(item.value, ' ')\n" +
+          "                                      FROM jsonb_array_elements(new.d->'contexts') element," +
+          "                                           jsonb_each_text(element - 'type') item));\n" +
           "  return new;\n" +
           "END\n" +
           "$$ LANGUAGE plpgsql;");
@@ -270,30 +276,7 @@ public class TraceServicePostgreSqlImpl extends WObjectServicePostgreSqlImpl<Tra
         setLong(stmt, index++, timeframe.lowerEndpoint().toDateTime(DateTimeZone.UTC).getMillis());
       }
     });
-    //    if (contexts == null || contexts.isEmpty())
-    //    {
-    //      return obtainForActivities(activities, timeframe);
-    //    }
-    //    else if (activities == null || activities.isEmpty())
-    //    {
-    //      return obtainForContexts(contexts, timeframe);
-    //    }
-    //    else
-    //    {
-    //      return obtainForContextsAndActivities(contexts, activities, timeframe);
-    //    }
   }
-
-  //  private ImmutableList<Trace> obtainForActivities(final ImmutableSet<Activity> activities, final Range<LocalDateTime> timeframe)
-  //  {
-  //    if (activities == null || activities.isEmpty())
-  //    {
-  //      return obtain(timeframe);
-  //    }
-  //    else
-  //    {
-  //    }
-  //  }
 
   @Override
   public void remove(final Trace trace)

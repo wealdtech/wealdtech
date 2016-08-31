@@ -20,6 +20,7 @@ import com.wealdtech.activities.Activity;
 import com.wealdtech.activities.GenericActivity;
 import com.wealdtech.activities.MealActivity;
 import com.wealdtech.contexts.Context;
+import com.wealdtech.contexts.GenericContext;
 import com.wealdtech.contexts.LocationContext;
 import com.wealdtech.contexts.NamedEntityContext;
 import com.wealdtech.datastore.config.PostgreSqlConfiguration;
@@ -39,7 +40,7 @@ public class TraceServicePostgreSqlImplTest
 {
   private TraceServicePostgreSqlImpl traceService;
 
-  private Trace mealTrace1, mealTrace2, meetingTrace1;
+  private Trace mealTrace1, mealTrace2, meetingTrace1, scanTrace1;
 
   @BeforeClass
   public void setUp()
@@ -61,7 +62,7 @@ public class TraceServicePostgreSqlImplTest
       mealTrace1 = Trace.builder()
                         .id(WID.<Trace>generate())
                         .contexts(ImmutableSet.<Context>of(mikeContext, restaurantContext))
-                        .activities(ImmutableSet.<Activity>of(dinnerActivity))
+                        .activity(dinnerActivity)
                         .timestamp(new LocalDateTime(2020, 1, 1, 19, 0, 0))
                         .build();
       traceService.add(mealTrace1);
@@ -76,7 +77,7 @@ public class TraceServicePostgreSqlImplTest
       mealTrace2 = Trace.builder()
                         .id(WID.<Trace>generate())
                         .contexts(ImmutableSet.<Context>of(janeContext, restaurantContext))
-                        .activities(ImmutableSet.<Activity>of(dinnerActivity))
+                        .activity(dinnerActivity)
                         .timestamp(new LocalDateTime(2020, 1, 2, 19, 0, 0))
                         .build();
       traceService.add(mealTrace2);
@@ -91,10 +92,25 @@ public class TraceServicePostgreSqlImplTest
       meetingTrace1 = Trace.builder()
                            .id(WID.<Trace>generate())
                            .contexts(ImmutableSet.<Context>of(mikeContext, officeContext))
-                           .activities(ImmutableSet.<Activity>of(meetingActivity))
+                           .activity(meetingActivity)
                            .timestamp(new LocalDateTime(2020, 1, 2, 21, 0, 0))
                            .build();
       traceService.add(meetingTrace1);
+    }
+
+    {
+      final GenericActivity scanActivity =
+          GenericActivity.builder().data("scantype", "Star").data("class", "G").data("name", "Sol").build();
+      final NamedEntityContext cmdrContext =
+          NamedEntityContext.builder().name("McDonald").gender(NamedEntityContext.Gender.MALE).build();
+      final LocationContext systemContext = LocationContext.builder().name("Sol").locationType(LocationContext.Type.OTHER).build();
+      scanTrace1 = Trace.builder()
+                        .id(WID.<Trace>generate())
+                        .contexts(ImmutableSet.<Context>of(systemContext, cmdrContext))
+                        .activity(scanActivity)
+                        .timestamp(new LocalDateTime(2020, 1, 3, 21, 0, 0))
+                        .build();
+      traceService.add(scanTrace1);
     }
   }
 
@@ -127,7 +143,7 @@ public class TraceServicePostgreSqlImplTest
   @Test
   public void testObtainByContext()
   {
-    final NamedEntityContext context = NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
+    final NamedEntityContext context = NamedEntityContext.builder().name("Mike").build();
     final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(),
                                                               Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
                                                                                new LocalDateTime(2020, 1, 14, 0, 0, 0)));
@@ -151,12 +167,34 @@ public class TraceServicePostgreSqlImplTest
   @Test
   public void testObtainByContextAndActivity()
   {
-    final NamedEntityContext context = NamedEntityContext.builder().name("Mike").gender(NamedEntityContext.Gender.MALE).build();
+    final NamedEntityContext context = NamedEntityContext.builder().name("Mike").build();
     final MealActivity activity = MealActivity.builder().mealType(MealActivity.MealType.DINNER).build();
-    final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(activity),
+    final ImmutableList<Trace> dbTraces =
+        traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(activity),
+                            Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0), new LocalDateTime(2020, 1, 14, 0, 0, 0)));
+    assertEquals(dbTraces.size(), 1);
+    assertEquals(dbTraces.get(0), mealTrace1);
+  }
+
+  @Test
+  public void testObtainByMinimalContext()
+  {
+    final GenericContext context = GenericContext.builder().data("name", "Sol").build();
+    final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(context), ImmutableSet.<Activity>of(),
                                                               Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
                                                                                new LocalDateTime(2020, 1, 14, 0, 0, 0)));
     assertEquals(dbTraces.size(), 1);
-    assertEquals(dbTraces.get(0), mealTrace1);
+    assertEquals(dbTraces.get(0), scanTrace1);
+  }
+
+  @Test
+  public void testObtainByMinimalActivity()
+  {
+    final GenericActivity activity = GenericActivity.builder().data("class", "g").build();
+    final ImmutableList<Trace> dbTraces = traceService.obtain(ImmutableSet.<Context>of(), ImmutableSet.<Activity>of(activity),
+                                                              Range.closedOpen(new LocalDateTime(2020, 1, 1, 0, 0, 0),
+                                                                               new LocalDateTime(2020, 1, 14, 0, 0, 0)));
+    assertEquals(dbTraces.size(), 1);
+    assertEquals(dbTraces.get(0), scanTrace1);
   }
 }
