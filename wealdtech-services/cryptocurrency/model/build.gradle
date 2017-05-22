@@ -1,0 +1,18 @@
+dependencies {
+  compile project(':wealdtech-configuration')
+  compile project(':wealdtech-wobject')
+  compile project(':wealdtech-retrofit')
+  compile project(':wealdtech-types')
+  compile 'com.google.inject:guice:4.0'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'Wealdtech Cryptocurrency Service'
+                description 'Access to cryptocurrency services'
+            } 
+        }
+    }
+}
