@@ -12,6 +12,7 @@ package com.wealdtech.cryptocurrency;
 
 import com.wealdtech.cryptocurrency.services.CryptocurrencyService;
 import com.wealdtech.cryptocurrency.services.CryptocurrencyServiceCoinMarketCapImpl;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Currency;
@@ -20,15 +21,32 @@ import java.util.List;
 public class CryptocurrencyServiceCoinMarketCapImplTest
 {
   @Test
-  public void testObtainTickers()
+  public void testObtainTicker1()
   {
     final CryptocurrencyService service = new CryptocurrencyServiceCoinMarketCapImpl();
 
-    final List<CryptocurrencyData> data = service.getCurrencies(Currency.getInstance("EUR"), 10);
+    final CryptocurrencyData data = service.getTicker("ethereum", Currency.getInstance("EUR"));
+
+    Assert.assertEquals("ETH", data.getSymbol());
+
+    Assert.assertTrue(data.getName().isPresent());
+    Assert.assertEquals("Ethereum", data.getName().get());
+
+    Assert.assertTrue(data.getPrice().isPresent());
+    Assert.assertEquals("EUR", data.getPrice().get().getCurrency().getCurrencyCode());
+  }
+
+  @Test
+  public void testObtainTickers1()
+  {
+    final CryptocurrencyService service = new CryptocurrencyServiceCoinMarketCapImpl();
+
+    final List<CryptocurrencyData> data = service.getTickers(Currency.getInstance("EUR"), 10);
 
     for (CryptocurrencyData datum : data)
     {
-      System.err.println(datum.toString());
+      Assert.assertTrue(datum.getName().isPresent());
+      Assert.assertTrue(datum.getPrice().isPresent());
     }
   }
 }

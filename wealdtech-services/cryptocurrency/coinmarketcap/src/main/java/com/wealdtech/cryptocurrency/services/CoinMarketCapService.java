@@ -13,6 +13,7 @@ package com.wealdtech.cryptocurrency.services;
 import com.wealdtech.GenericWObject;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface CoinMarketCapService
 {
   @GET("ticker/")
   Call<List<GenericWObject>> obtainTickers(@Query("convert") String currency, @Query("limit") Integer limit);
+
+  @GET("ticker/{key}/")
+  Call<List<GenericWObject>> obtainTicker(@Path("key") String ticker, @Query("convert") String currency);
 }

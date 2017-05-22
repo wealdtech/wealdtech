@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface CryptocurrencyService
 {
-  List<CryptocurrencyData> getCurrencies(Currency currency, Integer limit);
+  List<CryptocurrencyData> getTickers(Currency currency, Integer limit);
 
-  CryptocurrencyData getCurrency(Currency currency, String symbol);
+  CryptocurrencyData getTicker(String key, Currency currency);
 }

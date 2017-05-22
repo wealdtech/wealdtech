@@ -60,95 +60,14 @@ public class CoinMarketCapClient
       final Response<List<GenericWObject>> response = service.obtainTickers(currency.getCurrencyCode(), limit).execute();
       if (!response.isSuccessful())
       {
-        LOG.error("Failed to create user: {} ", response.errorBody().string());
+        LOG.error("Failed to obtain tickers: {} ", response.errorBody().string());
       }
       else
       {
         for (GenericWObject item : response.body())
         {
-          final CryptocurrencyData datum;
-          final CryptocurrencyData.Builder<?> builder =
-              CryptocurrencyData.builder().symbol(item.get("symbol", String.class).orNull())
-              .key(item.get("id", String.class).get());
-          if (item.exists("name"))
-          {
-            builder.name(item.get("name", String.class).get());
-          }
-          if (item.exists("timestamp"))
-          {
-            builder.timestamp(item.get("timestamp", Long.class).get());
-          }
-
-          if (item.exists("percent_change_1h"))
-          {
-            builder.change1H(new BigDecimal(item.get("percent_change_1h", String.class).get()));
-          }
-
-          if (item.exists("percent_change_24h"))
-          {
-            builder.change24H(new BigDecimal(item.get("percent_change_24h", String.class).get()));
-          }
-
-          if (item.exists("percent_change_7d"))
-          {
-            builder.change7D(new BigDecimal(item.get("percent_change_7d", String.class).get()));
-          }
-
-          if (item.exists("available_supply"))
-          {
-            builder.availableSupply(new BigDecimal(item.get("available_supply", String.class).get()));
-          }
-
-          if (item.exists("total_supply"))
-          {
-            builder.totalSupply(new BigDecimal(item.get("total_supply", String.class).get()));
-          }
-
-
-          if (item.exists("last_updated"))
-          {
-            builder.timestamp(item.get("last_updated", Long.class).get());
-          }
-
-
-          // Remaining items are currency-dependent
-          final String currencyCode = currency.getCurrencyCode().toLowerCase();
-
-          if (item.exists("price_" + currencyCode))
-          {
-            builder.price(Money.builder()
-                               .amount(new BigDecimal(item.get("price_" + currencyCode, String.class).get()))
-                               .currency(currency)
-                               .build());
-          }
-
-          if (item.exists("24h_volume_" + currencyCode))
-          {
-            builder.volume24H(Money.builder()
-                               .amount(new BigDecimal(item.get("24h_volume_" + currencyCode, String.class).get()))
-                               .currency(currency)
-                               .build());
-          }
-
-          if (item.exists("market_cap_" + currencyCode))
-          {
-            builder.marketCap(Money.builder()
-                                   .amount(new BigDecimal(item.get("market_cap_" + currencyCode, String.class).get()))
-                                   .currency(currency)
-                                   .build());
-          }
-
-          data.add(builder.build());
+          final CryptocurrencyData datum = convertItem(currency, item);
         }
-//      final Optional<String> id = response.body().get("Id", String.class);
-//      if (!id.isPresent())
-//      {
-//        LOG.error("Failed to create user; response is {}", response.body().toString());
-//      }
-//      else
-//      {
-//        userId = id.get();
-//      }
       }
     }
     catch (IOException ioe)
@@ -158,4 +77,101 @@ public class CoinMarketCapClient
     return data;
   }
 
+  public CryptocurrencyData obtainTicker(final String ticker, final Currency currency)
+  {
+    CryptocurrencyData result = null;
+    try
+    {
+      final Response<List<GenericWObject>> response = service.obtainTicker(ticker, currency.getCurrencyCode()).execute();
+      if (!response.isSuccessful())
+      {
+        LOG.error("Failed to obtain ticker: {} ", response.errorBody().string());
+      }
+      else
+      {
+        result = convertItem(currency, response.body().iterator().next());
+      }
+    }
+    catch (IOException ioe)
+    {
+      // Ignored
+    }
+    return result;
+  }
+
+  public static CryptocurrencyData convertItem(final Currency currency, final GenericWObject item)
+  {
+    final CryptocurrencyData.Builder<?> builder =
+        CryptocurrencyData.builder().symbol(item.get("symbol", String.class).orNull())
+                          .key(item.get("id", String.class).get());
+    if (item.exists("name"))
+    {
+      builder.name(item.get("name", String.class).get());
+    }
+    if (item.exists("timestamp"))
+    {
+      builder.timestamp(item.get("timestamp", Long.class).get());
+    }
+
+    if (item.exists("percent_change_1h"))
+    {
+      builder.change1H(new BigDecimal(item.get("percent_change_1h", String.class).get()));
+    }
+
+    if (item.exists("percent_change_24h"))
+    {
+      builder.change24H(new BigDecimal(item.get("percent_change_24h", String.class).get()));
+    }
+
+    if (item.exists("percent_change_7d"))
+    {
+      builder.change7D(new BigDecimal(item.get("percent_change_7d", String.class).get()));
+    }
+
+    if (item.exists("available_supply"))
+    {
+      builder.availableSupply(new BigDecimal(item.get("available_supply", String.class).get()));
+    }
+
+    if (item.exists("total_supply"))
+    {
+      builder.totalSupply(new BigDecimal(item.get("total_supply", String.class).get()));
+    }
+
+
+    if (item.exists("last_updated"))
+    {
+      builder.timestamp(item.get("last_updated", Long.class).get());
+    }
+
+
+    // Remaining items are currency-dependent
+    final String currencyCode = currency.getCurrencyCode().toLowerCase();
+
+    if (item.exists("price_" + currencyCode))
+    {
+      builder.price(Money.builder()
+                         .amount(new BigDecimal(item.get("price_" + currencyCode, String.class).get()))
+                         .currency(currency)
+                         .build());
+    }
+
+    if (item.exists("24h_volume_" + currencyCode))
+    {
+      builder.volume24H(Money.builder()
+                             .amount(new BigDecimal(item.get("24h_volume_" + currencyCode, String.class).get()))
+                             .currency(currency)
+                             .build());
+    }
+
+    if (item.exists("market_cap_" + currencyCode))
+    {
+      builder.marketCap(Money.builder()
+                             .amount(new BigDecimal(item.get("market_cap_" + currencyCode, String.class).get()))
+                             .currency(currency)
+                             .build());
+    }
+
+    return builder.build();
+  }
 }

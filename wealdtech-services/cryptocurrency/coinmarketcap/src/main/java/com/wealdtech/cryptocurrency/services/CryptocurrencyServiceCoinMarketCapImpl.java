@@ -28,14 +28,14 @@ public class CryptocurrencyServiceCoinMarketCapImpl implements CryptocurrencySer
   }
 
   @Override
-  public List<CryptocurrencyData> getCurrencies(final Currency currency, final Integer limit)
+  public List<CryptocurrencyData> getTickers(final Currency currency, final Integer limit)
   {
     return client.obtainTickers(currency, limit);
   }
 
   @Override
-  public CryptocurrencyData getCurrency(final Currency currency, final String symbol)
+  public CryptocurrencyData getTicker(final String key, final Currency currency)
   {
-    return null;
+    return client.obtainTicker(key, currency);
   }
 }
