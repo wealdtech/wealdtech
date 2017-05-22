@@ -21,13 +21,15 @@ build
 #
 # IntelliJ
 #
+*.iml
 .idea/workspace.xml
 .idea/tasks.xml
-.idea/vcs.xml
 .idea/gradle.xml
+.idea/dictionaries
 .idea/libraries
-.idea/modules.xml
-.idea/modules/
+
+# Keystore files
+*.jks
 
 #
 # TestNG
