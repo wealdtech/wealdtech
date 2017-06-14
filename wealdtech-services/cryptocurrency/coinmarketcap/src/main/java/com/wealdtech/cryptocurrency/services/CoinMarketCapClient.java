@@ -21,7 +21,6 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 public class CoinMarketCapClient
@@ -31,6 +30,11 @@ public class CoinMarketCapClient
   private static volatile CoinMarketCapClient instance = null;
 
   private final CoinMarketCapService service;
+
+  private CoinMarketCapClient()
+  {
+    this.service = RetrofitHelper.createRetrofit("https://api.coinmarketcap.com/v1/", CoinMarketCapService.class);
+  }
 
   public static CoinMarketCapClient getInstance()
   {
@@ -47,63 +51,10 @@ public class CoinMarketCapClient
     return instance;
   }
 
-  private CoinMarketCapClient()
-  {
-    this.service = RetrofitHelper.createRetrofit("https://api.coinmarketcap.com/v1/", CoinMarketCapService.class);
-  }
-
-  public List<CryptocurrencyData> obtainTickers(final Currency currency, final Integer limit)
-  {
-    List<CryptocurrencyData> data = new ArrayList<>();
-    try
-    {
-      final Response<List<GenericWObject>> response = service.obtainTickers(currency.getCurrencyCode(), limit).execute();
-      if (!response.isSuccessful())
-      {
-        LOG.error("Failed to obtain tickers: {} ", response.errorBody().string());
-      }
-      else
-      {
-        for (GenericWObject item : response.body())
-        {
-          final CryptocurrencyData datum = convertItem(currency, item);
-        }
-      }
-    }
-    catch (IOException ioe)
-    {
-      // Ignored
-    }
-    return data;
-  }
-
-  public CryptocurrencyData obtainTicker(final String ticker, final Currency currency)
-  {
-    CryptocurrencyData result = null;
-    try
-    {
-      final Response<List<GenericWObject>> response = service.obtainTicker(ticker, currency.getCurrencyCode()).execute();
-      if (!response.isSuccessful())
-      {
-        LOG.error("Failed to obtain ticker: {} ", response.errorBody().string());
-      }
-      else
-      {
-        result = convertItem(currency, response.body().iterator().next());
-      }
-    }
-    catch (IOException ioe)
-    {
-      // Ignored
-    }
-    return result;
-  }
-
-  public static CryptocurrencyData convertItem(final Currency currency, final GenericWObject item)
+  public static CryptocurrencyData convertItem(final String currency, final GenericWObject item)
   {
     final CryptocurrencyData.Builder<?> builder =
-        CryptocurrencyData.builder().symbol(item.get("symbol", String.class).orNull())
-                          .key(item.get("id", String.class).get());
+        CryptocurrencyData.builder().symbol(item.get("symbol", String.class).orNull()).key(item.get("id", String.class).get());
     if (item.exists("name"))
     {
       builder.name(item.get("name", String.class).get());
@@ -146,14 +97,12 @@ public class CoinMarketCapClient
 
 
     // Remaining items are currency-dependent
-    final String currencyCode = currency.getCurrencyCode().toLowerCase();
+    final String currencyCode = currency.toLowerCase();
 
     if (item.exists("price_" + currencyCode))
     {
-      builder.price(Money.builder()
-                         .amount(new BigDecimal(item.get("price_" + currencyCode, String.class).get()))
-                         .currency(currency)
-                         .build());
+      builder.price(
+          Money.builder().amount(new BigDecimal(item.get("price_" + currencyCode, String.class).get())).currency(currency).build());
     }
 
     if (item.exists("24h_volume_" + currencyCode))
@@ -173,5 +122,52 @@ public class CoinMarketCapClient
     }
 
     return builder.build();
+  }
+
+  public List<CryptocurrencyData> obtainTickers(final String currency, final Integer limit)
+  {
+    List<CryptocurrencyData> data = new ArrayList<>();
+    try
+    {
+      final Response<List<GenericWObject>> response = service.obtainTickers(currency, limit).execute();
+      if (!response.isSuccessful())
+      {
+        LOG.error("Failed to obtain tickers: {} ", response.errorBody().string());
+      }
+      else
+      {
+        for (GenericWObject item : response.body())
+        {
+          final CryptocurrencyData datum = convertItem(currency, item);
+        }
+      }
+    }
+    catch (IOException ioe)
+    {
+      // Ignored
+    }
+    return data;
+  }
+
+  public CryptocurrencyData obtainTicker(final String ticker, final String currency)
+  {
+    CryptocurrencyData result = null;
+    try
+    {
+      final Response<List<GenericWObject>> response = service.obtainTicker(ticker, currency).execute();
+      if (!response.isSuccessful())
+      {
+        LOG.error("Failed to obtain ticker: {} ", response.errorBody().string());
+      }
+      else
+      {
+        result = convertItem(currency, response.body().iterator().next());
+      }
+    }
+    catch (IOException ioe)
+    {
+      // Ignored
+    }
+    return result;
   }
 }

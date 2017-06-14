@@ -25,7 +25,7 @@ public class CryptocurrencyServiceCoinMarketCapImplTest
   {
     final CryptocurrencyService service = new CryptocurrencyServiceCoinMarketCapImpl();
 
-    final CryptocurrencyData data = service.getTicker("ethereum", Currency.getInstance("EUR"));
+    final CryptocurrencyData data = service.getTicker("ethereum", "EUR");
 
     Assert.assertEquals("ETH", data.getSymbol());
 
@@ -33,7 +33,7 @@ public class CryptocurrencyServiceCoinMarketCapImplTest
     Assert.assertEquals("Ethereum", data.getName().get());
 
     Assert.assertTrue(data.getPrice().isPresent());
-    Assert.assertEquals("EUR", data.getPrice().get().getCurrency().getCurrencyCode());
+    Assert.assertEquals("EUR", data.getPrice().get().getCurrency());
   }
 
   @Test
@@ -41,7 +41,7 @@ public class CryptocurrencyServiceCoinMarketCapImplTest
   {
     final CryptocurrencyService service = new CryptocurrencyServiceCoinMarketCapImpl();
 
-    final List<CryptocurrencyData> data = service.getTickers(Currency.getInstance("EUR"), 10);
+    final List<CryptocurrencyData> data = service.getTickers("EUR", 10);
 
     for (CryptocurrencyData datum : data)
     {

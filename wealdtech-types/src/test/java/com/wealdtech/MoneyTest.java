@@ -16,7 +16,6 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Currency;
 
 import static org.testng.Assert.assertEquals;
 
@@ -28,15 +27,15 @@ public class MoneyTest
   @Test
   public void simpleTest()
   {
-    final Money money = Money.builder().currency(Currency.getInstance("EUR")).amount(new BigDecimal("12.34")).build();
-    assertEquals(money.getCurrency(), Currency.getInstance("EUR"));
+    final Money money = Money.builder().currency("EUR").amount(new BigDecimal("12.34")).build();
+    assertEquals(money.getCurrency(), "EUR");
     assertEquals(money.getAmount(), new BigDecimal("12.34"));
   }
 
   @Test
   public void testSerialisation() throws JsonProcessingException
   {
-    final Money money = Money.builder().currency(Currency.getInstance("EUR")).amount(new BigDecimal("12.34")).build();
+    final Money money = Money.builder().currency("EUR").amount(new BigDecimal("12.34")).build();
     final String moneySer = WealdMapper.getServerMapper().writeValueAsString(money);
     assertEquals(moneySer, "{\"amount\":12.34,\"currency\":\"EUR\"}");
   }
@@ -44,7 +43,7 @@ public class MoneyTest
   @Test
   public void testReserialisation() throws IOException
   {
-    final Money money = Money.builder().currency(Currency.getInstance("EUR")).amount(new BigDecimal("12.34")).build();
+    final Money money = Money.builder().currency("EUR").amount(new BigDecimal("12.34")).build();
     final String moneySer = WealdMapper.getServerMapper().writeValueAsString(money);
     final Money money2 = WealdMapper.getServerMapper().readValue(moneySer, Money.class);
     assertEquals(money2, money);

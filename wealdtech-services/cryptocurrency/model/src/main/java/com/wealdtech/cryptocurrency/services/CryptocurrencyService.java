@@ -12,7 +12,6 @@ package com.wealdtech.cryptocurrency.services;
 
 import com.wealdtech.cryptocurrency.CryptocurrencyData;
 
-import java.util.Currency;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
  */
 public interface CryptocurrencyService
 {
-  List<CryptocurrencyData> getTickers(Currency currency, Integer limit);
+  List<CryptocurrencyData> getTickers(String currency, Integer limit);
 
-  CryptocurrencyData getTicker(String key, Currency currency);
+  CryptocurrencyData getTicker(String key, String currency);
 }

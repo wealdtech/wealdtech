@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.Map;
 
 /**
@@ -40,10 +39,10 @@ public class Money extends WObject<Money> implements Comparable<Money>
   }
 
   @JsonIgnore
-  public Currency getCurrency() { return get(CURRENCY, Currency.class).get(); }
+  public String getCurrency(){ return get(CURRENCY, String.class).get(); }
 
   @JsonIgnore
-  public BigDecimal getAmount() { return get(AMOUNT, BigDecimal.class).get(); }
+  public BigDecimal getAmount(){ return get(AMOUNT, BigDecimal.class).get(); }
 
   public static class Builder<P extends Builder<P>> extends WObject.Builder<Money, P>
   {
@@ -57,7 +56,7 @@ public class Money extends WObject<Money> implements Comparable<Money>
       super(prior);
     }
 
-    public P currency(final Currency currency)
+    public P currency(final String currency)
     {
       data(CURRENCY, currency);
       return self();
@@ -76,7 +75,7 @@ public class Money extends WObject<Money> implements Comparable<Money>
     }
   }
 
-  public static Builder<?> builder() { return new Builder(); }
+  public static Builder<?> builder(){ return new Builder(); }
 
-  public static Builder<?> builder(final Money prior) { return new Builder(prior); }
+  public static Builder<?> builder(final Money prior){ return new Builder(prior); }
 }

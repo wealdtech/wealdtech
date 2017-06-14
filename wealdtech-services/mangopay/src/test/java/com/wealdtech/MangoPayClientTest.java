@@ -56,8 +56,8 @@ public class MangoPayClientTest
     String id = client.createUser("Test", "User", "Test@test.com", new LocalDate(1970, 1, 1), "GB", "GB", "test");
     assertNotNull(id);
 
-    final CardRegistration
-        registration = client.createCardRegistration(id, CreditCard.Brand.VISA, Currency.getInstance("GBP"), "Test");
+    final CardRegistration registration =
+        client.createCardRegistration(id, CreditCard.Brand.VISA, Currency.getInstance("GBP"), "Test");
 
     assertNotNull(registration);
   }
@@ -66,7 +66,7 @@ public class MangoPayClientTest
   public void testCreateCardPayin()
   {
     client.payIn("15275627", "15275645", "15274507", "15274508",
-                 Money.builder().amount(new BigDecimal("10.00")).currency(Currency.getInstance("GBP")).build(),
-                 Money.builder().amount(new BigDecimal("1.00")).currency(Currency.getInstance("GBP")).build());
+                 Money.builder().amount(new BigDecimal("10.00")).currency("GBP").build(),
+                 Money.builder().amount(new BigDecimal("1.00")).currency("GBP").build());
   }
 }

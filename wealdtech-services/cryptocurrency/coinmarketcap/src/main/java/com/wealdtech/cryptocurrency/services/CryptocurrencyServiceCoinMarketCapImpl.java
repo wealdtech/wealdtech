@@ -13,7 +13,6 @@ package com.wealdtech.cryptocurrency.services;
 import com.google.inject.Inject;
 import com.wealdtech.cryptocurrency.CryptocurrencyData;
 
-import java.util.Currency;
 import java.util.List;
 
 public class CryptocurrencyServiceCoinMarketCapImpl implements CryptocurrencyService
@@ -28,13 +27,13 @@ public class CryptocurrencyServiceCoinMarketCapImpl implements CryptocurrencySer
   }
 
   @Override
-  public List<CryptocurrencyData> getTickers(final Currency currency, final Integer limit)
+  public List<CryptocurrencyData> getTickers(final String currency, final Integer limit)
   {
     return client.obtainTickers(currency, limit);
   }
 
   @Override
-  public CryptocurrencyData getTicker(final String key, final Currency currency)
+  public CryptocurrencyData getTicker(final String key, final String currency)
   {
     return client.obtainTicker(key, currency);
   }
